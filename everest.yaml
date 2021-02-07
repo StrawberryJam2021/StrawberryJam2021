@@ -1,6 +1,6 @@
-- Name: SpringCollab2020
+- Name: StrawberryJam2021
   Version: 1.0.0
-  DLL: bin/Debug/net452/SpringCollab2020.dll
+  DLL: bin/Debug/net452/StrawberryJam2021.dll
   Dependencies:
     - Name: Everest
-      Version: 1.1311.0
+      Version: 1.2541.0
