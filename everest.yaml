@@ -1,0 +1,6 @@
+- Name: SpringCollab2020
+  Version: 1.0.0
+  DLL: bin/Debug/net452/SpringCollab2020.dll
+  Dependencies:
+    - Name: Everest
+      Version: 1.1311.0
