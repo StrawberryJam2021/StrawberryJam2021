@@ -1,8 +1,6 @@
 # StrawberryJam2021
 Code mod to be used for the Celeste Community Strawberry Jam Collab 2021.
 
-> **Work in progress.** *(Oh god when was the last time I've set up a repo like this -jade)*
-
 ## Setup instructions
 
 Feel free to ask a coding team captain in the collab Discord server for help.
@@ -27,7 +25,7 @@ Developing directly on the main branch is highly discouraged.
 
 > **Work in progress.**
 
-- **/WIP/** Move your assigned task from the server into an issue and either assign it yourself or have a captain assign it to you. *(How exactly are we going to handle this? -jade)*
+- Move your assigned task from the server into an issue and either assign it yourself or have a captain assign it to you.
 - Create a new feature branch to work on.
 - Implement the request.
 - Submit a pull request to merge your feature branch into the main branch.
