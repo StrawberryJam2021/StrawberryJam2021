@@ -12,4 +12,4 @@ jobs:
         with:
           project: Strawberry Jam Collab 2021
           column: In progress
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.JADEBOT_TOKEN }}
