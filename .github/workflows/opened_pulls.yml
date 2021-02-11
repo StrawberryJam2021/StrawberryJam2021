@@ -1,0 +1,15 @@
+name: Move pull requests into project
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  automate-project-columns:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: alex-page/github-project-automation-plus@v0.5.1
+        with:
+          project: Strawberry Jam Collab 2021
+          column: Pull Requests
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
