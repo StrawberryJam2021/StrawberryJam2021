@@ -8,9 +8,11 @@
         }
 
         public override void Load() {
+            SelfUpdater.Load();
         }
 
         public override void Unload() {
+            SelfUpdater.Unload();
         }
 
     }
