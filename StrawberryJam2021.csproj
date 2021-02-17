@@ -5,6 +5,12 @@
     <AssemblyName>StrawberryJam2021</AssemblyName>
     <RootNamespace>Celeste.Mod.StrawberryJam2021</RootNamespace>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+
+    <CelestePrefix Condition="'$(CelestePrefix)' == '' And Exists('..\..\Celeste.exe')">..\..</CelestePrefix>
+    <CelestePrefix Condition="'$(CelestePrefix)' == ''">lib-stripped</CelestePrefix>
+    <CelesteType Condition="'$(CelesteType)' == '' And Exists('$(CelestePrefix)\BuildIsXNA.txt')">XNA</CelesteType>
+    <CelesteType Condition="'$(CelesteType)' == ''">FNA</CelesteType>
+    <XNAPath Condition="'$(XNAPath)' == ''">$(WINDIR)\Microsoft.NET\assembly\GAC_32\{0}\v4.0_4.0.0.0__842cf8be1de50553\{0}.dll</XNAPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,39 +19,37 @@
     <PackageReference Include="MonoMod.Utils" Version="21.01.11.01" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="YamlDotNet" Version="8.1.2" PrivateAssets="all" ExcludeAssets="runtime" />
+
+    <Reference Include="$(CelestePrefix)\Celeste.exe">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="$(CelestePrefix)\MMHOOK_Celeste.dll">
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
   <Choose>
-    <When Condition="Exists('..\..\Celeste.exe')">
+    <When Condition="'$(CelesteType)' == 'FNA'">
       <ItemGroup>
-        <Reference Include="Celeste" HintPath="..\..\Celeste.exe" Private="false" />
-        <Reference Include="MMHOOK_Celeste" HintPath="..\..\MMHOOK_Celeste.dll" Private="false" />
+        <Reference Include="$(CelestePrefix)\FNA.dll">
+          <Private>false</Private>
+        </Reference>
       </ItemGroup>
-
-      <Choose>
-        <When Condition="'$(OS)' != 'Windows_NT' Or Exists('..\..\BuildIsFNA.txt')">
-          <ItemGroup>
-            <Reference Include="FNA" HintPath="..\..\FNA.dll" Private="false" />
-          </ItemGroup>
-        </When>
-
-        <Otherwise>
-          <ItemGroup>
-            <Reference Include="Microsoft.Xna.Framework" HintPath="$(WINDIR)\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.dll" Private="false" />
-            <Reference Include="Microsoft.Xna.Framework.Game" HintPath="$(WINDIR)\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework.Game\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Game.dll" Private="false" />
-            <Reference Include="Microsoft.Xna.Framework.Graphics" HintPath="$(WINDIR)\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework.Graphics\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Graphics.dll" Private="false" />
-          </ItemGroup>
-        </Otherwise>
-      </Choose>
     </When>
 
-    <Otherwise>
+    <When Condition="'$(CelesteType)' == 'XNA'">
       <ItemGroup>
-        <Reference Include="Celeste" HintPath="lib-stripped\Celeste.exe" Private="false" />
-        <Reference Include="MMHOOK_Celeste" HintPath="lib-stripped\MMHOOK_Celeste.dll" Private="false" />
-        <Reference Include="FNA" HintPath="lib-stripped\FNA.dll" Private="false" />
+        <Reference Include="$([System.String]::Format('$(XNAPath)', 'Microsoft.Xna.Framework'))">
+          <Private>false</Private>
+        </Reference>
+        <Reference Include="$([System.String]::Format('$(XNAPath)', 'Microsoft.Xna.Framework.Game'))">
+          <Private>false</Private>
+        </Reference>
+        <Reference Include="$([System.String]::Format('$(XNAPath)', 'Microsoft.Xna.Framework.Graphics'))">
+          <Private>false</Private>
+        </Reference>
       </ItemGroup>
-    </Otherwise>
+    </When>
   </Choose>
 
 </Project>
