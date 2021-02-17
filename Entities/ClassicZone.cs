@@ -8,6 +8,32 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("StrawberryJam2021/ClassicZone")]
     [Tracked(false)]
     public class ClassicZone : Solid {
+        private static bool PlayerInZone;
+
+        public static void Load() {
+            On.Celeste.Player.Update += OnPlayerUpdate;
+            On.Celeste.Player.Render += OnPlayerRender;
+        }
+
+        public static void Unload() {
+            On.Celeste.Player.Update -= OnPlayerUpdate;
+            On.Celeste.Player.Render -= OnPlayerRender;
+        }
+
+        private static void OnPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self) {
+            if (!PlayerInZone) {
+                orig(self);
+                return;
+            }
+        }
+
+        private static void OnPlayerRender(On.Celeste.Player.orig_Render orig, Player self) {
+            if (!PlayerInZone) {
+                orig(self);
+                return;
+            }
+        }
+
         private struct DreamParticle {
             public Vector2 Position;
 
