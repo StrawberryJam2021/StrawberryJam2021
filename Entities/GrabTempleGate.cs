@@ -33,7 +33,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Add(sfx = new SoundSource());
             Add(shaker = new Shaker(on: false));
-            base.Depth = -9000;
+            base.Depth = Depths.Solids;
         }
 
         public GrabTempleGate(EntityData data, Vector2 offset)
@@ -42,7 +42,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
-            if(!startClosed) {
+            if (!startClosed) {
                 StartOpen();
             }
             drawHeight = Math.Max(4f, base.Height);
@@ -58,8 +58,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public void SwitchOpen() {
             sprite.Play("open");
-            Alarm.Set(this, 0.2f, delegate
-            {
+            Alarm.Set(this, 0.2f, () =>
                 shaker.ShakeFor(0.2f, removeOnFinish: false);
                 Alarm.Set(this, 0.2f, Open);
             });
@@ -112,7 +111,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             canSwitchTimer = Calc.Approach(canSwitchTimer, 0f, Engine.DeltaTime);
             if (Input.Grab.Pressed && canSwitchTimer == 0f) {
                 sfx.Stop();
-                if(open) {
+                if (open) {
                     Close();
                 } else {
                     Open();
