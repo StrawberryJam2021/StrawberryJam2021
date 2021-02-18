@@ -56,12 +56,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             p_regen = two ? Refill.P_RegenTwo : Refill.P_Regen;
             p_glow = two ? Refill.P_GlowTwo : Refill.P_Glow;
 
-            Add(sprite = new Sprite(GFX.Game, $"objects/refillShard/{(two ? "two" : "one")}"));
+            Add(sprite = new Sprite(GFX.Game, $"objects/StrawberryJam2021/refillShard/{(two ? "two" : "one")}"));
             sprite.AddLoop("idle", "", 0.1f);
             sprite.Play("idle", false, false);
             sprite.CenterOrigin();
 
-            Add(flash = new Sprite(GFX.Game, "objects/refillShard/flash"));
+            Add(flash = new Sprite(GFX.Game, "objects/StrawberryJam2021/refillShard/flash"));
             flash.Add("flash", "", 0.05f);
             flash.OnFinish = (anim) => flash.Visible = false;
             flash.CenterOrigin();
