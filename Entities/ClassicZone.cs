@@ -8,34 +8,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/ClassicZone")]
     [Tracked(false)]
     public class ClassicZone : Entity {
-        private static bool PlayerInZone;
-
-        public static void Load() {
-            On.Celeste.Player.Update += OnPlayerUpdate;
-            On.Celeste.Player.Render += OnPlayerRender;
-        }
-
-        public static void Unload() {
-            On.Celeste.Player.Update -= OnPlayerUpdate;
-            On.Celeste.Player.Render -= OnPlayerRender;
-        }
-
-        private static void OnPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self) {
-            // TODO: Convert to controller entity
-            skipFrame = !skipFrame;
-            if (!PlayerInZone) {
-                orig(self);
-                return;
-            }
-        }
-
-        private static void OnPlayerRender(On.Celeste.Player.orig_Render orig, Player self) {
-            if (!PlayerInZone) {
-                orig(self);
-                return;
-            }
-        }
-
+        
+        private ClassicZoneController controller;
         private struct Cloud {
             public Vector2 Position;
 
@@ -43,8 +17,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             public float Width;
         }
-
-        private static bool skipFrame;
 
         private static readonly Color activeBackColor = Color.Black;
 
@@ -101,6 +73,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Added(Scene scene) {
             base.Added(scene);
+            controller = scene.Tracker.GetEntity<ClassicZoneController>();
+            if (controller == null) {
+                controller = scene.CreateAndAdd<ClassicZoneController>();
+            }
             playerHasDreamDash = SceneAs<Level>().Session.Inventory.DreamDash;
             if (playerHasDreamDash && node.HasValue) {
                 Vector2 start = Position;
@@ -219,7 +195,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Vector2 position = SceneAs<Level>().Camera.Position;
             // TODO: Look into stenciling, Y axis also needs clipping
             for (var i = 0; i < clouds.Length; i++) {
-                if (!skipFrame)
+                if (!controller.SkipFrame)
                     clouds[i].Position.X += clouds[i].Speed;
                 
                 if (clouds[i].Position.X + clouds[i].Width > 0 && clouds[i].Position.X < Width) {
@@ -239,7 +215,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             new Color(29, 43, 83));
                 }
 
-                if (clouds[i].Position.X > Width && !skipFrame) {
+                if (clouds[i].Position.X > Width && !controller.SkipFrame) {
                     clouds[i].Position.X = -clouds[i].Width;
                     clouds[i].Position.Y = Calc.Random.NextFloat(Height - 8);
                 }

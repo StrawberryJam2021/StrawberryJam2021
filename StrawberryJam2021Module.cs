@@ -16,12 +16,12 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public override void Load() {
             SelfUpdater.Load();
-            ClassicZone.Load();
+            ClassicZoneController.Load();
         }
 
         public override void Unload() {
             SelfUpdater.Unload();
-            ClassicZone.Unload();
+            ClassicZoneController.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
