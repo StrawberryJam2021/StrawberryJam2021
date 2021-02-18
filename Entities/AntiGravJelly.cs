@@ -26,6 +26,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/AntiGravJelly")]
     class AntiGravJelly : Actor {
 
+        public bool canBoostUp { get; private set; }
+
         private bool bubble, destroyed = false;
         private float highFrictionTimer, noGravityTimer, downThrowMultiplier, diagThrowXMultiplier, diagThrowYMultiplier, gravity;
         private Vector2 speed, startPosition, prevLiftSpeed;
@@ -38,16 +40,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Level level;
 
         public AntiGravJelly(EntityData data, Vector2 offset) : this(data.Position + offset, data.Bool("bubble", false), data.Float("downThrowMultiplier", 1f),
-            data.Float("diagThrowXMultiplier", 1f), data.Float("diagThrowYMultiplier", 1f), data.Float("gravity", -30)) {
+            data.Float("diagThrowXMultiplier", 1f), data.Float("diagThrowYMultiplier", 1f), data.Float("gravity", -30), data.Bool("canBoostUp", false)) {
         }
 
-        public AntiGravJelly(Vector2 position, bool bubble, float downThrowMultiplier, float diagThrowXMultiplier, float diagThrowYMultiplier, float gravity) : base (position){
+        public AntiGravJelly(Vector2 position, bool bubble, float downThrowMultiplier, float diagThrowXMultiplier, float diagThrowYMultiplier, float gravity, bool canBoostUp) : base (position){
             this.bubble = bubble;
             this.downThrowMultiplier = downThrowMultiplier;
             this.diagThrowYMultiplier = diagThrowYMultiplier;
             this.diagThrowXMultiplier = diagThrowXMultiplier;
             this.gravity = gravity;
             startPosition = Position;
+            this.canBoostUp = canBoostUp;
+
             Collider = new Hitbox(8, 10, -4, -10);
             onCollideH = new Collision(CollideHandlerH);
             onCollideV = new Collision(CollideHandlerV);
@@ -104,7 +108,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             self.Play("event:/char/madeline/crystaltheo_lift", null, 0f);
             Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
-            if (self.Holding != null && self.Holding.SlowFall && ((get_self_gliderBoosterTimer() - 0.16f > 0f /* TODO block boost up? && ((Vector2) player_gliderBoostDir.GetValue(self)).Y < 0f*/) || (self.Speed.Length() > 180f /* TODO block boost up? && self.Speed.Y <= 0f*/))) {
+            if (self.Holding != null && self.Holding.SlowFall && get_self_gliderBoosterTimer() - 0.16f > 0f && self_gliderBoostDir.Y > 0f || (self.Speed.Length() > 180f && self.Speed.Y <= 0f)) {
                 Audio.Play("event:/new_content/game/10_farewell/glider_platform_dissipate", self.Position);
             }
             Vector2 oldSpeed = self.Speed;
@@ -114,35 +118,31 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Vector2 carryOffsetTarget = self_carryOffsetTarget;
             Vector2 control = new Vector2(vector.X + (float) (Math.Sign(vector.X) * 2), self_carryOffsetTarget.Y - 2f);
             SimpleCurve curve = new SimpleCurve(vector, carryOffsetTarget, control);
-            //self.carryOffset = vector;
             set_self_carryOffset(vector);
             Tween tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeInOut, 0.16f, true);
             tween.OnUpdate = delegate (Tween t)
             {
-                //self.carryOffset = curve.GetPoint(t.Eased);
                 set_self_carryOffset(curve.GetPoint(t.Eased));
             };
             self.Add(tween);
             yield return tween.Wait();
             self.Speed = oldSpeed;
-            self.Speed.Y = Math.Min(self.Speed.Y, 0f);
-            //self.varJumpTimer = varJump;
+            self.Speed.Y = Math.Max(self.Speed.Y, 0f);
             set_self_varJumpTimer(varJump);
             self.StateMachine.State = 0;
             if (self.Holding != null && self.Holding.SlowFall) {
-                if (get_self_gliderBoosterTimer() > 0f /* TODO block boost up? && ((Vector2) player_gliderBoostDir.GetValue(self)).Y < 0f*/ ) {
+                if (get_self_gliderBoosterTimer() > 0f && self_gliderBoostDir.Y > 0f) { // if can yeet and go down, do yeet
                     Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
-                    //self.gliderBoostTimer = 0f;
                     set_self_gliderBoosterTimer(0f);
-                    if (Math.Sign(self.Speed.Y) == -1) { // if moving up, default behaviour. TODO block boost up?
-                        self.Speed.Y = Math.Min(self.Speed.Y, -240f * Math.Abs(self_gliderBoostDir.Y));
-                    } else {
-                        self.Speed.Y = Math.Max(self.Speed.Y, 240f * Math.Abs(self_gliderBoostDir.Y));
-                    }
-                } else if (self.Speed.Y < 0f) {
-                    self.Speed.Y = Math.Min(self.Speed.Y, -105f);
-                } else {
-                    self.Speed.Y = Math.Max(self.Speed.Y, 105);
+                    self.Speed.Y = Math.Max(self.Speed.Y, 240f * self_gliderBoostDir.Y);
+                } else if (get_self_gliderBoosterTimer() > 0f && self_gliderBoostDir.Y < 0 && ((AntiGravJelly)self.Holding.Entity).canBoostUp) { // if can yeet, go up *and* canboostup
+                    Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
+                    set_self_gliderBoosterTimer(0f);
+                    self.Speed.Y = Math.Min(self.Speed.Y, -240f * Math.Abs(self_gliderBoostDir.Y));
+                } else if (self_gliderBoostDir.Y > 0f ) { // if too late for yeet and go down, set minimum down speed. TODO anti cheese here?
+                    self.Speed.Y = Math.Max(self.Speed.Y, 105f);
+                } else if (!((AntiGravJelly) self.Holding.Entity).canBoostUp && self_gliderBoostDir.Y < 0) {
+                    self.Speed.Y = Math.Max(oldSpeed.Y, -105f);
                 }
                 if (self_onGround && Input.MoveY == 1f) {
                     //self.holdCannotDuck = true;
@@ -225,9 +225,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         }
                         speed.X = Calc.Approach(speed.X, correction, 800f * Engine.DeltaTime);
 
-                        Vector2 liftspeed = LiftSpeed; //todo what the hecc is liftspeed
+                        Vector2 liftspeed = LiftSpeed;
                         if (liftspeed == Vector2.Zero && prevLiftSpeed != Vector2.Zero) { // todo what the hecc is this 
-                            speed = liftspeed; //todo invert y? maybe? could just be for the bounce idk
+                            speed = liftspeed;
                             prevLiftSpeed = Vector2.Zero;
                             speed.Y = Math.Min(speed.Y * 0.6f, 0);
 
@@ -247,20 +247,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         }
 
                     } // if(onGround)
-                    else if (hold.ShouldHaveGravity) {  // this is where gravity gets inverted for realsies innit
-                        float num = 200f; // approach to gravity
-                        if (speed.Y <= 30f) // if moving down too fast, dont halve approach
+                    else if (hold.ShouldHaveGravity) {
+                        float num = 200f; // gravity coefficient
+                        if (speed.Y <= 30f) // if moving down not too fast, halve coefficient
                             num *= 0.5f;
 
-                        float friction; // x speed correction?
-                        if (speed.Y < 0) { // if moving down, correction = 40
-                            friction = 40f;
-                        } else if (highFrictionTimer <= 0f) { // or if high friction, could get these two in one || statement
-                            friction = 40f;
-                        } else {
-                            friction = 10f;
-                        }
-                        speed.X = Calc.Approach(speed.X, 0f, friction * Engine.DeltaTime);
+                        float xAxisFriction = (speed.Y < 0 || highFrictionTimer <= 0)? 40f : 10f; // if moving down or high friction, use higher friction value
+                        speed.X = Calc.Approach(speed.X, 0f, xAxisFriction * Engine.DeltaTime);
 
                         if (noGravityTimer > 0) { // if no grav, dont do anything
                             noGravityTimer -= Engine.DeltaTime;
@@ -400,17 +393,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     return true;
                 }
                 if (spring.Orientation == Spring.Orientations.WallLeft && speed.X <= 0f) {
-                    base.MoveTowardsY(spring.CenterY + 5f, 4f, null);
+                    MoveTowardsY(spring.CenterY + 5f, 4f, null);
                     speed.X = 160f;
-                    speed.Y = -80f;
+                    speed.Y = 80f;
                     noGravityTimer = 0.1f;
                     wiggler.Start();
                     return true;
                 }
                 if (spring.Orientation == Spring.Orientations.WallRight && speed.X >= 0f) {
-                    base.MoveTowardsY(spring.CenterY + 5f, 4f, null);
+                    MoveTowardsY(spring.CenterY + 5f, 4f, null);
                     speed.X = -160f;
-                    speed.Y = -80f;
+                    speed.Y = 80f;
                     noGravityTimer = 0.1f;
                     wiggler.Start();
                     return true;
@@ -419,13 +412,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return false;
         }
 
+        protected override void OnSquish(CollisionData data) {
+            if (!TrySquishWiggle(data, 3, 3)) {
+                RemoveSelf();
+            }
+        }
+
         private Vector2 SpeedGetter() {
             // todo wtf even is a speed getter
             return speed;
         }
 
         private void ReleaseHandler(Vector2 force) {
-            Logger.Log("SJ2021/antigravjelly", $"ReleaseHandler(force {{X: {force.X}, Y: {force.Y}}}), Input.MoveY.Value = {Input.MoveY.Value}, diagmul ({diagThrowXMultiplier}, {diagThrowYMultiplier}), downmul {downThrowMultiplier}");
+            //Logger.Log("SJ2021/antigravjelly", $"ReleaseHandler(force {{X: {force.X}, Y: {force.Y}}}), Input.MoveY.Value = {Input.MoveY.Value}, diagmul ({diagThrowXMultiplier}, {diagThrowYMultiplier}), downmul {downThrowMultiplier}");
             if (force.X == 0f) {
                 Audio.Play("event:/new_content/char/madeline/glider_drop", Position);
             }
