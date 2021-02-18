@@ -27,7 +27,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             closedHeight = 48;
             this.startClosed = startClosed;
 
-            Add(sprite = GFX.SpriteBank.Create("templegate_default"));
+            Add(sprite = StrawberryJam2021Module.GrabTempleGateSpriteBank.Create("grabTempleGate"));
             sprite.X = base.Collider.Width / 2f;
             sprite.Play("idle");
 

@@ -1,7 +1,13 @@
-﻿namespace Celeste.Mod.StrawberryJam2021 {
+﻿using Monocle;
+
+namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
 
         public static StrawberryJam2021Module Instance;
+
+        // SpriteBanks
+        public static SpriteBank GrabTempleGateSpriteBank => Instance._GrabTempleGateSpriteBank;
+        public SpriteBank _GrabTempleGateSpriteBank;
         
         public StrawberryJam2021Module() {
             Instance = this;
@@ -13,6 +19,13 @@
 
         public override void Unload() {
             SelfUpdater.Unload();
+        }
+
+        public override void LoadContent(bool firstLoad) {
+            base.LoadContent(firstLoad);
+
+            _GrabTempleGateSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/GrabTempleGateSprites.xml");
+
         }
 
     }
