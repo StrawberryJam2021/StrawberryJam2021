@@ -8,8 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    [CustomEntity("StrawberryJam2021/DashSequenceController")]
+    [CustomEntity("SJ2021/DashSequenceController", "StrawberryJam2021/DashSequenceController")]
     public class DashSequenceController : Entity {
+        public string[] DashCode;
+        public string FlagLabel;
+        private DashListener DashListener;
+        private int CodePosition;
+
         public DashSequenceController(EntityData data, Vector2 offset) : base(data.Position + offset) {
             DashCode = data.Attr("dashCode", "*").ToUpper().Split(',');
             FlagLabel = data.Attr("flagLabel", "");
@@ -27,8 +32,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     level.Session.SetFlag(FlagLabel + "-" + i, false);
                 }
             }
-            Add(DashListener = new DashListener());
-            DashListener.OnDash = OnDash;
+            Add(DashListener = new DashListener() {
+                OnDash = OnDash
+            });
             CodePosition = 0;
         }
 
@@ -59,13 +65,5 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 CodePosition = 0;
             }
         }
-
-        public string[] DashCode;
-
-        public string FlagLabel;
-
-        private DashListener DashListener;
-
-        private int CodePosition;
     }
 }
