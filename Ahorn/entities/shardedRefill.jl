@@ -1,11 +1,11 @@
-module StrawberryJamShardedRefill
+module SJ2021ShardedRefill
 
 using ..Ahorn, Maple
 
-@mapdef Entity "StrawberryJam2021/RefillShard" ShardedRefill(x::Integer, y::Integer, spawnRefill::Bool=false, twoDashes::Bool=false, resetOnGround::Bool=true, oneUse::Bool=false, collectAmount::Integer=0)
+@mapdef Entity "SJ2021/RefillShard" ShardedRefill(x::Integer, y::Integer, spawnRefill::Bool=false, twoDashes::Bool=false, resetOnGround::Bool=true, oneUse::Bool=false, collectAmount::Integer=0)
 
 const placements = Ahorn.PlacementDict(
-    "Sharded Refill (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
+    "Sharded Refill (SJ2021)" => Ahorn.EntityPlacement(
         ShardedRefill
     )
 )

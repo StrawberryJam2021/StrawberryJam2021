@@ -45,7 +45,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(new StaticMover {
                 SolidChecker = solid => solid.CollideCheck(this),
                 OnAttach = platform => {
-                    Depth = -10000000;
+                    Depth = Depths.Top;
                     Collider = new Hitbox(18f, 18f, -9f, -9f);
                     attached = platform;
                     start = Position - platform.Position;
@@ -76,7 +76,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             sine.Randomize();
 
             UpdateY();
-            Depth = -100;
+            Depth = Depths.Pickups;
             Collider = new Hitbox(12f, 12f, -6f, -6f);
         }
 
@@ -125,7 +125,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public void OnCollectCutscene() {
             Finished = true;
             Follower.Leader.LoseFollower(Follower);
-            Depth = -2000002;
+            Depth = Depths.FormationSequences - 2;
             Tag = Tags.FrozenUpdate;
         }
 
@@ -161,7 +161,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void OnPlayer(Player player) {
             Audio.Play("event:/game/general/seed_touch", Position, "count", index % 5);
             Collidable = false;
-            Depth = -1000000;
+            Depth = Depths.Top;
             player.Leader.GainFollower(Follower);
         }
 

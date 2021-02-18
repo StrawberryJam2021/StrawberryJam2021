@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    [CustomEntity("StrawberryJam2021/RefillShard")]
+    [CustomEntity("SJ2021/RefillShard")]
     public class RefillShardController : Entity {
         private static MethodInfo m_RefillRespawn = typeof(Refill).GetMethod("Respawn", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -22,6 +22,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int collectAmount;
         private List<Vector2> nodes;
 
+        private DynData<Refill> refillData;
         private bool finished;
 
         public RefillShardController(EntityData data, Vector2 offset) : base(data.Position + offset) {
@@ -57,8 +58,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 scene.Add(Refill);
 
                 Refill.Collidable = false;
-                Refill.Depth = 8999;
-                var refillData = new DynData<Refill>(Refill);
+                Refill.Depth = Depths.BGDecals - 1;
+
+                refillData = new DynData<Refill>(Refill);
                 refillData.Get<Sprite>("sprite").Visible = false;
                 refillData.Get<Sprite>("flash").Visible = false;
                 refillData.Get<Image>("outline").Visible = true;
@@ -69,7 +71,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
             if (!finished && spawnRefill)
-                new DynData<Refill>(Refill).Set("respawnTimer", 3600f);
+                refillData.Set("respawnTimer", 3600f);
         }
 
         public void CheckCollection() {
@@ -126,7 +128,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void SpawnRefill() {
-            new DynData<Refill>(Refill).Set("respawnTimer", 3600f);
+            refillData.Set("respawnTimer", 3600f);
             m_RefillRespawn.Invoke(Refill, new object[] { });
         }
     }
