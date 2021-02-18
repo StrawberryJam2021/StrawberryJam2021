@@ -21,6 +21,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void OnPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self) {
+            // TODO: Convert to controller entity
+            skipFrame = !skipFrame;
             if (!PlayerInZone) {
                 orig(self);
                 return;
@@ -33,6 +35,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
         }
+
+        private struct Cloud {
+            public Vector2 Position;
+
+            public float Speed;
+
+            public float Width;
+        }
+
+        private static bool skipFrame;
 
         private static readonly Color activeBackColor = Color.Black;
 
@@ -47,6 +59,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2? node;
 
         private LightOcclude occlude;
+
+        private Cloud[] clouds;
 
         private float whiteFill = 0f;
 
@@ -97,7 +111,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (fastMoving) {
                     num /= 3f;
                 }
-                
+
                 // TODO: Moving dream blocks relay on things in Solid and Platform, disabled for now
                 // Tween tween = Tween.Create(Tween.TweenMode.YoyoLooping, Ease.SineInOut, num, start: true);
                 // tween.OnUpdate = delegate(Tween t) {
@@ -118,6 +132,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void Setup() {
+            clouds = new Cloud[17];
+            for (int i = 0; i < 17; i++) {
+                clouds[i] = new Cloud() {
+                    Position = new Vector2(Calc.Random.NextFloat(128), Calc.Random.NextFloat(128)),
+                    Speed = 1 + Calc.Random.NextFloat(4),
+                    Width = 32 + Calc.Random.NextFloat(32)
+                };
+            }
         }
 
         public void OnPlayerExit(Player player) {
@@ -197,6 +219,33 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Draw.Rect(shake.X + base.X, shake.Y + base.Y, base.Width, base.Height,
                 playerHasDreamDash ? activeBackColor : disabledBackColor);
             Vector2 position = SceneAs<Level>().Camera.Position;
+            // TODO: Look into stenciling, Y axis also needs clipping
+            for (var i = 0; i < clouds.Length; i++) {
+                if (!skipFrame)
+                    clouds[i].Position.X += clouds[i].Speed;
+                
+                if (clouds[i].Position.X + clouds[i].Width > 0 && clouds[i].Position.X < Width) {
+                    Vector2 pos;
+                    float width;
+                    if (clouds[i].Position.X < 0) {
+                        pos = new Vector2(Position.X, Position.Y + clouds[i].Position.Y);
+                        width = clouds[i].Width + clouds[i].Position.X;
+                    } else if (clouds[i].Position.X + clouds[i].Width > Width) {
+                        pos = Position + clouds[i].Position;
+                        width = Width - clouds[i].Position.X;
+                    } else {
+                        pos = Position + clouds[i].Position;
+                        width = clouds[i].Width;
+                    }
+                    Draw.Rect(pos, width, 4 + (1 - clouds[i].Width / 64) * 12,
+                            new Color(29, 43, 83));
+                }
+
+                if (clouds[i].Position.X > Width && !skipFrame) {
+                    clouds[i].Position.X = -clouds[i].Width;
+                    clouds[i].Position.Y = Calc.Random.NextFloat(Height - 8);
+                }
+            }
 
             if (whiteFill > 0f) {
                 Draw.Rect(base.X + shake.X, base.Y + shake.Y, base.Width, base.Height * whiteHeight,
