@@ -2,7 +2,7 @@ module SJ2021DashZipMover
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/DashZipMover" DashZipMover(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
+@mapdef Entity "SJ2021/DashZipMover" DashZipMover(x::Integer, y::Integer, width::Integer=16, height::Integer=16, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 
 const placements = Ahorn.PlacementDict(
     "Dash Zip Mover (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
