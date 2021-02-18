@@ -6,7 +6,7 @@ using ..Ahorn, Maple
     tiletype::String="3", climbFall::Bool=true, behind::Bool=false)
 
 const placements = Ahorn.PlacementDict(
-    "Classic Zone (SJ2021)" => Ahorn.EntityPlacement(
+    "Classic Zone (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         ClassicZone,
         "rectangle"
     )
