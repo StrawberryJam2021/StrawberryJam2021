@@ -5,7 +5,7 @@ using ..Ahorn, Maple
 @mapdef Entity "SJ2021/RefillShard" ShardedRefill(x::Integer, y::Integer, spawnRefill::Bool=false, twoDashes::Bool=false, resetOnGround::Bool=true, oneUse::Bool=false, collectAmount::Integer=0)
 
 const placements = Ahorn.PlacementDict(
-    "Sharded Refill (SJ2021)" => Ahorn.EntityPlacement(
+    "Sharded Refill (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         ShardedRefill
     )
 )

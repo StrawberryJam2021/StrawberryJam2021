@@ -42,6 +42,10 @@ Developing directly on the main branch is highly discouraged.
 - Code!
   - Implement the feature as it's requested and ask any question you might have in the coding channels on discord. If you are less experienced with modding, don't be shy here. There is no such thing as a stupid question, after all.
   - If, half-way through implementing the code, you realize you're missing some information, it's obviously fine to just ask the captains and the person who originally submitted the request for help.
+  - If you're making a custom entity or trigger, make sure to follow those naming conventions:
+    - The Ahorn module name (first line in the plugin) should be: `SJ2021YourEntityName` (for example `SJ2021DiagonalKevin`)
+    - The displayed name for your entity in Ahorn should be: `Your Entity Name (Options if multiple placements are present) (Strawberry Jam 2021)`. For example `Diagonal Kevin (All Directions) (Strawberry Jam 2021)`
+    - The ID of your entity, in both your Ahorn plugin and your `[CustomEntity]` attribute, should be: `SJ2021/YourEntityName` (for example `SJ2021/DiagonalKevin`)
 - While coding, commit your changes. This can be done multiple times throughout the implementation process. A commit and push will save any changes you made to the repository online.
   - In the CLI, you have to commit and push your changes to the repository first. For committing, you need a short descriptive message explaining what you changed. For pushing, you need to mention the name of your feature branch, so that it can be created on the repository online.
   ```
