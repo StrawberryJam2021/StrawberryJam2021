@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    [CustomEntity("StrawberryJam2021/ClassicZone")]
+    [CustomEntity("SJ2021/ClassicZone")]
     [Tracked(false)]
     public class ClassicZone : Solid {
         private static bool PlayerInZone;

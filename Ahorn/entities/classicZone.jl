@@ -1,12 +1,12 @@
-﻿module StrawberryJam2021ClassicZone
+﻿module SJ2021ClassicZone
 
 using ..Ahorn, Maple
 
-@mapdef Entity "StrawberryJam2021/ClassicZone" ClassicZone(x::Integer, y::Integer, width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight,
+@mapdef Entity "SJ2021/ClassicZone" ClassicZone(x::Integer, y::Integer, width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight,
     tiletype::String="3", climbFall::Bool=true, behind::Bool=false)
 
 const placements = Ahorn.PlacementDict(
-    "Classic Zone (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
+    "Classic Zone (SJ2021)" => Ahorn.EntityPlacement(
         ClassicZone,
         "rectangle"
     )
