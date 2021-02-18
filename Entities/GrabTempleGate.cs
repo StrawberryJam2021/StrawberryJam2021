@@ -58,7 +58,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public void SwitchOpen() {
             sprite.Play("open");
-            Alarm.Set(this, 0.2f, () =>
+            Alarm.Set(this, 0.2f, () => {
                 shaker.ShakeFor(0.2f, removeOnFinish: false);
                 Alarm.Set(this, 0.2f, Open);
             });
