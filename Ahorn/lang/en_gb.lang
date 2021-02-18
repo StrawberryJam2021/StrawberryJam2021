@@ -1,6 +1,6 @@
 # Dash Code Flag Sequence Controller
-placements.entities.StrawberryJam2021/DashSequenceController.tooltips.dashCode=The code the player needs to input. Should be in the form of "U,DR,L", with commas separating each direction. When writing diagonals, write them with vertical first, then horizontal, with no space. * is also a valid input, meaning you can dash any direction for it to work.
-placements.entities.StrawberryJam2021/DashSequenceController.tooltips.flagLabel=The starting label of the flags that will get activated. Every time a dash is successfully inputted, a flag with this label + "-#" will be set to true (e.g. "test" followed by a successful dash will set "test-1" to true).
+placements.entities.SJ2021/DashSequenceController.tooltips.dashCode=The code the player needs to input. Should be in the form of "U,DR,L", with commas separating each direction. When writing diagonals, write them with vertical first, then horizontal, with no space. * is also a valid input, meaning you can dash any direction for it to work.
+placements.entities.SJ2021/DashSequenceController.tooltips.flagLabel=The starting label of the flags that will get activated. Every time a dash is successfully inputted, a flag with this label + "-#" will be set to true (e.g. "test" followed by a successful dash will set "test-1" to true).
 
 # Sharded Refill
 placements.entities.StrawberryJam2021/RefillShard.tooltips.collectAmount=The amount of shards needed for collection. (0 for all)
