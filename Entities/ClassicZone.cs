@@ -82,8 +82,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private float wobbleEase = 0f;
 
-        private int randomSeed;
-
         public ClassicZone(Vector2 position, float width, float height, Vector2? node, bool fastMoving, bool oneUse,
             bool below)
             : base(position) {
