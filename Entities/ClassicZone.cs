@@ -7,7 +7,7 @@ using System.Collections;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/ClassicZone")]
     [Tracked(false)]
-    public class ClassicZone : Solid {
+    public class ClassicZone : Entity {
         private static bool PlayerInZone;
 
         public static void Load() {
@@ -86,8 +86,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public ClassicZone(Vector2 position, float width, float height, Vector2? node, bool fastMoving, bool oneUse,
             bool below)
-            : base(position, width, height, safe: true) {
-            base.Depth = -11000;
+            : base(position) {
+            Depth = -11000;
+            Collider = new Hitbox(width, height);
             this.node = node;
             this.fastMoving = fastMoving;
             this.oneUse = oneUse;
@@ -95,7 +96,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 base.Depth = 5000;
             }
 
-            SurfaceSoundIndex = 11;
             particleTextures = new MTexture[4] {
                 GFX.Game["objects/dreamblock/particles"].GetSubtexture(14, 0, 7, 7),
                 GFX.Game["objects/dreamblock/particles"].GetSubtexture(7, 0, 7, 7),
@@ -118,16 +118,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (fastMoving) {
                     num /= 3f;
                 }
-
-                Tween tween = Tween.Create(Tween.TweenMode.YoyoLooping, Ease.SineInOut, num, start: true);
-                tween.OnUpdate = delegate(Tween t) {
-                    if (Collidable) {
-                        MoveTo(Vector2.Lerp(start, end, t.Eased));
-                    } else {
-                        MoveToNaive(Vector2.Lerp(start, end, t.Eased));
-                    }
-                };
-                Add(tween);
+                
+                // TODO: Moving dream blocks relay on things in Solid and Platform, disabled for now
+                // Tween tween = Tween.Create(Tween.TweenMode.YoyoLooping, Ease.SineInOut, num, start: true);
+                // tween.OnUpdate = delegate(Tween t) {
+                //     if (Collidable) {
+                //         MoveTo(Vector2.Lerp(start, end, t.Eased));
+                //     } else {
+                //         MoveToNaive(Vector2.Lerp(start, end, t.Eased));
+                //     }
+                // };
+                // Add(tween);
             }
 
             if (!playerHasDreamDash) {
@@ -186,7 +187,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void OneUseDestroy() {
             Collidable = (Visible = false);
-            DisableStaticMovers();
             RemoveSelf();
         }
 
@@ -200,8 +200,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     wobbleFrom = wobbleTo;
                     wobbleTo = Calc.Random.NextFloat((float) Math.PI * 2f);
                 }
-
-                SurfaceSoundIndex = 12;
             }
         }
 
@@ -433,8 +431,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (shaker != null) {
                     shaker.On = false;
                 }
-
-                SurfaceSoundIndex = 11;
             }
         }
 
