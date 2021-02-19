@@ -1,12 +1,12 @@
-module SJ2021_AntiGravJelly
+module SJ2021AntiGravJelly
 using ..Ahorn, Maple
 
 @mapdef Entity "SJ2021/AntiGravJelly" AntiGravJelly(x::Integer, y::Integer,
-   bubble::Bool=false, canBoostUp::Bool=false, downThrowMultiplier::Number=-1.8, diagThrowXMultiplier::Number=-1.6,
-   diagThrowYMultiplier::Number=-1.8, gravity::Number=-30.0)
+   bubble::Bool=false, canBoostUp::Bool=true, downThrowMultiplier::Number=1.8, diagThrowXMultiplier::Number=1.6,
+   diagThrowYMultiplier::Number=1.8, gravity::Number=-30.0, riseSpeeds::String="-24.0, 32.0, -120.0, 0.0, -40.0")
 
 const placements = Ahorn.PlacementDict(
-   "Antigravity Jelly (SJ2021)" => Ahorn.EntityPlacement(
+   "Antigravity Jellyfeesh (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
     AntiGravJelly,
     "rectangle"
    )

@@ -1,32 +1,28 @@
 ﻿/*
  * Stuff to ask Quantum Spaceman:
- * - tweaking throw multipliers
- * - should an up boost be possible?
- * - adjust gravity value
- * - adjust spring behaviour
  * - adjust platform sine frequency
  * 
- * Stuff that still needs doing:
- * - modifying player movement while held
+ * TODO:
+ * - particles
+ * - anti-cheese (upboost if grabbing while moving down without dashing??)
  */
 
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Monocle;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using System.Collections;
 using MonoMod.Utils;
+using MonoMod.Cil;
+using Mono.Cecil.Cil;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/AntiGravJelly")]
     class AntiGravJelly : Actor {
 
         public bool canBoostUp { get; private set; }
+
+        public float[] riseSpeeds { get; private set; } // downhold, upwind + uphold, uphold, upwind, neutral
 
         private bool bubble, destroyed = false;
         private float highFrictionTimer, noGravityTimer, downThrowMultiplier, diagThrowXMultiplier, diagThrowYMultiplier, gravity;
@@ -39,11 +35,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private SoundSource risingSFX;
         private Level level;
 
-        public AntiGravJelly(EntityData data, Vector2 offset) : this(data.Position + offset, data.Bool("bubble", false), data.Float("downThrowMultiplier", 1f),
-            data.Float("diagThrowXMultiplier", 1f), data.Float("diagThrowYMultiplier", 1f), data.Float("gravity", -30), data.Bool("canBoostUp", false)) {
+        public AntiGravJelly(EntityData data, Vector2 offset) : this(data.Position + offset, data.Bool("bubble", false), data.Float("downThrowMultiplier", 1.8f),
+            data.Float("diagThrowXMultiplier", 1.6f), data.Float("diagThrowYMultiplier", 1.8f), data.Float("gravity", -30), data.Bool("canBoostUp", true), data.Attr("riseSpeeds", "-24.0, -176.0, -120.0, 0.0, -40.0")) {
         }
 
-        public AntiGravJelly(Vector2 position, bool bubble, float downThrowMultiplier, float diagThrowXMultiplier, float diagThrowYMultiplier, float gravity, bool canBoostUp) : base (position){
+        public AntiGravJelly(Vector2 position, bool bubble, float downThrowMultiplier, float diagThrowXMultiplier, float diagThrowYMultiplier, float gravity, bool canBoostUp, string riseSpeeds) : base (position){
             this.bubble = bubble;
             this.downThrowMultiplier = downThrowMultiplier;
             this.diagThrowYMultiplier = diagThrowYMultiplier;
@@ -51,6 +47,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.gravity = gravity;
             startPosition = Position;
             this.canBoostUp = canBoostUp;
+
+            string[] speeds = riseSpeeds.Split(',');
+            this.riseSpeeds = new float[speeds.Length];
+
+            for (int i = 0; i < speeds.Length; i++) {
+                this.riseSpeeds[i] = float.Parse(speeds[i]);
+            }
 
             Collider = new Hitbox(8, 10, -4, -10);
             onCollideH = new Collision(CollideHandlerH);
@@ -65,7 +68,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hold.SlowRun = false;
             hold.OnPickup = new Action(PickupHandler);
             hold.OnRelease = new Action<Vector2>(ReleaseHandler);
-            hold.SpeedGetter = SpeedGetter;
+            hold.SpeedGetter = () => { return speed; };
             hold.OnHitSpring = SpringHandler;
             Add(platformSine = new SineWave(0.3f, 0));
             platformSine.Randomize();
@@ -75,10 +78,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void Load() {
             On.Celeste.Player.PickupCoroutine += OnPickupCoroutine;
+            IL.Celeste.Player.NormalUpdate += patchPlayerNormalUpdate;
         }
 
         public static void Unload() {
             On.Celeste.Player.PickupCoroutine -= OnPickupCoroutine;
+            IL.Celeste.Player.NormalUpdate -= patchPlayerNormalUpdate;
         }
 
         private static IEnumerator OnPickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player self) {
@@ -150,6 +155,65 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
             yield break;
+        }
+
+        private static void patchPlayerNormalUpdate(ILContext il) {
+            ILCursor cursor = new ILCursor(il);
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(120f))) {
+                cursor.Emit(OpCodes.Ldarg_0);
+
+                cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
+
+                    if (player?.Holding?.Entity is AntiGravJelly jelly) {
+                        return jelly.riseSpeeds[0];
+                    }
+                    return speed;
+                });
+            }
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(-32f))) {
+                cursor.Emit(OpCodes.Ldarg_0);
+
+                cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
+
+                    if (player?.Holding?.Entity is AntiGravJelly jelly) {
+                        return jelly.riseSpeeds[1];
+                    }
+                    return speed;
+                });
+            }
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(24f))) {
+                cursor.Emit(OpCodes.Ldarg_0);
+
+                cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
+
+                    if (player?.Holding?.Entity is AntiGravJelly jelly) {
+                        return jelly.riseSpeeds[2];
+                    }
+                    return speed;
+                });
+            }
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(0f))) {
+                cursor.Emit(OpCodes.Ldarg_0);
+
+                cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
+
+                    if (player?.Holding?.Entity is AntiGravJelly jelly) {
+                        return jelly.riseSpeeds[3];
+                    }
+                    return speed;
+                });
+            }
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(40f))) {
+                cursor.Emit(OpCodes.Ldarg_0);
+
+                cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
+
+                    if (player?.Holding?.Entity is AntiGravJelly jelly) {
+                        return jelly.riseSpeeds[4];
+                    }
+                    return speed;
+                });
+            }
         }
 
         public override void Update() {
@@ -226,7 +290,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         speed.X = Calc.Approach(speed.X, correction, 800f * Engine.DeltaTime);
 
                         Vector2 liftspeed = LiftSpeed;
-                        if (liftspeed == Vector2.Zero && prevLiftSpeed != Vector2.Zero) { // todo what the hecc is this 
+                        if (liftspeed == Vector2.Zero && prevLiftSpeed != Vector2.Zero) {
                             speed = liftspeed;
                             prevLiftSpeed = Vector2.Zero;
                             speed.Y = Math.Min(speed.Y * 0.6f, 0);
@@ -383,7 +447,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        private bool SpringHandler(Spring spring) { //TODO: adjust spring hit speeds?
+        private bool SpringHandler(Spring spring) {
             if (!hold.IsHeld) {
                 if (spring.Orientation == Spring.Orientations.Floor && speed.Y >= 0f) {
                     speed.X = speed.X * 0.5f;
@@ -416,11 +480,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!TrySquishWiggle(data, 3, 3)) {
                 RemoveSelf();
             }
-        }
-
-        private Vector2 SpeedGetter() {
-            // todo wtf even is a speed getter
-            return speed;
         }
 
         private void ReleaseHandler(Vector2 force) {
