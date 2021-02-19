@@ -81,13 +81,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             bool onGround = self.OnGround();
 
-            var jump = Input.Jump;
+            // TODO: Remove buffering from Input.*.Pressed when options becomes available
+
+            var jump = Input.Jump.Pressed;
             if (jump)
                 _instance.jbuffer = 4;
             else if (_instance.jbuffer > 0)
                 _instance.jbuffer--;
 
-            var dash = Input.Dash;
+            var dash = Input.Dash.Pressed;
 
             if (onGround) {
                 _instance.grace = 6;
