@@ -376,6 +376,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 StartShaking(0.2f);
                 Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
+                streetlight.SetAnimationFrame(2);
                 SceneAs<Level>().Shake();
                 StopPlayerRunIntoAnimation = true;
                 yield return 0.5f;
