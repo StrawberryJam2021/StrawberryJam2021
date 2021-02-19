@@ -350,8 +350,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     continue;
                 }
 
-                // Would be very useful to store this string somewhere.
-                sfx.Play("event:/strawberry_jam_2021/game/dash_zip_mover/zip_mover");
+                sfx.Play(CustomSoundEffects.game_dash_zip_mover_zip_mover);
 
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
                 StartShaking(0.1f);
