@@ -374,22 +374,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return 0.5f;
 
                 StopPlayerRunIntoAnimation = false;
-                streetlight.SetAnimationFrame(2);
-                at2 = 0f;
-
-                while (at2 < 1f) {
-                    yield return null;
-                    at2 = Calc.Approach(at2, 1f, 0.5f * Engine.DeltaTime);
-                    percent = 1f - Ease.SineIn(at2);
-                    Vector2 position = Vector2.Lerp(target, start, Ease.SineIn(at2));
-                    MoveTo(position);
-                }
-
-                StopPlayerRunIntoAnimation = true;
-                StartShaking(0.2f);
                 streetlight.SetAnimationFrame(1);
                 triggered = false;
-                yield return 0.5f;
+                target = start;
+                start = Position;
+                sfx.Stop();
             }
         }
 
