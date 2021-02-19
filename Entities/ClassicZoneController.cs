@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
 
@@ -17,6 +18,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int dashEffectTime;
         private Vector2 dashTarget = new Vector2(0, 0);
         private Vector2 dashAccel = new Vector2(0, 0);
+        private int sprite = 1;
+        private float spriteOffset;
 
         public ClassicZoneController() {
             Tag = Tags.Global | Tags.PauseUpdate;
@@ -51,6 +54,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             } else if (!playerInZone && _instance.PlayerInZone) {
                 self.Speed *= 90f;
             }
+
             _instance.PlayerInZone = playerInZone;
 
             if (!_instance.PlayerInZone) {
@@ -61,7 +65,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // camera update
             var from = ((Level) Engine.Scene).Camera.Position;
             var target = self.CameraTarget;
-            ((Level) Engine.Scene).Camera.Position = from + (target - from) * (1f - (float)Math.Pow(0.01f, Engine.DeltaTime));
+            ((Level) Engine.Scene).Camera.Position =
+                from + (target - from) * (1f - (float) Math.Pow(0.01f, Engine.DeltaTime));
 
             if (_instance.SkipFrame) {
                 return;
@@ -194,20 +199,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             // animation
-            // spr_off += 0.25f;
-            // if (!onGround) {
-            //     if (is_solid(input, 0))
-            //         spr = 5;
-            //     else
-            //         spr = 3;
-            // } else if (E.btn(G.k_down))
-            //     spr = 6;
-            // else if (E.btn(G.k_up))
-            //     spr = 7;
-            // else if (spd.X == 0 || (!E.btn(G.k_left) && !E.btn(G.k_right)))
-            //     spr = 1;
-            // else
-            //     spr = 1 + spr_off % 4;
+            _instance.spriteOffset += 0.25f;
+            if (!onGround) {
+                if (/*is_solid(input, 0)*/ false)
+                    _instance.sprite = 5;
+                else
+                    _instance.sprite = 3;
+            } else if (Input.MoveY == 1)
+                _instance.sprite = 6;
+            else if (Input.MoveY == -1)
+                _instance.sprite = 7;
+            else if (self.Speed.X == 0 || (Input.MoveX == 0))
+                _instance.sprite = 1;
+            else
+                _instance.sprite = 1 + (int) (_instance.spriteOffset % 4);
         }
 
         private static float Approach(float val, float target, float amount) {
@@ -223,7 +228,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 orig(self);
                 return;
             }
-            Draw.Rect(self.Position - new Vector2(4f, 8f), 8f, 8f, Color.Red);
+
+            // Draw.Rect(self.Position - new Vector2(4f, 8f), 8f, 8f, Color.Red);
+            GFX.Game[$"objects/StrawberryJam2021/classicZoneController/player0{_instance.sprite - 1}"]
+                .Draw(self.Position, new Vector2(4f, 7f), Color.White,
+                    self.Facing == Facings.Left ? Vector2.One : new Vector2(-1f, 1f));
         }
     }
 }

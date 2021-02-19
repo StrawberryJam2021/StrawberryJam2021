@@ -28,6 +28,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Graphics\Atlases\Gameplay\objects\StrawberryJam2021\classicZoneController" />
+  </ItemGroup>
+
   <Choose>
     <When Condition="'$(CelesteType)' == 'FNA'">
       <ItemGroup>
