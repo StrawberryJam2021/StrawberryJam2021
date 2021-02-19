@@ -6,9 +6,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
+    [CustomEntity("SJ2021/DashZipMover")]
     public class DashZipMover : Solid {
 
-        [CustomEntity("SJ2021/DashZipMover")]
         private class DashZipMoverPathRenderer : Entity {
             public DashZipMover zipMover;
 
@@ -23,6 +23,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             private float sparkDirToA;
             private float sparkDirToB;
 
+            private float length;
+
             public DashZipMoverPathRenderer(DashZipMover zipMover) {
                 Depth = Depths.SolidsBelow;
                 this.zipMover = zipMover;
@@ -32,12 +34,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 sparkAdd = (from - to).SafeNormalize(5f).Perpendicular();
                 float num = (from - to).Angle();
+                length = (to - from).Length();
+
                 sparkDirFromA = num + (float) Math.PI / 8f;
                 sparkDirFromB = num - (float) Math.PI / 8f;
                 sparkDirToA = num + (float) Math.PI - (float) Math.PI / 8f;
                 sparkDirToB = num + (float) Math.PI + (float) Math.PI / 8f;
 
-                cog = GFX.Game["objects/zipmover/cog"];
+                cog = GFX.Game["objects/StrawberryJam2021/dashZipMover/cog"];
             }
 
             public void CreateSparks() {
@@ -48,7 +52,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             public override void Render() {
-                DrawCogs(Vector2.UnitY, Color.Black);
+                DrawCogs(Vector2.UnitY, ropeShadow);
                 DrawCogs(Vector2.Zero);
             }
 
@@ -58,16 +62,32 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Vector2 value2 = -vector.Perpendicular() * 4f;
 
                 float rotation = zipMover.percent * (float) Math.PI * 2f;
+                Vector2 perp = vector.Perpendicular();
+                Vector2 perpNormalized = vector.Perpendicular();
 
-                Draw.Line(from + value + offset, to + value + offset, colorOverride ?? ropeColor);
-                Draw.Line(from + value2 + offset, to + value2 + offset, colorOverride ?? ropeColor);
+                for (float num = 4f - zipMover.percent * (float) Math.PI * 8f % 4f; num < length; num += 4f) {
+                    float prevNum = num - 4;
 
-                for (float num = 4f - zipMover.percent * (float) Math.PI * 8f % 4f; num < (to - from).Length(); num += 4f) {
-                    Vector2 value3 = from + value + vector.Perpendicular() + vector * num;
-                    Vector2 value4 = to + value2 - vector * num;
+                    float progress = length == 0f ? 0 : num / length;
+                    float sinAmount = progress * (1 - progress) * 8;
 
-                    Draw.Line(value3 + offset, value3 + vector * 2f + offset, colorOverride ?? ropeLightColor);
-                    Draw.Line(value4 + offset, value4 - vector * 2f + offset, colorOverride ?? ropeLightColor);
+                    Vector2 sinOffset = perpNormalized * (float) Math.Sin(num) * sinAmount;
+                    Vector2 prevSinOffset = perpNormalized * (float) Math.Sin(prevNum) * sinAmount;
+
+                    Vector2 p1to = from + value + perp + vector * num + sinOffset;
+                    Vector2 p2to = to + value2 - vector * num + sinOffset;
+                    Vector2 p1from = from + value + perp + vector * prevNum + prevSinOffset;
+                    Vector2 p2from = to + value2 - vector * prevNum + prevSinOffset;
+
+                    Draw.Line(p1from + offset, p1to + offset, colorOverride ?? ropeColor);
+                    Draw.Line(p2from + offset, p2to + offset, colorOverride ?? ropeColor);
+                    if (colorOverride != null) {
+                        Draw.Line(p1from + offset, p1to + offset, (Color) colorOverride, 3);
+                        Draw.Line(p2from + offset, p2to + offset, (Color) colorOverride, 3);
+                    }
+
+                    Draw.Line(p1to + offset, p1to + vector * 4f + offset, colorOverride ?? ropeLightColor);
+                    Draw.Line(p2to + offset, p2to - vector * 4f + offset, colorOverride ?? ropeLightColor);
                 }
 
                 cog.DrawCentered(from + offset, colorOverride ?? Color.White, 1f, rotation);
@@ -87,9 +107,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2 start;
         private Vector2 target;
         private float percent;
+        private bool triggered;
 
-        private static readonly Color ropeColor = Calc.HexToColor("663931");
-        private static readonly Color ropeLightColor = Calc.HexToColor("9b6157");
+        private Vector2 scale = Vector2.One;
+
+        private static readonly Color ropeColor = Calc.HexToColor("046e19");
+        private static readonly Color ropeLightColor = Calc.HexToColor("329415");
+        private static readonly Color ropeShadow = Calc.HexToColor("003622");
 
         private SoundSource sfx = new SoundSource();
 
@@ -116,7 +140,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             streetlight.Position = new Vector2(Width / 2f - streetlight.Width / 2f, 0f);
 
             Add(bloom = new BloomPoint(1f, 6f));
-            bloom.Position = new Vector2(Width / 2f, 4f);
+            bloom.Position = new Vector2(Width / 2f, 10f);
 
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
@@ -126,12 +150,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             SurfaceSoundIndex = SurfaceIndex.Girder;
 
+            OnDashCollide = OnDashed;
+
             sfx.Position = new Vector2(Width, Height) / 2f;
             Add(sfx);
         }
 
         public DashZipMover(EntityData data, Vector2 offset)
             : this(data.Position + offset, data.Width, data.Height, data.Nodes[0] + offset) {
+        }
+
+        public DashCollisionResults OnDashed(Player player, Vector2 dir) {
+            if (!triggered) {
+                triggered = true;
+
+                scale = new Vector2(1f + Math.Abs(dir.Y) * 0.4f - Math.Abs(dir.X) * 0.4f, 1f + Math.Abs(dir.X) * 0.4f - Math.Abs(dir.Y) * 0.4f);
+
+                //Audio.Play("event:/new_content/game/10_farewell/fusebox_hit_1", Center);
+                // Was a test sound (for the smash vibe), cannot use because of never ending event with unrelated SFX.
+                return DashCollisionResults.Rebound;
+            }
+
+            return DashCollisionResults.NormalCollision;
         }
 
         public override void Added(Scene scene) {
@@ -147,14 +187,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            bloom.Y = streetlight.CurrentAnimationFrame * 3;
+
+            scale = Calc.Approach(scale, Vector2.One, 3f * Engine.DeltaTime);
+
+            streetlight.Scale = scale;
+            Vector2 zeroCenter = new Vector2(Width, Height) / 2f;
+            streetlight.Position = zeroCenter + (new Vector2(zeroCenter.X - streetlight.Width / 2f, 0) - zeroCenter) * scale;
         }
 
         public override void Render() {
             Vector2 position = Position;
             Position += Shake;
 
-            Draw.Rect(X + 1f, Y + 1f, Width - 2f, Height - 2f, Color.Black);
+            Rectangle rect = new Rectangle(
+                (int) (Center.X + (X + 2 - Center.X) * scale.X),
+                (int) (Center.Y + (Y + 2 - Center.Y) * scale.Y),
+                (int) ((Width - 4) * scale.X),
+                (int) ((Height - 4) * scale.Y));
+
+            Draw.Rect(rect, Color.Black);
 
             int num = 1;
             float num2 = 0f;
@@ -188,7 +239,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
 
                     mTexture = mTexture.GetSubtexture(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, temp);
-                    mTexture.DrawCentered(Position + new Vector2(j, i) + zero, Color.White * ((num < 0) ? 0.5f : 1f));
+                    Vector2 pos = Center + ((Position + new Vector2(j, i) + zero) - base.Center) * scale;
+                    mTexture.DrawCentered(pos, Color.White * ((num < 0) ? 0.5f : 1f), scale);
                     
                     num = -num;
                     num2 += (float) Math.PI / 3f;
@@ -202,8 +254,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 for (int l = 0; l < Height / 8f; l++) {
                     int num4 = ((k != 0) ? ((k != Width / 8f - 1f) ? 1 : 2) : 0);
                     int num5 = ((l != 0) ? ((l != Height / 8f - 1f) ? 1 : 2) : 0);
+
                     if (num4 != 1 || num5 != 1) {
-                        edges[num4, num5].Draw(new Vector2(X + k * 8, Y + l * 8));
+                        Vector2 pos = Center + (new Vector2(X + k * 8 + 4, Y + l * 8 + 4) - base.Center) * scale;
+                        edges[num4, num5].DrawCentered(pos, Color.White, scale);
                     }
                 }
             }
@@ -285,10 +339,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Vector2 start = Position;
 
             while (true) {
-                if (!HasPlayerRider()) {
+                if (!triggered) {
                     yield return null;
                     continue;
                 }
+
 
                 sfx.Play("event:/new_content/game/10_farewell/zip_mover");
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
@@ -333,6 +388,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 StopPlayerRunIntoAnimation = true;
                 StartShaking(0.2f);
                 streetlight.SetAnimationFrame(1);
+                triggered = false;
                 yield return 0.5f;
             }
         }
