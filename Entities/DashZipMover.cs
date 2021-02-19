@@ -52,8 +52,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             public override void Render() {
-                DrawCogs(Vector2.UnitY, ropeShadow);
-                DrawCogs(Vector2.Zero);
+                if (length != 0f) {
+                    DrawCogs(Vector2.UnitY, ropeShadow);
+                    DrawCogs(Vector2.Zero);
+                }
             }
 
             private void DrawCogs(Vector2 offset, Color? colorOverride = null) {
@@ -65,29 +67,33 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Vector2 perp = vector.Perpendicular();
                 Vector2 perpNormalized = vector.Perpendicular();
 
+                Vector2 p1from = from + value + perp + offset;
+                Vector2 p2from = to + value2 + offset;
                 for (float num = 4f - zipMover.percent * (float) Math.PI * 8f % 4f; num < length; num += 4f) {
-                    float prevNum = num - 4;
 
-                    float progress = length == 0f ? 0 : num / length;
+                    float progress = num / length;
                     float sinAmount = progress * (1 - progress) * 8;
-
                     Vector2 sinOffset = perpNormalized * (float) Math.Sin(num) * sinAmount;
-                    Vector2 prevSinOffset = perpNormalized * (float) Math.Sin(prevNum) * sinAmount;
 
-                    Vector2 p1to = from + value + perp + vector * num + sinOffset;
-                    Vector2 p2to = to + value2 - vector * num + sinOffset;
-                    Vector2 p1from = from + value + perp + vector * prevNum + prevSinOffset;
-                    Vector2 p2from = to + value2 - vector * prevNum + prevSinOffset;
+                    Vector2 p1to = from + value + perp + vector * num + sinOffset + offset;
+                    Vector2 p2to = to + value2 - vector * num + sinOffset + offset;
 
-                    Draw.Line(p1from + offset, p1to + offset, colorOverride ?? ropeColor);
-                    Draw.Line(p2from + offset, p2to + offset, colorOverride ?? ropeColor);
+                    // Thicker vine rope, in the back, sort of outline
                     if (colorOverride != null) {
-                        Draw.Line(p1from + offset, p1to + offset, (Color) colorOverride, 3);
-                        Draw.Line(p2from + offset, p2to + offset, (Color) colorOverride, 3);
+                        Draw.Line(p1from, p1to, (Color) colorOverride, 3);
+                        Draw.Line(p2from, p2to, (Color) colorOverride, 3);
                     }
 
-                    Draw.Line(p1to + offset, p1to + vector * 4f + offset, colorOverride ?? ropeLightColor);
-                    Draw.Line(p2to + offset, p2to - vector * 4f + offset, colorOverride ?? ropeLightColor);
+                    // Main "vine rope"
+                    Draw.Line(p1from, p1to, colorOverride ?? ropeColor);
+                    Draw.Line(p2from, p2to, colorOverride ?? ropeColor);
+
+                    // Leaves
+                    Draw.Line(p1to, p1to + vector * 4f, colorOverride ?? ropeLightColor);
+                    Draw.Line(p2to, p2to - vector * 4f, colorOverride ?? ropeLightColor);
+
+                    p1from = p1to;
+                    p2from = p2to;
                 }
 
                 cog.DrawCentered(from + offset, colorOverride ?? Color.White, 1f, rotation);
@@ -344,8 +350,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     continue;
                 }
 
+                // Would be very useful to store this string somewhere.
+                sfx.Play("event:/strawberry_jam_2021/game/dash_zip_mover/zip_mover");
 
-                sfx.Play("event:/new_content/game/10_farewell/zip_mover");
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
                 StartShaking(0.1f);
                 yield return 0.1f;
