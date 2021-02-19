@@ -28,12 +28,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.startClosed = startClosed;
 
             Add(sprite = StrawberryJam2021Module.GrabTempleGateSpriteBank.Create("grabTempleGate"));
-            sprite.X = base.Collider.Width / 2f;
+            sprite.X = Collider.Width / 2f;
             sprite.Play("idle");
 
             Add(sfx = new SoundSource());
             Add(shaker = new Shaker(on: false));
-            base.Depth = Depths.Solids;
+            Depth = Depths.Solids;
         }
 
         public GrabTempleGate(EntityData data, Vector2 offset)
@@ -45,13 +45,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!startClosed) {
                 StartOpen();
             }
-            drawHeight = Math.Max(4f, base.Height);
+            drawHeight = Math.Max(4f, Height);
         }
 
         public bool CloseBehindPlayerCheck() {
-            Player entity = base.Scene.Tracker.GetEntity<Player>();
+            Player entity = Scene.Tracker.GetEntity<Player>();
             if (entity != null) {
-                return entity.X < base.X;
+                return entity.X < X;
             }
             return false;
         }
@@ -65,9 +65,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void Open() {
-            sfx.Play("event:/game/05_mirror_temple/gate_main_open");
+            sfx.Play(SFX.game_05_gate_main_open);
             drawHeightMoveSpeed = 200f;
-            drawHeight = base.Height;
+            drawHeight = Height;
             shaker.ShakeFor(0.2f, removeOnFinish: false);
             SetHeight(0);
             sprite.Play("open");
@@ -81,9 +81,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void Close() {
-            sfx.Play("event:/game/05_mirror_temple/gate_main_close");
+            sfx.Play(SFX.game_05_gate_main_close);
             drawHeightMoveSpeed = 300f;
-            drawHeight = Math.Max(4f, base.Height);
+            drawHeight = Math.Max(4f, Height);
             shaker.ShakeFor(0.2f, removeOnFinish: false);
             SetHeight(closedHeight);
             sprite.Play("hit");
@@ -119,7 +119,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 canSwitchTimer = switchTimeDelay;
             }
 
-            float num = Math.Max(4f, base.Height);
+            float num = Math.Max(4f, Height);
             if (drawHeight != num) {
                 drawHeight = Calc.Approach(drawHeight, num, drawHeightMoveSpeed * Engine.DeltaTime);
             }
@@ -127,7 +127,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Render() {
             Vector2 value = new Vector2(Math.Sign(shaker.Value.X), 0f);
-            Draw.Rect(base.X - 2f, base.Y - 8f, 13f, 10f, Color.Black);
+            Draw.Rect(X - 2f, Y - 8f, 13f, 10f, Color.Black);
             sprite.DrawSubrect(Vector2.Zero + value, new Rectangle(0, (int) (sprite.Height - drawHeight), (int) sprite.Width, (int) drawHeight));
         }
 
