@@ -109,10 +109,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         Vector2 startPos = shard.Position;
                         Vector2 targetPos = Refill.Position;
 
-                        float dist = (targetPos - startPos).LengthSquared();
+                        float dist = (targetPos - startPos).Length();
                         maxDist = Math.Max(dist, maxDist);
 
-                        var tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeInOut, dist / 40000f, true);
+                        var tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeInOut, dist / 200f, true);
                         tween.OnUpdate = (t) => shard.Position = Vector2.Lerp(startPos, targetPos, t.Eased);
                         shard.Add(tween);
                     }
@@ -121,7 +121,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         Scene.Remove(Shards);
                         Shards.Clear();
                         SpawnRefill();
-                    }, maxDist / 40000f, true));
+                    }, maxDist / 200f, true));
                 }
             }
         }
