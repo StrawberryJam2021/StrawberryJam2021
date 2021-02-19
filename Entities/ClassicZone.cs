@@ -57,7 +57,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public ClassicZone(Vector2 position, float width, float height, Vector2? node, bool fastMoving, bool oneUse,
             bool below)
             : base(position) {
-            Depth = -11000;
+            Depth = 11000;
             Collider = new Hitbox(width, height);
             this.node = node;
             this.fastMoving = fastMoving;
