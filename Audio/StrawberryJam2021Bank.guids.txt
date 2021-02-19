@@ -1,0 +1,2 @@
+{2994b6ba-7ee7-4317-9c26-64c75d897863} event:/strawberry_jam_2021/game/dash_zip_mover/zip_mover
+{449c0225-4aa9-4151-b834-588cedee088a} bank:/StrawberryJam2021Bank
