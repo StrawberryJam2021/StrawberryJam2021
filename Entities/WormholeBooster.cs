@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Celeste.Mod.Entities;
-using Monocle;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using Monocle;
 using MonoMod.Utils;
 using System.Collections;
 using System.Reflection;
@@ -16,22 +11,34 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     class WormholeBooster : Booster {
         private PlayerCollider coll;
         private DynData<Booster> self;
+        public static bool TeleDeath;
         public static bool TeleportingDNI;
         public static bool TDLock = false;
+
+        public IEnumerator TeleportCoroutine(Player player) {
+            yield return null;
+
+            WormholeBooster nearest = FindNearestBooster();
+            player.Position = nearest.Position;
+            Audio.Play("event:/char/badeline/disappear", nearest.Position);
+            typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod).Invoke(nearest, new object[] { player }); // teleports and boosts from nearest booster
+            RemoveSelf();
+        }
+
         public WormholeBooster(EntityData data, Vector2 offset) : this(data.Position + offset) {
         }
 
         public WormholeBooster(Vector2 position) : base(position, false) {
 
         }
-       
+
         public override void Awake(Scene scene) {
             base.Awake(scene);
-            
+
             PlayerCollider c;
             while ((c = Get<PlayerCollider>()) != null)
                 Remove(c); // get rid of the existing player collider
-            
+
             Add(coll = new PlayerCollider(onWormholeActivate)); // add our own
         }
         public override void Added(Scene scene) {
@@ -41,7 +48,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
         public override void Update() {
             base.Update();
-            if (self.Get<float>("respawnTimer")>0.2f) {
+            if (self.Get<float>("respawnTimer") > 0.2f) {
                 self.Set("respawnTimer", 0.1f);
             }
         }
@@ -49,16 +56,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (TeleportingDNI)
                 return; // if something is teleporting the player, don't do it yourself;
             else {
-                if (SceneAs<Level>().Tracker.GetEntities<WormholeBooster>().Count < 2) { // if the booster is alone (or in a funky scenario, Count returns less than 1 for some reason), KILL THEM.          
-                    player.Die(Vector2.Zero);
-
-                } else {
-                    TeleportingDNI = true; // teleporting rn, everyone else shut up;
-                    WormholeBooster nearest = FindNearestBooster();
-                    player.Position = nearest.Position;
-                    typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod).Invoke(nearest, new object[] { player }); // teleports and boosts from nearest booster
-                    RemoveSelf();
-                    // TeleportingDNI gets set back to false on DashEnd
+                TeleportingDNI = true; // teleporting (or killing) rn, everyone else shut up;
+                if (TeleDeath) { // TIME TO DIE!!!
+                    typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod).Invoke(this, new object[] { player }); // with TeleDeath, this will kill the player
+                } else { // oh, guess not.
+                    Add(new Coroutine(TeleportCoroutine(player)));
                 }
             }
         }
