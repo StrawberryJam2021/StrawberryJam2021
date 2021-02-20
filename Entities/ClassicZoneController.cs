@@ -182,8 +182,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
 
                     Audio.Play("event:/classic/sfx3");
-                    // G.freeze = 2;
-                    // G.shake = 6;
+                    Celeste.Freeze(time: 0.06666667f);
+                    (_instance.Scene as Level)?.Shake(0.2f);
                     _instance.dashTarget.X = 2 * Math.Sign(self.Speed.X);
                     _instance.dashTarget.Y = 2 * Math.Sign(self.Speed.Y);
                     _instance.dashAccel.X = 1.5f;
