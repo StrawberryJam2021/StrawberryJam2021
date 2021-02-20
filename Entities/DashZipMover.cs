@@ -33,13 +33,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 to = zipMover.target + new Vector2(zipMover.Width / 2f, zipMover.Height / 2f);
 
                 sparkAdd = (from - to).SafeNormalize(5f).Perpendicular();
-                float num = (from - to).Angle();
+                float angle = (from - to).Angle();
                 length = (to - from).Length();
 
-                sparkDirFromA = num + (float) Math.PI / 8f;
-                sparkDirFromB = num - (float) Math.PI / 8f;
-                sparkDirToA = num + (float) Math.PI - (float) Math.PI / 8f;
-                sparkDirToB = num + (float) Math.PI + (float) Math.PI / 8f;
+                sparkDirFromA = angle + (float) Math.PI / 8f;
+                sparkDirFromB = angle - (float) Math.PI / 8f;
+                sparkDirToA = angle + (float) Math.PI - (float) Math.PI / 8f;
+                sparkDirToB = angle + (float) Math.PI + (float) Math.PI / 8f;
 
                 cog = GFX.Game["objects/StrawberryJam2021/dashZipMover/cog"];
             }
@@ -148,9 +148,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(bloom = new BloomPoint(1f, 6f));
             bloom.Position = new Vector2(Width / 2f, 10f);
 
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    edges[i, j] = GFX.Game[id].GetSubtexture(i * 8, j * 8, 8, 8);
+            for (int x = 0; x < 3; x++) {
+                for (int y = 0; y < 3; y++) {
+                    edges[x, y] = GFX.Game[id].GetSubtexture(x * 8, y * 8, 8, 8);
                 }
             }
 
@@ -213,57 +213,57 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Draw.Rect(rect, Color.Black);
 
-            int num = 1;
-            float num2 = 0f;
+            int offset = 1;
+            float angle = 0f;
             int count = innerCogs.Count;
 
-            for (int i = 4; i <= Height - 4f; i += 8) {
-                int num3 = num;
-                for (int j = 4; j <= Width - 4f; j += 8) {
-                    int index = (int) (Mod((num2 + (num * percent * (float) Math.PI * 4f)) / ((float) Math.PI / 2f), 1f) * count);
+            for (int x = 4; x <= Height - 4f; x += 8) {
+                int prevOffset = offset;
+                for (int y = 4; y <= Width - 4f; y += 8) {
+                    int index = (int) (Mod((angle + (offset * percent * (float) Math.PI * 4f)) / ((float) Math.PI / 2f), 1f) * count);
                     
-                    MTexture mTexture = innerCogs[index];
-                    Rectangle rectangle = new Rectangle(0, 0, mTexture.Width, mTexture.Height);
+                    MTexture innerCog = innerCogs[index];
+                    Rectangle rectangle = new Rectangle(0, 0, innerCog.Width, innerCog.Height);
                     Vector2 zero = Vector2.Zero;
 
-                    if (j <= 4) {
+                    if (y <= 4) {
                         zero.X = 2f;
                         rectangle.X = 2;
                         rectangle.Width -= 2;
-                    } else if (j >= Width - 4f) {
+                    } else if (y >= Width - 4f) {
                         zero.X = -2f;
                         rectangle.Width -= 2;
                     }
 
-                    if (i <= 4) {
+                    if (x <= 4) {
                         zero.Y = 2f;
                         rectangle.Y = 2;
                         rectangle.Height -= 2;
-                    } else if (i >= Height - 4f) {
+                    } else if (x >= Height - 4f) {
                         zero.Y = -2f;
                         rectangle.Height -= 2;
                     }
 
-                    mTexture = mTexture.GetSubtexture(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, temp);
-                    Vector2 pos = Center + ((Position + new Vector2(j, i) + zero) - base.Center) * scale;
-                    mTexture.DrawCentered(pos, Color.White * ((num < 0) ? 0.5f : 1f), scale);
+                    innerCog = innerCog.GetSubtexture(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, temp);
+                    Vector2 pos = Center + ((Position + new Vector2(y, x) + zero) - Center) * scale;
+                    innerCog.DrawCentered(pos, Color.White * ((offset < 0) ? 0.5f : 1f), scale);
                     
-                    num = -num;
-                    num2 += (float) Math.PI / 3f;
+                    offset = -offset;
+                    angle += (float) Math.PI / 3f;
                 }
-                if (num3 == num) {
-                    num = -num;
+                if (prevOffset == offset) {
+                    offset = -offset;
                 }
             }
 
-            for (int k = 0; k < Width / 8f; k++) {
-                for (int l = 0; l < Height / 8f; l++) {
-                    int num4 = ((k != 0) ? ((k != Width / 8f - 1f) ? 1 : 2) : 0);
-                    int num5 = ((l != 0) ? ((l != Height / 8f - 1f) ? 1 : 2) : 0);
+            for (int x = 0; x < Width / 8f; x++) {
+                for (int y = 0; y < Height / 8f; y++) {
+                    int edgeX = ((x != 0) ? ((x != Width / 8f - 1f) ? 1 : 2) : 0);
+                    int edgeY = ((y != 0) ? ((y != Height / 8f - 1f) ? 1 : 2) : 0);
 
-                    if (num4 != 1 || num5 != 1) {
-                        Vector2 pos = Center + (new Vector2(X + k * 8 + 4, Y + l * 8 + 4) - base.Center) * scale;
-                        edges[num4, num5].DrawCentered(pos, Color.White, scale);
+                    if (edgeX != 1 || edgeY != 1) {
+                        Vector2 pos = Center + (new Vector2(X + x * 8 + 4, Y + y * 8 + 4) - Center) * scale;
+                        edges[edgeX, edgeY].DrawCentered(pos, Color.White, scale);
                     }
                 }
             }
@@ -278,64 +278,58 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
 
-            bool flag = to.Y != ExactPosition.Y;
-            bool flag2 = to.X != ExactPosition.X;
+            bool movedV = to.Y != ExactPosition.Y;
+            bool movedY = to.X != ExactPosition.X;
 
-            if (flag && !flag2) {
-                int num = Math.Sign(to.Y - ExactPosition.Y);
-                int num2 = 4;
-                Vector2 value = ((num != 1) ? TopLeft : BottomLeft);
+            if (movedV && !movedY) {
+                int dir = Math.Sign(to.Y - ExactPosition.Y);
+                Vector2 collisionPoint = ((dir != 1) ? TopLeft : BottomLeft);
 
-                if (num == 1) {
-                    num2 = Math.Min((int) Height - 12, 20);
+                int particleOffset = 4;
+                if (dir == 1) {
+                    particleOffset = Math.Min((int) Height - 12, 20);
                 }
 
-                int num3 = (int) Height;
-
-                if (num == -1) {
-                    num3 = Math.Max(16, (int) Height - 16);
+                int particleHeight = (int) Height;
+                if (dir == -1) {
+                    particleHeight = Math.Max(16, (int) Height - 16);
                 }
 
-                if (Scene.CollideCheck<Solid>(value + new Vector2(-2f, num * -2))) {
-                    for (int i = num2; i < num3; i += 8) {
-                        SceneAs<Level>().ParticlesFG.Emit(ZipMover.P_Scrape, TopLeft + new Vector2(0f, i + num * 2f), (num == 1) ? (-(float) Math.PI / 4f) : ((float) Math.PI / 4f));
+                if (Scene.CollideCheck<Solid>(collisionPoint + new Vector2(-2f, dir * -2))) {
+                    for (int y = particleOffset; y < particleHeight; y += 8) {
+                        SceneAs<Level>().ParticlesFG.Emit(ZipMover.P_Scrape, TopLeft + new Vector2(0f, y + dir * 2f), (dir == 1) ? (-(float) Math.PI / 4f) : ((float) Math.PI / 4f));
                     }
                 }
 
-                if (Scene.CollideCheck<Solid>(value + new Vector2(Width + 2f, num * -2))) {
-                    for (int j = num2; j < num3; j += 8) {
-                        SceneAs<Level>().ParticlesFG.Emit(ZipMover.P_Scrape, TopRight + new Vector2(-1f, j + num * 2f), (num == 1) ? ((float) Math.PI * -3f / 4f) : ((float) Math.PI * 3f / 4f));
+                if (Scene.CollideCheck<Solid>(collisionPoint + new Vector2(Width + 2f, dir * -2))) {
+                    for (int y = particleOffset; y < particleHeight; y += 8) {
+                        SceneAs<Level>().ParticlesFG.Emit(ZipMover.P_Scrape, TopRight + new Vector2(-1f, y + dir * 2f), (dir == 1) ? ((float) Math.PI * -3f / 4f) : ((float) Math.PI * 3f / 4f));
                     }
                 }
 
-            } else {
-                if (!flag2 || flag) {
-                    return;
+            } else if (movedY && !movedV) {
+                int dir = Math.Sign(to.X - ExactPosition.X);
+                Vector2 collisionPoint = ((dir != 1) ? TopLeft : TopRight);
+
+                int particleOffset = 4;
+                if (dir == 1) {
+                    particleOffset = Math.Min((int) Width - 12, 20);
                 }
 
-                int num4 = Math.Sign(to.X - ExactPosition.X);
-                Vector2 value2 = ((num4 != 1) ? TopLeft : TopRight);
-                int num5 = 4;
-
-                if (num4 == 1) {
-                    num5 = Math.Min((int) Width - 12, 20);
+                int particleWidth = (int) Width;
+                if (dir == -1) {
+                    particleWidth = Math.Max(16, (int) Width - 16);
                 }
 
-                int num6 = (int) Width;
-
-                if (num4 == -1) {
-                    num6 = Math.Max(16, (int) Width - 16);
-                }
-
-                if (Scene.CollideCheck<Solid>(value2 + new Vector2(num4 * -2, -2f))) {
-                    for (int k = num5; k < num6; k += 8) {
-                        SceneAs<Level>().ParticlesFG.Emit(ZipMover.P_Scrape, TopLeft + new Vector2(k + num4 * 2f, -1f), (num4 == 1) ? ((float) Math.PI * 3f / 4f) : ((float) Math.PI / 4f));
+                if (Scene.CollideCheck<Solid>(collisionPoint + new Vector2(dir * -2, -2f))) {
+                    for (int x = particleOffset; x < particleWidth; x += 8) {
+                        SceneAs<Level>().ParticlesFG.Emit(ZipMover.P_Scrape, TopLeft + new Vector2(x + dir * 2f, -1f), (dir == 1) ? ((float) Math.PI * 3f / 4f) : ((float) Math.PI / 4f));
                     }
                 }
 
-                if (Scene.CollideCheck<Solid>(value2 + new Vector2(num4 * -2, Height + 2f))) {
-                    for (int l = num5; l < num6; l += 8) {
-                        SceneAs<Level>().ParticlesFG.Emit(ZipMover.P_Scrape, BottomLeft + new Vector2(l + num4 * 2f, 0f), (num4 == 1) ? ((float) Math.PI * -3f / 4f) : (-(float) Math.PI / 4f));
+                if (Scene.CollideCheck<Solid>(collisionPoint + new Vector2(dir * -2, Height + 2f))) {
+                    for (int x = particleOffset; x < particleWidth; x += 8) {
+                        SceneAs<Level>().ParticlesFG.Emit(ZipMover.P_Scrape, BottomLeft + new Vector2(x + dir * 2f, 0f), (dir == 1) ? ((float) Math.PI * -3f / 4f) : (-(float) Math.PI / 4f));
                     }
                 }
             }

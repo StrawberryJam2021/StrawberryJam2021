@@ -5,6 +5,8 @@ using System.Collections;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class RefillShard : Entity {
+        public const float LoseTime = 0.15f;
+
         public bool Finished;
         public Follower Follower;
 
@@ -29,7 +31,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private VertexLight light;
         private SineWave sine;
 
-        public RefillShard(RefillShardController controller, Vector2 position, int index, bool two, bool groundReset) : base(position) {
+        public RefillShard(RefillShardController controller, Vector2 position, int index, bool two, bool groundReset) 
+            : base(position) {
             this.index = index;
             this.controller = controller;
 
@@ -58,12 +61,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Add(sprite = new Sprite(GFX.Game, $"objects/StrawberryJam2021/refillShard/{(two ? "two" : "one")}"));
             sprite.AddLoop("idle", "", 0.1f);
-            sprite.Play("idle", false, false);
+            sprite.Play("idle");
             sprite.CenterOrigin();
 
             Add(flash = new Sprite(GFX.Game, "objects/StrawberryJam2021/refillShard/flash"));
             flash.Add("flash", "", 0.05f);
-            flash.OnFinish = (anim) => flash.Visible = false;
+            flash.OnFinish = (_) => flash.Visible = false;
             flash.CenterOrigin();
 
             sprite.Rotation = flash.Rotation = Calc.Random.Next(4) * ((float) Math.PI / 2f);
@@ -72,8 +75,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Add(bloom = new BloomPoint(0.8f, 8f));
             Add(light = new VertexLight(Color.White, 1f, 8, 32));
-            Add(sine = new SineWave(0.6f));
-            sine.Randomize();
+            Add(sine = new SineWave(0.6f).Randomize());
 
             UpdateY();
             Depth = Depths.Pickups;
@@ -97,7 +99,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     } else if (player.LoseShards) {
                         loseTimer -= Engine.DeltaTime;
                     } else {
-                        loseTimer = 0.15f;
+                        loseTimer = LoseTime;
                         losing = false;
                     }
                 }
@@ -138,7 +140,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             } else {
                 Collidable = false;
                 Visible = false;
-                Add(Alarm.Create(Alarm.AlarmMode.Oneshot, () => Respawn(), 3.6f + (index * 0.1f), true));
+                Add(Alarm.Create(Alarm.AlarmMode.Oneshot, Respawn, 3.6f + (index * 0.1f), true));
             }
         }
 
@@ -149,7 +151,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void OnGainLeader() {
             controller.CheckCollection();
             canLoseTimer = 0.25f;
-            loseTimer = 0.15f;
+            loseTimer = LoseTime;
         }
 
         private void OnLoseLeader() {
@@ -159,14 +161,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void OnPlayer(Player player) {
-            Audio.Play("event:/game/general/seed_touch", Position, "count", index % 5);
+            Audio.Play(SFX.game_gen_seed_touch, Position, "count", index % 5);
             Collidable = false;
             Depth = Depths.Top;
             player.Leader.GainFollower(Follower);
         }
 
         private IEnumerator ReturnRoutine() {
-            Audio.Play("event:/game/general/seed_poof", Position);
+            Audio.Play(SFX.game_gen_seed_poof, Position);
             Collidable = false;
             sprite.Scale = flash.Scale = Vector2.One * 2f;
             yield return 0.05f;
@@ -187,7 +189,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Position = start;
             if (attached != null)
                 Position += attached.Position;
-            FMOD.Studio.EventInstance sound = Audio.Play(twoDashes ? "event:/new_content/game/10_farewell/pinkdiamond_return" : "event:/game/general/diamond_return", Position);
+            FMOD.Studio.EventInstance sound = Audio.Play(twoDashes ? SFX.game_10_pinkdiamond_return : SFX.game_gen_diamond_return, Position);
             sound.setVolume(0.75f);
             sound.setPitch(2f);
             SceneAs<Level>().ParticlesFG.Emit(p_regen, 8, Position, Vector2.One * 2f);

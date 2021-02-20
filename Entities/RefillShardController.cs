@@ -10,6 +10,8 @@ using System.Reflection;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/RefillShard")]
     public class RefillShardController : Entity {
+        public const float RespawnTime = 3600f;
+
         private static MethodInfo m_RefillRespawn = typeof(Refill).GetMethod("Respawn", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public List<RefillShard> Shards;
@@ -20,14 +22,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private bool resetOnGround;
         private bool oneUse;
         private int collectAmount;
-        private List<Vector2> nodes;
+        private Vector2[] nodes;
 
         private DynData<Refill> refillData;
         private bool finished;
 
-        public RefillShardController(EntityData data, Vector2 offset) : base(data.Position + offset) {
-            nodes = data.NodesOffset(offset).ToList();
-
+        public RefillShardController(EntityData data, Vector2 offset) 
+            : base(data.Position + offset) {
             spawnRefill = data.Bool("spawnRefill");
             twoDashes = data.Bool("twoDashes");
             resetOnGround = data.Bool("resetOnGround");
@@ -38,8 +39,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!spawnRefill && !data.Has("collectAmount"))
                 oneUse = true;
 
-            if (!spawnRefill)
-                nodes.Insert(0, Position);
+            nodes = spawnRefill ? data.NodesOffset(offset) : data.NodesWithPosition(offset);
         }
 
         public override void Added(Scene scene) {
@@ -47,7 +47,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Shards = new List<RefillShard>();
 
-            for (int i = 0; i < nodes.Count; i++) {
+            for (int i = 0; i < nodes.Length; i++) {
                 var shard = new RefillShard(this, nodes[i], i, twoDashes, resetOnGround);
                 Shards.Add(shard);
                 scene.Add(shard);
@@ -64,14 +64,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 refillData.Get<Sprite>("sprite").Visible = false;
                 refillData.Get<Sprite>("flash").Visible = false;
                 refillData.Get<Image>("outline").Visible = true;
-                refillData.Set("respawnTimer", 3600f);
+                refillData.Set("respawnTimer", RespawnTime);
             }
         }
 
         public override void Update() {
             base.Update();
             if (!finished && spawnRefill)
-                refillData.Set("respawnTimer", 3600f);
+                refillData.Set("respawnTimer", RespawnTime);
         }
 
         public void CheckCollection() {
@@ -93,7 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         Shards.Remove(shard);
 
                     Player player = Scene.Tracker.GetEntity<Player>();
-                    Audio.Play(twoDashes ? "event:/new_content/game/10_farewell/pinkdiamond_touch" : "event:/game/general/diamond_touch", player.Position);
+                    Audio.Play(twoDashes ? SFX.game_10_pinkdiamond_touch : SFX.game_gen_diamond_touch, player.Position);
                     player.UseRefill(twoDashes);
                     Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
                     Celeste.Freeze(0.05f);
@@ -118,8 +118,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
 
                     Add(Alarm.Create(Alarm.AlarmMode.Oneshot, () => {
-                        foreach (RefillShard shard in Shards)
-                            shard.RemoveSelf();
+                        Scene.Remove(Shards);
                         Shards.Clear();
                         SpawnRefill();
                     }, maxDist / 200f, true));
@@ -128,8 +127,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void SpawnRefill() {
-            refillData.Set("respawnTimer", 3600f);
-            m_RefillRespawn.Invoke(Refill, new object[] { });
+            refillData.Set("respawnTimer", RespawnTime);
+            m_RefillRespawn.Invoke(Refill, null);
         }
     }
 }
