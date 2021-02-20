@@ -94,7 +94,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (onGround) {
                 _instance.grace = 6;
                 if (_instance.djump < self.MaxDashes) {
-                    // G.psfx(54);
+                    Audio.Play("event:/classic/sfx54");
                     _instance.djump = self.MaxDashes;
                 }
             } else if (_instance.grace > 0)
@@ -142,7 +142,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (_instance.jbuffer > 0) {
                     if (_instance.grace > 0) {
                         // normal jump
-                        // G.psfx(1);
+                        Audio.Play("event:/classic/sfx1");
                         _instance.jbuffer = 0;
                         _instance.grace = 0;
                         self.Speed.Y = -2;
@@ -150,7 +150,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         // wall jump
                         int wallDir = /* (is_solid(-3, 0) ? -1 : (is_solid(3, 0) ? 1 : 0)) */ 0;
                         if (wallDir != 0) {
-                            // G.psfx(2);
+                            Audio.Play("event:/classic/sfx2");
                             _instance.jbuffer = 0;
                             self.Speed.Y = -2;
                             self.Speed.X = -wallDir * 2;
@@ -181,7 +181,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         self.Speed.Y = dashYInput * dFull;
                     }
 
-                    // G.psfx(3);
+                    Audio.Play("event:/classic/sfx3");
                     // G.freeze = 2;
                     // G.shake = 6;
                     _instance.dashTarget.X = 2 * Math.Sign(self.Speed.X);
@@ -196,7 +196,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     if (self.Speed.X != 0)
                         _instance.dashAccel.Y *= 0.70710678118f;
                 } else if (dash && _instance.djump <= 0) {
-                    // G.psfx(9);
+                    Audio.Play("event:/classic/sfx9");
                 }
             }
 
