@@ -5,7 +5,7 @@ using Celeste.Mod.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities
 {
-    class FloatingBubble : Actor
+    public class FloatingBubble : Actor
     {
         private Vector2 Speed;
         private float NoFloatTimer;
@@ -43,14 +43,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
             {
                 Burst();
             }
-            foreach(Spring spring in CollideAll<Spring>())
+            foreach(BubbleCollider collider in Scene.Tracker.GetComponents<BubbleCollider>())
             {
-                HitSpring(spring);
-                SpringBounceAnimate.Invoke(spring, null);
-            }
-            foreach(TouchSwitch touchSwitch in CollideAll<TouchSwitch>())
-            {
-                touchSwitch.TurnOn();
+                if(collider.Check(this))
+                {
+                    if(collider.Entity is Spring)
+                    {
+                        HitSpring(collider.Entity as Spring);
+                        SpringBounceAnimate.Invoke(collider.Entity as Spring, null);
+                    }
+                    else if(collider.Entity is TouchSwitch)
+                    {
+                        (collider.Entity as TouchSwitch).TurnOn();
+                    }
+                }
             }
         }
 

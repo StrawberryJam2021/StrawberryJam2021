@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 namespace Celeste.Mod.StrawberryJam2021.Entities
 {
     [CustomEntity("SJ2021/FloatingBubbleEmitter")]
-    class FloatingBubbleEmitter : Entity
+    public class FloatingBubbleEmitter : Entity
     {
         float spawnTimer;
         float spawnTimerMax;
