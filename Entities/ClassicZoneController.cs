@@ -28,7 +28,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            SkipFrame = !SkipFrame;
+            if (!Scene.Paused) {
+                SkipFrame = !SkipFrame;
+            }
         }
 
         public static void Load() {
@@ -48,7 +50,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
 
-            bool playerInZone = self.CollideCheck<ClassicZone>();
+            ClassicZone classicZone = self.CollideFirst<ClassicZone>();
+            bool playerInZone = classicZone != null && classicZone.PlayerHasDreamDash;
             if (playerInZone && !_instance.PlayerInZone) {
                 self.Speed /= 90f;
             } else if (!playerInZone && _instance.PlayerInZone) {
@@ -65,7 +68,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (_instance.SkipFrame) {
                 return;
             }
-            
+
             // camera update
             var from = ((Level) Engine.Scene).Camera.Position;
             var target = self.CameraTarget;

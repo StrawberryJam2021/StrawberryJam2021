@@ -8,3 +8,6 @@ placements.entities.SJ2021/RefillShard.tooltips.spawnRefill=Whether the shards g
 placements.entities.SJ2021/RefillShard.tooltips.oneUse=Whether the shards respawn after collection / Whether the spawned refill is single-use.
 placements.entities.SJ2021/RefillShard.tooltips.resetOnGround=Whether touching the ground causes the shards to reset (normal seed behavior).
 placements.entities.SJ2021/RefillShard.tooltips.twoDashes=Whether the refill gives you two dashes.
+
+# Classic Block
+placements.entities.SJ2021/ClassicZone.tooltips.fastMoving=Makes the moving classic block move faster.
