@@ -37,9 +37,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
                 ActualSpeed += new Vector2(0, -60f);
             }
             Position += ActualSpeed * Engine.DeltaTime;
-            Speed.X = Calc.Approach(Speed.X, 0, -60f);
-            Speed.Y = Calc.Approach(Speed.Y, -60f, -20f);
+            Speed.X = Calc.Approach(Speed.X, 0, 40f * Engine.DeltaTime);
+            Speed.Y = Calc.Approach(Speed.Y, -60f, 20f);
             if(CollideCheck<Solid>())
+            {
+                Burst();
+            }
+            Rectangle levelBounds = SceneAs<Level>().Bounds;
+            if((Position.X > levelBounds.Right + 10 || Position.X < levelBounds.Left - 10) || (Position.Y> levelBounds.Bottom + 10|| Position.Y < levelBounds.Top - 10))
             {
                 Burst();
             }
@@ -68,20 +73,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
             switch(spring.Orientation) {
                 case Spring.Orientations.WallLeft:
                     MoveTowardsY(spring.CenterY + 5f, 4f);
-                    Speed.X = -160f;
+                    Speed.X = 160f;
                     Speed.Y = -80f;
                     NoFloatTimer = 0.1f;
                     break;
                 case Spring.Orientations.WallRight:
                     MoveTowardsY(spring.CenterY + 5f, 4f);
-                    Speed.X = 160f;
+                    Speed.X = -160f;
                     Speed.Y = -80f;
                     NoFloatTimer = 0.1f;
                     break;
                 case Spring.Orientations.Floor:
                     Speed.X *= 0.5f;
                     Speed.Y = -160f;
-                    NoFloatTimer = 0.1f;
+                    NoFloatTimer = 0.15f;
                     break;
             }
             return true;
@@ -95,6 +100,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
         public void OnPlayer(Player player)
         {
             player.SuperBounce(Top);
+            Vector2 position = Position + new Vector2(0f, 1f) + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
+		    SceneAs<Level>().ParticlesBG.Emit(TouchSwitch.P_FireWhite, 10, position, new Vector2(8,8), Color.White, 0);
+            SceneAs<Level>().Displacement.AddBurst(Position, 0.6f, 4f, 28f, 0.2f);
+            Audio.Play("event:/char/badeline/booster_reappear");
             Burst();
         }
         

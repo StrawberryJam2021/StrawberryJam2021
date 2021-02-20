@@ -1,4 +1,5 @@
 ﻿using Monocle;
+using Celeste.Mod.StrawberryJam2021.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
@@ -15,10 +16,12 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public override void Load() {
             SelfUpdater.Load();
+            BubbleCollider.Load();
         }
 
         public override void Unload() {
             SelfUpdater.Unload();
+            BubbleCollider.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
