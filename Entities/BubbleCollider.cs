@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities
 {   
+    [Tracked]
     public class BubbleCollider : Component
     {
         private Collider collider;
