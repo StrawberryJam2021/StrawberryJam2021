@@ -47,6 +47,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         // and heavily modified. Note that it doesn't aim to keep 100% accuracy and this whole approach is a bit hacky
         private static void OnPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self) {
             if (_instance == null) {
+                orig(self);
                 return;
             }
 
@@ -226,6 +227,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void OnPlayerRender(On.Celeste.Player.orig_Render orig, Player self) {
             if (_instance == null) {
+                orig(self);
                 return;
             }
 
