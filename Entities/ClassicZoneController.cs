@@ -62,15 +62,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
 
+            if (_instance.SkipFrame) {
+                return;
+            }
+            
             // camera update
             var from = ((Level) Engine.Scene).Camera.Position;
             var target = self.CameraTarget;
             ((Level) Engine.Scene).Camera.Position =
                 from + (target - from) * (1f - (float) Math.Pow(0.01f, Engine.DeltaTime));
-
-            if (_instance.SkipFrame) {
-                return;
-            }
 
             // I roughly estimated that the pico8 speed is 7.5 b/s, speed gets up to 1 and madeline's speed is 11.25 b/s
             // 
