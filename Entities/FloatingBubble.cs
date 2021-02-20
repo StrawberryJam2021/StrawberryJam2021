@@ -9,6 +9,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
     {
         private Vector2 Speed;
         private float NoFloatTimer;
+        private float springCooldownTimer;
         public static MethodInfo SpringBounceAnimate = typeof(Spring).GetMethod("BounceAnimate", BindingFlags.NonPublic | BindingFlags.Instance);
 
         public FloatingBubble(Vector2 position) : base(position) {
@@ -28,6 +29,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
         public override void Update() {
             base.Update();
             Vector2 ActualSpeed = Speed;
+            if(springCooldownTimer > 0)
+            {
+                springCooldownTimer -= Engine.DeltaTime;
+            }
             if(NoFloatTimer > 0)
             {
                 NoFloatTimer -= Engine.DeltaTime;
@@ -54,8 +59,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
                 {
                     if(collider.Entity is Spring)
                     {
-                        HitSpring(collider.Entity as Spring);
-                        SpringBounceAnimate.Invoke(collider.Entity as Spring, null);
+                        if(springCooldownTimer <= 0)
+                        {
+                            HitSpring(collider.Entity as Spring);
+                            SpringBounceAnimate.Invoke(collider.Entity as Spring, null);
+                        }
                     }
                     else if(collider.Entity is TouchSwitch)
                     {
@@ -70,6 +78,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
         }
 
         public bool HitSpring(Spring spring) {
+            springCooldownTimer = 0.05f;
             switch(spring.Orientation) {
                 case Spring.Orientations.WallLeft:
                     MoveTowardsY(spring.CenterY + 5f, 4f);
@@ -87,6 +96,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
                     Speed.X *= 0.5f;
                     Speed.Y = -160f;
                     NoFloatTimer = 0.15f;
+                    springCooldownTimer += 0.2f;
                     break;
             }
             return true;
