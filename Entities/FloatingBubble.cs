@@ -101,7 +101,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
         {
             player.SuperBounce(Top);
             Vector2 position = Position + new Vector2(0f, 1f) + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
-		    SceneAs<Level>().ParticlesBG.Emit(TouchSwitch.P_FireWhite, 10, position, new Vector2(8,8), Color.White, 0);
+		    SceneAs<Level>().ParticlesBG.Emit(Player.P_CassetteFly, 10, position, new Vector2(8,8), Color.White, 0);
             SceneAs<Level>().Displacement.AddBurst(Position, 0.6f, 4f, 28f, 0.2f);
             Audio.Play("event:/char/badeline/booster_reappear");
             Burst();
