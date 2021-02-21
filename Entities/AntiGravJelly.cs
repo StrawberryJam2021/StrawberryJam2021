@@ -524,6 +524,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool SpringHandler(Spring spring) {
             if (!hold.IsHeld) {
+
+                if (spring is UpsidedownSpring udspring) {
+                    Logger.Log("SJ2021/antigravjelly", "customspringhandler");
+                    speed.X = speed.X * udspring.xAxisFriction;
+                    speed.Y = 160f * udspring.strength;
+                    noGravityTimer = 0.15f;
+                    wiggler.Start();
+                    return true;
+                }
+
                 if (spring.Orientation == Spring.Orientations.Floor && speed.Y >= 0f) {
                     speed.X = speed.X * 0.5f;
                     speed.Y = -160f;
