@@ -32,7 +32,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
             Scene.Add(new FloatingBubble(new Vector2(Position.X, Position.Y - 18)));
-            Audio.Play("event:/game/general/seed_pulse", Position);
+            Audio.Play("event:/strawberry_jam_2021/game/bubble_emitter/emitter_generate", Position);
             yield return null;
         }
 
