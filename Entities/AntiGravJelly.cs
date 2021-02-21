@@ -34,6 +34,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private SineWave platformSine;
         private SoundSource risingSFX;
         private Level level;
+        private static ParticleType particleGlow, particleExpand, particleGlide, particlePlatform, particleGlideUp;
 
         public AntiGravJelly(EntityData data, Vector2 offset) : this(data.Position + offset, data.Bool("bubble", false), data.Float("downThrowMultiplier", 1.8f),
             data.Float("diagThrowXMultiplier", 1.6f), data.Float("diagThrowYMultiplier", 1.8f), data.Float("gravity", -30), data.Bool("canBoostUp", true), data.Attr("riseSpeeds", "-24.0, -176.0, -120.0, 0.0, -40.0")) {
@@ -74,6 +75,67 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             platformSine.Randomize();
             Add(risingSFX = new SoundSource());
             Add(new WindMover(WindHandler));
+            InitiateParticles();
+        }
+
+        private void InitiateParticles() {
+            if (particleGlide == null)
+                particleGlide = new ParticleType {
+                    Acceleration = Vector2.UnitY * 60,
+                    SpeedMin = 30f,
+                    SpeedMax = 40f,
+                    Direction = -1/2 * (float) Math.PI,
+                    DirectionRange = 1/2 * (float) Math.PI,
+                    LifeMin = 0.6f,
+                    LifeMax = 1.2f,
+                    ColorMode = ParticleType.ColorModes.Blink,
+                    FadeMode = ParticleType.FadeModes.Late,
+                    Color = Calc.HexToColor("4FFFF3"),
+                    Color2 = Calc.HexToColor("FFF899"),
+                    Source = GFX.Game["particles/rect"],
+                    Size = 0.5f,
+                    SizeRange = 0.2f,
+                    RotationMode = ParticleType.RotationModes.SameAsDirection
+                };
+            if (particleGlideUp == null) // TODO make glidedown?
+                particleGlideUp = new ParticleType(particleGlide) {
+                    Acceleration = Vector2.UnitY * -10f,
+                    SpeedMin = 50f,
+                    SpeedMax = 60f
+                };
+            if (particlePlatform == null) // TODO upward particles?
+                particlePlatform = new ParticleType {
+                    Acceleration = Vector2.UnitY * 60f,
+                    SpeedMin = 5f,
+                    SpeedMax = 20f,
+                    Direction = -1 / 2 * (float) Math.PI,
+                    LifeMin = 0.6f,
+                    LifeMax = 1.4f,
+                    FadeMode = ParticleType.FadeModes.Late,
+                    Size = 1f
+                };
+            if (particleGlow == null)
+                particleGlow = new ParticleType {
+                    SpeedMin = 8f,
+                    SpeedMax = 16f,
+                    DirectionRange = (float) Math.PI * 2,
+                    LifeMin = 0.4f,
+                    LifeMax = 0.8f,
+                    Size = 1f,
+                    FadeMode = ParticleType.FadeModes.Late,
+                    Color = Calc.HexToColor("B7F3FF"),
+                    Color2 = Calc.HexToColor("F4FDFF"),
+                    ColorMode = ParticleType.ColorModes.Blink
+                };
+            if (particleExpand == null)
+                particleExpand = new ParticleType(particleGlow) {
+                    SpeedMin = 40f,
+                    SpeedMax = 80f,
+                    SpeedMultiplier = 0.2f,
+                    LifeMin = 0.6f,
+                    LifeMax = 1.2f,
+                    DirectionRange = 3 / 4 * (float) Math.PI
+                };
         }
 
         public static void Load() {
