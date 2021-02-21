@@ -9,6 +9,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
         // SpriteBanks
         public static SpriteBank GrabTempleGateSpriteBank => Instance._GrabTempleGateSpriteBank;
         public SpriteBank _GrabTempleGateSpriteBank;
+
+        public static SpriteBank BubbleEmitterSpriteBank => Instance._BubbleEmitterSpriteBank;
+        public SpriteBank _BubbleEmitterSpriteBank;
         
         public StrawberryJam2021Module() {
             Instance = this;
@@ -28,6 +31,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             base.LoadContent(firstLoad);
 
             _GrabTempleGateSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/GrabTempleGateSprites.xml");
+            _BubbleEmitterSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/BubbleEmitterSprites.xml");
 
         }
 

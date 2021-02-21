@@ -1,21 +1,23 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using System.Reflection;
-using Celeste.Mod.Entities;
+using System.Collections;
 
-namespace Celeste.Mod.StrawberryJam2021.Entities
-{
-    public class FloatingBubble : Actor
-    {
+namespace Celeste.Mod.StrawberryJam2021.Entities {
+    public class FloatingBubble : Actor {
         private Vector2 Speed;
         private float NoFloatTimer;
         private float springCooldownTimer;
-        public static MethodInfo SpringBounceAnimate = typeof(Spring).GetMethod("BounceAnimate", BindingFlags.NonPublic | BindingFlags.Instance);
+        private Sprite sprite;
+        private static MethodInfo SpringBounceAnimate = typeof(Spring).GetMethod("BounceAnimate", BindingFlags.NonPublic | BindingFlags.Instance);
+        
 
         public FloatingBubble(Vector2 position) : base(position) {
             Speed = Vector2.Zero;
             Collider = new Circle(8);
             Add(new PlayerCollider(OnPlayer));
+            Add(sprite = StrawberryJam2021Module.BubbleEmitterSpriteBank.Create("bubble"));
+            sprite.CenterOrigin();
         }
 
         public override bool IsRiding(JumpThru jumpThru) {
@@ -29,32 +31,26 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
         public override void Update() {
             base.Update();
             Vector2 ActualSpeed = Speed;
-            if(springCooldownTimer > 0)
-            {
+            if(springCooldownTimer > 0) {
                 springCooldownTimer -= Engine.DeltaTime;
             }
-            if(NoFloatTimer > 0)
-            {
+            if(NoFloatTimer > 0) {
                 NoFloatTimer -= Engine.DeltaTime;
             }
-            else
-            {
+            else {
                 ActualSpeed += new Vector2(0, -60f);
             }
             Position += ActualSpeed * Engine.DeltaTime;
             Speed.X = Calc.Approach(Speed.X, 0, 40f * Engine.DeltaTime);
-            Speed.Y = Calc.Approach(Speed.Y, -60f, 20f);
-            if(CollideCheck<Solid>())
-            {
+            Speed.Y = Calc.Approach(Speed.Y, -60f, 20f * Engine.DeltaTime);
+            if(CollideCheck<Solid>()) {
                 Burst();
             }
             Rectangle levelBounds = SceneAs<Level>().Bounds;
-            if((Position.X > levelBounds.Right + 10 || Position.X < levelBounds.Left - 10) || (Position.Y> levelBounds.Bottom + 10|| Position.Y < levelBounds.Top - 10))
-            {
+            if((Position.X > levelBounds.Right + 10 || Position.X < levelBounds.Left - 10) || (Position.Y> levelBounds.Bottom + 10|| Position.Y < levelBounds.Top - 10)) {
                 Burst();
             }
-            foreach(BubbleCollider collider in Scene.Tracker.GetComponents<BubbleCollider>())
-            {
+            foreach(BubbleCollider collider in Scene.Tracker.GetComponents<BubbleCollider>()) {
                 if(collider.Check(this))
                 {
                     if(collider.Entity is Spring)
@@ -71,10 +67,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
                     }
                 }
             }
-        }
-
-        public override void Render() {
-            Draw.Circle(Position, 8, Color.White, 18);
         }
 
         public bool HitSpring(Spring spring) {
@@ -102,19 +94,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
             return true;
         }
 
-        public void Burst()
-        {
+        public void Burst() {
+            Add(new Coroutine(BurstRoutine()));
             RemoveSelf();
         }
 
-        public void OnPlayer(Player player)
-        {
+        public void OnPlayer(Player player) {
             player.SuperBounce(Top);
+            Burst();
+        }
+
+        private IEnumerator BurstRoutine() {
+            IEnumerator spriteEnumerator = sprite.PlayRoutine("pop");
+            while(spriteEnumerator.Current == null) {
+                spriteEnumerator.MoveNext();
+                yield return null;
+            }
             Vector2 position = Position + new Vector2(0f, 1f) + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
-		    SceneAs<Level>().ParticlesBG.Emit(Player.P_CassetteFly, 10, position, new Vector2(8,8), Color.White, 0);
+            Remove(sprite);
+            SceneAs<Level>().ParticlesFG.Emit(Player.P_CassetteFly, 10, position, new Vector2(8,8), Color.White, 0);
             SceneAs<Level>().Displacement.AddBurst(Position, 0.6f, 4f, 28f, 0.2f);
             Audio.Play("event:/char/badeline/booster_reappear");
-            Burst();
+            yield return 0;
         }
         
     }
