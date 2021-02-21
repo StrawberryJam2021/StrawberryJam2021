@@ -22,7 +22,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public float[] riseSpeeds { get; private set; } // downhold, upwind + uphold, uphold, upwind, neutral
 
         private bool bubble, destroyed = false;
-        private float highFrictionTimer, noGravityTimer, downThrowMultiplier, diagThrowXMultiplier, diagThrowYMultiplier, gravity;
+        private float highFrictionTimer, noGravityTimer, downThrowMultiplier, diagThrowXMultiplier, diagThrowYMultiplier, gravity, lastDroppedTime;
         private Vector2 speed, startPosition, prevLiftSpeed;
         private Collision onCollideH, onCollideV;
         private Sprite sprite;
@@ -52,6 +52,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             for (int i = 0; i < speeds.Length; i++) {
                 this.riseSpeeds[i] = float.Parse(speeds[i]);
             }
+
+            lastDroppedTime = 0;
 
             Collider = new Hitbox(8, 10, -4, -10);
             onCollideH = new Collision(CollideHandlerH);
@@ -151,8 +153,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             
             //Logger.Log("SJ2021/AntiGravJelly", $"self.Holding.Entity.GetType() == Type.GetType(\"Celeste.Mod.StrawberryJam2021.Entities.AntiGravJelly\") = {self.Holding.Entity.GetType() == Type.GetType("Celeste.Mod.StrawberryJam2021.Entities.AntiGravJelly")}");
             //Logger.Log("SJ2021/AntiGravJelly", $"Holding.Entity.GetType() = {self.Holding.Entity.GetType()}, Type.GetType(\"Celeste.Mod.StrawberryJam2021.Entities.AntiGravJelly\") = {Type.GetType("Celeste.Mod.StrawberryJam2021.Entities.AntiGravJelly")}");
-            if (!(self.Holding.Entity.GetType() == Type.GetType("Celeste.Mod.StrawberryJam2021.Entities.AntiGravJelly")))
-                yield return orig(self);
+            AntiGravJelly jelly = self.Holding.Entity as AntiGravJelly;
+            
+            if (jelly == null)
+                    yield return orig(self);
+
 
             Vector2 self_carryOffsetTarget = new Vector2(0f, -12f); // not the """correct""" way to do it but it never gets changed soo....why not
             DynData<Player> dyndata_player = new DynData<Player>(self);
@@ -191,25 +196,29 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             self.Add(tween);
             yield return tween.Wait();
             self.Speed = oldSpeed;
-            self.Speed.Y = Math.Max(self.Speed.Y, 0f);
             set_self_varJumpTimer(varJump);
             self.StateMachine.State = 0;
             if (self.Holding != null && self.Holding.SlowFall) {
-                if (get_self_gliderBoosterTimer() > 0f && self_gliderBoostDir.Y > 0f) { // if can yeet and go down, do yeet
+                if (get_self_gliderBoosterTimer() > 0f && self_gliderBoostDir.Y > 0f) {
                     Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
                     set_self_gliderBoosterTimer(0f);
                     self.Speed.Y = Math.Max(self.Speed.Y, 240f * self_gliderBoostDir.Y);
-                } else if (get_self_gliderBoosterTimer() > 0f && self_gliderBoostDir.Y < 0 && ((AntiGravJelly)self.Holding.Entity).canBoostUp) { // if can yeet, go up *and* canboostup
+                } else if (get_self_gliderBoosterTimer() > 0f && self_gliderBoostDir.Y < 0 && ((AntiGravJelly)self.Holding.Entity).canBoostUp) {
                     Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
                     set_self_gliderBoosterTimer(0f);
                     self.Speed.Y = Math.Min(self.Speed.Y, -240f * Math.Abs(self_gliderBoostDir.Y));
-                } else if (self_gliderBoostDir.Y > 0f ) { // if too late for yeet and go down, set minimum down speed. TODO anti cheese here?
-                    self.Speed.Y = Math.Max(self.Speed.Y, 105f);
-                } else if (!((AntiGravJelly) self.Holding.Entity).canBoostUp && self_gliderBoostDir.Y < 0) {
-                    self.Speed.Y = Math.Max(oldSpeed.Y, -105f);
+                } else if (self.Speed.Y > 0f && (get_self_gliderBoosterTimer() <= 0)) {
+                    float pickupTimeDiff = self.Scene.TimeActive - jelly.lastDroppedTime;
+                    if (pickupTimeDiff < 1.5f) {
+                        Logger.Log("SJ2021/AntiGravJelly", $"Anticheese, pickup time diff: {self.Scene.TimeActive - jelly.lastDroppedTime}");
+                        self.Speed.Y = -self.Speed.Y * 1.2f;
+                    } else {
+                        self.Speed.Y = Math.Max(self.Speed.Y, -105f);
+                    }
+                } else {
+                    self.Speed.Y = self.Speed.Y / 2;
                 }
                 if (self_onGround && Input.MoveY == 1f) {
-                    //self.holdCannotDuck = true;
                     self_holdCannotDuck = true;
                 }
             }
@@ -233,12 +242,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             ILCursor cursor = new ILCursor(il);
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(120f))) {
                 cursor.Emit(OpCodes.Ldarg_0);
-                //cursor.Emit(OpCodes.Ldarg_0);
-                //cursor.Emit(OpCodes.Ldfld, typeof(Player).GetField("windDirection", BindingFlags.NonPublic | BindingFlags.Instance));
                 cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
-
-                    if (player.Scene.OnInterval(0.5f))
-                    Logger.Log("SJ2021/AntiGravJelly", $"windDirection ({player.SceneAs<Level>().Wind.X}, {player.SceneAs<Level>().Wind.Y})");
 
                     if (player?.Holding?.Entity is AntiGravJelly jelly) {
                         if (player.SceneAs<Level>().Wind.Y > 0)
@@ -415,7 +419,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
 
                     // remove if above upper level bound
-                    if (Bottom < level.Bounds.Top - 16) {
+                    if (Bottom < level.Bounds.Top - 32) {
                         RemoveSelf();
                         return;
                     }
@@ -563,6 +567,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             bool dropped = false;
             if (force == Vector2.Zero) {
                 // speed will be set to Vector2.Zero
+                Console.WriteLine(Environment.StackTrace);
                 dropped = true;
             }
             if (Input.MoveY.Value == -1 && force.X != 0) {
@@ -571,6 +576,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 dropped = true;
             }
             if (dropped) {
+                lastDroppedTime = Scene.TimeActive;
                 Audio.Play("event:/new_content/char/madeline/glider_drop", Position);
             } else if(force.Y == 0) {
                 force.Y = diagThrowYMultiplier;
