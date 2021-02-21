@@ -1,9 +1,4 @@
-﻿/*
- * TODO:
- * - anti-cheese (upboost if grabbing while moving down without dashing??)
- */
-
-using System;
+﻿using System;
 using Monocle;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
@@ -113,7 +108,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     SpeedMin = 50f,
                     SpeedMax = 60f
                 };
-            if (particlePlatform == null) // TODO upward particles?
+            if (particlePlatform == null)
                 particlePlatform = new ParticleType {
                     Acceleration = Vector2.UnitY * 60f,
                     SpeedMin = 5f,
@@ -150,9 +145,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 
         private static IEnumerator OnPickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player self) {
-            
-            //Logger.Log("SJ2021/AntiGravJelly", $"self.Holding.Entity.GetType() == Type.GetType(\"Celeste.Mod.StrawberryJam2021.Entities.AntiGravJelly\") = {self.Holding.Entity.GetType() == Type.GetType("Celeste.Mod.StrawberryJam2021.Entities.AntiGravJelly")}");
-            //Logger.Log("SJ2021/AntiGravJelly", $"Holding.Entity.GetType() = {self.Holding.Entity.GetType()}, Type.GetType(\"Celeste.Mod.StrawberryJam2021.Entities.AntiGravJelly\") = {Type.GetType("Celeste.Mod.StrawberryJam2021.Entities.AntiGravJelly")}");
             AntiGravJelly jelly = self.Holding.Entity as AntiGravJelly;
             
             if (jelly == null)
@@ -302,7 +294,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 level.Particles.Emit(particleGlow, 1, Center + Vector2.UnitY * -9f, new Vector2(10f, 4f));
             }
 
-            // sprite rotation
             float targetAngle = 0;
             if (hold.IsHeld) {
                 if (hold.Holder.OnGround(1)) {
@@ -313,16 +304,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             sprite.Rotation = Calc.Approach(sprite.Rotation, targetAngle, (float)Math.PI * Engine.DeltaTime);
 
-            // rising sfx handling
             if (hold.IsHeld && !hold.Holder.OnGround(1) && (sprite.CurrentAnimationID.Equals("fall") || sprite.CurrentAnimationID.Equals("fallLoop"))){
-                // if held and player falling (rising lol)
                 if (!risingSFX.Playing) {
                     Audio.Play("event:/new_content/game/10_farewell/glider_engage", Position);
                     risingSFX.Play("event:/new_content/game/10_farewell/glider_movement", null, 0);
                 }
                 Vector2 jellySpeed = hold.Holder.Speed;
-                Vector2 vector = new Vector2(jellySpeed.X * 0.5f, (jellySpeed.Y > 0f) ? (jellySpeed.Y * 2) : jellySpeed.Y); // if moving down, double speed.y
-                float value = Calc.Map(vector.Length(), 0, 120, 0, 0.7f); // shorten vector length to between 0 and 0.7??
+                Vector2 vector = new Vector2(jellySpeed.X * 0.5f, (jellySpeed.Y > 0f) ? (jellySpeed.Y * 2) : jellySpeed.Y);
+                float value = Calc.Map(vector.Length(), 0, 120, 0, 0.7f);
                 risingSFX.Param("glider_speed", value);
             } else {
                 risingSFX.Stop(true);
@@ -358,8 +347,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 
                     if (OnGround(-1)) {
-
-                        // x correction for sliding off a corner
                         float correction = 0;
                         if (!OnGround(Position + Vector2.UnitX * 3f, -1)) {
                             correction = 20;
@@ -374,7 +361,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             prevLiftSpeed = Vector2.Zero;
                             speed.Y = Math.Min(speed.Y * 0.6f, 0);
 
-                            //bouncy
                             if (speed.X != 0 && speed.Y == 0) {
                                 speed.Y = -60;
                             }
@@ -388,28 +374,27 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             }
                         }
 
-                    } // if(onGround)
+                    }
                     else if (hold.ShouldHaveGravity) {
-                        float num = 200f; // gravity coefficient
-                        if (speed.Y <= 30f) // if moving down not too fast, halve coefficient
+                        float num = 200f;
+                        if (speed.Y <= 30f)
                             num *= 0.5f;
 
-                        float xAxisFriction = (speed.Y < 0 || highFrictionTimer <= 0)? 40f : 10f; // if moving down or high friction, use higher friction value
+                        float xAxisFriction = (speed.Y < 0 || highFrictionTimer <= 0)? 40f : 10f;
                         speed.X = Calc.Approach(speed.X, 0f, xAxisFriction * Engine.DeltaTime);
 
-                        if (noGravityTimer > 0) { // if no grav, dont do anything
+                        if (noGravityTimer > 0) {
                             noGravityTimer -= Engine.DeltaTime;
-                        } else if (level.Wind.Y > 0f) { // if wind goes down, approach stillstand
+                        } else if (level.Wind.Y > 0f) {
                             speed.Y = Calc.Approach(speed.Y, 0f, num * Engine.DeltaTime);
-                        } else { // else approach a speed of gravity
+                        } else {
                             speed.Y = Calc.Approach(speed.Y, gravity, num * Engine.DeltaTime);
                         }
                     }
-                    // execute move
+
                     MoveH(speed.X * Engine.DeltaTime, onCollideH, null);
                     MoveV(speed.Y * Engine.DeltaTime, onCollideV, null);
 
-                    // collide with horizontal screen bounds
                     if(Left < level.Bounds.Left) {
                         Left = level.Bounds.Left;
                         onCollideH(new CollisionData { Direction = -Vector2.UnitX });
@@ -418,24 +403,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         onCollideH(new CollisionData { Direction = Vector2.UnitX });
                     }
 
-                    // remove if above upper level bound
                     if (Bottom < level.Bounds.Top - 32) {
                         RemoveSelf();
                         return;
                     }
                     hold.CheckAgainstColliders();
-                } else { // if is bubble and not held
+                } else {
                     Position = startPosition + Vector2.UnitY * platformSine.Value * 1;
                 }
                 Vector2 one = Vector2.One;
                 if (!hold.IsHeld) {
-                    if (level.Wind.Y < 0f) { //if wind up
+                    if (level.Wind.Y < 0f) {
                         PlayOpen();
                     } else {
                         sprite.Play("idle", false, false);
                     }
-                } // if (!hold.isheld)
-                else if(hold.Holder.Speed.Y < -20f || level.Wind.Y < 0f) { // if held and rising fast enough or if held and wind up
+                }
+                else if(hold.Holder.Speed.Y < -20f || level.Wind.Y < 0f) {
                     if (level.OnInterval(0.04f)){
                         if (level.Wind.Y > 0) {
                             level.ParticlesBG.Emit(particleGlideDown, 1, Position - Vector2.UnitY * 20f, new Vector2(6f, 4f));
@@ -445,7 +429,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                     PlayOpen();
 
-                    // set sprite scale values depending on fastfall or slowfall
                     if (Input.GliderMoveY.Value > 0) {
                         one.X = 0.7f;
                         one.Y = 1.4f;
@@ -454,15 +437,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         one.Y = 0.8f;
                     }
                     Input.Rumble(RumbleStrength.Climb, RumbleLength.Short);
-                } // if(hold.Holder.Speed.Y > 20f || level.Wind.Y < 0f)
-                else { // just play the normal held animation
+                }
+                else {
                     sprite.Play("held", false, false);
                 }
                 sprite.Scale.Y = Calc.Approach(sprite.Scale.Y, one.Y, Engine.DeltaTime * 2f);
                 sprite.Scale.X = Calc.Approach(sprite.Scale.X, Math.Sign(sprite.Scale.X) * one.X, Engine.DeltaTime * 2f);
                 return;
-            } // if (!destroyed)
-            Position += speed * Engine.DeltaTime; // continue moving in a straight line during despawn animation
+            }
+            Position += speed * Engine.DeltaTime;
         }
 
         private void PlayOpen() {
@@ -490,8 +473,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
-            if (level.OnInterval(1))
-                //Logger.Log("SJ2021/antigravjelly", $"render() - pos: X {Position.X}, Y {Position.Y}");
             if (!destroyed)
                 sprite.DrawSimpleOutline();
             base.Render();
@@ -510,7 +491,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private Vector2 PlatformAdd(int i) {
-            return new Vector2(-12 + i, (-5 + (int) Math.Round(Math.Sin(Scene.TimeActive + i * 0.4f) * 1.7999999523162842))); // TODO: adjust platform sine frequency
+            return new Vector2(-12 + i, (-5 + (int) Math.Round(Math.Sin(Scene.TimeActive + i * 0.4f) * 1.7999999523162842)));
         }
 
         private void WindHandler(Vector2 windDirection) {
@@ -526,7 +507,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!hold.IsHeld) {
 
                 if (spring is UpsidedownSpring udspring) {
-                    Logger.Log("SJ2021/antigravjelly", "customspringhandler");
                     speed.X = speed.X * udspring.xAxisFriction;
                     speed.Y = 160f * udspring.strength;
                     noGravityTimer = 0.15f;
@@ -568,7 +548,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void ReleaseHandler(Vector2 force) {
-            //Logger.Log("SJ2021/antigravjelly", $"ReleaseHandler(force {{X: {force.X}, Y: {force.Y}}}), Input.MoveY.Value = {Input.MoveY.Value}, diagmul ({diagThrowXMultiplier}, {diagThrowYMultiplier}), downmul {downThrowMultiplier}");
             if (force.X == 0f) {
                 Audio.Play("event:/new_content/char/madeline/glider_drop", Position);
             }
@@ -576,7 +555,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             RemoveTag(Tags.Persistent);
             bool dropped = false;
             if (force == Vector2.Zero) {
-                // speed will be set to Vector2.Zero
+                // speed will be set to Vector2.Zero later
                 Console.WriteLine(Environment.StackTrace);
                 dropped = true;
             }
@@ -624,7 +603,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 sprite.Scale = new Vector2(1.2f, 0.8f);
                 Audio.Play("event:/new_content/game/10_farewell/glider_land", Position);
             }
-            if (speed.Y > 0) { // inverting speed check - speed.Y > 0 = moving downwards
+            if (speed.Y > 0) {
                 speed.Y *= -0.5f;
                 return;
             }
