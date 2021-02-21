@@ -31,7 +31,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private SineWave platformSine;
         private SoundSource risingSFX;
         private Level level;
-        private static ParticleType particleGlow, particleExpand, particleGlide, particlePlatform, particleGlideUp;
+        private static ParticleType particleGlow, particleExpand, particleGlide, particlePlatform, particleGlideDown;
 
         public AntiGravJelly(EntityData data, Vector2 offset) : this(data.Position + offset, data.Bool("bubble", false), data.Float("downThrowMultiplier", 1.8f),
             data.Float("diagThrowXMultiplier", 1.6f), data.Float("diagThrowYMultiplier", 1.8f), data.Float("gravity", -30), data.Bool("canBoostUp", true), data.Attr("riseSpeeds", "-24.0, -176.0, -120.0, -80.0, -40.0")) {
@@ -75,14 +75,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             InitiateParticles();
         }
 
+        public static void Load() {
+            On.Celeste.Player.PickupCoroutine += OnPickupCoroutine;
+            IL.Celeste.Player.NormalUpdate += patchPlayerNormalUpdate;
+            On.Celeste.Player.Throw += patchPlayerThrow;
+        }
+
+        public static void Unload() {
+            On.Celeste.Player.PickupCoroutine -= OnPickupCoroutine;
+            IL.Celeste.Player.NormalUpdate -= patchPlayerNormalUpdate;
+            On.Celeste.Player.Throw -= patchPlayerThrow;
+        }
         private void InitiateParticles() {
-            if (particleGlide == null)
-                particleGlide = new ParticleType {
+            if (particleGlideDown == null)
+                particleGlideDown = new ParticleType {
                     Acceleration = Vector2.UnitY * 60,
                     SpeedMin = 30f,
                     SpeedMax = 40f,
-                    Direction = -1/2 * (float) Math.PI,
-                    DirectionRange = 1/2 * (float) Math.PI,
+                    Direction = -1.5707964f,
+                    DirectionRange = 1.5707964f,
                     LifeMin = 0.6f,
                     LifeMax = 1.2f,
                     ColorMode = ParticleType.ColorModes.Blink,
@@ -92,10 +103,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Source = GFX.Game["particles/rect"],
                     Size = 0.5f,
                     SizeRange = 0.2f,
-                    RotationMode = ParticleType.RotationModes.SameAsDirection
+                    RotationMode = ParticleType.RotationModes.Random
                 };
-            if (particleGlideUp == null) // TODO make glidedown?
-                particleGlideUp = new ParticleType(particleGlide) {
+            if (particleGlide == null)
+                particleGlide = new ParticleType(particleGlideDown) {
                     Acceleration = Vector2.UnitY * -10f,
                     SpeedMin = 50f,
                     SpeedMax = 60f
@@ -135,17 +146,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 };
         }
 
-        public static void Load() {
-            On.Celeste.Player.PickupCoroutine += OnPickupCoroutine;
-            IL.Celeste.Player.NormalUpdate += patchPlayerNormalUpdate;
-            On.Celeste.Player.Throw += patchPlayerThrow;
-        }
-
-        public static void Unload() {
-            On.Celeste.Player.PickupCoroutine -= OnPickupCoroutine;
-            IL.Celeste.Player.NormalUpdate -= patchPlayerNormalUpdate;
-            On.Celeste.Player.Throw -= patchPlayerThrow;
-        }
 
         private static IEnumerator OnPickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player self) {
             
@@ -379,7 +379,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             }
                         } else {
                             prevLiftSpeed = liftspeed;
-                            // if liftspeed points up, and speed points up, cancel all up speed??
                             if (liftspeed.Y < 0 && speed.Y < 0) {
                                 speed.Y = 0;
                             }
@@ -432,10 +431,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         sprite.Play("idle", false, false);
                     }
                 } // if (!hold.isheld)
-                else if(hold.Holder.Speed.Y > 20f || level.Wind.Y < 0f) { // if held and falling fast or if held and wind up
+                else if(hold.Holder.Speed.Y < -20f || level.Wind.Y < 0f) { // if held and rising fast enough or if held and wind up
                     if (level.OnInterval(0.04f)){
-                        if (level.Wind.Y < 0) { // TODO switch this to "glide down"?
-                            level.ParticlesBG.Emit(particleGlideUp, 1, Position - Vector2.UnitY * 20f, new Vector2(6f, 4f));
+                        if (level.Wind.Y > 0) {
+                            level.ParticlesBG.Emit(particleGlideDown, 1, Position - Vector2.UnitY * 20f, new Vector2(6f, 4f));
                         } else {
                             level.ParticlesBG.Emit(particleGlide, 1, Position - Vector2.UnitY * 10f, new Vector2(6f, 4f));
                         }
