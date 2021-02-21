@@ -3,7 +3,7 @@ using ..Ahorn, Maple
 
 @mapdef Entity "SJ2021/AntiGravJelly" AntiGravJelly(x::Integer, y::Integer,
    bubble::Bool=false, canBoostUp::Bool=true, downThrowMultiplier::Number=1.8, diagThrowXMultiplier::Number=1.6,
-   diagThrowYMultiplier::Number=1.8, gravity::Number=-30.0, riseSpeeds::String="-24.0, 32.0, -120.0, 0.0, -40.0")
+   diagThrowYMultiplier::Number=1.8, gravity::Number=-30.0, riseSpeeds::String="-24.0, -176.0, -120.0, -80.0, -40.0")
 
 const placements = Ahorn.PlacementDict(
    "Antigravity Jellyfish (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
