@@ -138,11 +138,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static void Load() {
             On.Celeste.Player.PickupCoroutine += OnPickupCoroutine;
             IL.Celeste.Player.NormalUpdate += patchPlayerNormalUpdate;
+            On.Celeste.Player.Throw += patchPlayerThrow;
         }
 
         public static void Unload() {
             On.Celeste.Player.PickupCoroutine -= OnPickupCoroutine;
             IL.Celeste.Player.NormalUpdate -= patchPlayerNormalUpdate;
+            On.Celeste.Player.Throw -= patchPlayerThrow;
         }
 
         private static IEnumerator OnPickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player self) {
@@ -212,6 +214,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
             yield break;
+        }
+
+        private static void patchPlayerThrow(On.Celeste.Player.orig_Throw orig, Player self) {
+            if (self.Holding.Entity is AntiGravJelly && Input.MoveY.Value == 1 && Input.MoveX.Value != 0) {
+                Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
+                self.Holding.Release(Vector2.UnitX * (float) self.Facing);
+                self.Speed.X = self.Speed.X + 08f * (float) -(float) self.Facing;
+                self.Play("event:/char/madeline/crystaltheo_throw", null, 0f);
+                self.Sprite.Play("throw", false, false);
+                self.Holding = null;
+                return;
+            }
+            orig(self);
         }
 
         private static void patchPlayerNormalUpdate(ILContext il) {
@@ -551,7 +566,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 // speed will be set to Vector2.Zero
                 dropped = true;
             }
-            if (Input.MoveY.Value == -1 && Input.MoveX.Value == 0) {
+            if (Input.MoveY.Value == -1 && force.X != 0) {
                 force.X = 0;
                 force.Y = downThrowMultiplier;
                 dropped = true;
