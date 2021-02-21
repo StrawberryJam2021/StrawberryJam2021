@@ -357,13 +357,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         highFrictionTimer -= Engine.DeltaTime;
 
 
-                    if (OnGround(1)) { // todo: "onceiling". could abuse onGround(vector2, 1) for that?
+                    if (OnGround(-1)) {
 
                         // x correction for sliding off a corner
                         float correction = 0;
-                        if (!OnGround(Position + Vector2.UnitX * 3f, 1)) {
+                        if (!OnGround(Position + Vector2.UnitX * 3f, -1)) {
                             correction = 20;
-                        } else if (!OnGround(Position - Vector2.UnitX * 3f, 1)) {
+                        } else if (!OnGround(Position - Vector2.UnitX * 3f, -1)) {
                             correction = -20;
                         }
                         speed.X = Calc.Approach(speed.X, correction, 800f * Engine.DeltaTime);
