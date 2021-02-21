@@ -11,7 +11,7 @@
     <bubble path="objects/StrawberryJam2021/bubbleEmitter/bubble/" start="appear">
         <Anim id="appear" path="appear" delay="0.1" frames="0-2" goto="idle"/>
         <Loop id="idle" path="idle" delay="0.1" frames="0"/>
-        <Anim id="pop" path="idle" delay="0.1" frames="0-4"/>
+        <Anim id="pop" path="pop" delay="0.01" frames="0-4"/>
     </bubble>
 
 </Sprites>

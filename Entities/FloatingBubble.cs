@@ -9,14 +9,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float NoFloatTimer;
         private float springCooldownTimer;
         private Sprite sprite;
+
+        private bool broken = false;
         private static MethodInfo SpringBounceAnimate = typeof(Spring).GetMethod("BounceAnimate", BindingFlags.NonPublic | BindingFlags.Instance);
-        
+
 
         public FloatingBubble(Vector2 position) : base(position) {
             Speed = Vector2.Zero;
-            Collider = new Circle(8);
+            Collider = new Hitbox(14, 14, -7, -7);
             Add(new PlayerCollider(OnPlayer));
             Add(sprite = StrawberryJam2021Module.BubbleEmitterSpriteBank.Create("bubble"));
+            sprite.OnFinish = OnAnimationFinished;
             sprite.CenterOrigin();
         }
 
@@ -31,13 +34,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
             Vector2 ActualSpeed = Speed;
-            if(springCooldownTimer > 0) {
+            if (springCooldownTimer > 0) {
                 springCooldownTimer -= Engine.DeltaTime;
             }
-            if(NoFloatTimer > 0) {
+            if (NoFloatTimer > 0) {
                 NoFloatTimer -= Engine.DeltaTime;
-            }
-            else {
+            } else {
                 ActualSpeed += new Vector2(0, -60f);
             }
             Position += ActualSpeed * Engine.DeltaTime;
@@ -47,23 +49,30 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Burst();
             }
             Rectangle levelBounds = SceneAs<Level>().Bounds;
-            if((Position.X > levelBounds.Right + 10 || Position.X < levelBounds.Left - 10) || (Position.Y> levelBounds.Bottom + 10|| Position.Y < levelBounds.Top - 10)) {
+            if ((Position.X > levelBounds.Right + 10 || Position.X < levelBounds.Left - 10) || (Position.Y > levelBounds.Bottom + 10 || Position.Y < levelBounds.Top - 10)) {
                 Burst();
             }
-            foreach(BubbleCollider collider in Scene.Tracker.GetComponents<BubbleCollider>()) {
-                if(collider.Check(this))
-                {
-                    if(collider.Entity is Spring)
-                    {
-                        if(springCooldownTimer <= 0)
-                        {
+            foreach (BubbleCollider collider in Scene.Tracker.GetComponents<BubbleCollider>()) {
+                if (collider.Check(this)) {
+                    if (collider.Entity is Spring) {
+                        if (springCooldownTimer <= 0) {
                             HitSpring(collider.Entity as Spring);
                             SpringBounceAnimate.Invoke(collider.Entity as Spring, null);
                         }
-                    }
-                    else if(collider.Entity is TouchSwitch)
-                    {
+                    } else if (collider.Entity is TouchSwitch) {
                         (collider.Entity as TouchSwitch).TurnOn();
+                    }
+                }
+            }
+            if (sprite.CurrentAnimationID == "pop") {
+                if (sprite.CurrentAnimationFrame == 1) {
+                    if (broken == false) {
+                        Collidable = false;
+                        Vector2 position = Position + new Vector2(0f, 1f) + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
+                        SceneAs<Level>().ParticlesFG.Emit(Player.P_CassetteFly, 10, position, new Vector2(8, 8), Color.White, 0);
+                        SceneAs<Level>().Displacement.AddBurst(Position, 0.6f, 4f, 28f, 0.2f);
+                        Audio.Play("event:/game/02_old_site/theoselfie_photo_out");
+                        broken = true;
                     }
                 }
             }
@@ -71,7 +80,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public bool HitSpring(Spring spring) {
             springCooldownTimer = 0.05f;
-            switch(spring.Orientation) {
+            switch (spring.Orientation) {
                 case Spring.Orientations.WallLeft:
                     MoveTowardsY(spring.CenterY + 5f, 4f);
                     Speed.X = 160f;
@@ -95,8 +104,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void Burst() {
-            Add(new Coroutine(BurstRoutine()));
-            RemoveSelf();
+            sprite.Play("pop");
         }
 
         public void OnPlayer(Player player) {
@@ -104,19 +112,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Burst();
         }
 
-        private IEnumerator BurstRoutine() {
-            IEnumerator spriteEnumerator = sprite.PlayRoutine("pop");
-            while(spriteEnumerator.Current == null) {
-                spriteEnumerator.MoveNext();
-                yield return null;
-            }
-            Vector2 position = Position + new Vector2(0f, 1f) + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
+        public void OnAnimationFinished(string id) {
             Remove(sprite);
-            SceneAs<Level>().ParticlesFG.Emit(Player.P_CassetteFly, 10, position, new Vector2(8,8), Color.White, 0);
-            SceneAs<Level>().Displacement.AddBurst(Position, 0.6f, 4f, 28f, 0.2f);
-            Audio.Play("event:/char/badeline/booster_reappear");
-            yield return 0;
+            RemoveSelf();
         }
-        
     }
 }

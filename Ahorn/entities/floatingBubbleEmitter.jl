@@ -14,11 +14,12 @@ const placements = Ahorn.PlacementDict(
 function Ahorn.selection(entity::FloatingBubbleEmitter)
     x, y = Ahorn.position(entity)
 
-    return Ahorn.Rectangle(x-8, y-8, 16, 16)
+    return Ahorn.getSpriteRectangle("objects/StrawberryJam2021/bubbleEmitter/idle00.png", x, y)
 end
 
-function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::FloatingBubbleEmitter, room::Maple.Room)
-    Ahorn.drawRectangle(ctx, -8, -8, 16, 16, (1.0, 1.0, 1.0, 0.4), (1.0, 1.0, 1.0, 1.0))
+function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::FloatingBubbleEmitter, room::Maple.Room)
+    x, y = Ahorn.position(entity)
+    Ahorn.drawSprite(ctx, "objects/StrawberryJam2021/bubbleEmitter/idle00.png", x, y)
 end
 
 end
