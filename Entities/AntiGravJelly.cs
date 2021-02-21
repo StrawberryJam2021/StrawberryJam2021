@@ -1,9 +1,5 @@
 ﻿/*
- * Stuff to ask Quantum Spaceman:
- * - adjust platform sine frequency
- * 
  * TODO:
- * - particles
  * - anti-cheese (upboost if grabbing while moving down without dashing??)
  */
 
@@ -15,6 +11,7 @@ using System.Collections;
 using MonoMod.Utils;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
+using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/AntiGravJelly")]
@@ -37,7 +34,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static ParticleType particleGlow, particleExpand, particleGlide, particlePlatform, particleGlideUp;
 
         public AntiGravJelly(EntityData data, Vector2 offset) : this(data.Position + offset, data.Bool("bubble", false), data.Float("downThrowMultiplier", 1.8f),
-            data.Float("diagThrowXMultiplier", 1.6f), data.Float("diagThrowYMultiplier", 1.8f), data.Float("gravity", -30), data.Bool("canBoostUp", true), data.Attr("riseSpeeds", "-24.0, -176.0, -120.0, 0.0, -40.0")) {
+            data.Float("diagThrowXMultiplier", 1.6f), data.Float("diagThrowYMultiplier", 1.8f), data.Float("gravity", -30), data.Bool("canBoostUp", true), data.Attr("riseSpeeds", "-24.0, -176.0, -120.0, -80.0, -40.0")) {
         }
 
         public AntiGravJelly(Vector2 position, bool bubble, float downThrowMultiplier, float diagThrowXMultiplier, float diagThrowYMultiplier, float gravity, bool canBoostUp, string riseSpeeds) : base (position){
@@ -155,23 +152,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!(self.Holding.Entity.GetType() == Type.GetType("Celeste.Mod.StrawberryJam2021.Entities.AntiGravJelly")))
                 yield return orig(self);
 
-            DynData<Player> self_gliderBoostTimer = new DynData<Player>(self);
-            Func<float> get_self_gliderBoosterTimer = new Func<float>( () => { return self_gliderBoostTimer.Get<float>("gliderBoostTimer"); });
-            Action<float> set_self_gliderBoosterTimer = new Action<float>((x) => self_gliderBoostTimer.Set("gliderBoostTimer", x));
+            Vector2 self_carryOffsetTarget = new Vector2(0f, -12f); // not the """correct""" way to do it but it never gets changed soo....why not
+            DynData<Player> dyndata_player = new DynData<Player>(self);
+
+            Func<float> get_self_gliderBoosterTimer = new Func<float>( () => { return dyndata_player.Get<float>("gliderBoostTimer"); });
+            Action<float> set_self_gliderBoosterTimer = new Action<float>((x) => dyndata_player.Set("gliderBoostTimer", x));
 
             Vector2 self_gliderBoostDir = new DynData<Player>(self).Get<Vector2>("gliderBoostDir");
 
-            DynData<Player> self_varJumpTimer = new DynData<Player>(self);
-            Func<float> get_self_varJumpTimer = new Func<float>(() => { return self_varJumpTimer.Get<float>("varJumpTimer"); });
-            Action<float> set_self_varJumpTimer = new Action<float>((x) => self_gliderBoostTimer.Set("varJumpTimer", x));
+            Func<float> get_self_varJumpTimer = new Func<float>(() => { return dyndata_player.Get<float>("varJumpTimer"); });
+            Action<float> set_self_varJumpTimer = new Action<float>((x) => dyndata_player.Set("varJumpTimer", x));
 
-            Vector2 self_carryOffsetTarget = new Vector2(0f, -12f); // not the """correct""" way to do it but it never gets changed soo....why not
-            DynData<Player> self_carryOffset = new DynData<Player>(self);
+            Action<Vector2> set_self_carryOffset = new Action<Vector2>((x) => dyndata_player.Set("carryOffset", x));
 
-            Action<Vector2> set_self_carryOffset = new Action<Vector2>((x) => self_carryOffset.Set("carryOffset", x));
-
-            bool self_onGround = new DynData<Player>(self).Get<bool>("onGround");
-            bool self_holdCannotDuck = new DynData<Player>(self).Get<bool>("holdCannotDuck");
+            bool self_onGround = dyndata_player.Get<bool>("onGround");
+            bool self_holdCannotDuck = dyndata_player.Get<bool>("holdCannotDuck");
 
             self.Play("event:/char/madeline/crystaltheo_lift", null, 0f);
             Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
@@ -223,10 +218,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             ILCursor cursor = new ILCursor(il);
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(120f))) {
                 cursor.Emit(OpCodes.Ldarg_0);
-
+                //cursor.Emit(OpCodes.Ldarg_0);
+                //cursor.Emit(OpCodes.Ldfld, typeof(Player).GetField("windDirection", BindingFlags.NonPublic | BindingFlags.Instance));
                 cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
 
+                    if (player.Scene.OnInterval(0.5f))
+                    Logger.Log("SJ2021/AntiGravJelly", $"windDirection ({player.SceneAs<Level>().Wind.X}, {player.SceneAs<Level>().Wind.Y})");
+
                     if (player?.Holding?.Entity is AntiGravJelly jelly) {
+                        if (player.SceneAs<Level>().Wind.Y > 0)
+                            return jelly.riseSpeeds[0] + 40;
                         return jelly.riseSpeeds[0];
                     }
                     return speed;
@@ -267,7 +268,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(40f))) {
                 cursor.Emit(OpCodes.Ldarg_0);
-
                 cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
 
                     if (player?.Holding?.Entity is AntiGravJelly jelly) {
@@ -279,10 +279,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Update() {
-            if (level.OnInterval(1))
-                //Logger.Log("SJ2021/antigravjelly", $"update() - pos: X {Position.X}, Y {Position.Y}");
             if (Scene.OnInterval(0.05f)) {
-                // todo glow particles
+                level.Particles.Emit(particleGlow, 1, Center + Vector2.UnitY * -9f, new Vector2(10f, 4f));
             }
 
             // sprite rotation
@@ -421,12 +419,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 } // if (!hold.isheld)
                 else if(hold.Holder.Speed.Y > 20f || level.Wind.Y < 0f) { // if held and falling fast or if held and wind up
                     if (level.OnInterval(0.04f)){
-                        if (level.Wind.Y < 0) {
-                            //todo particle
-                            // this.level.ParticlesBG.Emit(Glider.P_GlideUp, 1, this.Position - Vector2.UnitY * 20f, new Vector2(6f, 4f));
+                        if (level.Wind.Y < 0) { // TODO switch this to "glide down"?
+                            level.ParticlesBG.Emit(particleGlideUp, 1, Position - Vector2.UnitY * 20f, new Vector2(6f, 4f));
                         } else {
-                            //todo particle
-                            // this.level.ParticlesBG.Emit(Glider.P_Glide, 1, this.Position - Vector2.UnitY * 10f, new Vector2(6f, 4f));
+                            level.ParticlesBG.Emit(particleGlide, 1, Position - Vector2.UnitY * 10f, new Vector2(6f, 4f));
                         }
                     }
                     PlayOpen();
@@ -455,8 +451,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!sprite.CurrentAnimationID.Equals("fall") && !sprite.CurrentAnimationID.Equals("fallLoop")) {
                 sprite.Play("fall", false, false);
                 sprite.Scale = new Vector2(1.5f, 0.6f);
-                // todo particles
-                // this.level.Particles.Emit(Glider.P_Expand, 16, base.Center + (Vector2.UnitY * -12f).Rotate(this.sprite.Rotation), new Vector2(8f, 3f), -1.5707964f + this.sprite.Rotation);
+                level.Particles.Emit(particleExpand, 16, Center + (Vector2.UnitY * -12f).Rotate(sprite.Rotation), new Vector2(8f, 3f), -1/2 * (float) Math.PI + sprite.Rotation);
                 if (hold.IsHeld) {
                     Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
                 }
@@ -575,8 +570,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void PickupHandler() {
             if (bubble) {
                 for (int i = 0; i < 24; i++) {
-                    // todo emit particles
-                    //level.Particles.Emit();
+                    level.Particles.Emit(particlePlatform, Position + PlatformAdd(i), PlatformColor(i));
                 }
             }
             AllowPushing = false;
