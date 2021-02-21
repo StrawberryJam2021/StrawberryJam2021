@@ -45,7 +45,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Position += ActualSpeed * Engine.DeltaTime;
             Speed.X = Calc.Approach(Speed.X, 0, 40f * Engine.DeltaTime);
             Speed.Y = Calc.Approach(Speed.Y, -60f, 20f * Engine.DeltaTime);
-            if(CollideCheck<Solid>()) {
+            if (CollideCheck<Solid>()) {
                 Burst();
             }
             Rectangle levelBounds = SceneAs<Level>().Bounds;

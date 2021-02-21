@@ -11,17 +11,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Sprite sprite;
 
         public FloatingBubbleEmitter(EntityData data, Vector2 offset) : base(data.Position + offset) {
-            spawnTimer = spawnTimerMax = data.Float("spawnTimer",2f);
+            spawnTimer = spawnTimerMax = data.Float("spawnTimer", 2f);
             Add(sprite = StrawberryJam2021Module.BubbleEmitterSpriteBank.Create("bubbleEmitter"));
             sprite.CenterOrigin();
         }
 
         public override void Update() {
             base.Update();
-            if(spawnTimer > 0) {
+            if (spawnTimer > 0) {
                 spawnTimer -= Engine.DeltaTime;
-            }
-            else {
+            } else {
                 spawnTimer = spawnTimerMax;
                 Add(new Coroutine(SpawnRoutine()));
             }
@@ -29,7 +28,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private IEnumerator SpawnRoutine() {
             sprite.Play("open");
-            while(sprite.CurrentAnimationFrame != 1) {
+            while (sprite.CurrentAnimationFrame != 1) {
                 yield return null;
             }
             Scene.Add(new FloatingBubble(new Vector2(Position.X, Position.Y - 18)));
