@@ -147,10 +147,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static IEnumerator OnPickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player self) {
             AntiGravJelly jelly = self.Holding.Entity as AntiGravJelly;
 
-            if (jelly == null)
+            if (jelly == null) {
                 yield return orig(self);
+                yield break;
+            }
 
-            Logger.Log("SJ2021/AntiGravJelly", "custom pickup coroutine");
             Vector2 self_carryOffsetTarget = new Vector2(0f, -12f); // not the """correct""" way to do it but it never gets changed soo....why not
             DynData<Player> dyndata_player = new DynData<Player>(self);
 
@@ -167,10 +168,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             bool self_onGround = dyndata_player.Get<bool>("onGround");
             bool self_holdCannotDuck = dyndata_player.Get<bool>("holdCannotDuck");
 
-            self.Play("event:/char/madeline/crystaltheo_lift", null, 0f);
+            self.Play(SFX.char_mad_crystaltheo_lift, null, 0f);
             Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
             if (self.Holding != null && self.Holding.SlowFall && get_self_gliderBoosterTimer() - 0.16f > 0f && self_gliderBoostDir.Y > 0f || (self.Speed.Length() > 180f && self.Speed.Y <= 0f)) {
-                Audio.Play("event:/new_content/game/10_farewell/glider_platform_dissipate", self.Position);
+                Audio.Play(SFX.game_10_glider_platform_dissipate, self.Position);
             }
             Vector2 oldSpeed = self.Speed;
             float varJump = get_self_varJumpTimer();
@@ -221,7 +222,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
                 self.Holding.Release(Vector2.UnitX * (float) self.Facing);
                 self.Speed.X = self.Speed.X + 08f * (float) -(float) self.Facing;
-                self.Play("event:/char/madeline/crystaltheo_throw", null, 0f);
+                self.Play(SFX.char_mad_crystaltheo_throw, null, 0f);
                 self.Sprite.Play("throw", false, false);
                 self.Holding = null;
                 return;
@@ -305,8 +306,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (hold.IsHeld && !hold.Holder.OnGround(1) && (sprite.CurrentAnimationID.Equals("fall") || sprite.CurrentAnimationID.Equals("fallLoop"))) {
                 if (!risingSFX.Playing) {
-                    Audio.Play("event:/new_content/game/10_farewell/glider_engage", Position);
-                    risingSFX.Play("event:/new_content/game/10_farewell/glider_movement", null, 0);
+                    Audio.Play(SFX.game_10_glider_engage, Position);
+                    risingSFX.Play(SFX.game_10_glider_movement, null, 0);
                 }
                 Vector2 jellySpeed = hold.Holder.Speed;
                 Vector2 vector = new Vector2(jellySpeed.X * 0.5f, (jellySpeed.Y > 0f) ? (jellySpeed.Y * 2) : jellySpeed.Y);
@@ -456,7 +457,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private IEnumerator DestroyAnimationCoroutine() {
-            Audio.Play("event:/new_content/game/10_farewell/glider_emancipate", Position);
+            Audio.Play(SFX.game_10_glider_emancipate, Position);
             sprite.Play("death", false, false);
             yield return 1f;
             RemoveSelf();
@@ -487,7 +488,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private Vector2 PlatformAdd(int i) {
-            return new Vector2(-12 + i, (-5 + (int) Math.Round(Math.Sin(Scene.TimeActive + i * 0.4f) * 1.7999999523162842)));
+            return new Vector2(-12 + i, (-5 + (int) Math.Round(Math.Sin(Scene.TimeActive + i * 0.4f) * 1.8)));
         }
 
         private void WindHandler(Vector2 windDirection) {
@@ -545,14 +546,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void ReleaseHandler(Vector2 force) {
             if (force.X == 0f) {
-                Audio.Play("event:/new_content/char/madeline/glider_drop", Position);
+                Audio.Play(SFX.char_mad_glider_drop, Position);
             }
             AllowPushing = true;
             RemoveTag(Tags.Persistent);
             bool dropped = false;
             if (force == Vector2.Zero) {
                 // speed will be set to Vector2.Zero later
-                Console.WriteLine(Environment.StackTrace);
                 dropped = true;
             }
             if (Input.MoveY.Value == -1 && force.X != 0) {
@@ -562,7 +562,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             if (dropped) {
                 lastDroppedTime = Scene.TimeActive;
-                Audio.Play("event:/new_content/char/madeline/glider_drop", Position);
+                Audio.Play(SFX.char_mad_glider_drop, Position);
             } else if (force.Y == 0) {
                 force.Y = diagThrowYMultiplier;
                 force.X = diagThrowXMultiplier * Math.Sign(force.X);
@@ -587,8 +587,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void CollideHandlerH(CollisionData data) {
-            if (data.Hit is DashSwitch)
-                (data.Hit as DashSwitch).OnDashCollide(null, Vector2.UnitX * (float) Math.Sign(speed.X));
+            if (data.Hit is DashSwitch dashswitch)
+                dashswitch.OnDashCollide(null, Vector2.UnitX * (float) Math.Sign(speed.X));
             string sfx = "event:/new_content/game/10_farewell/glider_wallbounce_" + ((speed.X < 0) ? "left" : "right");
             Audio.Play(sfx, Position);
             speed.X *= -1;
@@ -597,7 +597,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void CollideHandlerV(CollisionData data) {
             if (Math.Abs(speed.Y) > 8) {
                 sprite.Scale = new Vector2(1.2f, 0.8f);
-                Audio.Play("event:/new_content/game/10_farewell/glider_land", Position);
+                Audio.Play(SFX.game_10_glider_land, Position); 
             }
             if (speed.Y > 0) {
                 speed.Y *= -0.5f;

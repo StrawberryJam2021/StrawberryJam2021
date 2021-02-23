@@ -22,14 +22,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.xAxisFriction = xAxisFriction;
 
             // extract components
-            staticMover = Components.OfType<StaticMover>().First();
-            sprite = Components.OfType<Sprite>().First();
-            wiggler = Components.OfType<Wiggler>().First();
+            staticMover = Get<StaticMover>();
+            sprite = Get<Sprite>();
+            wiggler = Get<Wiggler>();
 
             // remove components that need removing
-            Remove(Components.OfType<PlayerCollider>().First());
-            Remove(Components.OfType<PufferCollider>().First());
-            Remove(Components.OfType<HoldableCollider>().First());
+            Remove(Get<PlayerCollider>());
+            Remove(Get<PufferCollider>());
+            Remove(Get<HoldableCollider>());
 
             // replace them with ones we need
             Add(new HoldableCollider(new Action<Holdable>(onHoldable), null));
