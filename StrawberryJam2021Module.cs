@@ -20,11 +20,13 @@ namespace Celeste.Mod.StrawberryJam2021 {
         public override void Load() {
             SelfUpdater.Load();
             BubbleCollider.Load();
+            MaskedDecal.Load();
         }
 
         public override void Unload() {
             SelfUpdater.Unload();
             BubbleCollider.Unload();
+            MaskedDecal.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
