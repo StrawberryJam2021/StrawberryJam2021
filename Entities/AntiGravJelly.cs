@@ -110,10 +110,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 };
             if (particlePlatform == null)
                 particlePlatform = new ParticleType {
-                    Acceleration = Vector2.UnitY * 60f,
+                    Acceleration = Vector2.UnitY * -60f,
                     SpeedMin = 5f,
                     SpeedMax = 20f,
-                    Direction = -1 / 2 * (float) Math.PI,
+                    Direction = 1 / 2 * (float) Math.PI,
                     LifeMin = 0.6f,
                     LifeMax = 1.4f,
                     FadeMode = ParticleType.FadeModes.Late,
