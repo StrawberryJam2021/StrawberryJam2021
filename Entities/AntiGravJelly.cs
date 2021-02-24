@@ -210,7 +210,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 } else {
                     self.Speed.Y = self.Speed.Y / 2;
                 }
-                if (self_onGround && Input.MoveY == 1f) {
+                if (self_onGround && Input.MoveY.Value == 1f) {
                     self_holdCannotDuck = true;
                 }
             }
