@@ -92,7 +92,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     lastFacing = (int) player.Facing;
                     Vector2 newOffset = new Vector2(Math.Abs(playerDynData.Get<Vector2>("carryOffset").X), playerDynData.Get<Vector2>("carryOffset").Y) * (Vector2.UnitX * (int) player.Facing);
                     Logger.Log("SJ2021/TripleBoostFlower", $"last {lastFacing}, new {(int) player.Facing}, text {player.Facing}, newoffset ({newOffset.X}, {newOffset.Y})");
-                    //playerDynData.Set("carryOffset", newOffset);
+                    //playerDynData.Set("carryOffset", newOffset); todo update offset
                 }
                 if (Input.Dash.Pressed) {
                     consumeBoost();
@@ -130,7 +130,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             gravityCoefficient *= 2;
                         }
                         float xAdjustSpeed = 10;
-                        if (speed.Y < 0 || highFrictionTimer <= 0) { // todo high friction timer?
+                        if (speed.Y < 0 || highFrictionTimer <= 0) {
                             xAdjustSpeed = 40;
                         }
                         speed.X = Calc.Approach(speed.X, 0f, xAdjustSpeed * Engine.DeltaTime);
@@ -145,6 +145,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
                 MoveH(speed.X * Engine.DeltaTime, onCollideH, null);
                 MoveV(speed.Y * Engine.DeltaTime, onCollideV, null);
+
                 // boundary enforcing
                 if (Left < level.Bounds.Left) {
                     Left = level.Bounds.Left;
@@ -163,12 +164,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
                 hold.CheckAgainstColliders();
             }
-            Position += speed * Engine.DeltaTime;
         }
 
         private void consumeBoost() {
             if (canBoost()) {
-                Logger.Log("SJ2021/TripleBoostFlower", "consuming boost");
                 player_launchBegin.Invoke(hold.Holder, new object[] { });
                 hold.Holder.Speed.Y = boostSpeed;
                 charges--;
@@ -190,7 +189,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private bool canBoost() {
-            Logger.Log("SJ2021/TripleBoostFlower", $"{hold.Holder.Speed.Y > boostThreshold}, {boostCooldown}, {charges}");
             return hold.Holder.Speed.Y > boostThreshold && boostCooldown <= 0f && charges > 0 && boostDuration <= 0;
         }
 
@@ -294,7 +292,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             lastFacing = (int) player.Facing;
             playerDynData = new DynData<Player>(player);
             playerDynData.Set("CarryOffsetTarget", customCarryOffset);// + (Vector2.UnitX * (int) player.Facing * 4f));
-            //throw new NotImplementedException();
         }
 
         private void collideHandlerV(CollisionData data) {
