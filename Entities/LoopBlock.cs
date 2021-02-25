@@ -37,7 +37,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private DashCollisionResults OnDashed(Player player, Vector2 dir) {
             if (dir.Y == 0 && !dashed) {
                 player.ExplodeLaunch(new Vector2(Center.X, player.Center.Y), false, false);
-
+                if (speed.Y < 0) {
+                    player.Speed.Y += Math.Max(speed.Y, -80);
+                }
                 speed.X = dir.X * 180f;
                 targetSpeedX = -dir.X * 90f;
                 dashedDirX = dir.X;
@@ -142,7 +144,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 (int) (Width * scale.X),
                 (int) (Height * scale.Y));
 
-            Draw.Rect(rect, Color.MediumVioletRed);
+            float colorLerp = -Calc.Clamp(speed.Y, -80, 0) / 80;
+            Draw.Rect(rect, Color.Lerp(Color.MediumVioletRed, Color.Orange, colorLerp));
         }
     }
 }
