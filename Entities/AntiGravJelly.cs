@@ -293,7 +293,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (Scene.OnInterval(0.05f)) {
                 level.Particles.Emit(particleGlow, 1, Center + Vector2.UnitY * -9f, new Vector2(10f, 4f));
             }
-
             float targetAngle = 0;
             if (hold.IsHeld) {
                 if (hold.Holder.OnGround(1)) {
@@ -303,7 +302,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
             sprite.Rotation = Calc.Approach(sprite.Rotation, targetAngle, (float) Math.PI * Engine.DeltaTime);
-
             if (hold.IsHeld && !hold.Holder.OnGround(1) && (sprite.CurrentAnimationID.Equals("fall") || sprite.CurrentAnimationID.Equals("fallLoop"))) {
                 if (!risingSFX.Playing) {
                     Audio.Play(SFX.game_10_glider_engage, Position);
@@ -316,9 +314,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             } else {
                 risingSFX.Stop(true);
             }
-
             base.Update();
-
             if (!destroyed) {
                 foreach (SeekerBarrier seekerBarrier in Scene.Tracker.GetEntities<SeekerBarrier>()) {
                     seekerBarrier.Collidable = true;
@@ -337,15 +333,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         return;
                     }
                 }
-
-
                 if (hold.IsHeld) {
                     prevLiftSpeed = Vector2.Zero;
                 } else if (!bubble) {
                     if (highFrictionTimer > 0f)
                         highFrictionTimer -= Engine.DeltaTime;
-
-
                     if (OnGround(-1)) {
                         float correction = 0;
                         if (!OnGround(Position + Vector2.UnitX * 3f, -1)) {
@@ -354,13 +346,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             correction = -20;
                         }
                         speed.X = Calc.Approach(speed.X, correction, 800f * Engine.DeltaTime);
-
                         Vector2 liftspeed = LiftSpeed;
                         if (liftspeed == Vector2.Zero && prevLiftSpeed != Vector2.Zero) {
                             speed = liftspeed;
                             prevLiftSpeed = Vector2.Zero;
                             speed.Y = Math.Min(speed.Y * 0.6f, 0);
-
                             if (speed.X != 0 && speed.Y == 0) {
                                 speed.Y = -60;
                             }
@@ -373,15 +363,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                                 speed.Y = 0;
                             }
                         }
-
                     } else if (hold.ShouldHaveGravity) {
                         float num = 200f;
                         if (speed.Y <= 30f)
                             num *= 0.5f;
-
                         float xAxisFriction = (speed.Y < 0 || highFrictionTimer <= 0) ? 40f : 10f;
                         speed.X = Calc.Approach(speed.X, 0f, xAxisFriction * Engine.DeltaTime);
-
                         if (noGravityTimer > 0) {
                             noGravityTimer -= Engine.DeltaTime;
                         } else if (level.Wind.Y > 0f) {
@@ -390,10 +377,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             speed.Y = Calc.Approach(speed.Y, gravity, num * Engine.DeltaTime);
                         }
                     }
-
                     MoveH(speed.X * Engine.DeltaTime, onCollideH, null);
                     MoveV(speed.Y * Engine.DeltaTime, onCollideV, null);
-
                     if (Left < level.Bounds.Left) {
                         Left = level.Bounds.Left;
                         onCollideH(new CollisionData { Direction = -Vector2.UnitX });
@@ -401,7 +386,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         Right = level.Bounds.Right;
                         onCollideH(new CollisionData { Direction = Vector2.UnitX });
                     }
-
                     if (Bottom < level.Bounds.Top - 32) {
                         RemoveSelf();
                         return;
@@ -426,7 +410,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         }
                     }
                     PlayOpen();
-
                     if (Input.GliderMoveY.Value > 0) {
                         one.X = 0.7f;
                         one.Y = 1.4f;
@@ -502,7 +485,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool SpringHandler(Spring spring) {
             if (!hold.IsHeld) {
-
                 if (spring is UpsidedownSpring udspring) {
                     speed.X = speed.X * udspring.xAxisFriction;
                     speed.Y = 160f * udspring.strength;
@@ -510,7 +492,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     wiggler.Start();
                     return true;
                 }
-
                 if (spring.Orientation == Spring.Orientations.Floor && speed.Y >= 0f) {
                     speed.X = speed.X * 0.5f;
                     speed.Y = -160f;
@@ -569,7 +550,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             speed = force * 100;
             wiggler.Start();
-
         }
 
         private void PickupHandler() {
@@ -594,6 +574,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             speed.X *= -1;
             sprite.Scale = new Vector2(0.8f, 1.2f);
         }
+
         private void CollideHandlerV(CollisionData data) {
             if (Math.Abs(speed.Y) > 8) {
                 sprite.Scale = new Vector2(1.2f, 0.8f);
