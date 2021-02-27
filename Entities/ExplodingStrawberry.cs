@@ -18,12 +18,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void OnPufferExplode(On.Celeste.Puffer.orig_Explode orig, Puffer self) {
-            Engine.Scene.Tracker.GetEntities<ExplodingStrawberry>().ForEach(entity => {
-                ExplodingStrawberry strawberry = entity as ExplodingStrawberry;
+            foreach (ExplodingStrawberry strawberry in Engine.Scene.Tracker.GetEntities<ExplodingStrawberry>()) {
                 if (strawberry.Follower.Leader == null) {
                     Engine.Scene.Remove(strawberry);
                 }
-            });
+            }
             orig(self);
         }
     }
