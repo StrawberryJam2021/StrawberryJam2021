@@ -6,7 +6,7 @@ using ..Ahorn, Maple
     diagThrowYMultiplier::Number=1.8, gravity::Number=-30.0, riseSpeeds::String="-24.0, -176.0, -120.0, -80.0, -40.0")
 
 const placements = Ahorn.PlacementDict(
-        "Antigravity Jellyfish (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
+    "Antigravity Jellyfish (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         AntiGravJelly,
         "rectangle"
     )

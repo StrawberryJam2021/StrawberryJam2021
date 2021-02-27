@@ -4,7 +4,7 @@ using ..Ahorn, Maple
 @mapdef Entity "SJ2021/UpsidedownSpring" UpsidedownSpring(x::Integer, y::Integer, strength::Number=1.0, xAxisFriction::Number=0.5)
 
 const placements = Ahorn.PlacementDict(
-        "Upside down Spring (AntiGravJelly only) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
+    "Upside down Spring (AntiGravJelly only) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         UpsidedownSpring,
         "rectangle"
     )
