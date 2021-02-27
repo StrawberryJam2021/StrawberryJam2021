@@ -4,9 +4,9 @@ using ..Ahorn, Maple
 @mapdef Entity "SJ2021/UpsidedownSpring" UpsidedownSpring(x::Integer, y::Integer, strength::Number=1.0, xAxisFriction::Number=0.5)
 
 const placements = Ahorn.PlacementDict(
-    "Upside down Spring (AntiGravJelly only) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
-    UpsidedownSpring,
-    "rectangle"
+        "Upside down Spring (AntiGravJelly only) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
+        UpsidedownSpring,
+        "rectangle"
     )
 )
 
@@ -17,7 +17,7 @@ function Ahorn.selection(entity::UpsidedownSpring)
 end
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::UpsidedownSpring, room::Maple.Room)
-    Ahorn.drawSprite(ctx, "objects/spring/00.png", 12, 6, rot = pi)
+    Ahorn.drawSprite(ctx, "objects/spring/00", 12, 6, rot = pi)
 end
 
 end
