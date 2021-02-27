@@ -66,34 +66,90 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // just using scene.Tracker.GetEntity<CassetteBlockManager>() == null doesn't work here
             // because EntityList.Add only adds in batches when we explicitly tell it to update
             // so, reflection saves the day again :)
-            var toAddField = scene.Entities.GetType().GetField("toAdd", BindingFlags.NonPublic | BindingFlags.Instance);
-            List<Entity> toAdd = toAddField.GetValue(scene.Entities) as List<Entity>;
-            if (scene.Tracker.GetEntity<CassetteBlockManager>() == null &&
-                !toAdd.OfType<CassetteBlockManager>().Any()) {
-                level.Add(new CassetteBlockManager());
+            var manager = scene.Tracker.GetEntity<CassetteBlockManager>();
+
+            if (manager == null) {
+                var toAddField = scene.Entities.GetType().GetField("toAdd", BindingFlags.NonPublic | BindingFlags.Instance);
+                List<Entity> toAdd = toAddField.GetValue(scene.Entities) as List<Entity>;
+                var possiblyManager = toAdd.OfType<CassetteBlockManager>().ToArray();
+
+                if (possiblyManager.Any())
+                    manager = possiblyManager.First();
+                else {
+                    manager = new CassetteBlockManager();
+                    level.Add(manager);
+                }
             }
+            
+            // If we spawn in and we're supposed to be at the end or moving to the end, place us there
+            switch (GetCurrentState(manager.GetSixteenthNote())) {
+                case MovingBlockState.MoveToEnd:
+                    goto case MovingBlockState.AtEnd;
+                case MovingBlockState.AtEnd:
+                    Teleport();
+
+                    break;
+            }
+        }
+
+        // Note that "AtStart" and "AtEnd" signify that we're either at the start/end or we're actively moving to them
+        private enum MovingBlockState {
+            AtStart, AtEnd, MoveToStart, MoveToEnd
+        }
+
+        private MovingBlockState? GetCurrentState(int beat) {
+            // Convert 1-indexing to 0-indexing so we can use modulo on this
+            beat = beat - 1;
+            int segment = beat % 16;
+
+            if (beat < preDelay)
+                return MovingBlockState.AtStart;
+
+            if (segment == moveForwardBeat)
+                return MovingBlockState.MoveToEnd;
+            if (segment == moveBackBeat)
+                return MovingBlockState.MoveToStart;
+
+            if (moveForwardBeat < moveBackBeat) {
+                if (segment > moveForwardBeat && segment < moveBackBeat)
+                    return MovingBlockState.AtStart;
+                if (segment < moveForwardBeat || segment > moveBackBeat)
+                    return MovingBlockState.AtEnd;
+            } else {
+                if (segment > moveBackBeat && segment < moveForwardBeat)
+                    return MovingBlockState.AtEnd;
+                if (segment < moveBackBeat || segment > moveForwardBeat)
+                    return MovingBlockState.AtStart;
+            }
+
+            return null;
         }
 
         public override void Update() {
             base.Update();
+
             var manager = Scene.Tracker.GetEntity<CassetteBlockManager>();
-            
+
             if (manager == null)
                 return;
-            
-            // Convert 1-indexing to 0-indexing so we can use modulo on this
-            int beat = manager.GetSixteenthNote() - 1;
-            if (beat != lastBeat && beat >= preDelay) {
-                if (beat % 16 == moveBackBeat && teleportBack) {
-                    Teleport();
-                } else if (beat % 16 == moveForwardBeat || beat % 16 == moveBackBeat) {
-                    Move();
-                }
 
-                if (oneWay) {
-                    moveForwardBeat = -1;
-                    moveBackBeat = -1;
-                }
+            int beat = manager.GetSixteenthNote();
+
+            if (beat == lastBeat)
+                return;
+
+            switch (GetCurrentState(beat)) {
+                case MovingBlockState.MoveToStart:
+                    if (teleportBack) {
+                        Teleport();
+
+                        break;
+                    }
+                    goto case MovingBlockState.MoveToEnd;
+                case MovingBlockState.MoveToEnd:
+                    Move();
+
+                    break;
             }
 
             lastBeat = beat;
