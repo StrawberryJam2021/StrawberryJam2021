@@ -1,4 +1,4 @@
-﻿using Monocle;
+using Monocle;
 using Celeste.Mod.StrawberryJam2021.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021 {
@@ -19,11 +19,13 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public override void Load() {
             SelfUpdater.Load();
+            AntiGravJelly.Load();
             BubbleCollider.Load();
         }
 
         public override void Unload() {
             SelfUpdater.Unload();
+            AntiGravJelly.Unload();
             BubbleCollider.Unload();
         }
 
@@ -32,7 +34,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
             _GrabTempleGateSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/GrabTempleGateSprites.xml");
             _BubbleEmitterSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/BubbleEmitterSprites.xml");
-
         }
 
     }
