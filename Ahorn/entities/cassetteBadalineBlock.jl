@@ -5,7 +5,7 @@ using ..Ahorn, Maple
 @pardef CassetteBadalineBlock(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, 
         width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight, 
         tiletype::String="g", moveForwardBeat::Integer=0, moveBackBeat::Integer=8, 
-        preDelay::Integer=0, transitionDuration::Integer=4, oneWay::Bool=false, teleportBack::Bool=false,
+        preDelay::Integer=0, transitionDuration::Integer=4, oneWay::Bool=false, teleportBack::Bool=false, 
         alignToCassetteTimer::Bool=false) = 
     Entity("SJ2021/CassetteBadalineBlock", x = x1, y = y1, nodes = Tuple{Int, Int}[(x2, y2)],
         width = width, height = height, tiletype = tiletype,

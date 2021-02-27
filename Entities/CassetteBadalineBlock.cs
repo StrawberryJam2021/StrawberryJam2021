@@ -73,8 +73,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             var manager = scene.Tracker.GetEntity<CassetteBlockManager>();
 
             if (manager == null) {
-                var toAddField = scene.Entities.GetType().GetField("toAdd", BindingFlags.NonPublic | BindingFlags.Instance);
-                List<Entity> toAdd = toAddField.GetValue(scene.Entities) as List<Entity>;
+                List<Entity> toAdd = scene.Entities
+                    .GetType().GetField("toAdd", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .GetValue(scene.Entities) as List<Entity>;
                 var possiblyManager = toAdd.OfType<CassetteBlockManager>().ToArray();
 
                 if (possiblyManager.Any())
@@ -87,14 +88,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (alignToCassetteTimer) {
                 // If we spawn in and we're supposed to be at the end or moving to the end, place us there
-                switch (GetCurrentState(manager.GetSixteenthNote())) {
-                    case MovingBlockState.MoveToEnd:
-                        goto case MovingBlockState.AtEnd;
-                    case MovingBlockState.AtEnd:
-                        Teleport();
+                var state = GetCurrentState(manager.GetSixteenthNote());
 
-                        break;
-                }
+                if (state == MovingBlockState.MoveToEnd || state == MovingBlockState.AtEnd)
+                    Teleport();
             }
         }
 
@@ -105,7 +102,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private MovingBlockState? GetCurrentState(int beat) {
             // Convert 1-indexing to 0-indexing so we can use modulo on this
-            beat = beat - 1;
+            beat -= 1;
             int segment = beat % 16;
 
             if (beat < preDelay)
@@ -135,35 +132,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Update();
 
             var manager = Scene.Tracker.GetEntity<CassetteBlockManager>();
-
             if (manager == null)
                 return;
 
             int beat = manager.GetSixteenthNote();
-
             if (beat == lastBeat)
                 return;
 
-            switch (GetCurrentState(beat)) {
-                case MovingBlockState.MoveToStart:
-                    if (teleportBack) {
-                        Teleport();
-                        if (oneWay) {
-                            moveForwardBeat = -1;
-                            moveBackBeat = -1;
-                        }
-
-                        break;
-                    }
-                    goto case MovingBlockState.MoveToEnd;
-                case MovingBlockState.MoveToEnd:
+            var state = GetCurrentState(beat);
+            if (state == MovingBlockState.MoveToStart || state == MovingBlockState.MoveToEnd) {
+                if (state == MovingBlockState.MoveToStart && teleportBack)
+                    Teleport();
+                else
                     Move();
-                    if (oneWay) {
-                        moveForwardBeat = -1;
-                        moveBackBeat = -1;
-                    }
 
-                    break;
+                if (oneWay) {
+                    moveForwardBeat = -1;
+                    moveBackBeat = -1;
+                }
             }
 
             lastBeat = beat;
@@ -178,10 +164,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             nodeIndex %= nodes.Length;
             Vector2 from = Position;
             Vector2 to = nodes[nodeIndex];
+            
             Tween tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeIn, actualTransitionDuration, true);
             tween.OnUpdate = delegate(Tween t) {
                 MoveTo(Vector2.Lerp(from, to, t.Eased));
             };
+            
             tween.OnComplete = delegate {
                 if (CollideCheck<SolidTiles>(Position + (to - from).SafeNormalize() * 2f)) {
                     Audio.Play("event:/game/06_reflection/fallblock_boss_impact", Center);
@@ -190,6 +178,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     StopParticles(to - from);
                 }
             };
+            
             Add(tween);
         }
 
