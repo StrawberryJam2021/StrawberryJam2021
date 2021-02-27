@@ -21,11 +21,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int transitionDuration;
         private bool oneWay;
         private bool teleportBack;
+        private bool alignToCassetteTimer;
 
         private int lastBeat = -1;
 
         public CassetteBadalineBlock(Vector2[] nodes, float width, float height, char tiletype,
-            int moveForwardBeat, int moveBackBeat, int preDelay, int transitionDuration, bool oneWay, bool teleportBack)
+            int moveForwardBeat, int moveBackBeat, int preDelay, int transitionDuration, bool oneWay,
+            bool teleportBack, bool alignToCassetteTimer)
             : base(nodes[0], width, height, false) {
             this.nodes = nodes;
             int newSeed = Calc.Random.Next();
@@ -44,12 +46,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.transitionDuration = transitionDuration;
             this.oneWay = oneWay;
             this.teleportBack = teleportBack;
+            this.alignToCassetteTimer = alignToCassetteTimer;
         }
 
         public CassetteBadalineBlock(EntityData data, Vector2 offset)
             : this(data.NodesWithPosition(offset), data.Width, data.Height, data.Char("tiletype", 'g'),
                 data.Int("moveForwardBeat", 0), data.Int("moveBackBeat", 8), data.Int("preDelay", 0),
-                data.Int("transitionDuration", 4), data.Bool("oneWay", false), data.Bool("teleportBack", false)) {
+                data.Int("transitionDuration", 4), data.Bool("oneWay", false),
+                data.Bool("teleportBack", false), data.Bool("alignToCassetteTimer", false)) {
         }
 
         public override void Added(Scene scene) {
@@ -80,15 +84,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     level.Add(manager);
                 }
             }
-            
-            // If we spawn in and we're supposed to be at the end or moving to the end, place us there
-            switch (GetCurrentState(manager.GetSixteenthNote())) {
-                case MovingBlockState.MoveToEnd:
-                    goto case MovingBlockState.AtEnd;
-                case MovingBlockState.AtEnd:
-                    Teleport();
 
-                    break;
+            if (alignToCassetteTimer) {
+                // If we spawn in and we're supposed to be at the end or moving to the end, place us there
+                switch (GetCurrentState(manager.GetSixteenthNote())) {
+                    case MovingBlockState.MoveToEnd:
+                        goto case MovingBlockState.AtEnd;
+                    case MovingBlockState.AtEnd:
+                        Teleport();
+
+                        break;
+                }
             }
         }
 
@@ -142,12 +148,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 case MovingBlockState.MoveToStart:
                     if (teleportBack) {
                         Teleport();
+                        if (oneWay) {
+                            moveForwardBeat = -1;
+                            moveBackBeat = -1;
+                        }
 
                         break;
                     }
                     goto case MovingBlockState.MoveToEnd;
                 case MovingBlockState.MoveToEnd:
                     Move();
+                    if (oneWay) {
+                        moveForwardBeat = -1;
+                        moveBackBeat = -1;
+                    }
 
                     break;
             }
