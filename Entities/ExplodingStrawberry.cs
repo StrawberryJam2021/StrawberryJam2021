@@ -1,6 +1,7 @@
 ﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System.Collections;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/ExplodingStrawberry")]
@@ -19,11 +20,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void OnPufferExplode(On.Celeste.Puffer.orig_Explode orig, Puffer self) {
             foreach (ExplodingStrawberry strawberry in Engine.Scene.Tracker.GetEntities<ExplodingStrawberry>()) {
-                if (strawberry.Follower.Leader == null) {
-                    Engine.Scene.Remove(strawberry);
-                }
+                strawberry.Components.Add(new Coroutine(Explode(strawberry)));
             }
             orig(self);
+        }
+
+        private static IEnumerator Explode(ExplodingStrawberry strawberry) {
+            yield return 0.5f;
+            if (strawberry.Follower.Leader == null) {
+                Engine.Scene.Remove(strawberry);
+            }
         }
     }
 }
