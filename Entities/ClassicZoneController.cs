@@ -13,7 +13,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         // TODO: Remove most of these and use DynData to use existing private player variables for better interactions
         private int jbuffer;
         private int grace;
-        private int djump;
         private int dashTime;
         private int dashEffectTime;
         private Vector2 dashTarget = new Vector2(0, 0);
@@ -97,9 +96,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (onGround) {
                 _instance.grace = 6;
-                if (_instance.djump < self.MaxDashes) {
+                if (self.Dashes < self.MaxDashes) {
                     Audio.Play("event:/classic/sfx54");
-                    _instance.djump = self.MaxDashes;
+                    self.Dashes = self.MaxDashes;
                 }
             } else if (_instance.grace > 0)
                 _instance.grace--;
@@ -166,8 +165,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 int dFull = 5;
                 float dHalf = dFull * 0.70710678118f;
 
-                if (_instance.djump > 0 && dash) {
-                    _instance.djump--;
+                if (self.Dashes > 0 && dash) {
+                    self.Dashes--;
                     _instance.dashTime = 4;
                     _instance.dashEffectTime = 10;
 
@@ -199,7 +198,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         _instance.dashAccel.X *= 0.70710678118f;
                     if (self.Speed.X != 0)
                         _instance.dashAccel.Y *= 0.70710678118f;
-                } else if (dash && _instance.djump <= 0) {
+                } else if (dash && self.Dashes <= 0) {
                     Audio.Play("event:/classic/sfx9");
                 }
             }
