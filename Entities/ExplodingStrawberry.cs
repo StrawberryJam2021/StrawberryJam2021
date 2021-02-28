@@ -38,15 +38,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static IEnumerator Explode(ExplodingStrawberry strawberry) {
-            strawberry.explosionSprite.Play("explode");
+            strawberry.explosionSprite.Play(SaveData.Instance.CheckStrawberry(strawberry.ID)
+                ? "ghostexplode"
+                : "explode");
             while (strawberry.explosionSprite.Animating) {
                 if (strawberry.Follower.Leader != null) {
                     strawberry.Get<Sprite>().Visible = true;
                     strawberry.explosionSprite.Visible = false;
                     yield break;
                 }
+
                 yield return null;
             }
+
             Engine.Scene.Remove(strawberry);
         }
     }
