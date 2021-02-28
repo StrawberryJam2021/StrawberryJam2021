@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Sprites>
+
+	<explodingStrawberry path="objects/StrawberryJam2021/explodingStrawberry/" start="idle">
+		<Center/>
+		<Anim id="idle" path="explodeberry" delay="0.1" frames="0"/>
+		<Anim id="explode" path="explodeberry" delay="0.1" frames="0-11"/>
+	</explodingStrawberry>
+
+</Sprites>
+
