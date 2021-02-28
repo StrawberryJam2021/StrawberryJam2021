@@ -5,17 +5,14 @@ using ..Ahorn, Maple
 @pardef CassetteBadalineBlock(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, 
         width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight, 
         tiletype::String="g", moveForwardBeat::Integer=0, moveBackBeat::Integer=8, 
-        preDelay::Integer=0, transitionDuration::Integer=4, oneWay::Bool=false, teleportBack::Bool=false, 
-        alignToCassetteTimer::Bool=false) = 
+        preDelay::Integer=0, transitionDuration::Integer=4, oneWay::Bool=false, teleportBack::Bool=false) = 
     Entity("SJ2021/CassetteBadalineBlock", x = x1, y = y1, nodes = Tuple{Int, Int}[(x2, y2)],
         width = width, height = height, tiletype = tiletype,
         moveForwardBeat = moveForwardBeat, moveBackBeat = moveBackBeat, preDelay = preDelay, 
-        transitionDuration = transitionDuration, oneWay = oneWay, teleportBack = teleportBack, 
-        alignToCassetteTImer = alignToCassetteTimer)
+        transitionDuration = transitionDuration, oneWay = oneWay, teleportBack = teleportBack)
         
 Ahorn.editingOrder(entity::CassetteBadalineBlock) = String["x", "y", "width", "height", 
-    "moveForwardBeat", "moveBackBeat", "preDelay", "transitionDuration", "oneWay", "teleportBack", 
-    "alignToCassetteTimer", "tiletype"]
+    "moveForwardBeat", "moveBackBeat", "preDelay", "transitionDuration", "oneWay", "teleportBack", "tiletype"]
 
 const placements = Ahorn.PlacementDict(
     "Cassette-based Moving Block (Strawberry Jam 2021)" => Ahorn.EntityPlacement(

@@ -21,13 +21,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int transitionDuration;
         private bool oneWay;
         private bool teleportBack;
-        private bool alignToCassetteTimer;
 
         private int lastBeat = -1;
 
         public CassetteBadalineBlock(Vector2[] nodes, float width, float height, char tiletype,
             int moveForwardBeat, int moveBackBeat, int preDelay, int transitionDuration, bool oneWay,
-            bool teleportBack, bool alignToCassetteTimer)
+            bool teleportBack)
             : base(nodes[0], width, height, false) {
             this.nodes = nodes;
             int newSeed = Calc.Random.Next();
@@ -46,14 +45,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.transitionDuration = transitionDuration;
             this.oneWay = oneWay;
             this.teleportBack = teleportBack;
-            this.alignToCassetteTimer = alignToCassetteTimer;
         }
 
         public CassetteBadalineBlock(EntityData data, Vector2 offset)
             : this(data.NodesWithPosition(offset), data.Width, data.Height, data.Char("tiletype", 'g'),
                 data.Int("moveForwardBeat", 0), data.Int("moveBackBeat", 8), data.Int("preDelay", 0),
-                data.Int("transitionDuration", 4), data.Bool("oneWay", false),
-                data.Bool("teleportBack", false), data.Bool("alignToCassetteTimer", false)) {
+                data.Int("transitionDuration", 4), data.Bool("oneWay", false), data.Bool("teleportBack", false)) {
         }
 
         public override void Added(Scene scene) {
@@ -86,13 +83,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
 
-            if (alignToCassetteTimer) {
-                // If we spawn in and we're supposed to be at the end or moving to the end, place us there
-                var state = GetCurrentState(manager.GetSixteenthNote());
+            // If we spawn in and we're supposed to be at the end or moving to the end, place us there
+            var state = GetCurrentState(manager.GetSixteenthNote());
 
-                if (state == MovingBlockState.MoveToEnd || state == MovingBlockState.AtEnd)
-                    Teleport();
-            }
+            if (state == MovingBlockState.MoveToEnd || state == MovingBlockState.AtEnd)
+                Teleport();
         }
 
         // Note that "AtStart" and "AtEnd" signify that we're either at the start/end or we're actively moving to them
@@ -132,10 +127,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Update();
 
             var manager = Scene.Tracker.GetEntity<CassetteBlockManager>();
+
             if (manager == null)
                 return;
 
             int beat = manager.GetSixteenthNote();
+
             if (beat == lastBeat)
                 return;
 
@@ -164,12 +161,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             nodeIndex %= nodes.Length;
             Vector2 from = Position;
             Vector2 to = nodes[nodeIndex];
-            
+
             Tween tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeIn, actualTransitionDuration, true);
             tween.OnUpdate = delegate(Tween t) {
                 MoveTo(Vector2.Lerp(from, to, t.Eased));
             };
-            
+
             tween.OnComplete = delegate {
                 if (CollideCheck<SolidTiles>(Position + (to - from).SafeNormalize() * 2f)) {
                     Audio.Play("event:/game/06_reflection/fallblock_boss_impact", Center);
@@ -178,7 +175,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     StopParticles(to - from);
                 }
             };
-            
+
             Add(tween);
         }
 
@@ -186,6 +183,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             nodeIndex++;
             nodeIndex %= nodes.Length;
             Vector2 to = nodes[nodeIndex];
+            MoveStaticMovers(to - Position);
             Position = to;
         }
 
