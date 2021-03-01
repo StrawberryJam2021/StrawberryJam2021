@@ -13,9 +13,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly char tiletype;
         private readonly int waitTime;
         private readonly int transitionDuration;
-        private readonly int preDelay;
+        private int preDelay;
         private readonly int position;
-        
+
+        private int lastBeat = -1;
+        private int cassetteResetOffset = 0;
+
         public CassetteConveyorBlock(Vector2[] nodes, float width, float height, char tiletype, int waitTime, int transitionDuration, int preDelay, int position = 0)
             : base(nodes[0], width, height, false) {
             this.nodes = nodes;
@@ -26,7 +29,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Calc.PopRandom();
             Add(new TileInterceptor(sprite, false));
             Add(new LightOcclude());
-            
+
             this.tiletype = tiletype;
             this.position = position;
             this.waitTime = waitTime;
@@ -71,8 +74,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // Align position when spawning
             int beat = manager.GetSixteenthNote();
-            Teleport(GetCurrentIndex(beat));
-            
+
+            // Special case when we spawn in to line up nicely
+            Teleport(beat == 1 ? position : GetCurrentIndex(beat));
+
             // We are the group leader
             if (position == 0) {
                 for (int i = 1; i < nodes.Length; ++i) {
@@ -85,7 +90,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int GetCurrentIndex(int beat) {
             // Convert 1-indexing to 0-indexing so we can use modulo on this
             beat -= 1;
+            beat += cassetteResetOffset;
             beat -= preDelay;
+
+            // We reset to zero
+            // Adjust offset to pretend we didn't reset
+            if (beat < lastBeat) {
+                cassetteResetOffset = lastBeat;
+                beat += cassetteResetOffset;
+            }
+
+            if (beat == lastBeat)
+                return nodeIndex;
+
+            lastBeat = beat;
 
             if (beat < 0)
                 return nodeIndex;
@@ -94,7 +112,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             return (beat / cycleLength + position + 1) % nodes.Length;
         }
-        
+
         public override void Update() {
             base.Update();
 
@@ -107,7 +125,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (index == nodeIndex)
                 return;
-            
+
             if (index == 0)
                 Teleport(0);
             else
@@ -142,7 +160,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             MoveStaticMovers(to - Position);
             Position = to;
         }
-        
+
         private void StopParticles(Vector2 moved) {
             Level level = SceneAs<Level>();
             float direction = moved.Angle();
