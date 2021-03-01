@@ -97,7 +97,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // Adjust offset to pretend we didn't reset
             if (beat < lastBeat) {
                 beat -= cassetteResetOffset;
-                cassetteResetOffset = lastBeat;
+                cassetteResetOffset = lastBeat + 1;
                 beat += cassetteResetOffset;
             }
 

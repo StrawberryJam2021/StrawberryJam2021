@@ -81,16 +81,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
 
-            // If we spawn in and we're supposed to be at the end or moving to the end, place us there
+            // If we spawn in and we're supposed to be at the end or moving from the end, place us there
             int beat = manager.GetSixteenthNote();
-
-            // Special case when we spawn in to line up nicely
-            if (beat == 1)
-                return;
-
             var state = GetCurrentState(beat);
 
-            if (state == MovingBlockState.MoveToEnd || state == MovingBlockState.AtEnd)
+            if (state == MovingBlockState.MoveToStart || state == MovingBlockState.AtEnd)
                 Teleport();
         }
 
@@ -114,14 +109,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (moveForwardBeat < moveBackBeat) {
                 if (segment > moveForwardBeat && segment < moveBackBeat)
-                    return MovingBlockState.AtStart;
-                if (segment < moveForwardBeat || segment > moveBackBeat)
                     return MovingBlockState.AtEnd;
+                if (segment < moveForwardBeat || segment > moveBackBeat)
+                    return MovingBlockState.AtStart;
             } else {
                 if (segment > moveBackBeat && segment < moveForwardBeat)
-                    return MovingBlockState.AtEnd;
-                if (segment < moveBackBeat || segment > moveForwardBeat)
                     return MovingBlockState.AtStart;
+                if (segment < moveBackBeat || segment > moveForwardBeat)
+                    return MovingBlockState.AtEnd;
             }
 
             return null;
