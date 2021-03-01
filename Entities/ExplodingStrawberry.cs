@@ -30,40 +30,40 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Render() {
             // Taken and modified from Puffer.cs
-            float num1 = 1f;
+            float opacity = 1f;
             if (explosionSprite.Visible) {
-                num1 = 1f - (float) explosionSprite.CurrentAnimationFrame / explosionSprite.CurrentAnimationTotalFrames;
+                opacity = 1f - (float) explosionSprite.CurrentAnimationFrame /
+                    explosionSprite.CurrentAnimationTotalFrames;
             }
 
-            if (num1 > 0.0) {
-                bool flag2 = false;
+            if (opacity > 0) {
+                bool belowPlayer = false;
                 if (lastPlayerPos.Y < Y) {
-                    lastPlayerPos.Y = Y - (float) (((double) lastPlayerPos.Y - Y) * 0.5);
+                    lastPlayerPos.Y = Y - (float) ((lastPlayerPos.Y - Y) * 0.5);
                     lastPlayerPos.X += lastPlayerPos.X - X;
-                    flag2 = true;
+                    belowPlayer = true;
                 }
 
-                float radiansB = (lastPlayerPos - Position).Angle();
-                for (int index = 0; index < 14; ++index) {
-                    float num2 = (float) Math.Sin(Scene.TimeActive * 0.5) * 0.02f;
-                    float num3 =
-                        Calc.Map(index / 14f + num2, 0.0f, 1f,
-                            0.10415082179037f, 3.246313f);
-                    Vector2 vector = Calc.AngleToVector(num3, 1f);
+                float angleFromPlayer = (lastPlayerPos - Position).Angle();
+                for (int i = 0; i < 14; ++i) {
+                    float offset = (float) Math.Sin(Scene.TimeActive * 0.5) * 0.02f;
+                    float angle = Calc.Map(i / 14f + offset, 0.0f, 1f, (float) (Math.PI / 30),
+                        (float) (31 * Math.PI / 30));
+                    Vector2 vector = Calc.AngleToVector(angle, 1f);
                     Vector2 start = Position - new Vector2(0, 1.5f) + vector * 16f;
-                    if (num1 > 0.0) {
-                        if (index == 0 || index == 13) {
-                            Draw.Line(start, start - vector * 7.5f, Color.White * num1);
+                    if (i == 0 || i == 13) {
+                        Draw.Line(start, start - vector * 7.5f, Color.White * opacity);
+                    } else {
+                        Vector2 distorted = vector * (float) Math.Sin(Scene.TimeActive * 2f + i * 0.6f);
+                        if (i % 2 == 0) {
+                            distorted *= -1f;
+                        }
+
+                        Vector2 translated = start + distorted;
+                        if (!belowPlayer && Calc.AbsAngleDiff(angle, angleFromPlayer) <= (float) (Math.PI / 18)) {
+                            Draw.Line(translated, translated - vector * 3f, Color.White * opacity);
                         } else {
-                            Vector2 distorted = vector * (float) Math.Sin(Scene.TimeActive * 2.0 +
-                                                                          index * 0.600000023841858);
-                            if (index % 2 == 0)
-                                distorted *= -1f;
-                            Vector2 translated = start + distorted;
-                            if (!flag2 && Calc.AbsAngleDiff(num3, radiansB) <= 0.174532920122147)
-                                Draw.Line(translated, translated - vector * 3f, Color.White * num1);
-                            else
-                                Draw.Point(translated, Color.White * num1);
+                            Draw.Point(translated, Color.White * opacity);
                         }
                     }
                 }
@@ -84,7 +84,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             foreach (ExplodingStrawberry strawberry in Engine.Scene.Tracker.GetEntities<ExplodingStrawberry>()) {
                 strawberry.Get<Sprite>().Visible = false;
                 strawberry.explosionSprite.Visible = true;
-                strawberry.Components.Add(new Coroutine(Explode(strawberry)));
+                strawberry.Add(new Coroutine(Explode(strawberry)));
             }
 
             orig(self);
@@ -104,7 +104,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
 
-            Engine.Scene.Remove(strawberry);
+            strawberry.RemoveSelf();
         }
     }
 }
