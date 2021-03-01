@@ -16,39 +16,44 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             
             dir = dir / 180.0f * (float)Math.PI;  //convert to radians
             targetSpeed = new Vector2(spd * (float)Math.Cos(dir), spd * (float)Math.Sin(dir));
-            lastPlayer = null;
         }
 
-
-	    public override void Update() {
+        public override void Update() {
             base.Update();
-            Player player;
-            if(HasPlayerOnTop())
-                player = GetPlayerOnTop();
-            else
-            if(HasPlayerClimbing())
-                player = GetPlayerClimbing();
-            else
-            {
-                if(lastPlayer != null && lastPlayer.Speed.Y < -0.01) //epsilon
-                {
-                    //lastPlayer.StartJumpGraceTime();
-                    lastPlayer.Speed += targetSpeed;
-    		    }
-                lastPlayer = null;
-                return;
-            }
-            lastPlayer = player;
+            LiftSpeed = targetSpeed;
+            MoveHExact(0);  //force an update, probably a bad method of doing this
+        }
+        
+
+        public override void MoveHExact(int move) {
+            LiftSpeed = targetSpeed;
+            base.MoveHExact(move);
+        }
+
+        public override void MoveVExact(int move) {
+            LiftSpeed = targetSpeed;
+            base.MoveVExact(move);
         }
 
         public override void Render() {
             //simple debug render for the time being
-            Draw.Line(Position, Position + new Vector2(0, Height), Color.White);
-            Draw.Line(Position, Position + new Vector2(Width, 0), Color.White);
-            Draw.Line(Position + new Vector2(Width, 0), Position + new Vector2(Width, Height), Color.White);
-            Draw.Line(Position + new Vector2(0, Height), Position + new Vector2(Width, Height), Color.White);
+            Vector2 direction = targetSpeed;
+            direction.Normalize();
+            Vector2 startPos = new Vector2(Position.X + Width / 2, Position.Y + Height / 2);
+            Vector2 endPos   = new Vector2(Position.X + Width / 2 + direction.X * Width / 4, Position.Y + Height / 2 + direction.Y * Height/4);
+            Draw.HollowRect(Position, Width, Height, Color.White);
+            Draw.Line(startPos , endPos , Color.Red);
+            Draw.Line(endPos,endPos + GetAngledVector(startPos - endPos, 16, 45), Color.Red);
+            Draw.Line(endPos,endPos + GetAngledVector(startPos - endPos, 16, -45), Color.Red);
         }
-       Player lastPlayer;
+
+        static Vector2 GetAngledVector(Vector2 vector, float magnitude, float alpha) 
+        {
+            Vector2 returnV = new Vector2(vector.X * (float)Math.Cos(alpha) + vector.Y * (float) Math.Sin(alpha), -vector.X * (float) Math.Sin(alpha) + vector.Y * (float) Math.Cos(alpha));
+            returnV.Normalize();
+            returnV *= magnitude;
+            return returnV;
+        }
 
         Vector2 targetSpeed;
     }

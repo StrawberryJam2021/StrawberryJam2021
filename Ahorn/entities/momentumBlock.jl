@@ -2,14 +2,17 @@ module SJ2021MomentumBlock
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/MomentumBlock" MomentumBlock(x::Integer, y::Integer, width::Integer=16, height::Integer=16, speed::Number=10, direction::Number=0)
+@mapdef Entity "SJ2021/MomentumBlock" MomentumBlock(x::Integer, y::Integer, width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight, speed::Number=10, direction::Number=0)
 
 const placements = Ahorn.PlacementDict(
-   "Momentum Block ((Strawberry Jam 2021))" => Ahorn.EntityPlacement(
+   "Momentum Block (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
       MomentumBlock,
       "rectangle"
    )
 )
+
+Ahorn.minimumSize(entity::MomentumBlock) = 8, 8
+Ahorn.resizable(entity::MomentumBlock) = true, true
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::MomentumBlock, room::Maple.Room)
     x = Int(get(entity.data, "x", 0))
@@ -23,7 +26,7 @@ end
 
 
 
-function Ahorn.selection(entity::DashZipMover)
+function Ahorn.selection(entity::MomentumBlock)
     x, y = Ahorn.position(entity)
 
     width = Int(get(entity.data, "width", 8))
