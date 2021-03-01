@@ -9,12 +9,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [RegisterStrawberry(true, false)]
     [Tracked]
     public class ExplodingStrawberry : Strawberry {
+        private Sprite sprite;
         private Sprite explosionSprite;
         private Vector2 lastPlayerPos;
         public ExplodingStrawberry(EntityData data, Vector2 offset, EntityID gid) : base(data, offset, gid) { }
 
         public override void Added(Scene scene) {
             base.Added(scene);
+            sprite = Get<Sprite>();
             explosionSprite = StrawberryJam2021Module.ExplodingStrawberrySpriteBank.Create("explodingStrawberry");
             explosionSprite.Visible = false;
             Add(explosionSprite);
@@ -32,8 +34,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // Taken and modified from Puffer.cs
             float opacity = 1f;
             if (explosionSprite.Visible) {
-                opacity = 1f - (float) explosionSprite.CurrentAnimationFrame /
-                    explosionSprite.CurrentAnimationTotalFrames;
+                opacity = 1f - (float) Math.Pow(
+                    (double) explosionSprite.CurrentAnimationFrame / explosionSprite.CurrentAnimationTotalFrames, 2);
+            } else if (sprite.CurrentAnimationID == "collect") {
+                opacity = 1f - (float) Math.Pow(
+                    (double) sprite.CurrentAnimationFrame / sprite.CurrentAnimationTotalFrames, 2);
             }
 
             if (opacity > 0) {
@@ -82,7 +87,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void OnPufferExplode(On.Celeste.Puffer.orig_Explode orig, Puffer self) {
             foreach (ExplodingStrawberry strawberry in Engine.Scene.Tracker.GetEntities<ExplodingStrawberry>()) {
-                strawberry.Get<Sprite>().Visible = false;
+                strawberry.sprite.Visible = false;
                 strawberry.explosionSprite.Visible = true;
                 strawberry.Add(new Coroutine(Explode(strawberry)));
             }
@@ -96,7 +101,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 : "explode");
             while (strawberry.explosionSprite.Animating) {
                 if (strawberry.Follower.Leader != null) {
-                    strawberry.Get<Sprite>().Visible = true;
+                    strawberry.sprite.Visible = true;
                     strawberry.explosionSprite.Visible = false;
                     yield break;
                 }
