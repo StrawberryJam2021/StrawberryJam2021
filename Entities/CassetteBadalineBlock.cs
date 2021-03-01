@@ -13,14 +13,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/CassetteBadalineBlock")]
     public class CassetteBadalineBlock : Solid {
         private int nodeIndex;
-        private Vector2[] nodes;
+        private readonly Vector2[] nodes;
 
         private int moveForwardBeat;
         private int moveBackBeat;
-        private int preDelay;
-        private int transitionDuration;
-        private bool oneWay;
-        private bool teleportBack;
+        private readonly int preDelay;
+        private readonly int transitionDuration;
+        private readonly bool oneWay;
+        private readonly bool teleportBack;
 
         private int lastBeat = -1;
 
@@ -33,8 +33,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Calc.PushRandom(newSeed);
             TileGrid sprite = GFX.FGAutotiler.GenerateBox(tiletype, (int) Width / 8, (int) Height / 8).TileGrid;
             Add(sprite);
-            Calc.PopRandom();
-            Calc.PushRandom(newSeed);
             Calc.PopRandom();
             Add(new TileInterceptor(sprite, false));
             Add(new LightOcclude());
