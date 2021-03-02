@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
 <Sprites>
-    
+
+    <!--Bubble Emitter-->
     <bubbleEmitter path="objects/StrawberryJam2021/bubbleEmitter/" start="idle">
         <Loop id="idle" path="close" delay="0.1" frames="3"/>
         <Anim id="open" path="open" delay="0.1" frames="0-1" goto="close"/>
@@ -13,5 +14,13 @@
         <Loop id="idle" path="idle" delay="0.1" frames="0"/>
         <Anim id="pop" path="pop" delay="0.01" frames="0-4"/>
     </bubble>
+
+    <!--Grab Temple Gate-->
+    <grabTempleGate path="objects/StrawberryJam2021/grabTempleGate/" start="idle">
+        <Justify x="0.5" y="0"/>
+        <Loop id="idle" path="TempleDoor" delay="0.1" frames="0"/>
+        <Anim id="open" path="TempleDoor" delay="0.1" frames="6-14" goto="idle"/>
+        <Anim id="hit" path="TempleDoor" delay="0.08" frames="0-4" goto="idle"/>
+    </grabTempleGate>
 
 </Sprites>

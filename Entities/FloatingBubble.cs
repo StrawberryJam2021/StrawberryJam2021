@@ -18,7 +18,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Speed = Vector2.Zero;
             Collider = new Hitbox(14, 14, -7, -7);
             Add(new PlayerCollider(OnPlayer));
-            Add(sprite = StrawberryJam2021Module.BubbleEmitterSpriteBank.Create("bubble"));
+            Add(sprite = StrawberryJam2021Module.SpriteBank.Create("bubble"));
             sprite.OnFinish = OnAnimationFinished;
             sprite.CenterOrigin();
         }

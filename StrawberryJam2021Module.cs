@@ -1,4 +1,4 @@
-﻿using Monocle;
+using Monocle;
 using Celeste.Mod.StrawberryJam2021.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021 {
@@ -6,15 +6,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public static StrawberryJam2021Module Instance;
 
-        // SpriteBanks
-        public static SpriteBank GrabTempleGateSpriteBank => Instance._GrabTempleGateSpriteBank;
-        public SpriteBank _GrabTempleGateSpriteBank;
-
-        public static SpriteBank BubbleEmitterSpriteBank => Instance._BubbleEmitterSpriteBank;
-        public SpriteBank _BubbleEmitterSpriteBank;
-        
-        public static SpriteBank ExplodingStrawberrySpriteBank => Instance._ExplodingStrawberrySpriteBank;
-        public SpriteBank _ExplodingStrawberrySpriteBank;
+        public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
+        private SpriteBank _CustomEntitySpriteBank;
         
         public StrawberryJam2021Module() {
             Instance = this;
@@ -22,23 +15,24 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public override void Load() {
             SelfUpdater.Load();
+            AntiGravJelly.Load();
             BubbleCollider.Load();
             ExplodingStrawberry.Load();
+            MaskedDecal.Load();
         }
 
         public override void Unload() {
             SelfUpdater.Unload();
+            AntiGravJelly.Unload();
             BubbleCollider.Unload();
             ExplodingStrawberry.Unload();
+            MaskedDecal.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
             base.LoadContent(firstLoad);
 
-            _GrabTempleGateSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/GrabTempleGateSprites.xml");
-            _BubbleEmitterSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/BubbleEmitterSprites.xml");
-            _ExplodingStrawberrySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/ExplodingStrawberrySprites.xml");
-
+            _CustomEntitySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/CustomEntitySprites.xml");
         }
 
     }
