@@ -18,6 +18,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             AntiGravJelly.Load();
             BubbleCollider.Load();
             ExplodingStrawberry.Load();
+            CrystalBombBadelineBoss.Load();
             MaskedDecal.Load();
         }
 
@@ -26,6 +27,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             AntiGravJelly.Unload();
             BubbleCollider.Unload();
             ExplodingStrawberry.Unload();
+            CrystalBombBadelineBoss.Unload();
             MaskedDecal.Unload();
         }
 
