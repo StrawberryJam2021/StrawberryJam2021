@@ -1,17 +1,13 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /* Large parts of this code are copied from Brokemia's non-badaline-dependant moving block helper.
        Thank you to Brokemia for letting me use his code in this project! */
 
     [CustomEntity("SJ2021/CassetteBadalineBlock")]
-    public class CassetteBadalineBlock : Solid {
+    public class CassetteBadalineBlock : CassetteTimedBlock {
         private int nodeIndex;
         private readonly Vector2[] nodes;
 
@@ -21,8 +17,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly int transitionDuration;
         private readonly bool oneWay;
         private readonly bool teleportBack;
-
-        private int lastBeat = -1;
 
         public CassetteBadalineBlock(Vector2[] nodes, float width, float height, char tiletype,
             int moveForwardBeat, int moveBackBeat, int preDelay, int transitionDuration, bool oneWay,
@@ -54,38 +48,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Added(Scene scene) {
             base.Added(scene);
 
-            Level level = scene as Level;
-
-            // This flag tells CassetteBlockManager to do its thing
-            if (!level.HasCassetteBlocks) {
-                level.HasCassetteBlocks = true;
-            }
-
-            // Add a cassette manager if there isn't one already
-            // just using scene.Tracker.GetEntity<CassetteBlockManager>() == null doesn't work here
-            // because EntityList.Add only adds in batches when we explicitly tell it to update
-            // so, reflection saves the day again :)
-            var manager = scene.Tracker.GetEntity<CassetteBlockManager>();
-
-            if (manager == null) {
-                List<Entity> toAdd = scene.Entities
-                    .GetType().GetField("toAdd", BindingFlags.NonPublic | BindingFlags.Instance)
-                    .GetValue(scene.Entities) as List<Entity>;
-                var possiblyManager = toAdd.OfType<CassetteBlockManager>().ToArray();
-
-                if (possiblyManager.Any())
-                    manager = possiblyManager.First();
-                else {
-                    manager = new CassetteBlockManager();
-                    level.Add(manager);
-                }
-            }
-
             // If we spawn in and we're supposed to be at the end or moving from the end, place us there
-            int beat = manager.GetSixteenthNote();
-            var state = GetCurrentState(beat);
+            var timerState = GetCassetteTimerState(false);
+            var blockState = GetMovingBlockState(timerState.Value.Beat);
 
-            if (state == MovingBlockState.MoveToStart || state == MovingBlockState.AtEnd)
+            if (blockState == MovingBlockState.MoveToStart || blockState == MovingBlockState.AtEnd)
                 Teleport();
         }
 
@@ -94,9 +61,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             AtStart, AtEnd, MoveToStart, MoveToEnd
         }
 
-        private MovingBlockState? GetCurrentState(int beat) {
-            // Convert 1-indexing to 0-indexing so we can use modulo on this
-            beat -= 1;
+        private MovingBlockState? GetMovingBlockState(int beat) {
             int segment = beat % 16;
 
             if (beat < preDelay)
@@ -125,19 +90,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
 
-            var manager = Scene.Tracker.GetEntity<CassetteBlockManager>();
+            var timerState = GetCassetteTimerState();
 
-            if (manager == null)
+            if (!timerState.HasValue || !timerState.Value.ChangedSinceLastBeat)
                 return;
 
-            int beat = manager.GetSixteenthNote();
-
-            if (beat == lastBeat)
-                return;
-
-            var state = GetCurrentState(beat);
-            if (state == MovingBlockState.MoveToStart || state == MovingBlockState.MoveToEnd) {
-                if (state == MovingBlockState.MoveToStart && teleportBack)
+            var blockState = GetMovingBlockState(timerState.Value.Beat);
+            if (blockState == MovingBlockState.MoveToStart || blockState == MovingBlockState.MoveToEnd) {
+                if (blockState == MovingBlockState.MoveToStart && teleportBack)
                     Teleport();
                 else
                     Move();
@@ -147,8 +107,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     moveBackBeat = -1;
                 }
             }
-
-            lastBeat = beat;
         }
 
         private void Move() {
@@ -184,77 +142,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Vector2 to = nodes[nodeIndex];
             MoveStaticMovers(to - Position);
             Position = to;
-        }
-
-        private void StopParticles(Vector2 moved) {
-            Level level = SceneAs<Level>();
-            float direction = moved.Angle();
-            if (moved.X > 0f) {
-                Vector2 value = new Vector2(Right - 1f, Top);
-                for (int i = 0; i < Height; i += 4) {
-                    level.Particles.Emit(FinalBossMovingBlock.P_Stop, value + Vector2.UnitY * (2 + i + Calc.Random.Range(-1, 1)), direction);
-                }
-            } else if (moved.X < 0f) {
-                Vector2 value2 = new Vector2(Left, Top);
-                for (int j = 0; j < Height; j += 4) {
-                    level.Particles.Emit(FinalBossMovingBlock.P_Stop, value2 + Vector2.UnitY * (2 + j + Calc.Random.Range(-1, 1)), direction);
-                }
-            }
-            if (moved.Y > 0f) {
-                Vector2 value3 = new Vector2(Left, Bottom - 1f);
-                for (int k = 0; k < Width; k += 4) {
-                    level.Particles.Emit(FinalBossMovingBlock.P_Stop, value3 + Vector2.UnitX * (2 + k + Calc.Random.Range(-1, 1)), direction);
-                }
-            } else if (moved.Y < 0f) {
-                Vector2 value4 = new Vector2(Left, Top);
-                for (int l = 0; l < Width; l += 4) {
-                    level.Particles.Emit(FinalBossMovingBlock.P_Stop, value4 + Vector2.UnitX * (2 + l + Calc.Random.Range(-1, 1)), direction);
-                }
-            }
-        }
-
-        private void ImpactParticles(Vector2 moved) {
-            if (moved.X < 0f) {
-                Vector2 offset = new Vector2(0f, 2f);
-                for (int i = 0; i < Height / 8f; i++) {
-                    Vector2 collideCheckPos = new Vector2(Left - 1f, Top + 4f + (i * 8));
-                    if (!Scene.CollideCheck<Water>(collideCheckPos) && Scene.CollideCheck<Solid>(collideCheckPos)) {
-                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos + offset, 0f);
-                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos - offset, 0f);
-                    }
-                }
-            } else if (moved.X > 0f) {
-                Vector2 offset = new Vector2(0f, 2f);
-                for (int j = 0; j < Height / 8f; j++) {
-                    Vector2 collideCheckPos = new Vector2(Right + 1f, Top + 4f + (j * 8));
-                    if (!Scene.CollideCheck<Water>(collideCheckPos) && Scene.CollideCheck<Solid>(collideCheckPos)) {
-                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos + offset, (float) Math.PI);
-                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos - offset, (float) Math.PI);
-                    }
-                }
-            }
-            if (moved.Y < 0f) {
-                Vector2 offset = new Vector2(2f, 0f);
-                for (int k = 0; k < Width / 8f; k++) {
-                    Vector2 collideCheckPos = new Vector2(Left + 4f + (k * 8), Top - 1f);
-                    if (!Scene.CollideCheck<Water>(collideCheckPos) && Scene.CollideCheck<Solid>(collideCheckPos)) {
-                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos + offset, (float) Math.PI / 2f);
-                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos - offset, (float) Math.PI / 2f);
-                    }
-                }
-            } else {
-                if (!(moved.Y > 0f)) {
-                    return;
-                }
-                Vector2 offset = new Vector2(2f, 0f);
-                for (int l = 0; l < Width / 8f; l++) {
-                    Vector2 collideCheckPos = new Vector2(Left + 4f + (l * 8), Bottom + 1f);
-                    if (!Scene.CollideCheck<Water>(collideCheckPos) && Scene.CollideCheck<Solid>(collideCheckPos)) {
-                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos + offset, -(float) Math.PI / 2f);
-                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos - offset, -(float) Math.PI / 2f);
-                    }
-                }
-            }
         }
     }
 }
