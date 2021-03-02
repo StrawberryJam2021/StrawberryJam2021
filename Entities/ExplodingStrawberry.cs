@@ -17,7 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Added(Scene scene) {
             base.Added(scene);
             sprite = Get<Sprite>();
-            explosionSprite = StrawberryJam2021Module.ExplodingStrawberrySpriteBank.Create("explodingStrawberry");
+            explosionSprite = StrawberryJam2021Module.SpriteBank.Create("explodingStrawberry");
             explosionSprite.Visible = false;
             Add(explosionSprite);
         }
