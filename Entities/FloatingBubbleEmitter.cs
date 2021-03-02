@@ -12,7 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public FloatingBubbleEmitter(EntityData data, Vector2 offset) : base(data.Position + offset) {
             spawnTimer = spawnTimerMax = data.Float("spawnTimer", 2f);
-            Add(sprite = StrawberryJam2021Module.BubbleEmitterSpriteBank.Create("bubbleEmitter"));
+            Add(sprite = StrawberryJam2021Module.SpriteBank.Create("bubbleEmitter"));
             sprite.CenterOrigin();
         }
 
