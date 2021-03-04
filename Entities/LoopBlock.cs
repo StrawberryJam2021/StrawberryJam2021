@@ -36,7 +36,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private DashCollisionResults OnDashed(Player player, Vector2 dir) {
             if (dir.Y == 0 && !dashed) {
+                int dashes = player.Dashes;
+                float stamina = player.Stamina;
                 player.ExplodeLaunch(new Vector2(Center.X, player.Center.Y), false, false);
+
+                player.Dashes = dashes;
+                player.Stamina = stamina;
+
                 if (speed.Y < 0) {
                     player.Speed.Y += Math.Max(speed.Y, -80);
                 }
