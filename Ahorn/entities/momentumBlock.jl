@@ -18,10 +18,11 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::MomentumBlock, room
     x = Int(get(entity.data, "x", 0))
     y = Int(get(entity.data, "y", 0))
 
+    angle = Integer(get(entity.data, "direction",0))
     width = Int(get(entity.data, "width", 32))
     height = Int(get(entity.data, "height", 32))
 
-    Ahorn.drawRectangle(ctx, 0, 0, width, height)
+    Ahorn.drawRectangle(ctx, 0, 0, width, height, Ahorn.defaultBlackColor, Ahorn.defaultWhiteColor)
 end
 
 
