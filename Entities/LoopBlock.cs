@@ -13,7 +13,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2 scale = Vector2.One;
 
         private bool waiting = true;
-        private bool canRumble;
+        private bool canRumble, canSquish;
         private bool returning, returningDash;
         private bool dashed;
 
@@ -50,17 +50,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 targetSpeedX = -dir.X * 90f;
                 dashedDirX = dir.X;
 
-                scale = new Vector2(1f + Math.Abs(dir.Y) * 0.4f - Math.Abs(dir.X) * 0.4f, 1f + Math.Abs(dir.X) * 0.4f - Math.Abs(dir.Y) * 0.4f);
-
-                dashed = true;
+                dashed = canSquish = true;
             }
             return DashCollisionResults.NormalCollision;
+        }
+
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
         }
 
         public override void Update() {
             base.Update();
 
             scale = Calc.Approach(scale, Vector2.One, 3f * Engine.DeltaTime);
+            foreach (StaticMover staticMover in staticMovers) {
+                if (staticMover.Entity is Spikes spikes) {
+                    spikes.SetOrigins(Center);
+                    foreach (Component component in spikes.Components) {
+                        if (component is Image image)
+                            image.Scale = scale;
+                    }
+                }
+            }
 
             if (respawnTimer > 0f) {
                 respawnTimer -= Engine.DeltaTime;
@@ -87,6 +98,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     MoveH(speed.X * Engine.DeltaTime);
                     if (speed.X == targetSpeedX && ((dashedDirX < 0 && X > start.X) || (dashedDirX > 0 && X < start.X)))
                         returningDash = true;
+                }
+                if (canSquish) {
+                    canSquish = false;
+                    scale = new Vector2(1f - Math.Abs(dashedDirX) * 0.4f, 1f + Math.Abs(dashedDirX) * 0.4f);
                 }
             }
 
