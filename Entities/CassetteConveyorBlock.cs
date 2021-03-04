@@ -1,6 +1,7 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/CassetteConveyorBlock")]
@@ -11,9 +12,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly int waitTime;
         private readonly int transitionDuration;
         private readonly int preDelay;
+        private readonly string ghostNodes;
         private readonly int position;
 
-        public CassetteConveyorBlock(Vector2[] nodes, float width, float height, char tiletype, int waitTime, int transitionDuration, int preDelay, int position = 0)
+        public CassetteConveyorBlock(Vector2[] nodes, float width, float height, char tiletype, int waitTime, int transitionDuration, int preDelay, string ghostNodes,
+            int position = 0)
             : base(nodes[0], width, height, false) {
             this.nodes = nodes;
             TileGrid sprite = GFX.FGAutotiler.GenerateBox(tiletype, (int) Width / 8, (int) Height / 8).TileGrid;
@@ -22,15 +25,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(new LightOcclude());
 
             this.tiletype = tiletype;
-            this.position = position;
             this.waitTime = waitTime;
             this.transitionDuration = transitionDuration;
             this.preDelay = preDelay;
+            this.ghostNodes = ghostNodes;
+            this.position = position;
         }
 
         public CassetteConveyorBlock(EntityData data, Vector2 offset)
             : this(data.NodesWithPosition(offset), data.Width, data.Height, data.Char("tiletype", 'g'),
-                data.Int("waitTime", 12), data.Int("transitionDuration", 4), data.Int("preDelay", 0)) {
+                data.Int("waitTime", 12), data.Int("transitionDuration", 4), data.Int("preDelay", 0),
+                data.Attr("ghostNodes", "")) {
         }
 
         public override void Added(Scene scene) {
@@ -43,9 +48,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // We are the group leader
             if (position == 0) {
+                int[] parsed = ghostNodes.Trim().Split(',').Select(int.Parse).ToArray();
+                Logger.Log("BasedBlock", parsed.ToString());
+                
                 for (int i = 1; i < nodes.Length; ++i) {
-                    Scene.Add(new CassetteConveyorBlock(nodes, Width, Height, tiletype, waitTime, transitionDuration, preDelay, i));
+                    if (!parsed.Contains(i))
+                        Scene.Add(new CassetteConveyorBlock(nodes, Width, Height, tiletype, waitTime, transitionDuration, preDelay, ghostNodes, i));
                 }
+                
+                // Ah the wonders of garbage collection
+                if (parsed.Contains(0))
+                    scene.Remove(this);
             }
         }
 
