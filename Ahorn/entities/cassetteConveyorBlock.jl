@@ -49,9 +49,7 @@ end
 
 function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteConveyorBlock, room::Maple.Room)
     Ahorn.drawTileEntity(ctx, room, entity, material = get(entity.data, "tiletype", "g")[1], blendIn = false)
-end
-
-function Ahorn.renderSelectedAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteConveyorBlock, room::Maple.Room)
+        
     x, y = Ahorn.position(entity)
     nodes = get(entity.data, "nodes", ())
 
