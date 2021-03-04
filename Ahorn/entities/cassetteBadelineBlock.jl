@@ -1,22 +1,22 @@
-module SJ2021CassetteBadalineBlock
+module SJ2021CassetteBadelineBlock
 
 using ..Ahorn, Maple
 
-@pardef CassetteBadalineBlock(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, 
+@pardef CassetteBadelineBlock(x1::Integer, y1::Integer, x2::Integer=x1 + 16, y2::Integer=y1, 
         width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight, 
         tiletype::String="g", moveForwardBeat::Integer=0, moveBackBeat::Integer=8, 
         preDelay::Integer=0, transitionDuration::Integer=4, oneWay::Bool=false, teleportBack::Bool=false) = 
-    Entity("SJ2021/CassetteBadalineBlock", x = x1, y = y1, nodes = Tuple{Int, Int}[(x2, y2)],
+    Entity("SJ2021/CassetteBadelineBlock", x = x1, y = y1, nodes = Tuple{Int, Int}[(x2, y2)],
         width = width, height = height, tiletype = tiletype,
         moveForwardBeat = moveForwardBeat, moveBackBeat = moveBackBeat, preDelay = preDelay, 
         transitionDuration = transitionDuration, oneWay = oneWay, teleportBack = teleportBack)
         
-Ahorn.editingOrder(entity::CassetteBadalineBlock) = String["x", "y", "width", "height", 
+Ahorn.editingOrder(entity::CassetteBadelineBlock) = String["x", "y", "width", "height", 
     "moveForwardBeat", "moveBackBeat", "preDelay", "transitionDuration", "oneWay", "teleportBack", "tiletype"]
 
 const placements = Ahorn.PlacementDict(
     "Cassette-based Moving Block (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
-        CassetteBadalineBlock,
+        CassetteBadelineBlock,
         "rectangle",
         Dict{String, Any}(),
         function(entity)
@@ -25,16 +25,16 @@ const placements = Ahorn.PlacementDict(
     )
 )
 
-Ahorn.editingOptions(entity::CassetteBadalineBlock) = Dict{String, Any}(
+Ahorn.editingOptions(entity::CassetteBadelineBlock) = Dict{String, Any}(
     "tiletype" => Ahorn.tiletypeEditingOptions(),
 )
 
-Ahorn.nodeLimits(entity::CassetteBadalineBlock) = 1, 1
-Ahorn.minimumSize(entity::CassetteBadalineBlock) = 8, 8
-Ahorn.resizable(entity::CassetteBadalineBlock) = true, true
+Ahorn.nodeLimits(entity::CassetteBadelineBlock) = 1, 1
+Ahorn.minimumSize(entity::CassetteBadelineBlock) = 8, 8
+Ahorn.resizable(entity::CassetteBadelineBlock) = true, true
 
-function Ahorn.selection(entity::CassetteBadalineBlock)
-    if entity.name == "SJ2021/CassetteBadalineBlock"
+function Ahorn.selection(entity::CassetteBadelineBlock)
+    if entity.name == "SJ2021/CassetteBadelineBlock"
         x, y = Ahorn.position(entity)
         nx, ny = Int.(entity.data["nodes"][1])
 
@@ -45,11 +45,11 @@ function Ahorn.selection(entity::CassetteBadalineBlock)
     end
 end
 
-function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteBadalineBlock, room::Maple.Room)
+function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteBadelineBlock, room::Maple.Room)
     Ahorn.drawTileEntity(ctx, room, entity, material = get(entity.data, "tiletype", "g")[1], blendIn = false)
 end
 
-function Ahorn.renderSelectedAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteBadalineBlock, room::Maple.Room)
+function Ahorn.renderSelectedAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteBadelineBlock, room::Maple.Room)
     x, y = Ahorn.position(entity)
     nodes = get(entity.data, "nodes", ())
 

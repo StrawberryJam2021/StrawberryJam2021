@@ -16,11 +16,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public CassetteConveyorBlock(Vector2[] nodes, float width, float height, char tiletype, int waitTime, int transitionDuration, int preDelay, int position = 0)
             : base(nodes[0], width, height, false) {
             this.nodes = nodes;
-            int newSeed = Calc.Random.Next();
-            Calc.PushRandom(newSeed);
             TileGrid sprite = GFX.FGAutotiler.GenerateBox(tiletype, (int) Width / 8, (int) Height / 8).TileGrid;
             Add(sprite);
-            Calc.PopRandom();
             Add(new TileInterceptor(sprite, false));
             Add(new LightOcclude());
 
@@ -100,8 +97,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void Move() {
             // Convert from beats to seconds
-            Level level = Engine.Scene as Level;
-            float actualTransitionDuration = (float) (transitionDuration * (1.0 / 6.0) * level.CassetteBlockTempo);
+            Level level = SceneAs<Level>();
+            float actualTransitionDuration = transitionDuration * (1f / 6f) * level.CassetteBlockTempo;
 
             nodeIndex++;
             nodeIndex %= nodes.Length;

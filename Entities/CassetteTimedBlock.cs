@@ -60,13 +60,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
          * The return value of this method is also 0-based, unlike the 1-based manager. Returns null on failure. You should call this function exactly once per frame.
          */
         protected CassetteTimerState? GetCassetteTimerState(bool updateLastBeat = true) {
-            int beat;
-
-            try {
-                beat = manager.GetSixteenthNote();
-            } catch (NullReferenceException) {
+            // This can happen in some edge cases when we're switching rooms and the manager is unloaded before us
+            if (manager == null)
                 return null;
-            }
+            
+            int beat = manager.GetSixteenthNote();
 
             beat = beat + cassetteResetOffset - 1;
 

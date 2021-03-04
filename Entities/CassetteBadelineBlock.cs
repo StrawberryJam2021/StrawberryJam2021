@@ -3,11 +3,11 @@ using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    /* Large parts of this code are copied from Brokemia's non-badaline-dependant moving block helper.
+    /* Large parts of this code are copied from Brokemia's non-badeline-dependant moving block helper.
        Thank you to Brokemia for letting me use his code in this project! */
 
-    [CustomEntity("SJ2021/CassetteBadalineBlock")]
-    public class CassetteBadalineBlock : CassetteTimedBlock {
+    [CustomEntity("SJ2021/CassetteBadelineBlock")]
+    public class CassetteBadelineBlock : CassetteTimedBlock {
         private int nodeIndex;
         private readonly Vector2[] nodes;
 
@@ -18,16 +18,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly bool oneWay;
         private readonly bool teleportBack;
 
-        public CassetteBadalineBlock(Vector2[] nodes, float width, float height, char tiletype,
+        public CassetteBadelineBlock(Vector2[] nodes, float width, float height, char tiletype,
             int moveForwardBeat, int moveBackBeat, int preDelay, int transitionDuration, bool oneWay,
             bool teleportBack)
             : base(nodes[0], width, height, false) {
             this.nodes = nodes;
-            int newSeed = Calc.Random.Next();
-            Calc.PushRandom(newSeed);
             TileGrid sprite = GFX.FGAutotiler.GenerateBox(tiletype, (int) Width / 8, (int) Height / 8).TileGrid;
             Add(sprite);
-            Calc.PopRandom();
             Add(new TileInterceptor(sprite, false));
             Add(new LightOcclude());
 
@@ -39,7 +36,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.teleportBack = teleportBack;
         }
 
-        public CassetteBadalineBlock(EntityData data, Vector2 offset)
+        public CassetteBadelineBlock(EntityData data, Vector2 offset)
             : this(data.NodesWithPosition(offset), data.Width, data.Height, data.Char("tiletype", 'g'),
                 data.Int("moveForwardBeat", 0), data.Int("moveBackBeat", 8), data.Int("preDelay", 0),
                 data.Int("transitionDuration", 4), data.Bool("oneWay", false), data.Bool("teleportBack", false)) {
@@ -56,7 +53,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Teleport();
         }
 
-        // Note that "AtStart" and "AtEnd" signify that we're either at the start/end or we're actively moving to them
+        // "AtStart" and "AtEnd" signify that we're either at the start/end or we're actively moving to them
+        // "MoveToStart" and "MoveToEnd" signify that we should move to the start (or the end) *on this frame*
         private enum MovingBlockState {
             AtStart, AtEnd, MoveToStart, MoveToEnd
         }
@@ -75,16 +73,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (moveForwardBeat < moveBackBeat) {
                 if (segment > moveForwardBeat && segment < moveBackBeat)
                     return MovingBlockState.AtEnd;
-                if (segment < moveForwardBeat || segment > moveBackBeat)
+                else // (segment < moveForwardBeat || segment > moveBackBeat)
                     return MovingBlockState.AtStart;
             } else {
                 if (segment > moveBackBeat && segment < moveForwardBeat)
                     return MovingBlockState.AtStart;
-                if (segment < moveBackBeat || segment > moveForwardBeat)
+                else // (segment < moveBackBeat || segment > moveForwardBeat)
                     return MovingBlockState.AtEnd;
             }
-
-            return null;
         }
 
         public override void Update() {
@@ -111,8 +107,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void Move() {
             // Convert from beats to seconds
-            Level level = Engine.Scene as Level;
-            float actualTransitionDuration = (float) (transitionDuration * (1.0 / 6.0) * level.CassetteBlockTempo);
+            Level level = SceneAs<Level>();
+            float actualTransitionDuration = transitionDuration * (1f / 6f) * level.CassetteBlockTempo;
 
             nodeIndex++;
             nodeIndex %= nodes.Length;
