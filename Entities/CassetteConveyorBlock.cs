@@ -52,7 +52,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 // Ah the wonders of garbage collection
                 if (parsed.Contains(0))
-                    scene.Remove(this);
+                    RemoveSelf();
             }
         }
 

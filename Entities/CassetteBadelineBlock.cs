@@ -59,7 +59,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             AtStart, AtEnd, MoveToStart, MoveToEnd
         }
 
-        private MovingBlockState? GetMovingBlockState(int beat) {
+        private MovingBlockState GetMovingBlockState(int beat) {
             int segment = beat % 16;
 
             if (beat < preDelay)

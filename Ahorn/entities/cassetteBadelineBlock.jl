@@ -34,15 +34,13 @@ Ahorn.minimumSize(entity::CassetteBadelineBlock) = 8, 8
 Ahorn.resizable(entity::CassetteBadelineBlock) = true, true
 
 function Ahorn.selection(entity::CassetteBadelineBlock)
-    if entity.name == "SJ2021/CassetteBadelineBlock"
-        x, y = Ahorn.position(entity)
-        nx, ny = Int.(entity.data["nodes"][1])
+    x, y = Ahorn.position(entity)
+    nx, ny = Int.(entity.data["nodes"][1])
 
-        width = Int(get(entity.data, "width", 8))
-        height = Int(get(entity.data, "height", 8))
+    width = Int(get(entity.data, "width", 8))
+    height = Int(get(entity.data, "height", 8))
 
-        return [Ahorn.Rectangle(x, y, width, height), Ahorn.Rectangle(nx, ny, width, height)]
-    end
+    return [Ahorn.Rectangle(x, y, width, height), Ahorn.Rectangle(nx, ny, width, height)]
 end
 
 function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteBadelineBlock, room::Maple.Room)

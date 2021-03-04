@@ -35,21 +35,19 @@ Ahorn.minimumSize(entity::CassetteConveyorBlock) = 8, 8
 Ahorn.resizable(entity::CassetteConveyorBlock) = true, true
 
 function Ahorn.selection(entity::CassetteConveyorBlock)
-    if entity.name == "SJ2021/CassetteConveyorBlock"
-        x, y = Ahorn.position(entity)
-        width = Int(get(entity.data, "width", 8))
-        height = Int(get(entity.data, "height", 8))
+    x, y = Ahorn.position(entity)
+    width = Int(get(entity.data, "width", 8))
+    height = Int(get(entity.data, "height", 8))
         
-        res = [Ahorn.Rectangle(x, y, width, height)]
+    res = [Ahorn.Rectangle(x, y, width, height)]
         
-        nx, ny = Int.(entity.data["nodes"][1])
+    nx, ny = Int.(entity.data["nodes"][1])
         
-        for (nx, ny) in entity.data["nodes"]
+    for (nx, ny) in entity.data["nodes"]
             push!(res, Ahorn.Rectangle(nx, ny, width, height))
-        end
-        
-        return res
     end
+        
+    return res
 end
 
 function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteConveyorBlock, room::Maple.Room)
