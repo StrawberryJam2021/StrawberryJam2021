@@ -42,8 +42,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 data.Int("transitionDuration", 4), data.Bool("oneWay", false), data.Bool("teleportBack", false)) {
         }
 
-        public override void Added(Scene scene) {
-            base.Added(scene);
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
 
             // If we spawn in and we're supposed to be at the end or moving from the end, place us there
             var timerState = GetCassetteTimerState(false);

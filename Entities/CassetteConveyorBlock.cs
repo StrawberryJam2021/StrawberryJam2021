@@ -41,25 +41,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Added(Scene scene) {
             base.Added(scene);
 
-            // Align position when spawning
-            var conveyorState = GetConveyorState(false);
-            int previousIndex = conveyorState.Index - 1 < 0 ? nodes.Length - 1 : conveyorState.Index - 1;
-            Teleport(conveyorState.MoveThisFrame ? previousIndex : conveyorState.Index);
-
             // We are the group leader
             if (position == 0) {
                 int[] parsed = ghostNodes.Trim().Split(',').Select(int.Parse).ToArray();
-                Logger.Log("BasedBlock", parsed.ToString());
-                
+
                 for (int i = 1; i < nodes.Length; ++i) {
                     if (!parsed.Contains(i))
                         Scene.Add(new CassetteConveyorBlock(nodes, Width, Height, tiletype, waitTime, transitionDuration, preDelay, ghostNodes, i));
                 }
-                
+
                 // Ah the wonders of garbage collection
                 if (parsed.Contains(0))
                     scene.Remove(this);
             }
+        }
+
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
+
+            // Align position when spawning
+            var conveyorState = GetConveyorState(false);
+            int previousIndex = conveyorState.Index - 1 < 0 ? nodes.Length - 1 : conveyorState.Index - 1;
+            Teleport(conveyorState.MoveThisFrame ? previousIndex : conveyorState.Index);
         }
 
         private readonly struct ConveyorState {
