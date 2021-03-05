@@ -18,24 +18,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             xLinear = data.Bool("xLinear", false);
             yLinear = data.Bool("yLinear", false);
-            yAmplitude = data.Height / 2;
             xAmplitude = data.Width / 2;
+            yAmplitude = data.Height / 2;
 
             if (xLinear) {
                 float xPeriod = data.Float("xPeriod", 1f);
                 Add(xTween = Tween.Create(Tween.TweenMode.Looping, duration: Math.Abs(xPeriod)));
                 xTween.Start(xPeriod < 0);
+            } else if (data.Float("xPeriod", 1f) != 0) {
+                Add(xSine = new SineWave(xFrequency, xPhase));
             }
             if (yLinear) {
                 float yPeriod = data.Float("yPeriod", 1f);
                 Add(yTween = Tween.Create(Tween.TweenMode.Looping, duration: Math.Abs(yPeriod)));
                 yTween.Start(yPeriod < 0);
-            }
-
-            if (data.Float("xPeriod", 1f) != 0 && !xLinear) {
-                Add(xSine = new SineWave(xFrequency, xPhase));
-            }
-            if (data.Float("yPeriod", 1f) != 0 && !yLinear) {
+            } else if (data.Float("yPeriod", 1f) != 0) {
                 Add(ySine = new SineWave(yFrequency, yPhase));
             }
 
