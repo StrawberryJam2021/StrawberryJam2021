@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Monocle;
 using System;
-
+using System.Globalization;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 [CustomEntity("SJ2021/MomentumBlock")]
@@ -13,11 +13,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         const float MAX_SPEED_X = 250; //internally the player has a max lift boost
         const float MAX_SPEED_Y = -130;
 
-        public MomentumBlock(EntityData data, Vector2 offset) :this(data.Position + offset, data.Width, data.Height, data.Float("speed"), data.Float("direction")){
+        public MomentumBlock(EntityData data, Vector2 offset) :this(data.Position + offset, data.Width, data.Height, data.Float("speed"), data.Float("direction"), data.Attr("startColor"), data.Attr("endColor")){
             //
         }
 
-        public MomentumBlock(Vector2 position, int width, int height, float spd, float dir) : base(position, width, height, safe: false) {            
+        public MomentumBlock(Vector2 position, int width, int height, float spd, float dir, string startC, string endC) : base(position, width, height, safe: false) {            
             dir = dir / 180.0f * (float)Math.PI;  //convert to radians
             targetSpeed = new Vector2(spd * (float)Math.Cos(dir), spd * (float)Math.Sin(dir));
             
@@ -28,18 +28,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             //get the newly bounded angle
 
             angle = dir;
-
-            //hsv gradient between yellow and red
-            float g = (float)(1 -Math.Abs((1.0 - spd / MAX_SPEED) % 2.0f - 1));
-            speedColor = new Color(255, g, 0); //gradient from yellow to red
+            
+            startColor = ToColor(startC);
+            endColor = ToColor(endC);
+            speedColor = CalculateGradient(spd);
             
             int value = (int)Math.Floor((0f - angle + (float)Math.PI * 2f) % ((float)Math.PI * 2f) / ((float)Math.PI * 2f) * 8f + 0.5f);
             arrowTexture = GFX.Game.GetAtlasSubtextures("objects/moveBlock/arrow")[Calc.Clamp(value, 0, 7)];
         }
 
+        public Color CalculateGradient(float spd) {
+            float g = (float)(1 -Math.Abs((1.0 - spd / MAX_SPEED) % 2.0f - 1)); //smooth the gradient
+            g=-g+1;
+            
+            return new Color((int)(g * (endColor.R - startColor.R) + startColor.R),
+                             (int)(g * (endColor.G - startColor.G) + startColor.G),
+                             (int)(g * (endColor.B - startColor.B) + startColor.B),
+                             255);
+        }
+
         public override void Update() {
             base.Update();
-            MoveHExact(0);  //force an update, probably a bad method of doing this
+            MoveHExact(0);  //force a lift update
         }
         
 
@@ -59,9 +69,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             arrowTexture.DrawCentered(Center);            
         }
 
+        //should probably be moved elsewhere?
+        static Color ToColor(string str) {
+            try {
+                return new Color(
+                            int.Parse(str.Substring(0, 2), NumberStyles.HexNumber),
+                            int.Parse(str.Substring(2, 2), NumberStyles.HexNumber),    
+                            int.Parse(str.Substring(4, 2), NumberStyles.HexNumber),
+                            255);
+            }
+            catch {
+                Logger.Log(LogLevel.Warn,"StrawberryJam2021", "Error reading momentum block color value.\n");
+            }
+            return new Color();
+        }
+
 
         private Vector2 targetSpeed;
         private Color speedColor;
+        private Color startColor, endColor;
         private MTexture arrowTexture;
         private float angle;
 
