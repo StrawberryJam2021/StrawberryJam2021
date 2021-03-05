@@ -12,7 +12,7 @@ placements.entities.SJ2021/RefillShard.tooltips.twoDashes=Whether the refill giv
 # Sine Dust Spinner
 placements.entities.SJ2021/SineDustSpinner.tooltips.xPeriod=Period of the X-Sine in seconds. If X Linear is enabled, travel time in seconds before wrapping around (travel direction reversed if negative)
 placements.entities.SJ2021/SineDustSpinner.tooltips.yPeriod=Period of the Y-Sine in seconds. If Y Linear is enabled, travel time in seconds before wrapping around (travel direction reversed if negative)
-placements.entities.SJ2021/SineDustSpinner.tooltips.xPhaseDeg=X-Sine Phase in Degrees
-placements.entities.SJ2021/SineDustSpinner.tooltips.yPhaseDeg=Y-Sine Phase in Degrees
+placements.entities.SJ2021/SineDustSpinner.tooltips.xPhase=X-Sine Phase in Rad*Pi
+placements.entities.SJ2021/SineDustSpinner.tooltips.yPhase=Y-Sine Phase in Rad*PI
 placements.entities.SJ2021/SineDustSpinner.tooltips.xLinear=Whether the X-Sine should be replaced with a linear, wrapping motion
 placements.entities.SJ2021/SineDustSpinner.tooltips.yLinear=Whether the Y-Sine should be replaced with a linear, wrapping motion

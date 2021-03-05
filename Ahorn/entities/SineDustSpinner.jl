@@ -3,7 +3,7 @@ module SJ2021SineDustSpinner
 using ..Ahorn, Maple
 
 @mapdef Entity "SJ2021/SineDustSpinner" SineDustSpinner(x::Integer, y::Integer, width::Integer = 16, height::Integer = 16,
-    xPeriod::Number = 1.0, xPhaseDeg::Number = 0.0, yPeriod::Number = 1.0, yPhaseDeg::Number = 0.0,
+    xPeriod::Number = 1.0, xPhase::Number = 0.0, yPeriod::Number = 1.0, yPhase::Number = 0.0,
     xLinear::Bool = false, yLinear::Bool = false)
 
 const placements = Ahorn.PlacementDict(
