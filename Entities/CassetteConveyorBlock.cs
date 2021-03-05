@@ -13,10 +13,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly int transitionDuration;
         private readonly int preDelay;
         private readonly string ghostNodes;
+        private readonly bool teleportBack;
         private readonly int position;
 
         public CassetteConveyorBlock(Vector2[] nodes, float width, float height, char tiletype, int waitTime, int transitionDuration, int preDelay, string ghostNodes,
-            int position = 0)
+            bool teleportBack, int position = 0)
             : base(nodes[position], width, height, false) {
             this.nodes = nodes;
             TileGrid sprite = GFX.FGAutotiler.GenerateBox(tiletype, (int) Width / 8, (int) Height / 8).TileGrid;
@@ -29,13 +30,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.transitionDuration = transitionDuration;
             this.preDelay = preDelay;
             this.ghostNodes = ghostNodes;
+            this.teleportBack = teleportBack;
             this.position = position;
         }
 
         public CassetteConveyorBlock(EntityData data, Vector2 offset)
             : this(data.NodesWithPosition(offset), data.Width, data.Height, data.Char("tiletype", 'g'),
                 data.Int("waitTime", 12), data.Int("transitionDuration", 4), data.Int("preDelay", 0),
-                data.Attr("ghostNodes", "")) {
+                data.Attr("ghostNodes", ""), data.Bool("teleportBack", true)) {
         }
 
         public override void Added(Scene scene) {
@@ -48,7 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 for (int i = 1; i < nodes.Length; ++i) {
                     if (!parsed.Contains(i))
-                        Scene.Add(new CassetteConveyorBlock(nodes, Width, Height, tiletype, waitTime, transitionDuration, preDelay, ghostNodes, i));
+                        Scene.Add(new CassetteConveyorBlock(nodes, Width, Height, tiletype, waitTime, transitionDuration, preDelay, ghostNodes, teleportBack, i));
                 }
 
                 // Ah the wonders of garbage collection
@@ -106,7 +108,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!state.MoveThisFrame)
                 return;
 
-            if (state.Index == 0)
+            if (state.Index == 0 && teleportBack)
                 Teleport(0);
             else
                 Move();

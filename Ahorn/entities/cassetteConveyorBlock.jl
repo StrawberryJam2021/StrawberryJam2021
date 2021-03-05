@@ -6,13 +6,13 @@ using ..Ahorn, Maple
         x3::Integer=x2 + 16, y3::Integer=y2, width::Integer=Maple.defaultBlockWidth, 
         height::Integer=Maple.defaultBlockHeight, tiletype::String="g", 
         waitTime::Integer=12, preDelay::Integer=0, transitionDuration::Integer=4, 
-        ghostNodes::String="") = 
+        ghostNodes::String="", teleportBack::Bool=true) = 
     Entity("SJ2021/CassetteConveyorBlock", x = x1, y = y1, nodes = Tuple{Int, Int}[(x2, y2), (x3, y3)],
         width = width, height = height, tiletype = tiletype, preDelay = preDelay, waitTime = waitTime, 
-        transitionDuration = transitionDuration, ghostNodes = ghostNodes)
+        transitionDuration = transitionDuration, ghostNodes = ghostNodes, teleportBack = teleportBack)
         
 Ahorn.editingOrder(entity::CassetteConveyorBlock) = String["x", "y", "width", "height", 
-    "transitionDuration", "waitTime", "preDelay", "ghostNodes", "tiletype"]
+    "transitionDuration", "waitTime", "preDelay", "ghostNodes", "tiletype", "teleportBack"]
 
 const placements = Ahorn.PlacementDict(
     "Cassette-based Conveyor Block (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
