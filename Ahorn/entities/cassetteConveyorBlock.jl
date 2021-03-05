@@ -5,7 +5,7 @@ using ..Ahorn, Maple
 @pardef CassetteConveyorBlock(x1::Integer, y1::Integer, x2::Integer =x1 + 16, y2::Integer=y1, 
         x3::Integer=x2 + 16, y3::Integer=y2, width::Integer=Maple.defaultBlockWidth, 
         height::Integer=Maple.defaultBlockHeight, tiletype::String="g", 
-        waitTime::Integer=12, preDelay::Integer=0, transitionDuration::Integer=4, 
+        waitTime::Integer=4, preDelay::Integer=0, transitionDuration::Integer=4, 
         ghostNodes::String="", teleportBack::Bool=true) = 
     Entity("SJ2021/CassetteConveyorBlock", x = x1, y = y1, nodes = Tuple{Int, Int}[(x2, y2), (x3, y3)],
         width = width, height = height, tiletype = tiletype, preDelay = preDelay, waitTime = waitTime, 

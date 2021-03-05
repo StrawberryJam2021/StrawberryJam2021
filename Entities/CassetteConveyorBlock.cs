@@ -36,7 +36,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public CassetteConveyorBlock(EntityData data, Vector2 offset)
             : this(data.NodesWithPosition(offset), data.Width, data.Height, data.Char("tiletype", 'g'),
-                data.Int("waitTime", 12), data.Int("transitionDuration", 4), data.Int("preDelay", 0),
+                data.Int("waitTime", 4), data.Int("transitionDuration", 4), data.Int("preDelay", 0),
                 data.Attr("ghostNodes", ""), data.Bool("teleportBack", true)) {
         }
 
