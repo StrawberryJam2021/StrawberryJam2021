@@ -43,7 +43,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // We are the group leader
             if (position == 0) {
-                int[] parsed = ghostNodes.Trim().Split(',').Select(int.Parse).ToArray();
+                string trimmed = ghostNodes.Trim();
+                int[] parsed = trimmed == "" ? new int[] { } : trimmed.Split(',').Select(int.Parse).ToArray();
 
                 for (int i = 1; i < nodes.Length; ++i) {
                     if (!parsed.Contains(i))
