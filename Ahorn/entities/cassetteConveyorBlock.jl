@@ -51,8 +51,6 @@ function Ahorn.selection(entity::CassetteConveyorBlock)
 end
 
 function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteConveyorBlock, room::Maple.Room)
-    Ahorn.drawTileEntity(ctx, room, entity, material = get(entity.data, "tiletype", "g")[1], blendIn = false)
-        
     x, y = Ahorn.position(entity)
     nodes = get(entity.data, "nodes", ())
 
@@ -66,6 +64,11 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteConveyor
         ghostnodes = map(n -> tryparse(Int, n), split(ghosts, ","))
     end
 
+    if 0 in ghostnodes
+        Ahorn.drawTileEntity(ctx, room, entity, material = get(entity.data, "tiletype", "g")[1], alpha = 0.5, blendIn = false)
+    else
+        Ahorn.drawTileEntity(ctx, room, entity, material = get(entity.data, "tiletype", "g")[1], blendIn = false)
+    end
 
     prev = (x, y)
     for (index, (nx, ny)) in enumerate(nodes)
