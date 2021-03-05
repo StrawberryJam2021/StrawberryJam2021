@@ -91,8 +91,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if ((int) player.Facing != lastFacing) {
                     lastFacing = (int) player.Facing;
                     Vector2 newOffset = new Vector2(Math.Abs(playerDynData.Get<Vector2>("carryOffset").X), playerDynData.Get<Vector2>("carryOffset").Y) * (Vector2.UnitX * (int) player.Facing);
-                    Logger.Log("SJ2021/TripleBoostFlower", $"last {lastFacing}, new {(int) player.Facing}, text {player.Facing}, newoffset ({newOffset.X}, {newOffset.Y})");
-                    //playerDynData.Set("carryOffset", newOffset); todo update offset
+                    //Logger.Log("SJ2021/TripleBoostFlower", $"last {lastFacing}, new {(int) player.Facing}, text {player.Facing}, newoffset ({newOffset.X}, {newOffset.Y})");
+                    //playerDynData.Set("carryOffset", newOffset); todo update offset depending on player.Facing
                 }
                 if (Input.Dash.Pressed) {
                     consumeBoost();
@@ -104,7 +104,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     highFrictionTimer -= Engine.DeltaTime;
                 }
                 if (OnGround(1)) {
-                    // X position adjustment if on ledge
+                    // todo X position adjustment if on ledge
                     speed.X = Calc.Approach(speed.X, 0, 800f * Engine.DeltaTime);
                     Vector2 liftspeed = LiftSpeed;
                     if (liftspeed == Vector2.Zero && prevLiftSpeed != Vector2.Zero) {
@@ -216,16 +216,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // todo everything
             switch (charges) {
                 case 3:
-                    Draw.Rect(Collider, Color.Green);
+                    Draw.HollowRect(Collider, Color.Green);
                     break;
                 case 2:
-                    Draw.Rect(Collider, Color.YellowGreen);
+                    Draw.HollowRect(Collider, Color.YellowGreen);
                     break;
                 case 1:
-                    Draw.Rect(Collider, Color.OrangeRed);
+                    Draw.HollowRect(Collider, Color.OrangeRed);
                     break;
                 case 0:
-                    Draw.Rect(Collider, Color.Red);
+                    Draw.HollowRect(Collider, Color.Red);
                     break;
             }
         }
