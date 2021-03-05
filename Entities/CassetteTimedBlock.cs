@@ -83,6 +83,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return res;
         }
 
+        protected float BeatsToSeconds(int beats) {
+            Level level = SceneAs<Level>();
+            return beats * (1f / 6f) * level.CassetteBlockTempo;
+        }
+
         protected void StopParticles(Vector2 moved) {
             Level level = SceneAs<Level>();
             float direction = moved.Angle();

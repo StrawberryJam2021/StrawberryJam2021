@@ -113,9 +113,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void Move() {
-            // Convert from beats to seconds
-            Level level = SceneAs<Level>();
-            float actualTransitionDuration = transitionDuration * (1f / 6f) * level.CassetteBlockTempo;
+            float actualTransitionDuration = BeatsToSeconds(transitionDuration);
 
             nodeIndex++;
             nodeIndex %= nodes.Length;
