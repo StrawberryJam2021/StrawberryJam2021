@@ -16,7 +16,7 @@ const placements = Ahorn.PlacementDict(
 Ahorn.minimumSize(entity::SineDustSpinner) = 16, 16
 Ahorn.resizable(entity::SineDustSpinner) = true, true
 
-const rectColor = (186, 41, 79, 120) ./ 255
+const rectColor = (210, 25, 90, 120) ./ 255
 
 function Ahorn.selection(entity::SineDustSpinner)
     x, y = Ahorn.position(entity)
