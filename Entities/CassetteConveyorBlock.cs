@@ -17,7 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public CassetteConveyorBlock(Vector2[] nodes, float width, float height, char tiletype, int waitTime, int transitionDuration, int preDelay, string ghostNodes,
             int position = 0)
-            : base(nodes[0], width, height, false) {
+            : base(nodes[position], width, height, false) {
             this.nodes = nodes;
             TileGrid sprite = GFX.FGAutotiler.GenerateBox(tiletype, (int) Width / 8, (int) Height / 8).TileGrid;
             Add(sprite);
