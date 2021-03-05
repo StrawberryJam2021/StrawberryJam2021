@@ -59,12 +59,27 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteConveyor
     width = Int(get(entity.data, "width", 8))
     height = Int(get(entity.data, "height", 8))
     
+    ghosts = strip(get(entity.data, "ghostNodes", ""))
+    ghostnodes = []
+
+    if !isempty(ghosts)
+        ghostnodes = map(n -> tryparse(Int, n), split(ghosts, ","))
+    end
+
+
     prev = (x, y)
-    for (nx, ny) in nodes
+    for (index, (nx, ny)) in enumerate(nodes)
         cox, coy = floor(Int, width / 2), floor(Int, height / 2)
 
         fakeTiles = Ahorn.createFakeTiles(room, nx, ny, width, height, get(entity.data, "tiletype", "g")[1], blendIn = false)
-        Ahorn.drawFakeTiles(ctx, room, fakeTiles, room.objTiles, true, nx, ny, clipEdges = true)
+
+        if index in ghostnodes
+            Ahorn.drawFakeTiles(ctx, room, fakeTiles, room.objTiles, true, nx, ny, alpha = 0.5, clipEdges = true)
+        else
+
+            Ahorn.drawFakeTiles(ctx, room, fakeTiles, room.objTiles, true, nx, ny, clipEdges = true)
+        end
+
         Ahorn.drawArrow(ctx, prev[1] + cox, prev[2] + coy, nx + cox, ny + coy, Ahorn.colors.selection_selected_fc, headLength = 6)
         prev = (nx, ny)
     end
