@@ -15,6 +15,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2 start;
         private Vector2 speed;
 
+        private MTexture[,] tiles;
         private Vector2 scale = Vector2.One;
 
         private bool waiting = true;
@@ -29,7 +30,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int edgeThickness;
 
         public LoopBlock(EntityData data, Vector2 offset) 
-            : this(data.Position + offset, data.Width, data.Height, data.Int("edgeThickness", 10)) { }
+            : this(data.Position + offset, data.Width, data.Height, data.Int("edgeThickness", 1)) { }
 
         public LoopBlock(Vector2 position, int width, int height, int edgeThickness)
             : base(position, width, height, false) {
@@ -50,7 +51,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             int w = (int) (Width / 8f);
             int h = (int) (Height / 8f);
 
+            tiles = new MTexture[w, h];
             VirtualMap<bool> tileMap = new VirtualMap<bool>(w, h);
+
             for (int i = 0; i < w; i++) {
                 for (int j = 0; j < h; j++) {
                     tileMap[i, j] = (i < edgeThickness || i >= w - edgeThickness || j < edgeThickness || j >= h - edgeThickness);
@@ -110,9 +113,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         }
 
                         if (texture != null)
-                            Add(new Image(texture) {
-                                Position = new Vector2(i * 8, j * 8)
-                            });
+                            tiles[i, j] = texture;
                     }
                 }
             }
@@ -240,7 +241,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Render() {
             base.Render();
 
-            float colorLerp = -Calc.Clamp(speed.Y, -80, 0) / 80;
+            int w = (int) (Width / 8f);
+            int h = (int) (Height / 8f);
+
+            for (int i = 0; i < w; i++) {
+                for (int j = 0; j < h; j++) {
+                    Vector2 pos = Center + (new Vector2(X + i * 8 + 4, Y + j * 8 + 4) - Center) * scale;
+                    MTexture tile = tiles[i, j];
+                    if (tile != null) tile.DrawCentered(pos, Color.White, scale);
+                }
+            }
         }
 
         public static void InitializeTextures() {
