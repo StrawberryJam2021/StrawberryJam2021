@@ -218,7 +218,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void patchPlayerThrow(On.Celeste.Player.orig_Throw orig, Player self) {
-            if (self.Holding.Entity is AntiGravJelly && Input.MoveY.Value == 1 && Input.MoveX.Value != 0) {
+            if (self.Holding?.Entity is AntiGravJelly && Input.MoveY.Value == 1 && Input.MoveX.Value != 0) {
                 Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
                 self.Holding.Release(Vector2.UnitX * (float) self.Facing);
                 self.Speed.X = self.Speed.X + 08f * (float) -(float) self.Facing;
