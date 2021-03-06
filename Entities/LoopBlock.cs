@@ -21,17 +21,36 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float targetSpeedX;
         private float dashedDirX;
 
-        public LoopBlock(EntityData data, Vector2 offset) 
-            : this(data.Position + offset, data.Width, data.Height) { }
+        private int edgeThickness;
 
-        public LoopBlock(Vector2 position, int width, int height)
+        public LoopBlock(EntityData data, Vector2 offset) 
+            : this(data.Position + offset, data.Width, data.Height, data.Int("edgeThickness", 10)) { }
+
+        public LoopBlock(Vector2 position, int width, int height, int edgeThickness)
             : base(position, width, height, false) {
-            Depth = Depths.SolidsBelow;
+            Depth = Depths.Dust;
             SurfaceSoundIndex = SurfaceIndex.Snow;
 
             start = position;
 
+            int minEdgeSize = Math.Min(width, height) / 8;
+            this.edgeThickness = Calc.Clamp(edgeThickness, 1, (int)((minEdgeSize - 1) / 2f));
+
             OnDashCollide = OnDashed;
+
+            SetupTiles();
+        }
+
+        private void SetupTiles() {
+            int w = (int) (Width / 8f);
+            int h = (int) (Height / 8f);
+
+            VirtualMap<bool> tileMap = new VirtualMap<bool>(w, h);
+            for (int i = 0; i < w; i++) {
+                for (int j = 0; j < h; j++) {
+                    tileMap[i, j] = (i < edgeThickness || i >= w - edgeThickness || j < edgeThickness || j >= h - edgeThickness);
+                }
+            }
         }
 
         private DashCollisionResults OnDashed(Player player, Vector2 dir) {
@@ -53,10 +72,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 dashed = canSquish = true;
             }
             return DashCollisionResults.NormalCollision;
-        }
-
-        public override void Awake(Scene scene) {
-            base.Awake(scene);
         }
 
         public override void Update() {
@@ -159,14 +174,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Render() {
             base.Render();
-            Rectangle rect = new Rectangle(
-                (int) (Center.X + (X - Center.X) * scale.X),
-                (int) (Center.Y + (Y - Center.Y) * scale.Y),
-                (int) (Width * scale.X),
-                (int) (Height * scale.Y));
 
             float colorLerp = -Calc.Clamp(speed.Y, -80, 0) / 80;
-            Draw.Rect(rect, Color.Lerp(Color.MediumVioletRed, Color.Orange, colorLerp));
+            Color color = Color.Lerp(Color.MediumVioletRed, Color.Orange, colorLerp);
         }
     }
 }
