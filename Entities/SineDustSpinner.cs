@@ -8,7 +8,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     class SineDustSpinner : DustStaticSpinner {
         private SineWave xSine, ySine;
         private Tween xTween, yTween;
-        private Vector2 origPos;
+        private Vector2 origPos, lastPos;
         private float xAmplitude, yAmplitude;
         private bool xLinear, yLinear;
         public SineDustSpinner(EntityData data, Vector2 offset) : base(data, offset) {
@@ -40,7 +40,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
+            lastPos = Position;
             Position = origPos + getXAdjust() + getYAdjust();
+            Sprite.EyeDirection = Vector2.Normalize(Position - lastPos);
         }
 
         private Vector2 getYAdjust() {
