@@ -2,7 +2,7 @@ module SJ2021LoopBlock
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/LoopBlock" LoopBlock(x::Integer, y::Integer, width::Integer = 16, height::Integer = 16)
+@mapdef Entity "SJ2021/LoopBlock" LoopBlock(x::Integer, y::Integer, width::Integer=16, height::Integer=16, edgeThickness::Integer=1, color::String="FFFFFF")
 
 const placements = Ahorn.PlacementDict(
     "Loop Block (Strawberry Jam 2021)" => Ahorn.EntityPlacement(

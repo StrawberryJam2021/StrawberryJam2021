@@ -17,6 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private MTexture[,] tiles;
         private Vector2 scale = Vector2.One;
+        private Color color;
 
         private bool waiting = true;
         private bool canRumble, canSquish;
@@ -30,9 +31,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int edgeThickness;
 
         public LoopBlock(EntityData data, Vector2 offset) 
-            : this(data.Position + offset, data.Width, data.Height, data.Int("edgeThickness", 1)) { }
+            : this(data.Position + offset, data.Width, data.Height, data.Int("edgeThickness", 1), data.HexColor("color")) { }
 
-        public LoopBlock(Vector2 position, int width, int height, int edgeThickness)
+        public LoopBlock(Vector2 position, int width, int height, int edgeThickness, Color color)
             : base(position, width, height, false) {
             Depth = Depths.Dust;
             SurfaceSoundIndex = SurfaceIndex.Snow;
@@ -41,6 +42,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             int minEdgeSize = Math.Min(width, height) / 8;
             this.edgeThickness = Calc.Clamp(edgeThickness, 1, (int)((minEdgeSize - 1) / 2f));
+            this.color = color;
 
             OnDashCollide = OnDashed;
 
@@ -248,7 +250,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 for (int j = 0; j < h; j++) {
                     Vector2 pos = Center + (new Vector2(X + i * 8 + 4, Y + j * 8 + 4) - Center) * scale;
                     MTexture tile = tiles[i, j];
-                    if (tile != null) tile.DrawCentered(pos, Color.White, scale);
+                    if (tile != null) tile.DrawCentered(pos, color, scale);
                 }
             }
         }
