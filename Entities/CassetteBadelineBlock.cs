@@ -18,10 +18,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly bool oneWay;
         private readonly bool teleportBack;
 
-        public CassetteBadelineBlock(Vector2[] nodes, float width, float height, char tiletype,
-            int moveForwardBeat, int moveBackBeat, int preDelay, int transitionDuration, bool oneWay,
-            bool teleportBack)
-            : base(nodes[0], width, height, false) {
+        public CassetteBadelineBlock(Vector2[] nodes, float width, float height, char tiletype, int moveForwardBeat, int moveBackBeat, int preDelay,
+            int transitionDuration, bool oneWay, bool teleportBack) : base(nodes[0], width, height, false) {
             this.nodes = nodes;
             TileGrid sprite = GFX.FGAutotiler.GenerateBox(tiletype, (int) Width / 8, (int) Height / 8).TileGrid;
             Add(sprite);
