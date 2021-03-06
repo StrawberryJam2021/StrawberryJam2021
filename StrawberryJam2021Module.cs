@@ -33,6 +33,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             _GrabTempleGateSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/GrabTempleGateSprites.xml");
             _BubbleEmitterSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/BubbleEmitterSprites.xml");
 
+            LoopBlock.InitializeTextures();
         }
 
     }

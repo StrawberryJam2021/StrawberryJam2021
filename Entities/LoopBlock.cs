@@ -7,6 +7,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/LoopBlock")]
     class LoopBlock : Solid {
 
+        // The third dimension is to store the same tiles with different details and variations.
+        private static readonly MTexture[,,] outerEdges = new MTexture[3, 3, 3];
+        private static readonly MTexture[,,] innerCorners = new MTexture[2, 2, 3];
+        private static readonly MTexture[,,] wallEdges = new MTexture[3, 2, 3];
+
         private Vector2 start;
         private Vector2 speed;
 
@@ -49,6 +54,66 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             for (int i = 0; i < w; i++) {
                 for (int j = 0; j < h; j++) {
                     tileMap[i, j] = (i < edgeThickness || i >= w - edgeThickness || j < edgeThickness || j >= h - edgeThickness);
+                }
+            }
+
+            for (int i = 0; i < w; i++) {
+                for (int j = 0; j < h; j++) {
+                    if (tileMap[i, j]) {
+                        int index = Calc.Random.Next(3);
+
+                        bool left = tileMap[i - 1, j];
+                        bool right = tileMap[i + 1, j];
+                        bool up = tileMap[i, j - 1];
+                        bool down = tileMap[i, j + 1];
+                        bool upleft = tileMap[i - 1, j - 1];
+                        bool upright = tileMap[i + 1, j - 1];
+                        bool downleft = tileMap[i - 1, j + 1];
+                        bool downright = tileMap[i + 1, j + 1];
+
+                        bool innerEdge = left && right && up && down;
+                        bool filler = innerEdge && upleft && upright && downleft && downright;
+
+                        MTexture texture = null;
+                        if (filler) {
+                            // missing tile in tileset
+                        } else if (innerEdge) {
+                            if (!downright)
+                                texture = innerCorners[0, 0, index];
+                            else if (!downleft)
+                                texture = innerCorners[1, 0, index];
+                            else if (!upright)
+                                texture = innerCorners[0, 1, index];
+                            else if (!upleft)
+                                texture = innerCorners[1, 1, index];
+                        } else {
+                            if (!up && down && left && right)
+                                texture = outerEdges[1, 0, index];
+                            else if (up && !down && left && right)
+                                texture = outerEdges[1, 2, index];
+                            else if (up && down && !left && right)
+                                texture = outerEdges[0, 1, index];
+                            else if (up && down && left && !right)
+                                texture = outerEdges[2, 1, index];
+                            else if (right && down)
+                                texture = (downright ? outerEdges[0, 0, index] : wallEdges[0, 0, index]);
+                            else if (left && down)
+                                texture = (downleft ? outerEdges[2, 0, index] : wallEdges[1, 0, index]);
+                            else if (right && up)
+                                texture = (upright ? outerEdges[0, 2, index] : wallEdges[0, 1, index]);
+                            else if (left && up)
+                                texture = (upleft ? outerEdges[2, 2, index] : wallEdges[1, 1, index]);
+                            else if (left && right && !up && !down)
+                                texture = wallEdges[2, 0, index];
+                            else if (!left && !right && up && down)
+                                texture = wallEdges[2, 1, index];
+                        }
+
+                        if (texture != null)
+                            Add(new Image(texture) {
+                                Position = new Vector2(i * 8, j * 8)
+                            });
+                    }
                 }
             }
         }
@@ -176,7 +241,33 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Render();
 
             float colorLerp = -Calc.Clamp(speed.Y, -80, 0) / 80;
-            Color color = Color.Lerp(Color.MediumVioletRed, Color.Orange, colorLerp);
+        }
+
+        public static void InitializeTextures() {
+            MTexture tiles = GFX.Game["objects/StrawberryJam2021/loopBlock/tiles"];
+            for (int i = 0; i < 3; i++) {
+                int tx = i * 8;
+                outerEdges[0, 0, i] = tiles.GetSubtexture(tx, 0, 8, 8); // outer top left
+                outerEdges[2, 0, i] = tiles.GetSubtexture(24 + tx, 0, 8, 8); // outer top right
+                outerEdges[0, 2, i] = tiles.GetSubtexture(tx, 8, 8, 8); // outer bottom left
+                outerEdges[2, 2, i] = tiles.GetSubtexture(24 + tx, 8, 8, 8); // outer bottom right
+                outerEdges[1, 0, i] = tiles.GetSubtexture(tx, 16, 8, 8); // outer top
+                outerEdges[1, 2, i] = tiles.GetSubtexture(tx, 24, 8, 8); // outer bottom
+                outerEdges[0, 1, i] = tiles.GetSubtexture(24 + tx, 16, 8, 8); // outer left
+                outerEdges[2, 1, i] = tiles.GetSubtexture(24 + tx, 24, 8, 8); // outer right
+
+                wallEdges[0, 0, i] = tiles.GetSubtexture(tx, 32, 8, 8); // outer inner top left
+                wallEdges[1, 0, i] = tiles.GetSubtexture(24 + tx, 32, 8, 8); // outer inner top right
+                wallEdges[0, 1, i] = tiles.GetSubtexture(tx, 40, 8, 8); // outer inner bottom left
+                wallEdges[1, 1, i] = tiles.GetSubtexture(24 + tx, 40, 8, 8); // outer inner bottom right
+                wallEdges[2, 0, i] = tiles.GetSubtexture(tx, 48, 8, 8); // outer inner horizontal
+                wallEdges[2, 1, i] = tiles.GetSubtexture(24 + tx, 48, 8, 8); // outer inner vertical
+
+                innerCorners[0, 0, i] = tiles.GetSubtexture(tx, 56, 8, 8); // inner top left
+                innerCorners[1, 0, i] = tiles.GetSubtexture(24 + tx, 56, 8, 8); // inner top right
+                innerCorners[0, 1, i] = tiles.GetSubtexture(tx, 64, 8, 8); // inner bottom left
+                innerCorners[1, 1, i] = tiles.GetSubtexture(24 + tx, 64, 8, 8); // inner bottom right
+            }
         }
     }
 }
