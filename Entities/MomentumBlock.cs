@@ -13,28 +13,46 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         const float MAX_SPEED_X = 250; //internally the player has a max lift boost
         const float MAX_SPEED_Y = -130;
 
-        public MomentumBlock(EntityData data, Vector2 offset) :this(data.Position + offset, data.Width, data.Height, data.Float("speed"), data.Float("direction"), data.Attr("startColor"), data.Attr("endColor")){
+        public MomentumBlock(EntityData data, Vector2 offset) :this(data.Position + offset, data.Width, data.Height, data.Float("speed"), data.Float("direction"), data.Float("speedFlagged"), data.Float("directionFlagged"), data.Attr("startColor"), data.Attr("endColor"), data.Attr("flag")){
             //
         }
 
-        public MomentumBlock(Vector2 position, int width, int height, float spd, float dir, string startC, string endC) : base(position, width, height, safe: false) {            
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
+            UpdateFlag();
+        }
+
+        public MomentumBlock(Vector2 position, int width, int height, float spd, float dir, float spdFlagged, float dirFlagged, string startC, string endC, string flg) : base(position, width, height, safe: false) {
+            flag = flg;
+            isFlagged = false;
             dir = dir / 180.0f * (float)Math.PI;  //convert to radians
+            dirFlagged = dirFlagged / 180.0f * (float) Math.PI;
+
             targetSpeed = new Vector2(spd * (float)Math.Cos(dir), spd * (float)Math.Sin(dir));
-            
+            targetSpeedFlagged = new Vector2(spdFlagged * (float) Math.Cos(dirFlagged), spdFlagged * (float) Math.Sin(dirFlagged));
+
             //bound the components to their respective max for accurate angles
             targetSpeed.X = Calc.Clamp(targetSpeed.X, -MAX_SPEED_X, MAX_SPEED_X);
             targetSpeed.Y = Calc.Clamp(targetSpeed.Y, MAX_SPEED_Y , 0);
 
+            targetSpeedFlagged.X = Calc.Clamp(targetSpeedFlagged.X, -MAX_SPEED_X, MAX_SPEED_X);
+            targetSpeedFlagged.Y = Calc.Clamp(targetSpeedFlagged.Y, MAX_SPEED_Y, 0);
             //get the newly bounded angle
 
             angle = dir;
+            angleFlagged = dirFlagged;
             
             startColor = ToColor(startC);
             endColor = ToColor(endC);
+
             speedColor = CalculateGradient(spd);
+            speedColorFlagged = CalculateGradient(spdFlagged);
             
             int value = (int)Math.Floor((0f - angle + (float)Math.PI * 2f) % ((float)Math.PI * 2f) / ((float)Math.PI * 2f) * 8f + 0.5f);
             arrowTexture = GFX.Game.GetAtlasSubtextures("objects/moveBlock/arrow")[Calc.Clamp(value, 0, 7)];
+
+            int valueFlagged = (int) Math.Floor((0f - angleFlagged + (float) Math.PI * 2f) % ((float) Math.PI * 2f) / ((float) Math.PI * 2f) * 8f + 0.5f);
+            arrowTextureFlagged = GFX.Game.GetAtlasSubtextures("objects/moveBlock/arrow")[Calc.Clamp(valueFlagged, 0, 7)];
         }
 
         public Color CalculateGradient(float spd) {
@@ -49,24 +67,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
+            UpdateFlag();
             MoveHExact(0);  //force a lift update
         }
         
 
         public override void MoveHExact(int move) {
-            LiftSpeed = targetSpeed;
+            LiftSpeed = isFlagged ? targetSpeedFlagged : targetSpeed;
             base.MoveHExact(move);
         }
 
         public override void MoveVExact(int move) {
-            LiftSpeed = targetSpeed;
+            LiftSpeed = isFlagged ? targetSpeedFlagged : targetSpeed;
             base.MoveVExact(move);
         }
         
         public override void Render() {
-            Draw.HollowRect(Position, Width, Height, speedColor);
-            Draw.Rect(Center.X - 4f, Center.Y - 4f, 8f, 8f, speedColor);    
-            arrowTexture.DrawCentered(Center);            
+            Draw.HollowRect(Position, Width, Height, isFlagged? speedColorFlagged : speedColor);
+            Draw.Rect(Center.X - 4f, Center.Y - 4f, 8f, 8f, isFlagged ? speedColorFlagged : speedColor);
+            if (isFlagged)
+                arrowTextureFlagged.DrawCentered(Center);
+            else
+                arrowTexture.DrawCentered(Center);            
         }
 
         //should probably be moved elsewhere?
@@ -84,13 +106,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return new Color();
         }
 
+        private void UpdateFlag() {
+            if(!String.IsNullOrEmpty(flag))
+                isFlagged = SceneAs<Level>().Session.GetFlag(flag);
+        }
 
-        private Vector2 targetSpeed;
-        private Color speedColor;
+        private Vector2 targetSpeed, targetSpeedFlagged;
+        private Color speedColor, speedColorFlagged;
+        private float angle, angleFlagged;
         private Color startColor, endColor;
-        private MTexture arrowTexture;
-        private float angle;
+        private MTexture arrowTexture, arrowTextureFlagged;
+        private string flag;
 
+        bool isFlagged;
     }
 
 }
