@@ -11,9 +11,10 @@ using ..Ahorn, Maple
            height=height, tiletype=tiletype, moveForwardBeat=moveForwardBeat, moveBackBeat=moveBackBeat,
            preDelay=preDelay, transitionDuration=transitionDuration, oneWay=oneWay, teleportBack=teleportBack)
 
-Ahorn.editingOrder(entity::CassetteBadelineBlock) =
-    String["x", "y", "width", "height", "moveForwardBeat", "moveBackBeat", "preDelay", "transitionDuration",
-             "oneWay", "teleportBack", "tiletype"]
+Ahorn.editingOrder(entity::CassetteBadelineBlock) = String[
+    "x", "y", "width", "height", "moveForwardBeat", "moveBackBeat", "preDelay", "transitionDuration",
+    "oneWay", "teleportBack", "tiletype"
+]
 
 const placements = Ahorn.PlacementDict(
     "Cassette-based Moving Block (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
@@ -26,8 +27,9 @@ const placements = Ahorn.PlacementDict(
     )
 )
 
-Ahorn.editingOptions(entity::CassetteBadelineBlock) =
-    Dict{String,Any}("tiletype" => Ahorn.tiletypeEditingOptions())
+Ahorn.editingOptions(entity::CassetteBadelineBlock) = Dict{String,Any}(
+    "tiletype" => Ahorn.tiletypeEditingOptions()
+)
 
 Ahorn.nodeLimits(entity::CassetteBadelineBlock) = 1, 1
 Ahorn.minimumSize(entity::CassetteBadelineBlock) = 8, 8
@@ -44,7 +46,7 @@ function Ahorn.selection(entity::CassetteBadelineBlock)
 end
 
 function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteBadelineBlock, room::Maple.Room)
-    Ahorn.drawTileEntity(ctx, room, entity, material = get(entity.data, "tiletype", "g")[1], blendIn = false)
+    Ahorn.drawTileEntity(ctx, room, entity, material=get(entity.data, "tiletype", "g")[1], blendIn=false)
 end
 
 function Ahorn.renderSelectedAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteBadelineBlock, room::Maple.Room)
@@ -58,9 +60,9 @@ function Ahorn.renderSelectedAbs(ctx::Ahorn.Cairo.CairoContext, entity::Cassette
         nx, ny = Int.(nodes[1])
         cox, coy = floor(Int, width / 2), floor(Int, height / 2)
 
-        fakeTiles = Ahorn.createFakeTiles(room, nx, ny, width, height, get(entity.data, "tiletype", "g")[1], blendIn = false)
-        Ahorn.drawFakeTiles(ctx, room, fakeTiles, room.objTiles, true, nx, ny, clipEdges = true)
-        Ahorn.drawArrow(ctx, x + cox, y + coy, nx + cox, ny + coy, Ahorn.colors.selection_selected_fc, headLength = 6)
+        fakeTiles = Ahorn.createFakeTiles(room, nx, ny, width, height, get(entity.data, "tiletype", "g")[1], blendIn=false)
+        Ahorn.drawFakeTiles(ctx, room, fakeTiles, room.objTiles, true, nx, ny, clipEdges=true)
+        Ahorn.drawArrow(ctx, x + cox, y + coy, nx + cox, ny + coy, Ahorn.colors.selection_selected_fc, headLength=6)
     end
 end
 end

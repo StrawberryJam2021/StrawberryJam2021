@@ -7,13 +7,14 @@ using ..Ahorn, Maple
                               height::Integer=Maple.defaultBlockHeight, tiletype::String="g",
                               waitTime::Integer=4, preDelay::Integer=0, transitionDuration::Integer=4,
                               ghostNodes::String="", teleportBack::Bool=true) =
-    Entity("SJ2021/CassetteConveyorBlock", x = x1, y = y1, nodes = Tuple{Int,Int}[(x2, y2), (x3, y3)],
-           width = width,height = height, tiletype = tiletype, waitTime = waitTime, preDelay = preDelay,
-           transitionDuration = transitionDuration, ghostNodes = ghostNodes, teleportBack = teleportBack)
+    Entity("SJ2021/CassetteConveyorBlock", x=x1, y=y1, nodes=Tuple{Int,Int}[(x2, y2), (x3, y3)],
+           width=width,height=height, tiletype=tiletype, waitTime=waitTime, preDelay=preDelay,
+           transitionDuration=transitionDuration, ghostNodes=ghostNodes, teleportBack=teleportBack)
 
-Ahorn.editingOrder(entity::CassetteConveyorBlock) =
-    String["x", "y", "width", "height", "transitionDuration", "waitTime", "preDelay", "ghostNodes", 
-             "tiletype", "teleportBack"]
+Ahorn.editingOrder(entity::CassetteConveyorBlock) = String[
+    "x", "y", "width", "height", "transitionDuration", "waitTime", "preDelay", "ghostNodes",
+    "tiletype", "teleportBack"
+]
 
 const placements = Ahorn.PlacementDict(
     "Cassette-based Conveyor Block (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
@@ -21,14 +22,17 @@ const placements = Ahorn.PlacementDict(
         "rectangle",
         Dict{String,Any}(),
         function (entity)
-            entity.data["nodes"] = [(Int(entity.data["x"]) + Int(entity.data["width"]) + 8,     Int(entity.data["y"])),
-                                    (Int(entity.data["x"]) + Int(entity.data["width"]) * 2 + 16,Int(entity.data["y"]))]
+            entity.data["nodes"] = [
+                (Int(entity.data["x"]) + Int(entity.data["width"]) + 8,      Int(entity.data["y"])),
+                (Int(entity.data["x"]) + Int(entity.data["width"]) * 2 + 16, Int(entity.data["y"]))
+            ]
         end
     )
 )
 
-Ahorn.editingOptions(entity::CassetteConveyorBlock) =
-    Dict{String,Any}("tiletype" => Ahorn.tiletypeEditingOptions())
+Ahorn.editingOptions(entity::CassetteConveyorBlock) = Dict{String,Any}(
+    "tiletype" => Ahorn.tiletypeEditingOptions()
+)
 
 Ahorn.nodeLimits(entity::CassetteConveyorBlock) = 1, -1
 Ahorn.minimumSize(entity::CassetteConveyorBlock) = 8, 8
@@ -61,21 +65,21 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteConveyor
     ghostnodes = tryparse.(Int, split(ghosts, r", ?"))
 
     if 0 in ghostnodes
-        Ahorn.drawTileEntity(ctx, room, entity, material = get(entity.data, "tiletype", "g")[1], alpha = 0.5, blendIn = false)
+        Ahorn.drawTileEntity(ctx, room, entity, material=get(entity.data, "tiletype", "g")[1], alpha=0.5, blendIn=false)
     else
-        Ahorn.drawTileEntity(ctx, room, entity, material = get(entity.data, "tiletype", "g")[1], blendIn = false)
+        Ahorn.drawTileEntity(ctx, room, entity, material=get(entity.data, "tiletype", "g")[1], blendIn=false)
     end
 
     prev = (x, y)
     for (index, (nx, ny)) in enumerate(nodes)
         cox, coy = floor(Int, width / 2), floor(Int, height / 2)
 
-        fakeTiles = Ahorn.createFakeTiles(room, nx, ny, width, height, get(entity.data, "tiletype", "g")[1], blendIn = false)
+        fakeTiles = Ahorn.createFakeTiles(room, nx, ny, width, height, get(entity.data, "tiletype", "g")[1], blendIn=false)
 
         if index in ghostnodes
-            Ahorn.drawFakeTiles(ctx, room, fakeTiles, room.objTiles, true, nx, ny, alpha = 0.5, clipEdges = true)
+            Ahorn.drawFakeTiles(ctx, room, fakeTiles, room.objTiles, true, nx, ny, alpha=0.5, clipEdges=true)
         else
-            Ahorn.drawFakeTiles(ctx, room, fakeTiles, room.objTiles, true, nx, ny, clipEdges = true)
+            Ahorn.drawFakeTiles(ctx, room, fakeTiles, room.objTiles, true, nx, ny, clipEdges=true)
         end
 
         Ahorn.drawArrow(ctx,prev[1] + cox,prev[2] + coy, nx + cox, ny + coy, Ahorn.colors.selection_selected_fc, headLength = 6)
