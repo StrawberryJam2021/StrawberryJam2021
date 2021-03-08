@@ -42,27 +42,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             angle = dir;
             angleFlagged = dirFlagged;
             
-            startColor = ToColor(startC);
-            endColor = ToColor(endC);
+            startColor = Monocle.Calc.HexToColor(startC);
+            endColor = Monocle.Calc.HexToColor(endC);
 
             speedColor = CalculateGradient(spd);
             speedColorFlagged = CalculateGradient(spdFlagged);
             
-            int value = (int)Math.Floor((0f - angle + (float)Math.PI * 2f) % ((float)Math.PI * 2f) / ((float)Math.PI * 2f) * 8f + 0.5f);
-            arrowTexture = GFX.Game.GetAtlasSubtextures("objects/moveBlock/arrow")[Calc.Clamp(value, 0, 7)];
+            arrowTexture = GetArrowTexture(angle);
+            arrowTextureFlagged = GetArrowTexture(angleFlagged);
+        }
 
-            int valueFlagged = (int) Math.Floor((0f - angleFlagged + (float) Math.PI * 2f) % ((float) Math.PI * 2f) / ((float) Math.PI * 2f) * 8f + 0.5f);
-            arrowTextureFlagged = GFX.Game.GetAtlasSubtextures("objects/moveBlock/arrow")[Calc.Clamp(valueFlagged, 0, 7)];
+        public static MTexture GetArrowTexture(float angle) {
+            int value = (int) Math.Floor((0f - angle + (float) Math.PI * 2f) % ((float) Math.PI * 2f) / ((float) Math.PI * 2f) * 8f + 0.5f);
+            return GFX.Game.GetAtlasSubtextures("objects/moveBlock/arrow")[Calc.Clamp(value, 0, 7)];
         }
 
         public Color CalculateGradient(float spd) {
-            float g = (float)(1 -Math.Abs((1.0 - spd / MAX_SPEED) % 2.0f - 1)); //smooth the gradient
+            float g = (float)(1 -Math.Abs((1.0 - spd / MAX_SPEED) % 2.0f - 1)); //smooth the linear gradient
             g=-g+1;
-            
-            return new Color((int)(g * (endColor.R - startColor.R) + startColor.R),
-                             (int)(g * (endColor.G - startColor.G) + startColor.G),
-                             (int)(g * (endColor.B - startColor.B) + startColor.B),
-                             255);
+            return Color.Lerp(startColor, endColor, g);
         }
 
         public override void Update() {
@@ -89,21 +87,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 arrowTextureFlagged.DrawCentered(Center);
             else
                 arrowTexture.DrawCentered(Center);            
-        }
-
-        //should probably be moved elsewhere?
-        static Color ToColor(string str) {
-            try {
-                return new Color(
-                            int.Parse(str.Substring(0, 2), NumberStyles.HexNumber),
-                            int.Parse(str.Substring(2, 2), NumberStyles.HexNumber),    
-                            int.Parse(str.Substring(4, 2), NumberStyles.HexNumber),
-                            255);
-            }
-            catch {
-                Logger.Log(LogLevel.Warn,"StrawberryJam2021", "Error reading momentum block color value.\n");
-            }
-            return new Color();
         }
 
         private void UpdateFlag() {

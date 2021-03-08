@@ -15,14 +15,24 @@ Ahorn.minimumSize(entity::MomentumBlock) = 8, 8
 Ahorn.resizable(entity::MomentumBlock) = true, true
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::MomentumBlock, room::Maple.Room)
-    x = Int(get(entity.data, "x", 0))
-    y = Int(get(entity.data, "y", 0))
+    #x = Int(get(entity.data, "x", 0))
+    #y = Int(get(entity.data, "y", 0))
 
-    angle = Integer(get(entity.data, "direction",0))
+    #angle = Integer(get(entity.data, "direction",0))
+    
+    startColor = String(get(entity.data, "startColor","9A0000"))
+    endColor = String(get(entity.data, "endColor", "00FFFF"))
+
+    startColorC = (parse(Int64, SubString(startColor, 1,2 ), base=16)/255.0,parse(Int64, SubString(startColor, 3,4 ), base=16)/255.0,parse(Int64, SubString(startColor, 5,6 ), base=16)/255.0)
+    endColorC = (parse(Int64, SubString(endColor, 1,2 ), base=16)/255.0,parse(Int64, SubString(endColor, 3,4 ), base=16)/255.0,parse(Int64, SubString(endColor, 5,6 ), base=16)/255.0)
     width = Int(get(entity.data, "width", 32))
     height = Int(get(entity.data, "height", 32))
 
-    Ahorn.drawRectangle(ctx, 0, 0, width, height, Ahorn.defaultBlackColor, Ahorn.defaultWhiteColor)
+    spd = Int(get(entity.data, "speed",0))
+    g = 1-abs((1.0 - spd / 282) % 2.0 - 1)
+    g=-g+1;
+
+    Ahorn.drawRectangle(ctx, 0, 0, width, height, Ahorn.defaultBlackColor, (startColorC[1] + (endColorC[1] - startColorC[1]) * g, startColorC[2] + (endColorC[2] - startColorC[2]) * g, startColorC[3] + (endColorC[3] - startColorC[3]) * g)) #Ahorn.defaultWhiteColor)
 end
 
 
