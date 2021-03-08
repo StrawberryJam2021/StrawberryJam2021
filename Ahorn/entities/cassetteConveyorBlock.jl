@@ -82,7 +82,7 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteConveyor
             Ahorn.drawFakeTiles(ctx, room, fakeTiles, room.objTiles, true, nx, ny, clipEdges=true)
         end
 
-        Ahorn.drawArrow(ctx,prev[1] + cox,prev[2] + coy, nx + cox, ny + coy, Ahorn.colors.selection_selected_fc, headLength = 6)
+        Ahorn.drawArrow(ctx, prev[1] + cox, prev[2] + coy, nx + cox, ny + coy, Ahorn.colors.selection_selected_fc, headLength=6)
         prev = (nx, ny)
     end
 end
