@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+using Monocle;
+using Celeste.Mod.StrawberryJam2021.Entities;
+
+using Microsoft.Xna.Framework;
 using Monocle;
 using System.Collections;
 
@@ -11,13 +14,19 @@ namespace Celeste.Mod.StrawberryJam2021 {
         public StrawberryJam2021Module() {
             Instance = this;
         }
-        public static SpriteBank SpriteBank;
-        public override void LoadContent(bool firstLoad) {
-            SpriteBank = new SpriteBank(GFX.Game, "Graphics/SJ2021/CustomSprites.xml");
-        }
+
+        public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
+        private SpriteBank _CustomEntitySpriteBank;
+
+
         public override void Load() {
             SelfUpdater.Load();
-            Entities.WormholeBooster.Load();
+            AntiGravJelly.Load();
+            BubbleCollider.Load();
+            ExplodingStrawberry.Load();
+            CrystalBombBadelineBoss.Load();
+            MaskedDecal.Load();
+            WormholeBooster.Load();
         }
 
         
@@ -25,6 +34,17 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public override void Unload() {
             SelfUpdater.Unload();
+            AntiGravJelly.Unload();
+            BubbleCollider.Unload();
+            ExplodingStrawberry.Unload();
+            CrystalBombBadelineBoss.Unload();
+            MaskedDecal.Unload();
+        }
+
+        public override void LoadContent(bool firstLoad) {
+            base.LoadContent(firstLoad);
+
+            _CustomEntitySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/CustomEntitySprites.xml");
             Entities.WormholeBooster.Unload();
         }
 

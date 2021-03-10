@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<Sprites>
+
+    <!--Bubble Emitter-->
+    <bubbleEmitter path="objects/StrawberryJam2021/bubbleEmitter/" start="idle">
+        <Loop id="idle" path="close" delay="0.1" frames="3"/>
+        <Anim id="open" path="open" delay="0.1" frames="0-1" goto="close"/>
+        <Anim id="close" path="close" delay="0.1" frames="0-2" goto="idle"/>
+    </bubbleEmitter>
+
+    <bubble path="objects/StrawberryJam2021/bubbleEmitter/bubble/" start="appear">
+        <Anim id="appear" path="appear" delay="0.1" frames="0-2" goto="idle"/>
+        <Loop id="idle" path="idle" delay="0.1" frames="0"/>
+        <Anim id="pop" path="pop" delay="0.01" frames="0-4"/>
+    </bubble>
+
+    <!--Grab Temple Gate-->
+    <grabTempleGate path="objects/StrawberryJam2021/grabTempleGate/" start="idle">
+        <Justify x="0.5" y="0"/>
+        <Loop id="idle" path="TempleDoor" delay="0.1" frames="0"/>
+        <Anim id="open" path="TempleDoor" delay="0.1" frames="6-14" goto="idle"/>
+        <Anim id="hit" path="TempleDoor" delay="0.08" frames="0-4" goto="idle"/>
+    </grabTempleGate>
+
+    <!--Exploding Strawberry-->
+    <explodingStrawberry path="objects/StrawberryJam2021/explodingStrawberry/" start="idle">
+        <Center/>
+        <Anim id="idle" path="explodeberry" delay="0.1" frames="0"/>
+        <Anim id="explode" path="explodeberry" delay="0.1" frames="0-11"/>
+        <Anim id="ghostexplode" path="explodeghostberry" delay="0.1" frames="0-11"/>
+    </explodingStrawberry>
+
+    <!--Wormhole Booster-->
+    <wormholeBooster path="objects/StrawberryJam2021/boosterWormhole/" start="loop">
+        <Justify x="0.5" y="0.5"/>
+        <Loop id="loop" path="boosterWormhole" delay="0.1" frames="0-4"/>
+        <Loop id="inside" path="boosterWormhole" delay="0.1" frames="5-8"/>
+        <Loop id="spin" path="boosterWormhole" delay="0.06" frames="18-25"/>
+        <Anim id="pop" path="boosterWormhole" delay="0.08" frames="9-17"/>
+    </wormholeBooster>
+    
+</Sprites>

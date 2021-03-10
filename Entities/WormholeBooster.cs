@@ -15,6 +15,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static bool TeleDeath;
         public static bool TeleportingDNI;
         public static bool TDLock = false;
+        public bool allowed = true;
         private static ParticleType P_Teleporting;
         private static ParticleType P_WBurst;
         private static ParticleType P_WAppear;
@@ -31,8 +32,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Audio.Play("event:/char/badeline/disappear", nearest.Position);
             self.Get<Sprite>("sprite").Visible = false;
             Collidable = false;
+            allowed = false;
             player.Position = nearest.Position;
-            typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod).Invoke(nearest, new object[] { player }); // teleports and boosts from nearest booster
+            typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod).Invoke(nearest, new object[] { player });
 
             TeleportingDNI = true;
 
@@ -71,9 +73,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             LoadParticles();
             PlayerCollider c;
             while ((c = Get<PlayerCollider>()) != null)
-                Remove(c); // get rid of the existing player collider
+                Remove(c);
 
-            Add(coll = new PlayerCollider(onWormholeActivate)); // add our own
+            Add(coll = new PlayerCollider(onWormholeActivate));
             Remove(self.Get<Sprite>("sprite"));
             Sprite sprite = StrawberryJam2021Module.SpriteBank.Create("wormholeBooster");
             self["sprite"] = sprite;
@@ -113,13 +115,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 tween.OnUpdate = delegate {
                     boost.Get<Sprite>("sprite").Scale = new Vector2(1 - tween.Eased);
                     if (Input.Dash.Pressed && !hitDash) {
-                       
+
                         new DynData<Tween>(tween).Set("TimeLeft", 0f);
                         boost.Get<Sprite>("sprite").Scale = Vector2.Zero;
                         hitDash = true;
                         Input.Dash.ConsumePress();
                     }
-                    };
+                };
                 tween.OnComplete = delegate {
                     TeleDeath = false;
                     TeleportingDNI = false;
@@ -129,7 +131,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     self.Die(Vector2.Zero);
 
                     if (self != null) {
-                        
+
                         self.Visible = true;
                         new DynData<Booster>(self.CurrentBooster).Get<Entity>("outline").RemoveSelf();
                         self.CurrentBooster.RemoveSelf();
@@ -169,6 +171,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
         public static void Unload() {
             On.Celeste.Player.NormalBegin -= allowTeleport;
+            On.Celeste.Player.DashBegin -= killPlayer;
             On.Celeste.Player.BoostEnd -= readyAT;
             On.Celeste.Player.BoostCoroutine -= increaseDelay;
             On.Celeste.Booster.AppearParticles -= wormholeAppearParticles;
@@ -191,7 +194,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             orig(self);
         }
         private static IEnumerator increaseDelay(On.Celeste.Player.orig_BoostCoroutine orig, Player self) {
-            
+
             if (!TeleportingDNI) {
                 IEnumerator original = orig(self);
                 while (original.MoveNext())
@@ -203,24 +206,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
         private static void allowTeleport(On.Celeste.Player.orig_NormalBegin orig, Player self) {
-            
+            if (TeleportingDNI) {
                 TeleportingDNI = false;
                 TDLock = false;
-
-            
-
-            
+                Console.WriteLine("I'M A MOTHERFUCKING BANANA");
+            }
             orig(self);
         }
 
         public override void Update() {
             base.Update();
-            if (CollideCheck<Player>())
+            //if (CollideCheck<Player>())
+            //                Console.WriteLine(TeleportingDNI + ", " + allowed + ", " + TDLock);
+
             if (self.Get<float>("respawnTimer") > 0.2f) {
                 self.Set("respawnTimer", 0.1f);
             }
             self.Get<Sprite>("sprite").Color = color;
-            if (SceneAs<Level>().Tracker.CountEntities<Entities.WormholeBooster>() == 1 && !TeleportingDNI && !TDLock) {
+            if (SceneAs<Level>().Tracker.CountEntities<WormholeBooster>() == 1 && !TeleportingDNI && !TDLock) {
                 TeleDeath = true;
             }
             if (TeleDeath) {
@@ -229,12 +232,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
         private void onWormholeActivate(Player player) {
             if (TeleportingDNI)
-                return; // if something is teleporting the player, don't do it yourself;
+                return;
             else {
-                TeleportingDNI = true; // teleporting (or killing) rn, everyone else shut up;
-                if (TeleDeath) { // TIME TO DIE!!!
-                    typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod).Invoke(this, new object[] { player }); // with TeleDeath, this will kill the player
-                } else { // oh, guess not.
+                TeleportingDNI = true;
+                if (TeleDeath) {
+                    typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod).Invoke(this, new object[] { player });
+                } else {
 
                     Add(new Coroutine(TeleportCoroutine(player)));
 
@@ -242,15 +245,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
         private WormholeBooster FindNearestBooster() {
-            WormholeBooster leader = null; // the closest booster gets stored to be returned at the end
+            WormholeBooster leader = null;
             foreach (WormholeBooster booster in SceneAs<Level>().Tracker.GetEntities<WormholeBooster>()) {
-                if (booster != this) { // this is why we can't just Tracker.GetNearestEntity
+                if (booster != this) {
                     if (leader != null) {
-                        if (((booster.Position - Position).Length() < (leader.Position - Position).Length()) && booster.Collidable) { // if the distance between this and the current booster is less than the distance between this and the leader, update the leader!
+                        if (((booster.Position - Position).Length() < (leader.Position - Position).Length()) && booster.allowed) {
                             leader = booster;
                         }
                     } else {
-                        leader = booster; //if the leader is still null, just update the leader with the first booster it can find
+                        leader = booster;
                     }
                 }
             }
@@ -258,7 +261,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 SceneAs<Level>().Tracker.GetEntity<Player>().Die(Vector2.Zero);
                 return this;
             } else
-                return leader; // this'll be the closest wormholebooster around
+                return leader;
         }
         private class WBTrailManager : Entity {
             private Tween t;
