@@ -1,20 +1,25 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Monocle;
 using System;
-using System.Globalization;
+
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 [CustomEntity("SJ2021/MomentumBlock")]
     public class MomentumBlock : Solid {
-
-        const float MAX_SPEED = 282;
-        const float MAX_SPEED_X = 250; //internally the player has a max lift boost
+        const float MAX_SPEED = 282; //internally the player has a max lift boost in each direction
+        const float MAX_SPEED_X = 250; 
         const float MAX_SPEED_Y = -130;
+        private Vector2 targetSpeed, targetSpeedFlagged;
+        private Color speedColor, speedColorFlagged;
+        private float angle, angleFlagged;
+        private Color startColor, endColor;
+        private MTexture arrowTexture, arrowTextureFlagged;
+        private string flag;
+        private bool isFlagged;
 
-        public MomentumBlock(EntityData data, Vector2 offset) :this(data.Position + offset, data.Width, data.Height, data.Float("speed"), data.Float("direction"), data.Float("speedFlagged"), data.Float("directionFlagged"), data.Attr("startColor"), data.Attr("endColor"), data.Attr("flag")){
-            //
+        public MomentumBlock(EntityData data, Vector2 offset)
+            :this(data.Position + offset, data.Width, data.Height, data.Float("speed"), data.Float("direction"), data.Float("speedFlagged"), data.Float("directionFlagged"), data.Attr("startColor"), data.Attr("endColor"), data.Attr("flag")) {
         }
 
         public override void Awake(Scene scene) {
@@ -25,26 +30,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public MomentumBlock(Vector2 position, int width, int height, float spd, float dir, float spdFlagged, float dirFlagged, string startC, string endC, string flg) : base(position, width, height, safe: false) {
             flag = flg;
             isFlagged = false;
-            dir = dir / 180.0f * (float)Math.PI;  //convert to radians
-            dirFlagged = dirFlagged / 180.0f * (float) Math.PI;
+            dir = Calc.ToRad(dir);  //convert to radians
+            dirFlagged = Calc.ToRad(dirFlagged);
 
-            targetSpeed = new Vector2(spd * (float)Math.Cos(dir), spd * (float)Math.Sin(dir));
-            targetSpeedFlagged = new Vector2(spdFlagged * (float) Math.Cos(dirFlagged), spdFlagged * (float) Math.Sin(dirFlagged));
+            targetSpeed = Calc.AngleToVector(dir, spd);
+            targetSpeedFlagged = Calc.AngleToVector(dirFlagged, spdFlagged);
 
             //bound the components to their respective max for accurate angles
-            targetSpeed.X = Calc.Clamp(targetSpeed.X, -MAX_SPEED_X, MAX_SPEED_X);
-            targetSpeed.Y = Calc.Clamp(targetSpeed.Y, MAX_SPEED_Y , 0);
-
-            targetSpeedFlagged.X = Calc.Clamp(targetSpeedFlagged.X, -MAX_SPEED_X, MAX_SPEED_X);
-            targetSpeedFlagged.Y = Calc.Clamp(targetSpeedFlagged.Y, MAX_SPEED_Y, 0);
-            //get the newly bounded angle
-
+            ClampLiftBoost(targetSpeed);
+            ClampLiftBoost(targetSpeedFlagged);
+            
             angle = dir;
             angleFlagged = dirFlagged;
-            
-            startColor = Monocle.Calc.HexToColor(startC);
-            endColor = Monocle.Calc.HexToColor(endC);
 
+            //calculate the color gradient
+            startColor = Calc.HexToColor(startC);
+            endColor = Calc.HexToColor(endC);
             speedColor = CalculateGradient(spd);
             speedColorFlagged = CalculateGradient(spdFlagged);
             
@@ -57,8 +58,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return GFX.Game.GetAtlasSubtextures("objects/moveBlock/arrow")[Calc.Clamp(value, 0, 7)];
         }
 
+        public static void ClampLiftBoost(Vector2 liftBoost) {
+            liftBoost.X = Calc.Clamp(liftBoost.X, -MAX_SPEED_X, MAX_SPEED_X);
+            liftBoost.Y = Calc.Clamp(liftBoost.Y, MAX_SPEED_Y, 0);
+        }
+
         public Color CalculateGradient(float spd) {
-            float g = (float)(1 -Math.Abs((1.0 - spd / MAX_SPEED) % 2.0f - 1)); //smooth the linear gradient
+            float g = (float)(1 -Math.Abs((1.0 - spd / MAX_SPEED) % 2f - 1)); //smooth the linear gradient
             g=-g+1;
             return Color.Lerp(startColor, endColor, g);
         }
@@ -68,7 +74,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             UpdateFlag();
             MoveHExact(0);  //force a lift update
         }
-        
 
         public override void MoveHExact(int move) {
             LiftSpeed = isFlagged ? targetSpeedFlagged : targetSpeed;
@@ -81,27 +86,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
         
         public override void Render() {
-            Draw.HollowRect(Position, Width, Height, isFlagged? speedColorFlagged : speedColor);
+            Draw.HollowRect(Position, Width, Height, isFlagged ? speedColorFlagged : speedColor);
             Draw.Rect(Center.X - 4f, Center.Y - 4f, 8f, 8f, isFlagged ? speedColorFlagged : speedColor);
-            if (isFlagged)
+            if(isFlagged)
                 arrowTextureFlagged.DrawCentered(Center);
             else
                 arrowTexture.DrawCentered(Center);            
         }
 
         private void UpdateFlag() {
-            if(!String.IsNullOrEmpty(flag))
+            if(!string.IsNullOrEmpty(flag))
                 isFlagged = SceneAs<Level>().Session.GetFlag(flag);
         }
-
-        private Vector2 targetSpeed, targetSpeedFlagged;
-        private Color speedColor, speedColorFlagged;
-        private float angle, angleFlagged;
-        private Color startColor, endColor;
-        private MTexture arrowTexture, arrowTextureFlagged;
-        private string flag;
-
-        bool isFlagged;
     }
-
 }
