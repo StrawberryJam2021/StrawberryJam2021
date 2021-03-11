@@ -15,7 +15,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static bool TeleDeath;
         public static bool TeleportingDNI;
         public static bool TDLock = false;
-        public bool allowed = true;
         private static ParticleType P_Teleporting;
         private static ParticleType P_WBurst;
         private static ParticleType P_WAppear;
@@ -32,7 +31,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Audio.Play("event:/char/badeline/disappear", nearest.Position);
             self.Get<Sprite>("sprite").Visible = false;
             Collidable = false;
-            allowed = false;
             player.Position = nearest.Position;
             typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod).Invoke(nearest, new object[] { player });
 
@@ -171,8 +169,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
         public static void Unload() {
             On.Celeste.Player.NormalBegin -= allowTeleport;
-            On.Celeste.Player.DashBegin -= killPlayer;
             On.Celeste.Player.BoostEnd -= readyAT;
+            On.Celeste.Player.DashBegin -= killPlayer;
             On.Celeste.Player.BoostCoroutine -= increaseDelay;
             On.Celeste.Booster.AppearParticles -= wormholeAppearParticles;
         }
@@ -206,24 +204,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
         private static void allowTeleport(On.Celeste.Player.orig_NormalBegin orig, Player self) {
-            if (TeleportingDNI) {
-                TeleportingDNI = false;
-                TDLock = false;
-                Console.WriteLine("I'M A MOTHERFUCKING BANANA");
-            }
+
+            TeleportingDNI = false;
+            TDLock = false;
             orig(self);
         }
 
         public override void Update() {
             base.Update();
-            //if (CollideCheck<Player>())
-            //                Console.WriteLine(TeleportingDNI + ", " + allowed + ", " + TDLock);
-
-            if (self.Get<float>("respawnTimer") > 0.2f) {
-                self.Set("respawnTimer", 0.1f);
-            }
+            if (CollideCheck<Player>())
+                if (self.Get<float>("respawnTimer") > 0.2f) {
+                    self.Set("respawnTimer", 0.1f);
+                }
             self.Get<Sprite>("sprite").Color = color;
-            if (SceneAs<Level>().Tracker.CountEntities<WormholeBooster>() == 1 && !TeleportingDNI && !TDLock) {
+            if (SceneAs<Level>().Tracker.CountEntities<Entities.WormholeBooster>() == 1 && !TeleportingDNI && !TDLock) {
                 TeleDeath = true;
             }
             if (TeleDeath) {
@@ -247,18 +241,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private WormholeBooster FindNearestBooster() {
             WormholeBooster leader = null;
             foreach (WormholeBooster booster in SceneAs<Level>().Tracker.GetEntities<WormholeBooster>()) {
-                if (booster != this) {
-                    if (leader != null) {
-                        if (((booster.Position - Position).Length() < (leader.Position - Position).Length()) && booster.Collidable && (new DynData<WormholeBooster>(booster).Get<float>("respawnTimer") == 0f)) {
-                            leader = booster;
-                        }
-                    } else {
+
+
+                DynData<Booster> boost = new DynData<Booster>(booster);
+                if (booster != this && booster.Collidable && !booster.BoostingPlayer && boost.Get<float>("respawnTimer") <= 0f) {
+                    if (leader == null || (booster.Position - Position).Length() < (leader.Position - Position).Length()) {
                         leader = booster;
+
                     }
+
                 }
+
+
+
             }
+
             if (leader == null) {
-                SceneAs<Level>().Tracker.GetEntity<Player>().Die(Vector2.Zero);
+                Logger.Log("SJ2021", "Couldn't find valid leader. Contact @aridai#3842 about it.");
+                SceneAs<Level>().Tracker.GetEntity<Player>().StateMachine.State = 0;
+                RemoveSelf();
                 return this;
             } else
                 return leader;
