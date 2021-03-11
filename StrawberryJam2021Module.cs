@@ -15,7 +15,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public override void Load() {
             SelfUpdater.Load();
-            AntiGravJelly.Load();
+            SkyLantern.Load();
             BubbleCollider.Load();
             ExplodingStrawberry.Load();
             CrystalBombBadelineBoss.Load();
@@ -24,7 +24,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public override void Unload() {
             SelfUpdater.Unload();
-            AntiGravJelly.Unload();
+            SkyLantern.Unload();
             BubbleCollider.Unload();
             ExplodingStrawberry.Unload();
             CrystalBombBadelineBoss.Unload();

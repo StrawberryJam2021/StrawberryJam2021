@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
+    <LangVersion>9.0</LangVersion>
     <TargetFrameworks>net452</TargetFrameworks>
     <AssemblyName>StrawberryJam2021</AssemblyName>
     <RootNamespace>Celeste.Mod.StrawberryJam2021</RootNamespace>
