@@ -53,8 +53,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Collider = new Hitbox(8, 10, -4, -10);
             onCollideH = new Collision(CollideHandlerH);
             onCollideV = new Collision(CollideHandlerV);
-            Add(sprite = GFX.SpriteBank.Create("glider"));
-            sprite.SetColor(Color.Red); // todo: custom sprite instead of flat recolor
+            Add(sprite = StrawberryJam2021Module.SpriteBank.Create("skyLantern"));
             Add(wiggler = Wiggler.Create(0.25f, 4, null, false, false));
             Depth = Depths.Player - 5;
             Add(hold = new Holdable(0.3f));
