@@ -11,8 +11,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2 origPos, lastPos;
         private float xAmplitude, yAmplitude;
         private bool xLinear, yLinear;
-        public SineDustSpinner(EntityData data, Vector2 offset) : base(data, offset) {
 
+        public SineDustSpinner(EntityData data, Vector2 offset) : base(data, offset) {
             Collider = new Circle(6, 0, 0);
 
             float xPeriod = data.Float("xPeriod", 1f), xPhase = data.Float("xPhase", 0f) * (float) Math.PI,
