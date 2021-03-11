@@ -24,6 +24,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 
             WormholeBooster nearest = FindNearestBooster();
+            if (nearest == null) {
+                RemoveSelf();
+                yield break;
+            }
 
             SceneAs<Level>().Add(new WBTrailManager(Position, nearest.Position));
             Celeste.Freeze(Engine.RawDeltaTime * 4);
@@ -255,13 +259,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 
             }
-
-            if (leader == null) {
-                Logger.Log("SJ2021", "Couldn't find valid leader. Contact @aridai#3842 about it.");
-                SceneAs<Level>().Tracker.GetEntity<Player>().StateMachine.State = 0;
-                RemoveSelf();
-                return this;
-            } else
                 return leader;
         }
         private class WBTrailManager : Entity {
