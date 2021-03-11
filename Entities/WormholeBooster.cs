@@ -249,7 +249,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             foreach (WormholeBooster booster in SceneAs<Level>().Tracker.GetEntities<WormholeBooster>()) {
                 if (booster != this) {
                     if (leader != null) {
-                        if (((booster.Position - Position).Length() < (leader.Position - Position).Length()) && booster.allowed) {
+                        if (((booster.Position - Position).Length() < (leader.Position - Position).Length()) && booster.Collidable && (new DynData<WormholeBooster>(booster).Get<float>("respawnTimer") == 0f)) {
                             leader = booster;
                         }
                     } else {
