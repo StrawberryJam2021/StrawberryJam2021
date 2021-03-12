@@ -219,7 +219,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (self.Holding?.Entity is SkyLantern && Input.MoveY.Value == 1 && Input.MoveX.Value != 0) {
                 Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
                 self.Holding.Release(Vector2.UnitX * (float) self.Facing);
-                self.Speed.X = self.Speed.X + 08f * (float) -(float) self.Facing;
+                self.Speed.X = self.Speed.X + 80f * (float) -(float) self.Facing;
                 self.Play(SFX.char_mad_crystaltheo_throw, null, 0f);
                 self.Sprite.Play("throw", false, false);
                 self.Holding = null;
