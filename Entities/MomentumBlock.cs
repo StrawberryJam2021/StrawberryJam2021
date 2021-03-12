@@ -19,7 +19,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private bool isFlagged;
 
         public MomentumBlock(EntityData data, Vector2 offset)
-            :this(data.Position + offset, data.Width, data.Height, data.Float("speed"), data.Float("direction"), data.Float("speedFlagged"), data.Float("directionFlagged"), data.Attr("startColor"), data.Attr("endColor"), data.Attr("flag")) {
+            : this(data.Position + offset, data.Width, data.Height, data.Float("speed"), data.Float("direction"), data.Float("speedFlagged"), data.Float("directionFlagged"), data.Attr("startColor"), data.Attr("endColor"), data.Attr("flag")) {
         }
 
         public override void Awake(Scene scene) {
@@ -64,8 +64,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public Color CalculateGradient(float spd) {
-            float g = (float)(1 -Math.Abs((1.0 - spd / MAX_SPEED) % 2f - 1)); //smooth the linear gradient
-            g=-g+1;
+            float g = (float) (1 - Math.Abs((1.0 - spd / MAX_SPEED) % 2f - 1)); //smooth the linear gradient
+            g = -g + 1;
             return Color.Lerp(startColor, endColor, g);
         }
 
@@ -88,14 +88,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Render() {
             Draw.HollowRect(Position, Width, Height, isFlagged ? speedColorFlagged : speedColor);
             Draw.Rect(Center.X - 4f, Center.Y - 4f, 8f, 8f, isFlagged ? speedColorFlagged : speedColor);
-            if(isFlagged)
+            if (isFlagged)
                 arrowTextureFlagged.DrawCentered(Center);
             else
                 arrowTexture.DrawCentered(Center);            
         }
 
         private void UpdateFlag() {
-            if(!string.IsNullOrEmpty(flag))
+            if (!string.IsNullOrEmpty(flag))
+
                 isFlagged = SceneAs<Level>().Session.GetFlag(flag);
         }
     }
