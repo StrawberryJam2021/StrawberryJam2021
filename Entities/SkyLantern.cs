@@ -48,7 +48,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 this.riseSpeeds[i] = float.Parse(speeds[i]);
             }
 
-            lastDroppedTime = 0;
+            lastDroppedTime = -2;
 
             Collider = new Hitbox(8, 10, -4, -10);
             onCollideH = new Collision(CollideHandlerH);
@@ -220,6 +220,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
                 self.Holding.Release(Vector2.UnitX * (float) self.Facing);
                 self.Speed.X = self.Speed.X + 80f * (float) -(float) self.Facing;
+                self.Play(SFX.char_mad_crystaltheo_throw, null, 0f);
+                self.Sprite.Play("throw", false, false);
+                self.Holding = null;
+                return;
+            } else if (self.Holding?.Entity is SkyLantern && Input.MoveY.Value == -1) {
+                Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
+                self.Holding.Release(Vector2.UnitX * (float) self.Facing);
                 self.Play(SFX.char_mad_crystaltheo_throw, null, 0f);
                 self.Sprite.Play("throw", false, false);
                 self.Holding = null;
