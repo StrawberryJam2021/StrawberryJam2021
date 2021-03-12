@@ -11,10 +11,8 @@ const placements = Ahorn.PlacementDict(
     )
 )
 
-Ahorn.minimumSize(entity::LoopBlock) = 16, 16
+Ahorn.minimumSize(entity::LoopBlock) = 24, 24
 Ahorn.resizable(entity::LoopBlock) = true, true
-
-const rectColor = (186, 41, 79, 255) ./ 255
 
 function Ahorn.selection(entity::LoopBlock)
     x, y = Ahorn.position(entity)
@@ -24,15 +22,96 @@ function Ahorn.selection(entity::LoopBlock)
     return Ahorn.Rectangle(x, y, width, height)
 end
 
+const tileset = "objects/StrawberryJam2021/loopBlock/tiles"
+
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::LoopBlock, room::Maple.Room)
     width = Int(get(entity.data, "width", 16))
     height = Int(get(entity.data, "height", 16))
 
-    # will change
-    Ahorn.drawRectangle(ctx, 0, 0, width, 8, rectColor)
-    Ahorn.drawRectangle(ctx, 0, 0, 8, height, rectColor)
-    Ahorn.drawRectangle(ctx, width - 8, 0, 8, height, rectColor)
-    Ahorn.drawRectangle(ctx, 0, height - 8, width, 8, rectColor)
+    tileWidth = ceil(Int, width / 8)
+    tileHeight = ceil(Int, height / 8)
+    
+    tileRands = Ahorn.getDrawableRoom(Ahorn.loadedState.map, room).fgTileStates.rands
+
+    minSize = min(width, height) / 8
+    edgeThickness = clamp(Int(get(entity.data, "edgeThickness", 1)), 1, floor((minSize - 1) / 2))
+
+    # borrowed from Communal Helper
+    color = tuple(Ahorn.argb32ToRGBATuple(parse(Int, String(get(entity.data, "color", "FFFFFF")), base=16))[1:3] ./ 255..., 1.0)
+
+    tiles = Array{Bool}(undef, tileWidth, tileHeight)
+    for i in 1:tileWidth, j in 1:tileHeight
+        tiles[i, j] = (i <= edgeThickness || i > tileWidth - edgeThickness || j <= edgeThickness || j > tileHeight - edgeThickness)
+    end
+
+    # not a super elegant way of doing it
+    for i in 1:tileWidth, j in 1:tileHeight
+        if tiles[i, j] 
+            up = get(tiles, (i, j - 1), false)
+            down = get(tiles, (i, j + 1), false)
+            left = get(tiles, (i - 1, j), false)
+            right = get(tiles, (i + 1, j), false)
+            upleft = get(tiles, (i - 1, j - 1), false)
+            upright = get(tiles, (i + 1, j - 1), false)
+            downleft = get(tiles, (i - 1, j + 1), false)
+            downright = get(tiles, (i + 1, j + 1), false)
+
+            tileChoice = mod(get(tileRands, (j, i), 0), 3)
+
+            innerCorner = up && down && left && right
+            full = innerCorner && upleft && upright && downleft && downright
+
+            tx = 0
+            ty = 0
+
+            if full
+                # missing
+                continue
+            elseif innerCorner
+                if !downright
+                    ty = 7
+                elseif !downleft
+                    tx = 3
+                    ty = 7
+                elseif !upright
+                    ty = 8
+                else 
+                    tx = 3
+                    ty = 8
+                end
+            else
+                if !up && left && down && right
+                    ty = 2
+                elseif up && !left && down && right
+                    tx = 3
+                    ty = 2
+                elseif up && left && !down && right
+                    ty = 3
+                elseif up && left && down && !right
+                    tx = 3
+                    ty = 3
+                elseif !up && !left && down && right
+                    ty = downright ? 0 : 4
+                elseif !up && left && down && !right
+                    tx = 3
+                    ty = downleft ? 0 : 4
+                elseif up && !left && !down && right
+                    ty = upright ? 1 : 5
+                elseif up && left && !down && !right
+                    tx = 3
+                    ty = upleft ? 1 : 5
+                elseif up && down && !left && !right
+                    tx = 3
+                    ty = 6
+                elseif !up && !down && left && right
+                    ty = 6
+                end
+            end
+
+            tx += tileChoice
+            Ahorn.drawImage(ctx, tileset, (i - 1) * 8, (j - 1) * 8, tx * 8, ty * 8, 8, 8, tint=color)
+        end
+    end
 end
 
 end
