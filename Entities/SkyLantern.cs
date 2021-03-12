@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/AntiGravJelly")]
-    class AntiGravJelly : Actor {
+    class SkyLantern : Actor {
 
         public bool canBoostUp { get; private set; }
 
@@ -28,11 +28,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Level level;
         private static ParticleType particleGlow, particleExpand, particleGlide, particlePlatform, particleGlideDown;
 
-        public AntiGravJelly(EntityData data, Vector2 offset) : this(data.Position + offset, data.Bool("bubble", false), data.Float("downThrowMultiplier", 1.8f),
+        public SkyLantern(EntityData data, Vector2 offset) : this(data.Position + offset, data.Bool("bubble", false), data.Float("downThrowMultiplier", 1.8f),
             data.Float("diagThrowXMultiplier", 1.6f), data.Float("diagThrowYMultiplier", 1.8f), data.Float("gravity", -30), data.Bool("canBoostUp", true), data.Attr("riseSpeeds", "-24.0, -176.0, -120.0, -80.0, -40.0")) {
         }
 
-        public AntiGravJelly(Vector2 position, bool bubble, float downThrowMultiplier, float diagThrowXMultiplier, float diagThrowYMultiplier, float gravity, bool canBoostUp, string riseSpeeds) : base(position) {
+        public SkyLantern(Vector2 position, bool bubble, float downThrowMultiplier, float diagThrowXMultiplier, float diagThrowYMultiplier, float gravity, bool canBoostUp, string riseSpeeds) : base(position) {
             this.bubble = bubble;
             this.downThrowMultiplier = downThrowMultiplier;
             this.diagThrowYMultiplier = diagThrowYMultiplier;
@@ -53,8 +53,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Collider = new Hitbox(8, 10, -4, -10);
             onCollideH = new Collision(CollideHandlerH);
             onCollideV = new Collision(CollideHandlerV);
-            Add(sprite = GFX.SpriteBank.Create("glider"));
-            sprite.SetColor(Color.Red); // todo: custom sprite instead of flat recolor
+            Add(sprite = StrawberryJam2021Module.SpriteBank.Create("skyLantern"));
             Add(wiggler = Wiggler.Create(0.25f, 4, null, false, false));
             Depth = Depths.Player - 5;
             Add(hold = new Holdable(0.3f));
@@ -145,9 +144,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 
         private static IEnumerator OnPickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player self) {
-            AntiGravJelly jelly = self.Holding.Entity as AntiGravJelly;
 
-            if (jelly == null) {
+            if (self.Holding.Entity is not SkyLantern jelly) {
                 yield return orig(self);
                 yield break;
             }
@@ -195,7 +193,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
                     set_self_gliderBoosterTimer(0f);
                     self.Speed.Y = Math.Max(self.Speed.Y, 240f * self_gliderBoostDir.Y);
-                } else if (get_self_gliderBoosterTimer() > 0f && self_gliderBoostDir.Y < 0 && ((AntiGravJelly) self.Holding.Entity).canBoostUp) {
+                } else if (get_self_gliderBoosterTimer() > 0f && self_gliderBoostDir.Y < 0 && ((SkyLantern) self.Holding.Entity).canBoostUp) {
                     Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
                     set_self_gliderBoosterTimer(0f);
                     self.Speed.Y = Math.Min(self.Speed.Y, -240f * Math.Abs(self_gliderBoostDir.Y));
@@ -218,7 +216,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void patchPlayerThrow(On.Celeste.Player.orig_Throw orig, Player self) {
-            if (self.Holding?.Entity is AntiGravJelly && Input.MoveY.Value == 1 && Input.MoveX.Value != 0) {
+            if (self.Holding?.Entity is SkyLantern && Input.MoveY.Value == 1 && Input.MoveX.Value != 0) {
                 Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
                 self.Holding.Release(Vector2.UnitX * (float) self.Facing);
                 self.Speed.X = self.Speed.X + 08f * (float) -(float) self.Facing;
@@ -236,7 +234,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
 
-                    if (player?.Holding?.Entity is AntiGravJelly jelly) {
+                    if (player?.Holding?.Entity is SkyLantern jelly) {
                         if (player.SceneAs<Level>().Wind.Y > 0)
                             return jelly.riseSpeeds[0] + 40;
                         return jelly.riseSpeeds[0];
@@ -249,7 +247,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
 
-                    if (player?.Holding?.Entity is AntiGravJelly jelly) {
+                    if (player?.Holding?.Entity is SkyLantern jelly) {
                         return jelly.riseSpeeds[1];
                     }
                     return speed;
@@ -260,7 +258,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
 
-                    if (player?.Holding?.Entity is AntiGravJelly jelly) {
+                    if (player?.Holding?.Entity is SkyLantern jelly) {
                         return jelly.riseSpeeds[2];
                     }
                     return speed;
@@ -271,7 +269,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
 
-                    if (player?.Holding?.Entity is AntiGravJelly jelly) {
+                    if (player?.Holding?.Entity is SkyLantern jelly) {
                         return jelly.riseSpeeds[3];
                     }
                     return speed;
@@ -281,7 +279,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
 
-                    if (player?.Holding?.Entity is AntiGravJelly jelly) {
+                    if (player?.Holding?.Entity is SkyLantern jelly) {
                         return jelly.riseSpeeds[4];
                     }
                     return speed;
