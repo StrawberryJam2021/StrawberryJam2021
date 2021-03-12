@@ -8,14 +8,12 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public static StrawberryJam2021Module Instance;
 
+        public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
+        private SpriteBank _CustomEntitySpriteBank;
 
         public StrawberryJam2021Module() {
             Instance = this;
         }
-
-        public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
-        private SpriteBank _CustomEntitySpriteBank;
-
 
         public override void Load() {
             SelfUpdater.Load();
