@@ -17,7 +17,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static ParticleType P_WBurst;
         public static ParticleType P_WAppear;
         private static MethodInfo BoostPlayer = typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod);
-        private static MethodInfo OverrideOnPlayer = typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod);
         private Color color;
 
         public static void Load() {
@@ -95,7 +94,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             self.Get<Sprite>("sprite").Visible = false;
             Collidable = false;
             player.Position = nearest.Position;
-            OverrideOnPlayer.Invoke(nearest, new object[] { player });
+            BoostPlayer.Invoke(nearest, new object[] { player });
             TeleportingDNI = true;
             yield return DashFix();
             RemoveSelf();
