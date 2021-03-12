@@ -1,4 +1,4 @@
-module SJ_Wormhole
+module SJ2021WormholeBooster
 
 using ..Ahorn, Maple
 

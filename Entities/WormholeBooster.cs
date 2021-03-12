@@ -12,12 +12,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     class WormholeBooster : Booster {
         private PlayerCollider coll;
         private DynData<Booster> self;
-        public static bool TeleDeath;
-        public static bool TeleportingDNI;
-        public static bool TDLock = false;
-        private static ParticleType P_Teleporting;
-        private static ParticleType P_WBurst;
-        private static ParticleType P_WAppear;
+        public static bool TeleDeath; // if true, the next boost from a Wormhole Booster will kill the player
+        public static bool TeleportingDNI; // if true, the player can't interact with other boosters, used to avoid teleportation loops
+        public static bool TDLock = false; // additional interaction-blocking variable, to differentiate between dashing and boosting
+        public static ParticleType P_Teleporting;
+        public static ParticleType P_WBurst;
+        public static ParticleType P_WAppear;
+        private static MethodInfo BoostPlayer = typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod);
         private Color color;
 
         public IEnumerator TeleportCoroutine(Player player) {
@@ -72,17 +73,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
-            LoadParticles();
+
             PlayerCollider c;
             while ((c = Get<PlayerCollider>()) != null)
                 Remove(c);
-
             Add(coll = new PlayerCollider(onWormholeActivate));
+
             Remove(self.Get<Sprite>("sprite"));
             Sprite sprite = StrawberryJam2021Module.SpriteBank.Create("wormholeBooster");
             self["sprite"] = sprite;
             Add(sprite);
             color = Calc.HexToColor("7800bd");
+
             self["particleType"] = P_WBurst;
 
         }
@@ -90,8 +92,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Added(scene);
             self = new DynData<Booster>(this);
             self.Get<Entity>("outline").RemoveSelf();
-
-
         }
         public static void Load() {
             On.Celeste.Player.NormalBegin += allowTeleport;
@@ -102,18 +102,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void killPlayer(On.Celeste.Player.orig_DashBegin orig, Player self) {
-            if (self.CollideFirst<WormholeBooster>() != null) {
+            WormholeBooster booster = self.CollideFirst<WormholeBooster>();
+            if (booster != null) {
                 TeleportingDNI = true;
                 TDLock = true;
             }
-            if (TeleDeath && self.CollideFirst<WormholeBooster>() != null && self != null) {
+            if (TeleDeath && booster != null && self != null) {
                 self.Visible = false;
                 self.StateMachine.State = 11;
                 self.DummyGravity = false;
                 bool hitDash = false;
 
                 Tween tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.ExpoIn, 0.75f, false);
-                DynData<Booster> boost = new DynData<Booster>(self.CollideFirst<WormholeBooster>());
+                DynData<Booster> boost = new DynData<Booster>(booster);
                 tween.OnUpdate = delegate {
                     boost.Get<Sprite>("sprite").Scale = new Vector2(1 - tween.Eased);
                     if (Input.Dash.Pressed && !hitDash) {
@@ -139,38 +140,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         self.CurrentBooster.RemoveSelf();
                     }
                 };
-                self.CollideFirst<WormholeBooster>().Add(tween);
-                self.CollideFirst<WormholeBooster>().Collidable = false;
+                booster.Add(tween);
+                booster.Collidable = false;
                 tween.Start();
             } else
                 orig(self);
         }
 
-        private static void LoadParticles() {
-            if (P_Teleporting == null)
-                P_Teleporting = new ParticleType {
-                    Source = GFX.Game["particles/blob"],
-                    Color = Calc.HexToColor("8100C1") * 0.2f,
-                    Color2 = Calc.HexToColor("7800bd") * 0.2f,
-                    ColorMode = ParticleType.ColorModes.Choose,
-                    RotationMode = ParticleType.RotationModes.SameAsDirection,
-                    Size = 0.7f,
-                    SizeRange = 0.2f,
-                    DirectionRange = (float) Math.PI / 12f,
-                    FadeMode = ParticleType.FadeModes.Late,
-                    LifeMax = 0.2f,
-                    SpeedMin = 70f,
-                    SpeedMax = 100f,
-                    SpeedMultiplier = 1f,
-                    Acceleration = new Vector2(0f, 10f)
-                };
-            P_WBurst = new ParticleType(P_Burst);
-            P_WBurst.Color = Calc.HexToColor("7800bd");
-            P_WAppear = new ParticleType(P_Appear) {
-                Color = Calc.HexToColor("8100C1")
-            };
-
-        }
         public static void Unload() {
             On.Celeste.Player.NormalBegin -= allowTeleport;
             On.Celeste.Player.BoostEnd -= readyAT;
@@ -192,7 +168,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void readyAT(On.Celeste.Player.orig_BoostEnd orig, Player self) {
             TDLock = true;
-
             orig(self);
         }
         private static IEnumerator increaseDelay(On.Celeste.Player.orig_BoostCoroutine orig, Player self) {
@@ -208,7 +183,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
         private static void allowTeleport(On.Celeste.Player.orig_NormalBegin orig, Player self) {
-
             TeleportingDNI = false;
             TDLock = false;
             orig(self);
@@ -216,10 +190,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            if (CollideCheck<Player>())
-                if (self.Get<float>("respawnTimer") > 0.2f) {
-                    self.Set("respawnTimer", 0.1f);
-                }
+            if (self.Get<float>("respawnTimer") > 0.2f) {
+                self.Set("respawnTimer", 0.1f);
+            }
             self.Get<Sprite>("sprite").Color = color;
             if (SceneAs<Level>().Tracker.CountEntities<Entities.WormholeBooster>() == 1 && !TeleportingDNI && !TDLock) {
                 TeleDeath = true;
@@ -234,7 +207,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             else {
                 TeleportingDNI = true;
                 if (TeleDeath) {
-                    typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod).Invoke(this, new object[] { player });
+                    BoostPlayer.Invoke(this, new object[] { player });
                 } else {
 
                     Add(new Coroutine(TeleportCoroutine(player)));
@@ -259,7 +232,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 
             }
-                return leader;
+            return leader;
         }
         private class WBTrailManager : Entity {
             private Tween t;
