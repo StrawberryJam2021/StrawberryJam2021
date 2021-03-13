@@ -2,16 +2,14 @@ module SJ2021WormholeBooster
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/WormholeBooster" WormholeBooster(x::Integer, y::Integer);
+@mapdef Entity "SJ2021/WormholeBooster" WormholeBooster(x::Integer, y::Integer)
 
 const placements = Ahorn.PlacementDict(
-    
     "Wormhole Booster (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         WormholeBooster,
         "rectangle"
     )
 )
-
 
 function Ahorn.selection(entity::WormholeBooster)
     x, y = Ahorn.position(entity)

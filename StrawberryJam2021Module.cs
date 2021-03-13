@@ -25,9 +25,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             WormholeBooster.Load();
         }
 
-
-
-
         public override void Unload() {
             SelfUpdater.Unload();
             AntiGravJelly.Unload();
@@ -44,6 +41,5 @@ namespace Celeste.Mod.StrawberryJam2021 {
             _CustomEntitySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/CustomEntitySprites.xml");
             WormholeBooster.LoadParticles();
         }
-
     }
 }
