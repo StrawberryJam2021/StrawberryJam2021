@@ -19,6 +19,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             BubbleCollider.Load();
             CrystalBombBadelineBoss.Load();
             MaskedDecal.Load();
+            PocketUmbrellaController.Load();
         }
 
         public override void Unload() {
@@ -27,6 +28,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             BubbleCollider.Unload();
             CrystalBombBadelineBoss.Unload();
             MaskedDecal.Unload();
+            PocketUmbrellaController.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
