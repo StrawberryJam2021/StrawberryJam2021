@@ -16,7 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static MethodInfo SpringBounceAnimate = typeof(Spring).GetMethod("BounceAnimate", BindingFlags.NonPublic | BindingFlags.Instance);
         private static Hook FlagTouchSwitchCtorHook;
         private static ConstructorInfo FlagTouchSwitchCtorInfo = typeof(FlagTouchSwitch).GetConstructor(new Type[] { typeof(EntityData), typeof(Vector2) });
-        private static MethodInfo OnFlagTouchSwitchCtorInfo = typeof(FloatingBubbleEmitter).GetMethod("OnFlagTouchSwitchCtor", BindingFlags.Public | BindingFlags.Static);
+        private static MethodInfo OnFlagTouchSwitchCtorInfo = typeof(FloatingBubble).GetMethod("OnFlagTouchSwitchCtor", BindingFlags.Public | BindingFlags.Static);
 
 
         public FloatingBubble(Vector2 position) : base(position) {
