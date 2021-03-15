@@ -1,7 +1,7 @@
+using System.Collections;
 using Monocle;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
-using System.Collections;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked]
@@ -17,10 +17,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             sprite.CenterOrigin();
         }
 
-        public void Fire()
-        {
-            if(!firing)
-            {
+        public void Fire() {
+            if (!firing) {
                 Add(new Coroutine(SpawnRoutine()));
             }
         }

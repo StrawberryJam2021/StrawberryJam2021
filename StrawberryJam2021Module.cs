@@ -20,6 +20,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ExplodingStrawberry.Load();
             CrystalBombBadelineBoss.Load();
             MaskedDecal.Load();
+            FloatingBubble.Load();
         }
 
         public override void Unload() {
@@ -29,6 +30,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ExplodingStrawberry.Unload();
             CrystalBombBadelineBoss.Unload();
             MaskedDecal.Unload();
+            FloatingBubble.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
