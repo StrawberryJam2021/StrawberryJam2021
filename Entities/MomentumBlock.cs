@@ -22,11 +22,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             : this(data.Position + offset, data.Width, data.Height, data.Float("speed"), data.Float("direction"), data.Float("speedFlagged"), data.Float("directionFlagged"), data.Attr("startColor"), data.Attr("endColor"), data.Attr("flag")) {
         }
 
-        public override void Awake(Scene scene) {
-            base.Awake(scene);
-            UpdateFlag();
-        }
-
         public MomentumBlock(Vector2 position, int width, int height, float spd, float dir, float spdFlagged, float dirFlagged, string startC, string endC, string flg) : base(position, width, height, safe: false) {
             flag = flg;
             isFlagged = false;
@@ -51,6 +46,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             
             arrowTexture = GetArrowTexture(angle);
             arrowTextureFlagged = GetArrowTexture(angleFlagged);
+        }
+
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
+            UpdateFlag();
         }
 
         public static MTexture GetArrowTexture(float angle) {
@@ -96,7 +96,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void UpdateFlag() {
             if (!string.IsNullOrEmpty(flag))
-
                 isFlagged = SceneAs<Level>().Session.GetFlag(flag);
         }
     }
