@@ -63,9 +63,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Added(Scene scene) {
             base.Added(scene);
-            Logger.Log("SJ2021/PUC", "added");
             if (Instance != this) {
-                Logger.Log("SJ2021/PUC", "removeself");
                 scene.Add(Instance);
                 RemoveSelf();
             }
@@ -76,6 +74,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Player.Throw += Player_Throw;
             On.Celeste.Player.Added += Player_Added;
             isCelesteBeta = Celeste.Instance.Version >= Version.Parse("1.3.3.0");
+            Logger.Log("SJ2021/PUC", $"celeste version is {Celeste.Instance.Version}, min beta version is {Version.Parse("1.3.3.0")}, isCelesteBeta {isCelesteBeta}");
         }
 
         public static void Unload() {
@@ -145,9 +144,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool grabCheck() {
             if (isCelesteBeta) {
-                return Input.GrabCheck;
+                return betaGrabCheck();
             }
             return Input.Grab.Check;
+        }
+
+        private bool betaGrabCheck() {
+            return Input.GrabCheck;
         }
 
         private bool safelySpawnJelly(out PocketUmbrella umbrella) {
@@ -161,8 +164,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private bool shouldSpawnJelly() {
-            var t = holdDelay <= 0 && player.Stamina > 20 && !player.Ducking && !wallJumpCheck(1) && !wallJumpCheck(-1) && playerStateCheck(); // && not near wall && not grounded (?)
-            return t;
+            return holdDelay <= 0 && player.Stamina > 20 && !player.Ducking && !wallJumpCheck(1) && !wallJumpCheck(-1) && playerStateCheck(); // && not near wall && not grounded (?)
         }
 
         private bool playerStateCheck() {
