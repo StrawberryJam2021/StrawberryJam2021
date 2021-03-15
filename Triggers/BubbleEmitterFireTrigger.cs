@@ -1,7 +1,9 @@
 using Microsoft.Xna.Framework;
+using Celeste.Mod.Entities;
 using Celeste.Mod.StrawberryJam2021.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
+    [CustomEntity("SJ2021/bubbleEmitterFireTrigger")]
     public class BubbleEmitterFireTrigger : Trigger {
         private string flag;
         private bool onlyOnce;
