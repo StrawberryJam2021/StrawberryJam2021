@@ -1,5 +1,7 @@
-using Monocle;
 using Celeste.Mod.StrawberryJam2021.Entities;
+using Microsoft.Xna.Framework;
+using Monocle;
+using System;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
@@ -8,7 +10,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
         private SpriteBank _CustomEntitySpriteBank;
-        
+
         public StrawberryJam2021Module() {
             Instance = this;
         }
@@ -20,6 +22,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ExplodingStrawberry.Load();
             CrystalBombBadelineBoss.Load();
             MaskedDecal.Load();
+            WormholeBooster.Load();
         }
 
         public override void Unload() {
@@ -29,13 +32,14 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ExplodingStrawberry.Unload();
             CrystalBombBadelineBoss.Unload();
             MaskedDecal.Unload();
+            WormholeBooster.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
             base.LoadContent(firstLoad);
 
             _CustomEntitySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/CustomEntitySprites.xml");
+            WormholeBooster.LoadParticles();
         }
-
     }
 }
