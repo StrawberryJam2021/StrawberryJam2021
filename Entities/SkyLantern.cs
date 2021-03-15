@@ -26,6 +26,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private SineWave platformSine;
         private SoundSource risingSFX;
         private Level level;
+        private VertexLight light;
         private static ParticleType particleGlow, particleExpand, particleGlide, particlePlatform, particleGlideDown;
 
         public SkyLantern(EntityData data, Vector2 offset) : this(data.Position + offset, data.Bool("bubble", false), data.Float("downThrowMultiplier", 1.8f),
@@ -48,7 +49,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 this.riseSpeeds[i] = float.Parse(speeds[i]);
             }
 
-            lastDroppedTime = 0;
+            lastDroppedTime = -2;
 
             Collider = new Hitbox(8, 10, -4, -10);
             onCollideH = new Collision(CollideHandlerH);
@@ -68,6 +69,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             platformSine.Randomize();
             Add(risingSFX = new SoundSource());
             Add(new WindMover(WindHandler));
+            Add(light = new VertexLight(new Vector2(0, -15), Color.Orange, 1f, 32, 64));
             InitiateParticles();
         }
 
@@ -94,8 +96,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     LifeMax = 1.2f,
                     ColorMode = ParticleType.ColorModes.Blink,
                     FadeMode = ParticleType.FadeModes.Late,
-                    Color = Calc.HexToColor("4FFFF3"),
-                    Color2 = Calc.HexToColor("FFF899"),
+                    Color = Calc.HexToColor("951a00"),
+                    Color2 = Calc.HexToColor("b94f00"),
                     Source = GFX.Game["particles/rect"],
                     Size = 0.5f,
                     SizeRange = 0.2f,
@@ -127,8 +129,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     LifeMax = 0.8f,
                     Size = 1f,
                     FadeMode = ParticleType.FadeModes.Late,
-                    Color = Calc.HexToColor("B7F3FF"),
-                    Color2 = Calc.HexToColor("F4FDFF"),
+                    Color = Calc.HexToColor("daa600"),
+                    Color2 = Calc.HexToColor("da8200"),
                     ColorMode = ParticleType.ColorModes.Blink
                 };
             if (particleExpand == null)
@@ -219,7 +221,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (self.Holding?.Entity is SkyLantern && Input.MoveY.Value == 1 && Input.MoveX.Value != 0) {
                 Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
                 self.Holding.Release(Vector2.UnitX * (float) self.Facing);
-                self.Speed.X = self.Speed.X + 08f * (float) -(float) self.Facing;
+                self.Speed.X = self.Speed.X + 80f * (float) -(float) self.Facing;
+                self.Play(SFX.char_mad_crystaltheo_throw, null, 0f);
+                self.Sprite.Play("throw", false, false);
+                self.Holding = null;
+                return;
+            } else if (self.Holding?.Entity is SkyLantern && Input.MoveY.Value == -1) {
+                Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
+                self.Holding.Release(Vector2.UnitX * (float) self.Facing);
                 self.Play(SFX.char_mad_crystaltheo_throw, null, 0f);
                 self.Sprite.Play("throw", false, false);
                 self.Holding = null;
@@ -440,6 +449,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private IEnumerator DestroyAnimationCoroutine() {
             Audio.Play(SFX.game_10_glider_emancipate, Position);
             sprite.Play("death", false, false);
+            var LightTween = Tween.Create(Tween.TweenMode.Oneshot, Ease.Linear, 1f);
+            LightTween.Start(true);
+            LightTween.OnUpdate = delegate (Tween t) { light.Alpha = t.Eased; };
+            Add(LightTween);
             yield return 1f;
             RemoveSelf();
             yield break;

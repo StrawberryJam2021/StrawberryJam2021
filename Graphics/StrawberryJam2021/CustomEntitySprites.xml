@@ -33,7 +33,7 @@
 
 	<!--Sky Lantern-->
 	<skyLantern path="objects/StrawberryJam2021/skyLantern/" start="idle">
-		<Justify x="0.5" y="0.58"/>
+		<Justify x="0.5" y="0.9"/>
 		<Anim id="idle" path="idle" delay="0.1"/>
 		<Anim id="held" path="held" delay="0.1"/>
 		<Anim id="fall" path="fall" delay="0.06" goto="fallLoop"/>
