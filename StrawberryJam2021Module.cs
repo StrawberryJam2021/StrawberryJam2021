@@ -1,5 +1,6 @@
 using Monocle;
 using Celeste.Mod.StrawberryJam2021.Entities;
+using Celeste.Mod.StrawberryJam2021.Triggers;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
@@ -20,6 +21,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ExplodingStrawberry.Load();
             CrystalBombBadelineBoss.Load();
             MaskedDecal.Load();
+            HoldableDashTrigger.Load();
         }
 
         public override void Unload() {
@@ -29,6 +31,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ExplodingStrawberry.Unload();
             CrystalBombBadelineBoss.Unload();
             MaskedDecal.Unload();
+            HoldableDashTrigger.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
