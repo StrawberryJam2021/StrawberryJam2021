@@ -12,12 +12,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class DashSequenceController : Entity {
         public string[] DashCode;
         public string FlagLabel;
+        public string FailureFlag;
         private DashListener DashListener;
         private int CodePosition;
 
         public DashSequenceController(EntityData data, Vector2 offset) : base(data.Position + offset) {
             DashCode = data.Attr("dashCode", "*").ToUpper().Split(',');
             FlagLabel = data.Attr("flagLabel", "");
+            FailureFlag = data.Attr("flagOnFailure", "");
 
             //stole this code from max480's helping hand set flag on spawn trigger hope u don't mind
             Level level = null;
@@ -31,6 +33,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 for (int i = 1; i <= DashCode.Length; i++) {
                     level.Session.SetFlag(FlagLabel + "-" + i, false);
                 }
+                level.Session.SetFlag(FailureFlag, false);
             }
             Add(DashListener = new DashListener() {
                 OnDash = OnDash
@@ -61,6 +64,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             } else {
                 for (int i = 1; i <= DashCode.Length; i++) {
                     SceneAs<Level>().Session.SetFlag(FlagLabel + "-" + i, false);
+                }
+                if (CodePosition != 0 && !string.IsNullOrEmpty(FailureFlag)) {
+                    SceneAs<Level>().Session.SetFlag(FailureFlag, true);
                 }
                 CodePosition = 0;
             }
