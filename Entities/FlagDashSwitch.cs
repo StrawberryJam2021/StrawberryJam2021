@@ -56,11 +56,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Added(Scene scene) {
             base.Added(scene);
-            Logger.Log("SJ2021/FDS", "added");
             if (SceneAs<Level>().Session.GetFlag(flag) == target) {
-                Logger.Log("SJ2021/FDS", $"getflag:{flag}");
                 if (!persistent) {
-                    Logger.Log("SJ2021/FDS", "non persist");
                     SceneAs<Level>().Session.SetFlag(flag, false);
                 }
             }
@@ -93,9 +90,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            if (Scene.OnInterval(1f)) {
-                //Logger.Log("SJ2021/fds", $"speed: {Speed}");
-            }
         }
 
         private static Sides chooseFacing(bool horizontal, bool leftSide, bool ceiling) {
@@ -125,10 +119,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void staticMoverMove(Vector2 amount) {
-            //Logger.Log("SJ2021/FDS", $"before: {Position}, move: {amount}, after: {Position + amount}");
             if ((Sides) ds_side.GetValue(this) == Sides.Down && !(bool) ds_pressed.GetValue(this)) {
-                // up facing dashswitch must be handled seperately
-                // manually tracking origpos, adjusting this.starty as needed?
                 float v = (float) ds_startY.GetValue(this);
                 ds_startY.SetValue(this, v + amount.Y);
             }
@@ -138,11 +129,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (GetPlayerRider() is Player p) {
                 p.MoveV(amount.Y);
                 p.MoveH(amount.X);
-                /*if (HasPlayerOnTop()) {
-                    movePlayerOnTop(p, amount);
-                    return;
-                }
-                movePlayerOnSide(p, amount);*/
             }
         }
 
