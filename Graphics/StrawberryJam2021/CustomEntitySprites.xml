@@ -50,4 +50,13 @@
         <Anim id="pop" path="boosterWormhole" delay="0.08" frames="9-17"/>
     </wormholeBooster>
     
+    <!--Rose Glider-->
+	<roseGliderBoxes path="objects/StrawberryJam2021/roseGlider/" start="idle">
+		<Loop id="idle" path="roseGliderBoxes" delay="0.1" frames="3-7,6-4"/>
+        <Loop id="idle_gust" path="roseGliderBoxes" delay="0.1" frames="3-0,1,2"/>
+	</roseGliderBoxes>
+    <roseGlider path="objects/StrawberryJam2021/roseGlider/" start="idle">
+		<Loop id="idle" path="roseGlider" delay="0.1" frames="3-7,6-4"/>
+        <Loop id="idle_gust" path="roseGlider" delay="0.1" frames="3-0,1,2"/>
+	</roseGlider>
 </Sprites>

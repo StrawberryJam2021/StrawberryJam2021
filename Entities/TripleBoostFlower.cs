@@ -22,10 +22,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Player player;
         private DynData<Player> playerDynData;
         private Level level;
+        private Sprite sprite;
+        private Random prng;
+        private EntityID id;
         private static ParticleType boostParticles;
         private static MethodInfo player_launchBegin = typeof(Player).GetMethod("LaunchBegin", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public TripleBoostFlower(EntityData data, Vector2 offset) : this(data.Position + offset, data.Float("boostDelay", 0.2f), data.Float("boostSpeed", -160f), data.Float("boostDuration", 0.5f)) {
+        public TripleBoostFlower(EntityData data, Vector2 offset, EntityID id) : this(data.Position + offset, data.Float("boostDelay", 0.2f), data.Float("boostSpeed", -160f), data.Float("boostDuration", 0.5f)) {
+            this.id = id;
         }
 
 
@@ -44,6 +48,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             prevLiftSpeed = Vector2.Zero;
 
             // todo sprite
+            Add(sprite = StrawberryJam2021Module.SpriteBank.Create("roseGliderBoxes"));
+            sprite.CenterOrigin();
+            sprite.Origin.Y += 9;
+            sprite.OnLoop = new Action<string>(handleSpriteLoop);
+            sprite.Play("idle");
 
             Collider = new Hitbox(6, 10, -3, -5); // todo adjust
             onCollideH = new Collision(collideHandlerH);
@@ -64,6 +73,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Added(Scene scene) {
             base.Added(scene);
             level = SceneAs<Level>();
+            prng = new Random($"{level.Session.Area.SID}_{level.Session.Level}_{id.ID}".GetHashCode());
         }
 
         public static void Load() {
@@ -72,6 +82,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void Unload() {
 
+        }
+
+        private void handleSpriteLoop(string id) {
+            if (id.Equals("idle") || id.Equals("idle_gust")) {
+                bool gust = prng.Next(0, 10) == 0;
+                if (gust) {
+                    sprite.Play("idle_gust");
+                } else {
+                    sprite.Play("idle");
+                }
+            }
         }
 
         public override void Update() {
