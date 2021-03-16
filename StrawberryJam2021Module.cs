@@ -1,32 +1,45 @@
-﻿using Monocle;
+using Celeste.Mod.StrawberryJam2021.Entities;
+using Microsoft.Xna.Framework;
+using Monocle;
+using System;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
 
         public static StrawberryJam2021Module Instance;
 
-        // SpriteBanks
-        public static SpriteBank GrabTempleGateSpriteBank => Instance._GrabTempleGateSpriteBank;
-        public SpriteBank _GrabTempleGateSpriteBank;
-        
+        public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
+        private SpriteBank _CustomEntitySpriteBank;
+
         public StrawberryJam2021Module() {
             Instance = this;
         }
 
         public override void Load() {
             SelfUpdater.Load();
+            SkyLantern.Load();
+            BubbleCollider.Load();
+            ExplodingStrawberry.Load();
+            CrystalBombBadelineBoss.Load();
+            MaskedDecal.Load();
+            WormholeBooster.Load();
         }
 
         public override void Unload() {
             SelfUpdater.Unload();
+            SkyLantern.Unload();
+            BubbleCollider.Unload();
+            ExplodingStrawberry.Unload();
+            CrystalBombBadelineBoss.Unload();
+            MaskedDecal.Unload();
+            WormholeBooster.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
             base.LoadContent(firstLoad);
 
-            _GrabTempleGateSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/GrabTempleGateSprites.xml");
-
+            _CustomEntitySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/CustomEntitySprites.xml");
+            WormholeBooster.LoadParticles();
         }
-
     }
 }

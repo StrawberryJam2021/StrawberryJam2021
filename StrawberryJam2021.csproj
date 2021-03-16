@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
+    <LangVersion>9.0</LangVersion>
     <TargetFrameworks>net452</TargetFrameworks>
     <AssemblyName>StrawberryJam2021</AssemblyName>
     <RootNamespace>Celeste.Mod.StrawberryJam2021</RootNamespace>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>true</ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>
 
     <CelestePrefix Condition="'$(CelestePrefix)' == '' And Exists('..\..\Celeste.exe')">..\..</CelestePrefix>
     <CelestePrefix Condition="'$(CelestePrefix)' == ''">lib-stripped</CelestePrefix>
@@ -24,6 +25,10 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="$(CelestePrefix)\MMHOOK_Celeste.dll">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="CavernHelper">
+      <HintPath>lib-stripped\CavernHelper.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
