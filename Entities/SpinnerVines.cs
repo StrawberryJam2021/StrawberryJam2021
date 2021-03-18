@@ -258,7 +258,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             for(int i = 1; i < WidthVecarr.Length-1; i++) {
                 WidthVecarr[i] = (WidthVecarr[i - 1] + WidthVecarr[i + 1]) / 2;
-            }
+            } 
         }
 
         IEnumerator SpawnGrowingSpinner(float WaitTime) {
@@ -408,19 +408,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 vertices[j].Color = color;
             }
         }
-
-        private Vector2 TargetTentaclePosition(Tentacle tentacle, Vector2 position, float along) {
-            Vector2 value;
-            Vector2 value2 = (value = position - outwards * offset);
-            if (player != null) {
-                Vector2 value3 = outwards.Perpendicular();
-                value = Calc.ClosestPointOnLine(value - value3 * 200f, value + value3 * 200f, player.Position);
-            }
-            Vector2 vector = value2 + outwards.Perpendicular() * (-220f + along + tentacle.Width * 0.5f);
-            float scaleFactor = (value - vector).Length();
-            return vector + outwards * scaleFactor * 0.6f;
-        }
-
 
 
         public override void Update() {
