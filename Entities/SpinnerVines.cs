@@ -29,7 +29,7 @@ public class SpinnerVinesModule : EverestModule
 
     public override void Load()
     {
-        Console.WriteLine("loadieload");
+
     }
 
     public override void Unload()
@@ -407,6 +407,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             for (int j = 0; j < vertices.Length; j++) {
                 vertices[j].Color = color;
             }
+            
         }
 
 
