@@ -119,7 +119,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         Vector2[] SpinnerPositions;
 
-        int CurrentSpinnerNum = 0;
+        int CurrentSpinnerNum = 1;
 
         int CurrentGrowthCycle = 0;
 
@@ -270,7 +270,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 //}
                 switch (CurrentGrowthCycle) {
                     case 0:
-                        if (CurrentSpinnerNum > 0) {
                             CurrentSpinner = new CrystalStaticSpinner(SpinnerPositions[CurrentSpinnerNum], false, CrystalColor.Blue);
                             DynData<CrystalStaticSpinner> CurrentSpinnerData1 = new DynData<CrystalStaticSpinner>(CurrentSpinner);
                             CurrentSpinnerData1.Set<bool>("expanded", true);
@@ -280,71 +279,71 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             currenspinnerimg.Position += new Vector2(-12, -12);
                             CurrentSpinner.Collidable = false;
                             DisableHitBox = true;
-                        }
+                        
                         CurrentGrowthCycle++;
 
                         break;
                     case 1:
-                        if (CurrentSpinnerNum > 0) {
+                   
                             CurrentSpinner.Remove(currenspinnerimg);
                             CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner2"]));
                             currenspinnerimg.Color = SpinnerColor;
                             currenspinnerimg.Position += new Vector2(-12, -12);
                             CurrentSpinner.Collidable = false;
-                        }
+                        
                         CurrentGrowthCycle++;
                         break;
                     case 2:
-                        if (CurrentSpinnerNum > 0) {
+                      
                             CurrentSpinner.Remove(currenspinnerimg);
                             CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner3"]));
                             currenspinnerimg.Color = SpinnerColor;
                             currenspinnerimg.Position += new Vector2(-12, -12);
 
                             CurrentSpinner.Collidable = false;
-                        }
+                        
                         CurrentGrowthCycle++;
                         break;
                     case 3:
-                        if (CurrentSpinnerNum > 0) {
+                        
                             CurrentSpinner.Remove(currenspinnerimg);
                             CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner4"]));
                             currenspinnerimg.Color = SpinnerColor;
                             currenspinnerimg.Position += new Vector2(-12, -12);
                             CurrentSpinner.Collidable = false;
-                        }
+                        
                         CurrentGrowthCycle++;
                         break;
 
                     case 4:
-                        if (CurrentSpinnerNum > 0) {
+                       
                             CurrentSpinner.Remove(currenspinnerimg);
                             CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner5"]));
                             currenspinnerimg.Color = SpinnerColor;
                             currenspinnerimg.Position += new Vector2(-12, -12);
                             CurrentSpinner.Collidable = false;
-                        }
+                        
                         CurrentGrowthCycle++;
                         break;
                     case 5:
-                        if (CurrentSpinnerNum > 0) {
+                       
                             CurrentSpinner.Remove(currenspinnerimg);
                             CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner6"]));
                             currenspinnerimg.Color = SpinnerColor;
                             currenspinnerimg.Position += new Vector2(-12, -12);
                             CurrentSpinner.Collidable = false;
-                        }
+                        
                         CurrentGrowthCycle++;
                         break;
                     case 6:
-                        if (CurrentSpinnerNum > 0) {
+                        
                             CurrentSpinner.Remove(currenspinnerimg);
                             CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner7"]));
                             currenspinnerimg.Color = SpinnerColor;
                             currenspinnerimg.Position += new Vector2(-12, -12);
                             CurrentSpinner.Collidable = true;
                             DisableHitBox = false;
-                        }
+                        
                         CurrentSpinnerNum++;
                         CurrentGrowthCycle = 0;
                         break;
