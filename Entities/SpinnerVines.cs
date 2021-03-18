@@ -163,9 +163,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             SpinnerPositionsSmooth = new Vector2[SpinnerPositions.Length * 2 - 1];
 
-            for (int i = 0; i < SpinnerPositions.Length; i++) {
-                Console.WriteLine(SpinnerPositions[i]);
-            }
 
             int r = 0;
             for (int i = 0; i < SpinnerPositionsSmooth.Length; i += 2, r++) {
@@ -416,7 +413,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (DisableHitBox) {
                 CurrentSpinner.Collidable = false;
             }
-            Console.WriteLine("//////////////");
             if (HasStartedGrowing) {
                 SpinnerGrowthPos[CurrentDirNum] += GrowDir;
                 if (SpinnerGrowthPos[CurrentDirNum].X >= SpinnerPositionsSmooth[CurrentDirNum].X - 0.1 && SpinnerPositionsSmooth[CurrentDirNum].X <= SpinnerPositionsSmooth[CurrentDirNum].X + 0.1 && SpinnerGrowthPos[CurrentDirNum].Y >= SpinnerPositionsSmooth[CurrentDirNum].Y - 0.1 && SpinnerGrowthPos[CurrentDirNum].Y <= SpinnerPositionsSmooth[CurrentDirNum].Y + 0.1) {
@@ -432,7 +428,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         }
                         SpinnerGrowthPos = SpinnerVec;
                         SpinnerGrowthPos[CurrentDirNum] += GrowDir;
-                        Console.WriteLine("neww Dir");
                     } else {
                         HasStartedGrowing = false;
                     }
