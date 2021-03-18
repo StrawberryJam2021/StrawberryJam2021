@@ -2,7 +2,7 @@ module SJ2021SpinnerVines
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/SpinnerVines" SpinnerVines(x::Integer, y::Integer, TentacleColor :: String = "ffffff", SpinnerColor :: String = "ffffff", nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], NewSpinnerWaitTime :: Number = 0.0, MaxThicknessDecrease :: Number = 0.0, TentacleWidth :: Number = 0.0)
+@mapdef Entity "SJ2021/SpinnerVines" SpinnerVines(x::Integer, y::Integer, ID ::Integer = 0; TentacleColor :: String = "ffffff", SpinnerColor :: String = "ffffff", nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], NewSpinnerWaitTime :: Number = 0.0, MaxThicknessDecrease :: Number = 0.0, TentacleWidth :: Number = 0.0)
 
 const placements = Ahorn.PlacementDict(
     "SpinnerVines" => Ahorn.EntityPlacement(

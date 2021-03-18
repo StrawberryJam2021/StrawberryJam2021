@@ -77,6 +77,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private Player player;
 
+        bool HasStarted = false;
+
         private float fearDistance;
 
         private float offset;
@@ -105,11 +107,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private List<MTexture> fillers;
 
-        private Vector2[] SpinnerGrowthPos = new Vector2[2];
+        private Vector2[] SpinnerGrowthPos = new Vector2[3];
 
         Vector2[] SpinnerPositionsSmooth;
 
-        int CurrentDirNum = 2;
+        int CurrentDirNum = 3;
 
         CrystalStaticSpinner CurrentSpinner;
 
@@ -141,19 +143,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         Vector2[] WidthVecarr;
 
+        int ID;
+
         public SpinnerVines() {
         }
 
         public SpinnerVines(EntityData data, Vector2 offset) : base(data.Position + offset) {
-            float SpinnerGrowthTime = (float) SpinnerWaitTime;
-            Add(new Coroutine(SpawnGrowingSpinner(SpinnerGrowthTime / 7f)));
             SpinnerWaitTime = data.Int("NewSpinnerWaitTime");
             TentacleWidth = data.Float("TentacleWidth");
             MaxThin = data.Float("MaxThicknessDecrease");
             color = Calc.HexToColor(data.Attr("TentacleColor", "3f7a3b"));
             SpinnerColor = Calc.HexToColor(data.Attr("SpinnerColor", "ff003c"));
+            ID = data.Int("ID");
             SpinnerPositions = data.NodesOffset(Position);
-
+            Console.WriteLine("Maxthin: " + MaxThin);
             Vector2[] vecarr = new Vector2[SpinnerPositions.Length + 1];
             vecarr[0] = Position;
             for (int i = 1; i < vecarr.Length; i++) {
@@ -174,11 +177,27 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             for (int i = 1; i <= SpinnerPositionsSmooth.Length - 2; i += 2) {
                 if (Math.Abs(Vector2.Distance(SpinnerPositionsSmooth[i - 1], SpinnerPositionsSmooth[i + 1])) > 1.5) {
                     if (i <= 2) {
-                        CurveOffset = (SpinnerPositionsSmooth[i + 1].X - SpinnerPositionsSmooth[i - 1].X) / 30;
+                        if (SpinnerPositionsSmooth[i + 1].X - SpinnerPositionsSmooth[i - 1].X >= SpinnerPositionsSmooth[i + 1].Y - SpinnerPositionsSmooth[i - 1].Y) {
+                            CurveOffset = (SpinnerPositionsSmooth[i + 1].X - SpinnerPositionsSmooth[i - 1].X) / 100;
+                        }
+                        else {
+                            CurveOffset = (SpinnerPositionsSmooth[i + 1].Y - SpinnerPositionsSmooth[i - 1].Y) / 100;
+                        }
                     } else {
-                        CurveOffset = (SpinnerPositionsSmooth[i + -1].X - SpinnerPositionsSmooth[i - 3].X) / 30;
+
+                        if (SpinnerPositionsSmooth[i - 1].X - SpinnerPositionsSmooth[i - 3].X >= SpinnerPositionsSmooth[i - 1].Y - SpinnerPositionsSmooth[i - 3].Y) {
+                            CurveOffset = (SpinnerPositionsSmooth[i - 1].X - SpinnerPositionsSmooth[i - 3].X) / 100;
+                        } else {
+                            CurveOffset = (SpinnerPositionsSmooth[i - 1].Y - SpinnerPositionsSmooth[i - 3].Y) / 100;
+                        }
                     }
-                    SpinnerPositionsSmooth[i] = new Vector2(((SpinnerPositionsSmooth[i - 1].X + SpinnerPositionsSmooth[i + 1].X) / 2) + (8 * CurveOffset), (SpinnerPositionsSmooth[i - 1].Y + SpinnerPositionsSmooth[i + 1].Y) / 2);
+                    float multi;
+                    if (SpinnerPositionsSmooth[i - 1].X - SpinnerPositionsSmooth[i + 1].X >= SpinnerPositionsSmooth[i - 1].Y - SpinnerPositionsSmooth[i + 1].Y) {
+                        multi = SpinnerPositionsSmooth[i - 1].X - SpinnerPositionsSmooth[i + 1].X;
+                    } else {
+                        multi = SpinnerPositionsSmooth[i - 1].Y - SpinnerPositionsSmooth[i + 1].Y;
+                    }
+                    SpinnerPositionsSmooth[i] = new Vector2(((SpinnerPositionsSmooth[i - 1].X + SpinnerPositionsSmooth[i + 1].X) / 2) - (multi * CurveOffset), (SpinnerPositionsSmooth[i - 1].Y + SpinnerPositionsSmooth[i + 1].Y) / 2);
                 } else {
                     SpinnerPositionsSmooth[i] = new Vector2(((SpinnerPositionsSmooth[i - 1].X + SpinnerPositionsSmooth[i + 1].X) / 2), (SpinnerPositionsSmooth[i - 1].Y + SpinnerPositionsSmooth[i + 1].Y) / 2);
                 }
@@ -186,7 +205,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             SpinnerGrowthPos[0] = SpinnerPositionsSmooth[0];
             SpinnerGrowthPos[1] = SpinnerPositionsSmooth[1];
-
+            SpinnerGrowthPos[2] = SpinnerPositionsSmooth[2];
 
 
             for (int i = 0; i < SpinnerPositionsSmooth.Length - 1; i++) {
@@ -251,22 +270,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     WidthVecarr[i].Y = X;
                     WidthVecarr[i] = Vector2.Normalize(WidthVecarr[i]);
                     WidthVecarr[i] = (WidthVecarr[i] + Vec) / 2;
+                    WidthVecarr[i] = Vector2.Normalize(WidthVecarr[i]);
                 }
             }
             for(int i = 1; i < WidthVecarr.Length-1; i++) {
                 WidthVecarr[i] = (WidthVecarr[i - 1] + WidthVecarr[i + 1]) / 2;
-            } 
+            }
+            for (int i = 1; i < WidthVecarr.Length - 1; i++) {
+                WidthVecarr[i] = (WidthVecarr[i - 1] + WidthVecarr[i + 1]) / 2;
+            }
         }
 
         IEnumerator SpawnGrowingSpinner(float WaitTime) {
             while (CurrentSpinnerNum < SpinnerPositions.Length) {
                 yield return WaitTime;
-                //if (currenspinnerimg != null)
-                //{
-                // Remove(currenspinnerimg);
-                //}
+
                 switch (CurrentGrowthCycle) {
+
                     case 0:
+                        if (CurrentSpinnerNum < SpinnerPositions.Length) {
                             CurrentSpinner = new CrystalStaticSpinner(SpinnerPositions[CurrentSpinnerNum], false, CrystalColor.Blue);
                             DynData<CrystalStaticSpinner> CurrentSpinnerData1 = new DynData<CrystalStaticSpinner>(CurrentSpinner);
                             CurrentSpinnerData1.Set<bool>("expanded", true);
@@ -276,74 +298,75 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             currenspinnerimg.Position += new Vector2(-12, -12);
                             CurrentSpinner.Collidable = false;
                             DisableHitBox = true;
-                        
-                        CurrentGrowthCycle++;
 
-                        break;
+                            CurrentGrowthCycle++;
+                        }
+                            break;
+                        
                     case 1:
                    
                             CurrentSpinner.Remove(currenspinnerimg);
-                            CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner2"]));
-                            currenspinnerimg.Color = SpinnerColor;
-                            currenspinnerimg.Position += new Vector2(-12, -12);
-                            CurrentSpinner.Collidable = false;
-                        
-                        CurrentGrowthCycle++;
-                        break;
+                    CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner2"]));
+                    currenspinnerimg.Color = SpinnerColor;
+                    currenspinnerimg.Position += new Vector2(-12, -12);
+                    CurrentSpinner.Collidable = false;
+
+                    CurrentGrowthCycle++;
+                    break;
                     case 2:
                       
                             CurrentSpinner.Remove(currenspinnerimg);
-                            CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner3"]));
-                            currenspinnerimg.Color = SpinnerColor;
-                            currenspinnerimg.Position += new Vector2(-12, -12);
+                    CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner3"]));
+                    currenspinnerimg.Color = SpinnerColor;
+                    currenspinnerimg.Position += new Vector2(-12, -12);
 
-                            CurrentSpinner.Collidable = false;
-                        
-                        CurrentGrowthCycle++;
-                        break;
+                    CurrentSpinner.Collidable = false;
+
+                    CurrentGrowthCycle++;
+                    break;
                     case 3:
                         
                             CurrentSpinner.Remove(currenspinnerimg);
-                            CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner4"]));
-                            currenspinnerimg.Color = SpinnerColor;
-                            currenspinnerimg.Position += new Vector2(-12, -12);
-                            CurrentSpinner.Collidable = false;
-                        
-                        CurrentGrowthCycle++;
-                        break;
+                    CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner4"]));
+                    currenspinnerimg.Color = SpinnerColor;
+                    currenspinnerimg.Position += new Vector2(-12, -12);
+                    CurrentSpinner.Collidable = false;
+
+                    CurrentGrowthCycle++;
+                    break;
 
                     case 4:
                        
                             CurrentSpinner.Remove(currenspinnerimg);
-                            CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner5"]));
-                            currenspinnerimg.Color = SpinnerColor;
-                            currenspinnerimg.Position += new Vector2(-12, -12);
-                            CurrentSpinner.Collidable = false;
-                        
-                        CurrentGrowthCycle++;
-                        break;
+                    CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner5"]));
+                    currenspinnerimg.Color = SpinnerColor;
+                    currenspinnerimg.Position += new Vector2(-12, -12);
+                    CurrentSpinner.Collidable = false;
+
+                    CurrentGrowthCycle++;
+                    break;
                     case 5:
                        
                             CurrentSpinner.Remove(currenspinnerimg);
-                            CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner6"]));
-                            currenspinnerimg.Color = SpinnerColor;
-                            currenspinnerimg.Position += new Vector2(-12, -12);
-                            CurrentSpinner.Collidable = false;
-                        
-                        CurrentGrowthCycle++;
-                        break;
+                    CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner6"]));
+                    currenspinnerimg.Color = SpinnerColor;
+                    currenspinnerimg.Position += new Vector2(-12, -12);
+                    CurrentSpinner.Collidable = false;
+
+                    CurrentGrowthCycle++;
+                    break;
                     case 6:
                         
                             CurrentSpinner.Remove(currenspinnerimg);
-                            CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner7"]));
-                            currenspinnerimg.Color = SpinnerColor;
-                            currenspinnerimg.Position += new Vector2(-12, -12);
-                            CurrentSpinner.Collidable = true;
-                            DisableHitBox = false;
-                        
-                        CurrentSpinnerNum++;
-                        CurrentGrowthCycle = 0;
-                        break;
+                    CurrentSpinner.Add(currenspinnerimg = new Image(GFX.Game["objects/StrawberryJam2021/spinnerVine/WhiteSpinner7"]));
+                    currenspinnerimg.Color = SpinnerColor;
+                    currenspinnerimg.Position += new Vector2(-12, -12);
+                    CurrentSpinner.Collidable = true;
+                    DisableHitBox = false;
+
+                    CurrentSpinnerNum++;
+                    CurrentGrowthCycle = 0;
+                    break;
                 }
 
 
@@ -358,16 +381,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Awake(Scene scene) {
             base.Awake(scene);
 
-            GrowDir = ((SpinnerPositionsSmooth[CurrentDirNum] - SpinnerPositionsSmooth[CurrentDirNum - 1]) / 60) / SpinnerWaitTime;
-            Vector2[] SpinnerVec = new Vector2[SpinnerGrowthPos.Length + 1];
-            SpinnerVec[SpinnerGrowthPos.Length] = SpinnerGrowthPos[SpinnerGrowthPos.Length - 1];
 
-            for (int i = 0; i < SpinnerGrowthPos.Length; i++) {
-                SpinnerVec[i] = SpinnerGrowthPos[i];
-            }
-            SpinnerGrowthPos = SpinnerVec;
-
-            HasStartedGrowing = true;
         }
 
         public void Create(float fearDistance, int slideUntilIndex, int layer, List<Vector2> startNodes) {
@@ -434,6 +448,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
 
             }
+
+            if((Scene as Level).Session.GetFlag(ID.ToString()) && !HasStarted) {
+                GrowDir = (((SpinnerPositionsSmooth[CurrentDirNum] - SpinnerPositionsSmooth[CurrentDirNum - 1])) / 30) / SpinnerWaitTime;
+                Vector2[] SpinnerVec = new Vector2[SpinnerGrowthPos.Length + 1];
+                SpinnerVec[SpinnerGrowthPos.Length] = SpinnerGrowthPos[SpinnerGrowthPos.Length - 1];
+
+                for (int i = 0; i < SpinnerGrowthPos.Length; i++) {
+                    SpinnerVec[i] = SpinnerGrowthPos[i];
+                }
+                SpinnerGrowthPos = SpinnerVec;
+                HasStarted = true;
+                HasStartedGrowing = true;
+                float SpinnerGrowthTime = (float) SpinnerWaitTime;
+                Add(new Coroutine(SpawnGrowingSpinner(SpinnerGrowthTime / 7f)));
+            }
         }
 
 
@@ -490,8 +519,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             for (int j = 0; j < SpinnerGrowthPos.Length-1; j++) {
 
-                WidthOffset = TentacleWidth - ((MaxThin / SpinnerGrowthPos.Length) * (Vector2.Distance(SpinnerPositionsSmooth[CurrentDirNum], SpinnerPositionsSmooth[CurrentDirNum - 1]) / AverageVineLength))*j;
+                WidthOffset = LastWidthOffset - (MaxThin / (SpinnerGrowthPos.Length-1));
+                Console.WriteLine("LttrJ: " + j);
+                Console.WriteLine("WidthOffset: " + WidthOffset);
+                Console.WriteLine("WidthLength " + WidthVecarr.Length);
+                Console.WriteLine("GrowthLength " + SpinnerGrowthPos.Length);
                 Vector2 WidthOffsetVec = WidthOffset * WidthVecarr[j];
+                Console.WriteLine("WidthOffsetvec: " + WidthOffsetVec);
 
                 Quad(ref n, SpinnerGrowthPos[j] - LastWidthOffsetVec, SpinnerGrowthPos[j] + LastWidthOffsetVec, SpinnerGrowthPos[j + 1] + WidthOffsetVec, SpinnerGrowthPos[j + 1] - WidthOffsetVec, Tex123);
 
