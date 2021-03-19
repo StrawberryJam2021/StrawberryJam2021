@@ -45,11 +45,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     return false;
                 }
             }
-            if (player.SceneAs<Level>().Session.GetFlag(DashWithHoldableFlag)) {
-                return true;
-            } else {
-                return false;
-            }
+            return player.SceneAs<Level>().Session.GetFlag(DashWithHoldableFlag);
         }
 
         public static void Load() {
