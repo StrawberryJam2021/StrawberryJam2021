@@ -1,62 +1,71 @@
-﻿using Celeste.Mod.CavernHelper;
+﻿using Celeste.Mod.UI;
+using FMOD.Studio;
+using Microsoft.Xna.Framework;
+using Monocle;
 using Celeste;
+using System;
+using System.Collections;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.RuntimeDetour;
-using MonoMod.Utils;
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
+using Celeste.Mod;
+using MonoMod.Utils;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
-    [CustomEntity("SJ2021/DashCountTrigger")]
+
+        [CustomEntity("SJ2021/DashCountTrigger")]
     [Tracked]
     public class DashCountTrigger : Trigger {
+
         bool HasSet = false;
         int NumberOfDashes = 0;
-        Player player;
-        Color HairColor;
-        bool Enabled = false;
 
         public DashCountTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             NumberOfDashes = data.Int("NumberOfDashes");
         }
-        public override void Update() {
-            base.Update();
 
-            if(HasSet && player.Dashes > 0 && !Enabled) {
-                On.Celeste.PlayerHair.GetHairColor += modPlayerGetHairColor;
-                On.Celeste.Player.GetCurrentTrailColor += modPlayerGetTrailColor;
-                Enabled = true;
+        private static Color modPlayerGetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index) {
+            Player player = (Player)self.Entity;
+            if (player.Dashes > 0) {
+                return Player.NormalHairColor;
             }
-            else if(HasSet && Enabled && player.Dashes == 0) { 
-                On.Celeste.PlayerHair.GetHairColor -= modPlayerGetHairColor;
-                On.Celeste.Player.GetCurrentTrailColor -= modPlayerGetTrailColor;
-                Enabled = false;
+            else {
+                return Player.UsedHairColor;
             }
         }
-        private Color modPlayerGetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index) {
-            return HairColor;
-        }
 
-        private Color modPlayerGetTrailColor(On.Celeste.Player.orig_GetCurrentTrailColor orig, Player self) {
-            return HairColor;
+        private static Color modPlayerGetTrailColor(On.Celeste.Player.orig_GetCurrentTrailColor orig, Player self) {
+            if (self.Dashes > 0) {
+                return Player.NormalHairColor;
+                
+            } else {
+                return Player.UsedHairColor;
+            }
+               
+        }
+        public static void Load() {
+            On.Celeste.PlayerHair.GetHairColor += modPlayerGetHairColor;
+            On.Celeste.Player.GetCurrentTrailColor += modPlayerGetTrailColor;
+        }
+        public static void Unload() {
+            On.Celeste.PlayerHair.GetHairColor -= modPlayerGetHairColor;
+            On.Celeste.Player.GetCurrentTrailColor -= modPlayerGetTrailColor;
         }
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
-            HairColor = Player.NormalHairColor;
-            player = base.Scene.Tracker.GetEntity<Player>();
         }
 
         public override void OnEnter(Player player) {
             base.OnEnter(player);
             if (!HasSet) {
                 SceneAs<Level>().Session.Inventory.Dashes = NumberOfDashes;
-
                 player.Dashes = NumberOfDashes;
-                Console.WriteLine("MaxDashes: " + player.MaxDashes);
                 HasSet = true;
             }
         }
