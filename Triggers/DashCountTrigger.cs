@@ -16,7 +16,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         bool HasSet = false;
         int NumberOfDashes = 0;
         Player player;
-        Color OneDashColor;
 
         public DashCountTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             NumberOfDashes = data.Int("NumberOfDashes");
@@ -32,7 +31,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             }
         }
         private Color modPlayerGetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index) {
-            return OneDashColor;
+            return Calc.HexToColor("AC3232");
         }
 
         public override void Awake(Scene scene) {
@@ -43,9 +42,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         public override void OnEnter(Player player) {
             base.OnEnter(player);
             if (!HasSet) {
-                OneDashColor = player.Hair.GetHairColor(1);
                 SceneAs<Level>().Session.Inventory.Dashes = NumberOfDashes;
                 player.Dashes = NumberOfDashes;
+                Console.WriteLine("MaxDashes: " + player.MaxDashes);
                 HasSet = true;
             }
         }
