@@ -16,6 +16,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         bool HasSet = false;
         int NumberOfDashes = 0;
         Player player;
+        Color HairColor;
+        bool Enabled = false;
 
         public DashCountTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             NumberOfDashes = data.Int("NumberOfDashes");
@@ -23,19 +25,28 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         public override void Update() {
             base.Update();
 
-            if(HasSet && player.Dashes > 0) {
+            if(HasSet && player.Dashes > 0 && !Enabled) {
                 On.Celeste.PlayerHair.GetHairColor += modPlayerGetHairColor;
+                On.Celeste.Player.GetCurrentTrailColor += modPlayerGetTrailColor;
+                Enabled = true;
             }
-            else if(HasSet) { 
+            else if(HasSet && Enabled && player.Dashes == 0) { 
                 On.Celeste.PlayerHair.GetHairColor -= modPlayerGetHairColor;
+                On.Celeste.Player.GetCurrentTrailColor -= modPlayerGetTrailColor;
+                Enabled = false;
             }
         }
         private Color modPlayerGetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index) {
-            return Calc.HexToColor("AC3232");
+            return HairColor;
+        }
+
+        private Color modPlayerGetTrailColor(On.Celeste.Player.orig_GetCurrentTrailColor orig, Player self) {
+            return HairColor;
         }
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
+            HairColor = Player.NormalHairColor;
             player = base.Scene.Tracker.GetEntity<Player>();
         }
 
@@ -43,6 +54,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             base.OnEnter(player);
             if (!HasSet) {
                 SceneAs<Level>().Session.Inventory.Dashes = NumberOfDashes;
+
                 player.Dashes = NumberOfDashes;
                 Console.WriteLine("MaxDashes: " + player.MaxDashes);
                 HasSet = true;
