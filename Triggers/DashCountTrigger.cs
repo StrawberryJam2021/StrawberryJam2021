@@ -1,20 +1,10 @@
-﻿using Celeste.Mod.UI;
-using FMOD.Studio;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
 using Monocle;
-using Celeste;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using System;
-using System.Collections;
-using Celeste.Mod.Entities;
-using Microsoft.Xna.Framework;
-using Monocle;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using Celeste.Mod;
-using MonoMod.Utils;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
@@ -35,22 +25,24 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 return Player.NormalHairColor;
             }
             else {
-                return Player.UsedHairColor;
+                return orig(self, 1);
             }
         }
 
         private static Color modPlayerGetTrailColor(On.Celeste.Player.orig_GetCurrentTrailColor orig, Player self) {
             if (self.Dashes > 0) {
                 return Player.NormalHairColor;
-                
+
             } else {
-                return Player.UsedHairColor;
+                return orig(self);
             }
                
         }
         public static void Load() {
-            On.Celeste.PlayerHair.GetHairColor += modPlayerGetHairColor;
-            On.Celeste.Player.GetCurrentTrailColor += modPlayerGetTrailColor;
+            using (new DetourContext { After = { "*" } }) { 
+                On.Celeste.PlayerHair.GetHairColor += modPlayerGetHairColor;
+                On.Celeste.Player.GetCurrentTrailColor += modPlayerGetTrailColor;
+            }
         }
         public static void Unload() {
             On.Celeste.PlayerHair.GetHairColor -= modPlayerGetHairColor;
