@@ -1,4 +1,5 @@
 using Celeste.Mod.StrawberryJam2021.Entities;
+using Celeste.Mod.StrawberryJam2021.Triggers;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
@@ -22,6 +23,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ExplodingStrawberry.Load();
             CrystalBombBadelineBoss.Load();
             MaskedDecal.Load();
+            HoldableDashTrigger.Load();
             WormholeBooster.Load();
         }
 
@@ -32,6 +34,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ExplodingStrawberry.Unload();
             CrystalBombBadelineBoss.Unload();
             MaskedDecal.Unload();
+            HoldableDashTrigger.Unload();
             WormholeBooster.Unload();
         }
 
