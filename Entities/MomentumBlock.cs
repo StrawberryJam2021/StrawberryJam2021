@@ -5,7 +5,7 @@ using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 
-[CustomEntity("SJ2021/MomentumBlock")]
+    [CustomEntity("SJ2021/MomentumBlock")]
     public class MomentumBlock : Solid {
         const float MAX_SPEED = 282; //internally the player has a max lift boost in each direction
         const float MAX_SPEED_X = 250; 
@@ -32,8 +32,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             targetSpeedFlagged = Calc.AngleToVector(dirFlagged, spdFlagged);
 
             //bound the components to their respective max for accurate angles
-            ClampLiftBoost(targetSpeed);
-            ClampLiftBoost(targetSpeedFlagged);
+            targetSpeed = ClampLiftBoost(targetSpeed);
+            targetSpeedFlagged = ClampLiftBoost(targetSpeedFlagged);
             
             angle = dir;
             angleFlagged = dirFlagged;
@@ -58,9 +58,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return GFX.Game.GetAtlasSubtextures("objects/moveBlock/arrow")[Calc.Clamp(value, 0, 7)];
         }
 
-        public static void ClampLiftBoost(Vector2 liftBoost) {
+        public static Vector2 ClampLiftBoost(Vector2 liftBoost) {
             liftBoost.X = Calc.Clamp(liftBoost.X, -MAX_SPEED_X, MAX_SPEED_X);
             liftBoost.Y = Calc.Clamp(liftBoost.Y, MAX_SPEED_Y, 0);
+            return liftBoost;
         }
 
         public Color CalculateGradient(float spd) {
