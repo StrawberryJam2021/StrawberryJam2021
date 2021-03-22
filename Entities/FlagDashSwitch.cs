@@ -15,7 +15,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2 spriteOffset;
         private StaticMover mover;
 
-        public FlagDashSwitch(EntityData data, Vector2 offset, EntityID id) : base(data.Position + offset, chooseFacing(data.Bool("horizontal", false), data.Bool("leftSide", false), data.Bool("ceiling", false)), data.Bool("persistent", false), false, id, data.Attr("sprite", "default")) {
+        public FlagDashSwitch(EntityData data, Vector2 offset, EntityID id) : base(data.Position + offset, chooseFacing(data.Enum<Sides>("orientation")), data.Bool("persistent", false), false, id, data.Attr("sprite", "default")) {
             persistent = data.Bool("persistent", false);
             target = data.Bool("flagTargetValue", true);
             flag = data.Attr("flag");
@@ -36,8 +36,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 )
                 });
             }
-            var v = (Sides) ds_side.GetValue(this);
-            if (v == Sides.Up || v == Sides.Down) {
+            Sides side = (Sides) ds_side.GetValue(this);
+            if (side == Sides.Up || side == Sides.Down) {
                 Collider.Width = 16f;
                 Collider.Height = 6f;
             } else {
@@ -45,11 +45,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Collider.Height = 16f;
             }
 
-            if (v == Sides.Left) {
+            if (side == Sides.Left) {
                 Collider.Position.X += 1;
-            } else if (v == Sides.Up) {
+            } else if (side == Sides.Up) {
                 Collider.Position.Y += 1;
-            } else if (v == Sides.Down) {
+            } else if (side == Sides.Down) {
                 Collider.Height -= 1;
             }
         }
@@ -72,8 +72,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             On.Celeste.DashSwitch.GetGate += DashSwitch_GetGate;
             On.Celeste.DashSwitch.OnDashed += DashSwitch_OnDashed;
-
-            typeof(DashSwitch).GetField("pressedTarget", BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
         public static void Unload() {
@@ -88,16 +86,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Position = oldPos;
         }
 
-        public override void Update() {
-            base.Update();
-        }
-
-        private static Sides chooseFacing(bool horizontal, bool leftSide, bool ceiling) {
-            if (!horizontal) {
-                return leftSide ? Sides.Left : Sides.Right;
-            }
-            return ceiling ? Sides.Up : Sides.Down;
-        }
+        private static Sides chooseFacing(Sides side) => // In order to keep consistent naming in Ahorn, the direction names are reversed, which means they must be un-reversed here.
+            side switch {
+                Sides.Up => Sides.Down,
+                Sides.Down => Sides.Up,
+                Sides.Left => Sides.Right,
+                Sides.Right => Sides.Left,
+                _ => throw new Exception("Unknown FlagDashSwitch direction!")
+            };
 
         private static TempleGate DashSwitch_GetGate(On.Celeste.DashSwitch.orig_GetGate orig, DashSwitch self) {
             if (self is FlagDashSwitch fds) {
@@ -150,5 +146,5 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Sides.Right => p.Right = Left + (offset * Math.Sign(Left)),
                 _ => 0
             };
-}
+    }
 }
