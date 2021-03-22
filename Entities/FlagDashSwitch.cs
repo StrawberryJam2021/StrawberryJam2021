@@ -59,6 +59,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (SceneAs<Level>().Session.GetFlag(flag) == target) {
                 if (!persistent) {
                     SceneAs<Level>().Session.SetFlag(flag, false);
+                } else {
+                    ds_pressed.SetValue(this, true);
                 }
             }
         }
