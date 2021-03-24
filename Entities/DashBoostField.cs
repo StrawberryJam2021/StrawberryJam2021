@@ -58,6 +58,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             dashCoroutineHook = new ILHook(dashCoroutineInfo, IL_Player_DashCoroutine);
             IL.Celeste.Player.SuperWallJump += IL_Player_SuperWallJump;
             IL.Celeste.Player.SuperJump += IL_Player_SuperJump;
+            On.Celeste.Player.Die += On_Player_Die;
         }
 
         public static void Unload() {
@@ -68,6 +69,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             dashCoroutineHook?.Dispose();
             IL.Celeste.Player.SuperWallJump -= IL_Player_SuperWallJump;
             IL.Celeste.Player.SuperJump -= IL_Player_SuperJump;
+            On.Celeste.Player.Die -= On_Player_Die;
+        }
+
+        private static float ModifyTimeRate(float timeRate) {
+            if (!(Engine.Scene as Level).Paused) {
+                timeRate *= CurrentTimeRateMult;
+            }
+            return timeRate;
         }
 
         private static void IL_Level_Update(ILContext il) {
@@ -76,8 +85,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (cursor.TryGotoNext(MoveType.After,
                 instr => instr.MatchLdcR4(10f),
                 instr => instr.MatchDiv())) {
-                cursor.Emit<DashBoostField>(OpCodes.Ldsfld, "CurrentTimeRateMult");
-                cursor.Emit(OpCodes.Mul);
+                cursor.EmitDelegate<Func<float, float>>(ModifyTimeRate);
             }
         }
 
@@ -86,8 +94,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             orig(self);
             // having the player itself handle collision is nicer
             DashBoostField boostField = self.CollideFirst<DashBoostField>();
-            // don't slow down while the player is dashing
-            if (boostField != null && self.StateMachine.State != Player.StDash)
+            // don't slow down while the player is dashing or dead
+            if (!self.Dead && boostField != null && self.StateMachine.State != Player.StDash)
                 CurrentTimeRateMult = boostField.TargetTimeRateMult;
             else
                 CurrentTimeRateMult = 1f;
@@ -183,6 +191,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Func<float, Player, float>>(ModifySpeed);
             }
+        }
+
+        private static PlayerDeadBody On_Player_Die(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats) {
+            CurrentTimeRateMult = 1f;
+            return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
     }
 }
