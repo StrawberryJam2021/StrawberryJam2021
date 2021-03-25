@@ -103,9 +103,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             }
         }
 
-        public override void OnEnter(Player player) {
-            base.OnEnter(player);
-            player = player;
+        public override void OnEnter(Player player2) {
+            base.OnEnter(player2);
+            player = player2;
             SceneAs<Level>().Session.Inventory.Dashes = NumberOfDashes;
             player.Dashes = NumberOfDashes;
             ResetOnDeath = ResetOnDeathPrivate;
