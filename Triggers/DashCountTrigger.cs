@@ -75,7 +75,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         private static void modDraw(On.Celeste.DeathEffect.orig_Draw orig, Vector2 position, Color color, float ease) {
             if (IsInCurrentMap) {
-                if (player.Dashes >= 0) {
+                if (player.Dashes > 0) {
                     color = Player.NormalHairColor;
                 } else {
                     color = Player.UsedHairColor;
