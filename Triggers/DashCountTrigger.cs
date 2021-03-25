@@ -86,6 +86,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 }
             }
             orig(position, color, ease);
+
         }
 
         private static void modOnExit(Level level, LevelExit exit, LevelExit.Mode mode, Session session, HiresSnow snow) {
