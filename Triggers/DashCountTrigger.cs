@@ -10,7 +10,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/DashCountTrigger")]
     [Tracked]
     public class DashCountTrigger : Trigger {
-        int NumberOfDashes = 0;
+        int NumberOfDashes = 1;
         private static bool IsInCurrentMap = false;
         private static int NormalDashAmount = 1;
         int NormalDashAmountprivate = 1;
@@ -84,21 +84,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 } else {
                     color = Player.UsedHairColor;
                 }
-                Color color2 = ((Math.Floor(ease * 10f) % 2.0 == 0.0) ? color : Color.White);
-                MTexture mTexture = GFX.Game["characters/player/hair00"];
-                float num = ((ease < 0.5f) ? (0.5f + ease) : Ease.CubeOut(1f - (ease - 0.5f) * 2f));
-                for (int i = 0; i < 8; i++) {
-                    Vector2 value = Calc.AngleToVector(((float) i / 8f + ease * 0.25f) * ((float) Math.PI * 2f), Ease.CubeOut(ease) * 24f);
-                    mTexture.DrawCentered(position + value + new Vector2(-1f, 0f), Color.Black, new Vector2(num, num));
-                    mTexture.DrawCentered(position + value + new Vector2(1f, 0f), Color.Black, new Vector2(num, num));
-                    mTexture.DrawCentered(position + value + new Vector2(0f, -1f), Color.Black, new Vector2(num, num));
-                    mTexture.DrawCentered(position + value + new Vector2(0f, 1f), Color.Black, new Vector2(num, num));
-                }
-                for (int j = 0; j < 8; j++) {
-                    Vector2 value2 = Calc.AngleToVector(((float) j / 8f + ease * 0.25f) * ((float) Math.PI * 2f), Ease.CubeOut(ease) * 24f);
-                    mTexture.DrawCentered(position + value2, color2, new Vector2(num, num));
-                }
             }
+            orig(position, color, ease);
         }
 
         private static void modOnExit(Level level, LevelExit exit, LevelExit.Mode mode, Session session, HiresSnow snow) {
