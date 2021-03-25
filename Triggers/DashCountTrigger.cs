@@ -21,16 +21,16 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             NumberOfDashes = data.Int("NumberOfDashes");
             NormalDashAmountprivate = data.Int("DashAmountOnReset");
             ResetOnDeathPrivate = data.Bool("ResetOnDeath");
+            Console.WriteLine("NormalDashAmountprivatge: " + NormalDashAmountprivate);
         }
 
         private static Color modPlayerGetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index) {
             if (self.Entity is Player player2) {
                 player = player2;
-                if (player.Dashes > 0 && player != null && IsInCurrentMap) {
+                if (player.Dashes > 0 && IsInCurrentMap) {
                     return Player.NormalHairColor;
-                } else {
-                    return orig(self, 1);
                 }
+                return orig(self, 1);
             }
             return orig(self, 1);
         }
@@ -73,8 +73,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 }
                 return Deadbody;
 
-            } else
-                return orig(self, Vector2.Zero, false, false);
+            }
+            return orig(self, direction, false, false);
         }
 
         private static void modDraw(On.Celeste.DeathEffect.orig_Draw orig, Vector2 position, Color color, float ease) {
@@ -101,12 +101,14 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static void modPlayerdie(global::Celeste.Player player) {
             if (ResetOnDeath) {
                 player.SceneAs<Level>().Session.Inventory.Dashes = NormalDashAmount;
+                player.Dashes = NormalDashAmount;
+                Console.WriteLine("NormalDashAmount: " + NormalDashAmount);
             }
         }
 
-        public override void OnEnter(Player player2) {
-            base.OnEnter(player2);
-            player = player2;
+        public override void OnEnter(Player player) {
+            base.OnEnter(player);
+            player = player;
             SceneAs<Level>().Session.Inventory.Dashes = NumberOfDashes;
             player.Dashes = NumberOfDashes;
             ResetOnDeath = ResetOnDeathPrivate;
