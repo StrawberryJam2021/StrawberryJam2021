@@ -18,10 +18,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         bool ResetOnDeathPrivate = false;
         private static Player player;
         public DashCountTrigger(EntityData data, Vector2 offset) : base(data, offset) {
-            NumberOfDashes = data.Int("NumberOfDashes");
-            NormalDashAmountprivate = data.Int("DashAmountOnReset");
+            NumberOfDashes = data.Int("NumberOfDashes",1);
+            NormalDashAmountprivate = data.Int("DashAmountOnReset",1);
             ResetOnDeathPrivate = data.Bool("ResetOnDeath");
-            Console.WriteLine("NormalDashAmountprivatge: " + NormalDashAmountprivate);
         }
 
         private static Color modPlayerGetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index) {
@@ -30,7 +29,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 if (player.Dashes > 0 && IsInCurrentMap) {
                     return Player.NormalHairColor;
                 }
-                return orig(self, 1);
             }
             return orig(self, 1);
         }
@@ -38,7 +36,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static Color modPlayerGetTrailColor(On.Celeste.Player.orig_GetCurrentTrailColor orig, Player self) {
             if (self.Dashes > 0 && IsInCurrentMap) {
                 return Player.NormalHairColor;
-
             } else {
                 return orig(self);
             } 
@@ -72,7 +69,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.UsedHairColor;
                 }
                 return Deadbody;
-
             }
             return orig(self, direction, false, false);
         }
@@ -86,7 +82,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 }
             }
             orig(position, color, ease);
-
         }
 
         private static void modOnExit(Level level, LevelExit exit, LevelExit.Mode mode, Session session, HiresSnow snow) {
@@ -102,13 +97,12 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             if (ResetOnDeath) {
                 player.SceneAs<Level>().Session.Inventory.Dashes = NormalDashAmount;
                 player.Dashes = NormalDashAmount;
-                Console.WriteLine("NormalDashAmount: " + NormalDashAmount);
             }
         }
 
-        public override void OnEnter(Player player2) {
+        public override void OnEnter(Player player) {
             base.OnEnter(player);
-            player = player2;
+            DashCountTrigger.player = player;
             SceneAs<Level>().Session.Inventory.Dashes = NumberOfDashes;
             player.Dashes = NumberOfDashes;
             ResetOnDeath = ResetOnDeathPrivate;
