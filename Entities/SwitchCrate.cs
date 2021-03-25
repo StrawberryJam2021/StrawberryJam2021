@@ -9,7 +9,7 @@ using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 
-    [CustomEntity("SJ2021/ExplodingStrawberry")]
+    [CustomEntity("SJ2021/SwitchGate")]
     [Tracked]
     class SwitchCrate : Actor {
 
