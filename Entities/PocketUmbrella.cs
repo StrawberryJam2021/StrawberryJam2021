@@ -18,14 +18,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Logger.Log("SJ2021/PU", "nostaminadrop");
                 Hold.Holder.Drop();
             }
-            if (!Hold.IsHeld && !(bool) PocketUmbrellaController.Instance.gliderDestroyed_FI.GetValue(this)) {
+            if (!Hold.IsHeld && !(bool) PocketUmbrellaController.gliderDestroyed_FI.GetValue(this)) {
                 Logger.Log("SJ2021/PU", "emergency removal");
                 Collidable = false;
                 Hold.Active = false;
-                PocketUmbrellaController.Instance.gliderDestroyed_FI.SetValue(this, true);
+                PocketUmbrellaController.gliderDestroyed_FI.SetValue(this, true);
                 Speed *= 1 / 3;
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
-                Add(new Coroutine((System.Collections.IEnumerator) PocketUmbrellaController.Instance.coroutine_MI.Invoke(this, new object[] { })));
+                Add(new Coroutine((System.Collections.IEnumerator) PocketUmbrellaController.coroutine_MI.Invoke(this, new object[] { })));
             }
         }
     }

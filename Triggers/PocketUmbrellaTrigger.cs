@@ -7,12 +7,13 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/PocketUmbrellaTrigger")]
     class PocketUmbrellaTrigger : Trigger {
         private bool Enable = true, revertOnLeave = false, prevVal;
-        private float staminaCost, prevCost;
+        private float staminaCost, prevCost, cooldown, prevCooldown;
 
         public PocketUmbrellaTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             Enable = data.Bool("enabled", true);
             revertOnLeave = data.Bool("revertOnLeave", false);
             staminaCost = data.Float("staminaCost", 100 / 2.2f);
+            cooldown = data.Float("cooldown", 0.2f);
         }
 
         public override void Added(Scene scene) {
@@ -27,10 +28,12 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             }
             prevVal = PocketUmbrellaController.Instance.Enabled;
             prevCost = PocketUmbrellaController.Instance.StaminaCost;
+            prevCooldown = PocketUmbrellaController.Instance.Cooldown;
             if (Enable) {
                 Logger.Log("SJ2021/PUC", "enable");
                 PocketUmbrellaController.Instance.Enable();
                 PocketUmbrellaController.Instance.setCost(staminaCost);
+                PocketUmbrellaController.Instance.setCooldown(cooldown);
                 PocketUmbrellaController.Instance.player = player;
             } else {
                 Logger.Log("SJ2021/PUC", "disable");
@@ -47,6 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     PocketUmbrellaController.Instance.Disable();
                 }
                 PocketUmbrellaController.Instance.setCost(prevCost);
+                PocketUmbrellaController.Instance.setCooldown(prevCost);
             }
         }
 
