@@ -220,7 +220,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (returning) {
                 speed.Y = Calc.Approach(speed.Y, 180f, 600f * Engine.DeltaTime);
-                MoveTowardsY(start.Y, speed.Y * Engine.DeltaTime);
+
+                // Acts like Platform.MoveTowardsY, but with custom liftspeed.
+                // Essentially makes it possible to get the Y boost in a larger window of time.
+                MoveToY(Calc.Approach(ExactPosition.Y, start.Y, speed.Y * Engine.DeltaTime), speed.Y < 0f ? -220f : speed.Y);
+
                 if (base.ExactPosition.Y == start.Y) {
                     returning = false;
                     waiting = true;
