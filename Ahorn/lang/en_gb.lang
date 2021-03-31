@@ -17,5 +17,8 @@ placements.entities.SJ2021/SineDustSpinner.tooltips.yPhase=Y-Sine Phase in Rad*P
 placements.entities.SJ2021/SineDustSpinner.tooltips.xLinear=Whether the X-Sine should be replaced with a linear, wrapping motion
 placements.entities.SJ2021/SineDustSpinner.tooltips.yLinear=Whether the Y-Sine should be replaced with a linear, wrapping motion
 
+# Bubble Emitter Fire Trigger
+placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of the emitters to fire. Will fire every emitter if empty
+
 # Dash With Holdable Trigger
 placements.triggers.SJ2021/HoldableDashTrigger.tooltips.mode="Toggle" will set or clear a session flag that allows dashing anywhere.\n"OnStay" will force the ability to be on/off while inside the trigger, regardless of what the session flag is set to.
