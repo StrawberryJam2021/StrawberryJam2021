@@ -35,7 +35,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public LoopBlock(Vector2 position, int width, int height, int edgeThickness, Color color)
             : base(position, width, height, false) {
-            Depth = Depths.Dust;
+            Depth = Depths.FGTerrain + 1;
             SurfaceSoundIndex = SurfaceIndex.Snow;
 
             start = position;
