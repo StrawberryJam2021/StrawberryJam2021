@@ -249,18 +249,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             } else {
                 speed.Y += 1200f * Engine.DeltaTime;
                 if (speed.Y >= -100f) {
-                    Player playerRider2 = GetPlayerRider();
-                    if (playerRider2 != null && playerRider2.Speed.Y >= 0f && !HasPlayerClimbing()) {
-                        playerRider2.Speed.Y = -200f;
+                    Player playerRider = GetPlayerRider();
+                    if (playerRider != null && playerRider.Speed.Y >= 0f && !HasPlayerClimbing()) {
+                        playerRider.Speed.Y = -200f;
                     }
                     returning = true;
                 }
             }
-            float num = speed.Y;
-            if (num < 0f) {
-                num = -220f;
-            }
-            MoveV(speed.Y * Engine.DeltaTime, num);
+
+            MoveV(speed.Y * Engine.DeltaTime, speed.Y < 0f ? -220f : speed.Y);
         }
 
         public override void Render() {
