@@ -19,6 +19,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2 scale = Vector2.One;
         private Color color;
 
+        private ParticleType particleType;
+
         private bool waiting = true;
         private bool canRumble;
         private bool returning, returningDash;
@@ -43,6 +45,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             int minEdgeSize = Math.Min(width, height) / 8;
             this.edgeThickness = Calc.Clamp(edgeThickness, 1, (int)((minEdgeSize - 1) / 2f));
             this.color = color;
+
+            particleType = new ParticleType(Cloud.P_Cloud) {
+                Color = color
+            };
 
             OnDashCollide = OnDashed;
 
@@ -231,7 +237,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             if (speed.Y < 0f && base.Scene.OnInterval(0.02f)) {
-                (base.Scene as Level).ParticlesBG.Emit(Cloud.P_Cloud, 1, Position + new Vector2(Width / 2, Height), new Vector2(base.Collider.Width / 2f, 1f), (float) Math.PI / 2f);
+                (base.Scene as Level).ParticlesBG.Emit(particleType, 1, Position + new Vector2(Width / 2, Height), new Vector2(base.Collider.Width / 2f, 1f), (float) Math.PI / 2f);
             }
 
             if (base.Y >= start.Y) {
