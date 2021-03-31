@@ -20,9 +20,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Color color;
 
         private bool waiting = true;
-        private bool canRumble, canSquish;
+        private bool canRumble;
         private bool returning, returningDash;
-        private bool dashed;
+        private bool dashed, scaledSpikes;
 
         private float respawnTimer;
         private float targetSpeedX;
@@ -123,8 +123,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private DashCollisionResults OnDashed(Player player, Vector2 dir) {
             if (dir.Y == 0 && !dashed) {
+                dashedDirX = dir.X;
+                scale = new Vector2(1f - Math.Abs(dashedDirX) * 0.4f, 1f + Math.Abs(dashedDirX) * 0.4f);
+
                 int dashes = player.Dashes;
                 float stamina = player.Stamina;
+
+                // We'll rescale spikes here instead, and it won't be done in Update.
+                // Because of the Celeste.Freeze call in Player.ExplodeLaunch,
+                // they would remain unscaled during the freeze time, which looked a bit weird.
+                RescaleSpikes(); 
                 player.ExplodeLaunch(new Vector2(Center.X, player.Center.Y), false, false);
 
                 player.Dashes = dashes;
@@ -135,17 +143,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
                 speed.X = dir.X * 180f;
                 targetSpeedX = -dir.X * 90f;
-                dashedDirX = dir.X;
 
-                dashed = canSquish = true;
+                dashed = true;
             }
             return DashCollisionResults.NormalCollision;
         }
 
-        public override void Update() {
-            base.Update();
-
-            scale = Calc.Approach(scale, Vector2.One, 3f * Engine.DeltaTime);
+        private void RescaleSpikes() {
+            if (scaledSpikes)
+                return;
             foreach (StaticMover staticMover in staticMovers) {
                 if (staticMover.Entity is Spikes spikes) {
                     spikes.SetOrigins(Center);
@@ -155,6 +161,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                 }
             }
+            scaledSpikes = true;
+        }
+
+        public override void Update() {
+            base.Update();
+
+            scale = Calc.Approach(scale, Vector2.One, 3f * Engine.DeltaTime);
+            if (!scaledSpikes)
+                RescaleSpikes();
+
+            scaledSpikes = false;
 
             if (respawnTimer > 0f) {
                 respawnTimer -= Engine.DeltaTime;
@@ -181,10 +198,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     MoveH(speed.X * Engine.DeltaTime);
                     if (speed.X == targetSpeedX && ((dashedDirX < 0 && X > start.X) || (dashedDirX > 0 && X < start.X)))
                         returningDash = true;
-                }
-                if (canSquish) {
-                    canSquish = false;
-                    scale = new Vector2(1f - Math.Abs(dashedDirX) * 0.4f, 1f + Math.Abs(dashedDirX) * 0.4f);
                 }
             }
 
