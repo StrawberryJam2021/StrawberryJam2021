@@ -25,6 +25,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             MaskedDecal.Load();
             HoldableDashTrigger.Load();
             WormholeBooster.Load();
+            DashCountTrigger.Load();
             DashBoostField.Load();
             FlagDashSwitch.Load();
         }
@@ -38,6 +39,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             MaskedDecal.Unload();
             HoldableDashTrigger.Unload();
             WormholeBooster.Unload();
+            DashCountTrigger.Unload();
             DashBoostField.Unload();
             FlagDashSwitch.Unload();
         }
