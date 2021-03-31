@@ -79,10 +79,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             TimeToExplode = TimeToExplode * 60;
             previousPosition = position;
             base.Depth = 100;
-            base.Collider = new Hitbox(18f, 18f, 0f, 0f);
+            base.Collider = new Hitbox(8f, 10f, 4f, 6f);
             Add(sprite = new Image(GFX.Game["objects/StrawberryJam2021/SwitchCrate/SwitchCrate"]));
+            sprite.Scale.X = -1f;
             Add(Hold = new Holdable(0.1f));
-            Hold.PickupCollider = new Hitbox(18f, 18f, 0f, 0f);
+            Hold.PickupCollider = new Hitbox(16f, 22f, 0f, 0f);
             Hold.SlowFall = false;
             Hold.SlowRun = true;
             Hold.OnPickup = OnPickup;
