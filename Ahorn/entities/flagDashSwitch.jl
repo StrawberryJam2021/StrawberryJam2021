@@ -31,17 +31,14 @@ function Ahorn.selection(entity::FlagDashSwitch)
     x, y = Ahorn.position(entity)
     direction = get(entity.data, "orientation", "Up")
 
-    if(direction == "Up")
+    if direction == "Up"
         return Ahorn.Rectangle(x, y, 16, 12)
-    end
-    if(direction == "Down")
+    elseif direction == "Down"
         return Ahorn.Rectangle(x, y - 4, 16, 12)
-    end
-    if(direction == "Left")
-        return Ahorn.Rectangle(x, y-1, 10, 16)
-    end
-    if(direction == "Right")
-        return Ahorn.Rectangle(x-2, y-1, 10, 16)
+    elseif direction == "Left"
+        return Ahorn.Rectangle(x, y - 1, 10, 16)
+    elseif direction == "Right"
+        return Ahorn.Rectangle(x - 2, y - 1, 10, 16)
     end
 end
 
@@ -49,16 +46,13 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::FlagDashSwitch, roo
     direction = get(entity.data, "orientation", "Up")
     texture = get(entity.data, "sprite", "default") == "default" ? "objects/temple/dashButton00.png" : "objects/temple/dashButtonMirror00.png"
 
-    if(direction == "Down")
+    if direction == "Down"
         Ahorn.drawSprite(ctx, texture, 9, 20, rot=-pi/2)
-    end
-    if(direction == "Up")
+    elseif direction == "Up"
         Ahorn.drawSprite(ctx, texture, 27, 7, rot=pi/2)
-    end
-    if(direction == "Right")
+    elseif direction == "Right"
         Ahorn.drawSprite(ctx, texture, 20, 25, rot=pi)
-    end
-    if(direction == "Left")
+    elseif direction == "Left"
         Ahorn.drawSprite(ctx, texture, 8, 7)
     end
 end
