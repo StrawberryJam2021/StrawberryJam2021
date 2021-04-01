@@ -183,7 +183,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     offset = base.Collider.CenterLeft + new Vector2(-1f, 0f);
                     break;
             }
-            Add(new VertexLight(offset, Color.Lime, 1f, 12, 24));
+            Add(new VertexLight(offset, Color.Aqua, 1f, 12, 24));
         }
 
         public void Hit(SwitchCrate Crate, Vector2 direction) {

@@ -6,14 +6,8 @@ using System.Threading.Tasks;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using System.Collections;
-using Celeste;
-using Celeste.Mod.StrawberryJam2021.Entities;
-using FactoryHelper.Entities;
-using Celeste.Mod;
 using System.Reflection;
-using FactoryHelper.Entities;
-using FactoryHelper.Components;
+using MonoMod.Utils;
 
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
@@ -60,6 +54,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private EntityID id;
 
+        private DynData<Player> playerDynData;
+
+        private Player player;
+
         private string FlagName => GetFlagName(id);
 
         Type ConveyorType;
@@ -79,12 +77,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             TimeToExplode = TimeToExplode * 60;
             previousPosition = position;
             base.Depth = 100;
-            base.Collider = new Hitbox(8f, 10f, 4f, 6f);
+            base.Collider = new Hitbox(8f, 11f, -4f, -2f);
             Add(sprite = new Image(GFX.Game["objects/StrawberryJam2021/SwitchCrate/SwitchCrate"]));
             sprite.CenterOrigin();
-            sprite.Scale.X = -1f;
             Add(Hold = new Holdable(0.1f));
-            Hold.PickupCollider = new Hitbox(16f, 22f, 0f, 0f);
+            Hold.PickupCollider = new Hitbox(20f, 19f, -10f, -10f);
             Hold.SlowFall = false;
             Hold.SlowRun = true;
             Hold.OnPickup = OnPickup;
@@ -112,6 +109,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Added(scene1);
             Level = SceneAs<Level>();
             scene = scene1;
+        }
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
+            player = base.Scene.Tracker.GetEntity<Player>();
         }
 
         private void MoveOnConveyor(float amount) {
@@ -141,23 +142,29 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             if (CurrentFloorTime >= TimeToExplode && !dead) {
                                 Die();
                                 Audio.Play("event:/new_content/game/10_farewell/fusebox_hit_2", Position);
+                                sprite.CenterOrigin();
                                 SmashParticles(Vector2.UnitX);
                                 SmashParticles(-Vector2.UnitX);
                             } else if (CurrentFloorTime == TimeToExplode / 6) {
                                 Remove(sprite);
                                 Add(sprite = new Image(GFX.Game["objects/StrawberryJam2021/SwitchCrate/SwitchCrate2"]));
+                                sprite.CenterOrigin();
                             } else if (CurrentFloorTime == TimeToExplode / 6 * 2) {
                                 Remove(sprite);
                                 Add(sprite = new Image(GFX.Game["objects/StrawberryJam2021/SwitchCrate/SwitchCrate3"]));
+                                sprite.CenterOrigin();
                             } else if (CurrentFloorTime == TimeToExplode / 6 * 3) {
                                 Remove(sprite);
                                 Add(sprite = new Image(GFX.Game["objects/StrawberryJam2021/SwitchCrate/SwitchCrate4"]));
+                                sprite.CenterOrigin();
                             } else if (CurrentFloorTime == TimeToExplode / 6 * 4) {
                                 Remove(sprite);
                                 Add(sprite = new Image(GFX.Game["objects/StrawberryJam2021/SwitchCrate/SwitchCrate5"]));
+                                sprite.CenterOrigin();
                             } else if (CurrentFloorTime == TimeToExplode / 6 * 5) {
                                 Remove(sprite);
                                 Add(sprite = new Image(GFX.Game["objects/StrawberryJam2021/SwitchCrate/SwitchCrate6"]));
+                                sprite.CenterOrigin();
                             }
                         }
                         float target = ((!OnGround(Position + Vector2.UnitX * 3f)) ? 20f : (OnGround(Position - Vector2.UnitX * 3f) ? 0f : (-20f)));
@@ -219,11 +226,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     if (base.X < (float) (Level.Bounds.Left + 10)) {
                         MoveH(32f * Engine.DeltaTime);
                     }
-                    Player entity = base.Scene.Tracker.GetEntity<Player>();
                     TempleGate templeGate = CollideFirst<TempleGate>();
-                    if (templeGate != null && entity != null) {
+                    if (templeGate != null && player != null) {
                         templeGate.Collidable = false;
-                        MoveH((float) (Math.Sign(entity.X - base.X) * 32) * Engine.DeltaTime);
+                        MoveH((float) (Math.Sign(player.X - base.X) * 32) * Engine.DeltaTime);
                         templeGate.Collidable = true;
                     }
                 }
@@ -265,23 +271,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             SceneAs<Level>().Particles.Emit(P_Smash, num, position, positionRange, direction);
         }
 
-        public void ExplodeLaunch(Vector2 from) {
-            if (!Hold.IsHeld) {
-                Speed = (base.Center - from).SafeNormalize(120f);
-                SlashFx.Burst(base.Center, Speed.Angle());
-            }
-        }
-
         public void Swat(HoldableCollider hc, int dir) {
             if (Hold.IsHeld && hitSeeker == null) {
                 swatTimer = 0.1f;
                 hitSeeker = hc;
                 Hold.Holder.Swat(dir);
             }
-        }
-        public static Type GetModdedTypeByName(string module, string name) {
-            var mod = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == module);
-            return mod?.GetType().Assembly.GetType(name);
         }
 
         public bool OnFloor(int downCheck = 1) {
@@ -423,10 +418,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void OnPickup() {
             Speed = Vector2.Zero;
             AddTag(Tags.Persistent);
+            playerDynData = new DynData<Player>(player);
+            playerDynData.Set("CarryOffsetTarget", new Vector2(0f, -20f));
         }
 
         private void OnRelease(Vector2 force) {
             RemoveTag(Tags.Persistent);
+            playerDynData.Set("CarryOffsetTarget", new Vector2(0f, -12f));
             if (force.X != 0f && force.Y == 0f) {
                 force.Y = -0.4f;
             }
