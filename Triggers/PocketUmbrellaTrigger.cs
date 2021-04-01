@@ -21,7 +21,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         public override void OnEnter(Player player) {
-            Logger.Log("SJ2021/PUC", "enter");
+            //Logger.Log("SJ2021/PUC", "enter");
             base.OnEnter(player);
             if (!PocketUmbrellaController.instantiated) {
                 Scene.Add(new PocketUmbrellaController());
@@ -30,13 +30,13 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             prevCost = PocketUmbrellaController.Instance.StaminaCost;
             prevCooldown = PocketUmbrellaController.Instance.Cooldown;
             if (Enable) {
-                Logger.Log("SJ2021/PUC", "enable");
+                //Logger.Log("SJ2021/PUC", "enable");
                 PocketUmbrellaController.Instance.Enable();
                 PocketUmbrellaController.Instance.setCost(staminaCost);
                 PocketUmbrellaController.Instance.setCooldown(cooldown);
                 PocketUmbrellaController.Instance.player = player;
             } else {
-                Logger.Log("SJ2021/PUC", "disable");
+                //Logger.Log("SJ2021/PUC", "disable");
                 PocketUmbrellaController.Instance.Disable();
             }
         }
