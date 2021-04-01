@@ -1,12 +1,10 @@
-﻿// Celeste.Mod.Batteries.BatterySwitch
-using Celeste.Mod.StrawberryJam2021.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Celeste;
 using Celeste.Mod.Batteries;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 
     [CustomEntity("SJ2021/SwitchCrateHolder")]

@@ -89,8 +89,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Hold.OnHitSpring = HitSpring;
             Hold.OnHitSpinner = HitSpinner;
             Hold.SpeedGetter = () => Speed;
-            //Add(ConveyorMover = new ConveyorMover());
-            //ConveyorMover.OnMove = MoveOnConveyor;
             onCollideH = OnCollideH;
             onCollideV = OnCollideV;
             LiftSpeedGraceTime = 0.1f;

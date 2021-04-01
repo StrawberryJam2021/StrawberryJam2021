@@ -34,9 +34,6 @@
       <HintPath>lib-stripped\CavernHelper.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="FactoryHelper">
-      <HintPath>..\FactoryHelper\FactoryHelper.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <Choose>
