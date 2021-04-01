@@ -105,7 +105,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         private static void modPlayerdie(global::Celeste.Player player) {
-            if (ResetOnDeath) {
+            if (ResetOnDeath && IsInCurrentMap) {
                 player.SceneAs<Level>().Session.Inventory.Dashes = NormalDashAmount;
                 player.Dashes = NormalDashAmount;
             }
