@@ -15,11 +15,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Hold.Holder.Stamina -= staminaCost * Engine.DeltaTime;
             }
             if (Hold?.Holder?.Stamina != null && Hold?.Holder?.Stamina <= 0) {
-                Logger.Log("SJ2021/PU", "nostaminadrop");
+                //Logger.Log("SJ2021/PU", "nostaminadrop");
                 Hold.Holder.Drop();
             }
             if (!Hold.IsHeld && !(bool) PocketUmbrellaController.gliderDestroyed_FI.GetValue(this)) {
-                Logger.Log("SJ2021/PU", "emergency removal");
+                //Logger.Log("SJ2021/PU", "emergency removal");
                 Collidable = false;
                 Hold.Active = false;
                 PocketUmbrellaController.gliderDestroyed_FI.SetValue(this, true);

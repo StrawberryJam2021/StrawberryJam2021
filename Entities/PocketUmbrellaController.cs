@@ -18,7 +18,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static MethodInfo pickup_MI, coroutine_MI, wallJumpCheck_MI;
         private static PocketUmbrellaController _Instance;
         public static bool instantiated {
-            get => _instantiated && Engine.Scene.Entities.FindFirst<PocketUmbrellaController>() != null;
+            get => _instantiated && Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>() != null;
             private set => _instantiated = value;
         }
 
@@ -39,7 +39,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public PocketUmbrellaController(float cost, bool enabled, float cooldown = 0.2f) {
-            Logger.Log("SJ2021/PUC", "ctor");
+            //Logger.Log("SJ2021/PUC", "ctor");
             AddTag(Tags.Global);
             StaminaCost = cost;
             Enabled = enabled;
@@ -166,7 +166,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private bool grabCheck() {
             bool pressed = Input.Grab.Pressed;
             Input.Grab.ConsumePress();
-            return pressed;  // todo beta difference?
+            return pressed;
         }
 
         private bool safelySpawnJelly(out PocketUmbrella umbrella) {
