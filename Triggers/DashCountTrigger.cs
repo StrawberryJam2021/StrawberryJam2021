@@ -47,7 +47,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             }
             Everest.Events.Level.OnExit += modOnExit;
             On.Celeste.DeathEffect.Draw += modDraw;
-            Everest.Events.Level.OnEnter += modPlayerRespawn;
+            On.Celeste.Level.LoadLevel += modPlayerRespawn;
         }
 
         public static void Unload() {
@@ -55,7 +55,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             On.Celeste.Player.GetCurrentTrailColor -= modPlayerGetTrailColor;
             On.Celeste.Player.Die -= modDie;
             On.Celeste.DeathEffect.Draw -= modDraw;
-            Everest.Events.Level.OnEnter -= modPlayerRespawn;
+            On.Celeste.Level.LoadLevel -= modPlayerRespawn;
         }
 
         private static Color modPlayerGetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index) {
@@ -78,8 +78,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         private static PlayerDeadBody modDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible = false, bool registerDeathInStats = true) {
             if (IsInCurrentMap) {
-                PlayerDeadBody Deadbody = orig(self, Vector2.Zero, false, false);
-                if (player.Dashes > 1) {
+                PlayerDeadBody Deadbody = orig(self, Vector2.Zero, evenIfInvincible, registerDeathInStats);
+                if (player.Dashes > 0) {
                     new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.NormalHairColor;
                 } else {
                     new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.UsedHairColor;
@@ -105,8 +105,10 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             ResetOnDeath = false;
         }
 
-        private static void modPlayerRespawn(Session session, bool fromSaveData) {
-            if (ResetOnDeath && IsInCurrentMap) {
+        private static void modPlayerRespawn(On.Celeste.Level.orig_LoadLevel orig, global::Celeste.Level level, global::Celeste.Player.IntroTypes playerIntro, bool isFromLoader) {
+            orig(level, playerIntro, isFromLoader);
+            if (ResetOnDeath && IsInCurrentMap && playerIntro == Player.IntroTypes.Respawn) {
+                player = level.Tracker.GetEntity<Player>();
                 player.SceneAs<Level>().Session.Inventory.Dashes = NormalDashAmount;
                 player.Dashes = NormalDashAmount;
             }
