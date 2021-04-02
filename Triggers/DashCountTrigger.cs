@@ -65,7 +65,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     return Player.NormalHairColor;
                 }
             }
-            return orig(self, 1);
+            return orig(self, index);
         }
 
         private static Color modPlayerGetTrailColor(On.Celeste.Player.orig_GetCurrentTrailColor orig, Player self) {
@@ -86,7 +86,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 }
                 return Deadbody;
             }
-            return orig(self, direction, false, false);
+            return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
         private static void modDraw(On.Celeste.DeathEffect.orig_Draw orig, Vector2 position, Color color, float ease) {
