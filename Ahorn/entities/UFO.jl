@@ -18,7 +18,6 @@ function Ahorn.selection(entity::UFO)
 	
 	for node in nodes
         nx, ny = node
-  	x, y = Ahorn.position(entity)
         push!(res, Ahorn.getSpriteRectangle(spinnersprite, nx, ny))
 	end
 	
@@ -30,9 +29,6 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::UFO, room::Maple
     nodes = get(entity.data, "nodes", ())
     for node in nodes
         nx, ny = node
-  	x, y = Ahorn.position(entity)
-	nx = nx + x
-	ny = ny + y
         Ahorn.drawSprite(ctx, spinnersprite, nx, ny)
     end
 	sprite = "objects/StrawberryJam2021/spinnerVine/VineController.png"
