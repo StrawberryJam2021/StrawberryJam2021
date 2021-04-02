@@ -46,16 +46,16 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 On.Celeste.Player.Die += modDie;
             }
             Everest.Events.Level.OnExit += modOnExit;
-            Everest.Events.Player.OnDie += modPlayerdie;
             On.Celeste.DeathEffect.Draw += modDraw;
+            Everest.Events.Level.OnEnter += modPlayerRespawn;
         }
 
         public static void Unload() {
             On.Celeste.PlayerHair.GetHairColor -= modPlayerGetHairColor;
             On.Celeste.Player.GetCurrentTrailColor -= modPlayerGetTrailColor;
-            Everest.Events.Player.OnDie -= modPlayerdie;
             On.Celeste.Player.Die -= modDie;
             On.Celeste.DeathEffect.Draw -= modDraw;
+            Everest.Events.Level.OnEnter -= modPlayerRespawn;
         }
 
         private static Color modPlayerGetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index) {
@@ -79,7 +79,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static PlayerDeadBody modDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible = false, bool registerDeathInStats = true) {
             if (IsInCurrentMap) {
                 PlayerDeadBody Deadbody = orig(self, Vector2.Zero, false, false);
-                if (player.Dashes > 0) {
+                if (player.Dashes > 1) {
                     new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.NormalHairColor;
                 } else {
                     new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.UsedHairColor;
@@ -102,9 +102,10 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         private static void modOnExit(Level level, LevelExit exit, LevelExit.Mode mode, Session session, HiresSnow snow) {
             IsInCurrentMap = false;
+            ResetOnDeath = false;
         }
 
-        private static void modPlayerdie(global::Celeste.Player player) {
+        private static void modPlayerRespawn(Session session, bool fromSaveData) {
             if (ResetOnDeath && IsInCurrentMap) {
                 player.SceneAs<Level>().Session.Inventory.Dashes = NormalDashAmount;
                 player.Dashes = NormalDashAmount;
