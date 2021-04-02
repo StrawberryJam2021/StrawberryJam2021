@@ -67,7 +67,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Teleport(conveyorState.MoveThisFrame ? previousIndex : conveyorState.Index);
         }
 
-        private readonly struct ConveyorState {
+        private struct ConveyorState {
             public readonly int Index;
             public readonly bool MoveThisFrame;
 
