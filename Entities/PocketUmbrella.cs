@@ -23,7 +23,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Collidable = false;
                 Hold.Active = false;
                 PocketUmbrellaController.gliderDestroyed_FI.SetValue(this, true);
-                Speed *= 1 / 3;
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
                 Add(new Coroutine((System.Collections.IEnumerator) PocketUmbrellaController.coroutine_MI.Invoke(this, new object[] { })));
             }

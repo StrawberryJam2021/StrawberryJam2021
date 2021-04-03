@@ -197,7 +197,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             gliderDestroyed_FI.SetValue(umbrella, true);
             umbrella.Collidable = false;
             umbrella.Hold.Active = false;
-            umbrella.Speed *= 1 / 3;
             Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
             umbrella.Add(new Coroutine((System.Collections.IEnumerator) coroutine_MI.Invoke(umbrella, new object[] { })));
         }
