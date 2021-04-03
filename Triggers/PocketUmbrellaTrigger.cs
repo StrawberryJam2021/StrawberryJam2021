@@ -50,7 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     PocketUmbrellaController.Instance.Disable();
                 }
                 PocketUmbrellaController.Instance.setCost(prevCost);
-                PocketUmbrellaController.Instance.setCooldown(prevCost);
+                PocketUmbrellaController.Instance.setCooldown(prevCooldown);
             }
         }
 
