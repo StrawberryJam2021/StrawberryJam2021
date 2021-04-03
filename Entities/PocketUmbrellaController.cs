@@ -185,7 +185,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool playerStateCheck() {
             int state = player.StateMachine.State;
-            return state == 0 || state == 2 || state == 7;
+            return state == Player.StNormal || state == Player.StDash || state == Player.StLaunch;
         }
 
         private bool wallJumpCheck(int dir) {
