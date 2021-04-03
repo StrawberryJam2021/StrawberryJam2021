@@ -44,12 +44,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         };
 
         #endregion
+
+        #region Properties
+
+        public Orientations Orientation { get; }
+        public Color Color { get; }
+        public float FlickerFrequency { get; }
+        public float FlickerDenominator { get; }
+        public float Thickness { get; }
+        public float Alpha { get; }
+
+        #endregion
         
         #region Private Fields
 
-        private const float DEFAULT_SIZE = 4f;
-
-        private readonly Orientations orientation;
         private readonly StaticMover staticMover;
         private readonly Sprite emitterSprite;
         private readonly LaserKillZoneRect killZoneRect;
@@ -61,14 +69,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         
         public LaserEmitter(EntityData data, Vector2 offset, Orientations orientation)
             : base(data.Position + offset) {
-            this.orientation = orientation;
+            Orientation = orientation;
+            
+            Color = data.HexColor("color", Color.Red);
+            FlickerFrequency = data.Float("flickerFrequency", 4f);
+            FlickerDenominator = data.Float("flickerDenominator", 8f);
+            Thickness = data.Float("thickness", 6f);
+            Alpha = data.Float("alpha", 0.4f);
             
             Depth = -8501;
-            Collider = killbox = new Hitbox(DEFAULT_SIZE, DEFAULT_SIZE);
+            Collider = killbox = new Hitbox(Thickness, Thickness);
 
-            void SpecifyName(float v) => killZoneRect.Multiplier = 1f + Math.Abs(v) / 2f;
-
-            Add(killZoneRect = new LaserKillZoneRect(Color.Red),
+            Add(killZoneRect = new LaserKillZoneRect(),
                 emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter"),
                 staticMover = new StaticMover {
                     OnAttach = p => Depth = p.Depth + 1,
@@ -77,9 +89,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     OnEnable = onEnable,
                     OnDisable = onDisable,
                 },
-                new PlayerCollider(onCollide),
-                new SineWave(1f) {OnUpdate = SpecifyName}
+                new PlayerCollider(onCollide)
             );
+
+            if (FlickerFrequency > 0 && FlickerDenominator >= 1)
+                Add(new SineWave(FlickerFrequency) {OnUpdate = v => killZoneRect.AlphaMultiplier = 1f + v / FlickerDenominator});
 
             emitterSprite.Rotation = rotationForOrientation(orientation);
         }
@@ -104,16 +118,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             killbox.Center = Vector2.Zero;
 
             while (!CollideCheck<Solid>() && killboxInBounds()) {
-                switch (orientation) {
+                switch (Orientation) {
                     case Orientations.Up:
-                        killbox.Width = DEFAULT_SIZE;
+                        killbox.Width = Thickness;
                         killbox.Height++;
                         killbox.BottomCenter = Vector2.Zero;
                         target = killbox.TopCenter;
                         break;
                 
                     case Orientations.Down:
-                        killbox.Width = DEFAULT_SIZE;
+                        killbox.Width = Thickness;
                         killbox.Height++;
                         killbox.TopCenter = Vector2.Zero;
                         target = killbox.BottomCenter;
@@ -121,14 +135,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 
                     case Orientations.Left:
                         killbox.Width++;
-                        killbox.Height = DEFAULT_SIZE;
+                        killbox.Height = Thickness;
                         killbox.CenterRight = Vector2.Zero;
                         target = killbox.CenterLeft;
                         break;
                 
                     case Orientations.Right:
                         killbox.Width++;
-                        killbox.Height = DEFAULT_SIZE;
+                        killbox.Height = Thickness;
                         killbox.CenterLeft = Vector2.Zero;
                         target = killbox.CenterRight;
                         break;
@@ -165,25 +179,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public class LaserKillZoneRect : Component {
-            public Color Color;
-            public float Alpha = 0.3f;
-            public float Multiplier = 1f;
+            public float AlphaMultiplier = 1f;
             
-            public LaserKillZoneRect(Color color) : base(true, true) {
-                Color = color;
+            public LaserKillZoneRect() : base(true, true) {
             }
 
             public override void Render() {
-                if (!(Entity is LaserEmitter laserEmitter && laserEmitter.Collider is Hitbox hitbox))
+                if (!Entity.Collidable || !(Entity is LaserEmitter {Collider: Hitbox hitbox} laserEmitter))
                     return;
 
-                Draw.Rect(hitbox.Bounds, Color * (Alpha * Multiplier));
+                var color = laserEmitter.Color * (laserEmitter.Alpha * AlphaMultiplier);
+                
+                Draw.Rect(hitbox.Bounds, color);
 
-                float thickness = laserEmitter.orientation == Orientations.Left || laserEmitter.orientation == Orientations.Right
+                float thickness = laserEmitter.Orientation == Orientations.Left || laserEmitter.Orientation == Orientations.Right
                     ? hitbox.Height / 3f
                     : hitbox.Width / 3f;
 
-                Draw.Line(Entity.X, Entity.Y, Entity.X + laserEmitter.target.X, Entity.Y + laserEmitter.target.Y, Color * (Alpha * Multiplier), thickness);
+                Draw.Line(Entity.X, Entity.Y, Entity.X + laserEmitter.target.X, Entity.Y + laserEmitter.target.Y, color, thickness);
             }
         }
     }
