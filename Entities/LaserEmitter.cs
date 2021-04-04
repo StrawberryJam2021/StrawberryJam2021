@@ -4,6 +4,20 @@ using Monocle;
 using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
+    /// <summary>
+    /// Entity that emits a flickering laser beam that will kill the player.
+    /// </summary>
+    /// <remarks>
+    /// Has four available orientations, indicated by the <see cref="Orientations"/> enum.<br/>
+    /// Configurable values from Ahorn:<br/>
+    /// <list type="bullet">
+    /// <item><description>"color" =&gt; <see cref="Color"/></description></item>
+    /// <item><description>"alpha" =&gt; <see cref="Alpha"/></description></item>
+    /// <item><description>"flickerFrequency =&gt; <see cref="FlickerFrequency"/></description></item>
+    /// <item><description>"flickerIntensity =&gt; <see cref="FlickerIntensity"/></description></item>
+    /// <item><description>"thickness" =&gt; <see cref="Thickness"/></description></item>
+    /// </list>
+    /// </remarks>
     [CustomEntity("SJ2021/LaserEmitterUp = LoadUp",
         "SJ2021/LaserEmitterDown = LoadDown",
         "SJ2021/LaserEmitterLeft = LoadLeft",
@@ -47,11 +61,44 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         #region Properties
 
+        /// <summary>
+        /// The orientation of the emitter, where the direction indicates which way the beam travels.
+        /// </summary>
         public Orientations Orientation { get; }
+        
+        /// <summary>
+        /// The base <see cref="Microsoft.Xna.Framework.Color"/> used to render the beam.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
+        /// </remarks>
         public Color Color { get; }
+        
+        /// <summary>
+        /// The number of times per second that the beam will flicker.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 4, set to 0 to disable flickering.
+        /// </remarks>
         public float FlickerFrequency { get; }
+        
+        /// <summary>
+        /// The intensity of the flicker, where higher is less intense.
+        /// </summary>
+        /// <remarks>
+        /// Implemented by adding to <see cref="Alpha"/> the value returned by a <see cref="SineWave"/> divided by <see cref="FlickerIntensity"/>.
+        /// Defaults to 8.
+        /// </remarks>
         public float FlickerIntensity { get; }
+        
+        /// <summary>
+        /// The thickness of the beam (and corresponding <see cref="Hitbox"/> in pixels).
+        /// </summary>
         public float Thickness { get; }
+        
+        /// <summary>
+        /// The base alpha value for the beam.
+        /// </summary>
         public float Alpha { get; }
 
         #endregion
@@ -72,15 +119,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             : base(data.Position + offset) {
             Orientation = orientation;
             
+            // read properties from EntityData
             Color = data.HexColor("color", Color.Red);
             FlickerFrequency = Math.Max(data.Float("flickerFrequency", 4f), 0f);
             FlickerIntensity = Math.Max(data.Float("flickerIntensity", 8f), 1f);
             Thickness = Math.Max(data.Float("thickness", 6f), 0f);
             Alpha = Calc.Clamp(data.Float("alpha", 0.4f), 0f, 1f);
             
+            // same depth as springs
             Depth = -8501;
+            
+            // create collider killbox
             Collider = killbox = new Hitbox(Thickness, Thickness);
 
+            // add main components
             Add(killZoneRect = new LaserKillZoneRect(),
                 emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter"),
                 staticMover = new StaticMover {
@@ -93,6 +145,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 new PlayerCollider(player => player.Die(Vector2.Zero))
             );
 
+            // add a SineWave if flickering is enabled
             if (FlickerFrequency > 0 && FlickerIntensity >= 1)
                 Add(new SineWave(FlickerFrequency) {OnUpdate = v => alphaMultiplier = 1f + v / FlickerIntensity});
 
@@ -120,10 +173,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 killbox.AbsoluteTop >= level.Bounds.Top &&
                 killbox.AbsoluteBottom <= level.Bounds.Bottom;
 
+            // default killbox to empty centred on the emitter
             killbox.Width = 0;
             killbox.Height = 0;
             killbox.Center = Vector2.Zero;
 
+            // increase size of the killbox until we collide with a Solid
             while (!CollideCheck<Solid>() && killboxInBounds()) {
                 switch (Orientation) {
                     case Orientations.Up:
@@ -157,13 +212,38 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
+        /// <summary>
+        /// The available orientations of an emitter, where the direction indicates which way the beam travels.
+        /// </summary>
         public enum Orientations {
+            /// <summary>
+            /// Indicates that the beam fires from the emitter toward the top of the screen.
+            /// </summary>
             Up,
+            
+            /// <summary>
+            /// Indicates that the beam fires from the emitter toward the bottom of the screen.
+            /// </summary>
             Down,
+            
+            /// <summary>
+            /// Indicates that the beam fires from the emitter toward the left of the screen.
+            /// </summary>
             Left,
+            
+            /// <summary>
+            /// Indicates that the beam fires from the emitter toward the right of the screen.
+            /// </summary>
             Right,
         }
 
+        /// <summary>
+        /// Renders the beam part of the laser emitter.
+        /// </summary>
+        /// <remarks>
+        /// Opacity of the beam edges is calculated as <see cref="LaserEmitter.Alpha"/> times <see cref="LaserEmitter.alphaMultiplier"/>.
+        /// The centre third of the beam is twice that opacity.
+        /// </remarks>
         public class LaserKillZoneRect : Component {
             public LaserKillZoneRect() : base(true, true) {
             }
