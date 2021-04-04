@@ -86,10 +86,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     OnAttach = p => Depth = p.Depth + 1,
                     SolidChecker = s => CollideCheck(s, Position + directionForOrientation(orientation)),
                     JumpThruChecker = jt => CollideCheck(jt, Position + directionForOrientation(orientation)),
-                    OnEnable = onEnable,
-                    OnDisable = onDisable,
+                    OnEnable = () => Collidable = true,
+                    OnDisable = () => Collidable = false,
                 },
-                new PlayerCollider(onCollide)
+                new PlayerCollider(player => player.Die(Vector2.Zero))
             );
 
             if (FlickerFrequency > 0 && FlickerDenominator >= 1)
@@ -150,21 +150,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        private void onEnable() {
-            Visible = Collidable = true;
-        }
-
-        private void onDisable() {
-            Collidable = false;
-        }
-        
-        private void onCollide(Player player) {
-            if (SaveData.Instance.Assists.Invincible)
-                return;
-            
-            player.Die(Vector2.Zero);
-        }
-        
         public override void Update() {
             base.Update();
             
