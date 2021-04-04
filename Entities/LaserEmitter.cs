@@ -64,6 +64,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly Hitbox killbox;
         
         private Vector2 target;
+        private float alphaMultiplier = 1f;
         
         #endregion
         
