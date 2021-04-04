@@ -54,6 +54,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             On.Celeste.PlayerHair.GetHairColor -= modPlayerGetHairColor;
             On.Celeste.Player.GetCurrentTrailColor -= modPlayerGetTrailColor;
             On.Celeste.Player.Die -= modDie;
+            Everest.Events.Level.OnExit -= modOnExit;
             On.Celeste.DeathEffect.Draw -= modDraw;
             On.Celeste.Level.LoadLevel -= modPlayerRespawn;
         }
