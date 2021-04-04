@@ -50,7 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public Orientations Orientation { get; }
         public Color Color { get; }
         public float FlickerFrequency { get; }
-        public float FlickerDenominator { get; }
+        public float FlickerIntensity { get; }
         public float Thickness { get; }
         public float Alpha { get; }
 
@@ -72,10 +72,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Orientation = orientation;
             
             Color = data.HexColor("color", Color.Red);
-            FlickerFrequency = data.Float("flickerFrequency", 4f);
-            FlickerDenominator = data.Float("flickerDenominator", 8f);
-            Thickness = data.Float("thickness", 6f);
-            Alpha = data.Float("alpha", 0.4f);
+            FlickerFrequency = Math.Max(data.Float("flickerFrequency", 4f), 0f);
+            FlickerIntensity = Math.Max(data.Float("flickerIntensity", 8f), 1f);
+            Thickness = Math.Max(data.Float("thickness", 6f), 0f);
+            Alpha = Calc.Clamp(data.Float("alpha", 0.4f), 0f, 1f);
             
             Depth = -8501;
             Collider = killbox = new Hitbox(Thickness, Thickness);
@@ -92,14 +92,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 new PlayerCollider(player => player.Die(Vector2.Zero))
             );
 
-            if (FlickerFrequency > 0 && FlickerDenominator >= 1)
-                Add(new SineWave(FlickerFrequency) {OnUpdate = v => killZoneRect.AlphaMultiplier = 1f + v / FlickerDenominator});
+            if (FlickerFrequency > 0 && FlickerIntensity >= 1)
+                Add(new SineWave(FlickerFrequency) {OnUpdate = v => alphaMultiplier = 1f + v / FlickerIntensity});
 
             emitterSprite.Rotation = rotationForOrientation(orientation);
         }
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
+            
+            updateBeam();
+        }
+        
+        public override void Update() {
+            base.Update();
             
             updateBeam();
         }
@@ -150,12 +156,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        public override void Update() {
-            base.Update();
-            
-            updateBeam();
-        }
-
         public enum Orientations {
             Up,
             Down,
@@ -164,8 +164,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public class LaserKillZoneRect : Component {
-            public float AlphaMultiplier = 1f;
-            
             public LaserKillZoneRect() : base(true, true) {
             }
 
@@ -173,7 +171,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (!Entity.Collidable || !(Entity is LaserEmitter {Collider: Hitbox hitbox} laserEmitter))
                     return;
 
-                var color = laserEmitter.Color * (laserEmitter.Alpha * AlphaMultiplier);
+                var color = laserEmitter.Color * (laserEmitter.Alpha * laserEmitter.alphaMultiplier);
                 
                 Draw.Rect(hitbox.Bounds, color);
 
