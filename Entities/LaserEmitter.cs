@@ -76,10 +76,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public Color Color { get; }
         
         /// <summary>
-        /// The number of times per second that the beam will flicker.
+        /// Whether or not the beam should flicker.
         /// </summary>
         /// <remarks>
-        /// Defaults to 4, set to 0 to disable flickering.
+        /// Defaults to true, flickering 4 times per second.
         /// </remarks>
         public bool Flicker { get; }
         
@@ -130,7 +130,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             KillPlayer = data.Bool("killPlayer", true);
             
             // same depth as springs
-            Depth = -8501;
+            Depth = Depths.Above - 1;
             
             // create collider killbox
             Collider = killbox = new Hitbox(Thickness, Thickness);
