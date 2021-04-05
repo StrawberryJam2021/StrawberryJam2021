@@ -14,8 +14,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <list type="bullet">
     /// <item><description>"color" =&gt; <see cref="Color"/></description></item>
     /// <item><description>"alpha" =&gt; <see cref="Alpha"/></description></item>
-    /// <item><description>"flickerFrequency =&gt; <see cref="FlickerFrequency"/></description></item>
-    /// <item><description>"flickerIntensity =&gt; <see cref="FlickerIntensity"/></description></item>
+    /// <item><description>"flicker" =&gt; <see cref="Flicker"/></description></item>
     /// <item><description>"thickness" =&gt; <see cref="Thickness"/></description></item>
     /// <item><description>"killPlayer" =&gt; <see cref="KillPlayer"/></description></item>
     /// </list>
@@ -82,16 +81,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// <remarks>
         /// Defaults to 4, set to 0 to disable flickering.
         /// </remarks>
-        public float FlickerFrequency { get; }
-        
-        /// <summary>
-        /// The intensity of the flicker, where higher is less intense.
-        /// </summary>
-        /// <remarks>
-        /// Implemented by adding to <see cref="Alpha"/> the value returned by a <see cref="SineWave"/> divided by <see cref="FlickerIntensity"/>.
-        /// Defaults to 8.
-        /// </remarks>
-        public float FlickerIntensity { get; }
+        public bool Flicker { get; }
         
         /// <summary>
         /// The thickness of the beam (and corresponding <see cref="Hitbox"/> in pixels).
@@ -114,6 +104,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         #endregion
         
         #region Private Fields
+        
+        private const float flickerFrequency = 4f;
+        private const float flickerRange = 4f;
 
         private readonly StaticMover staticMover;
         private readonly Sprite emitterSprite;
@@ -121,7 +114,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly Hitbox killbox;
         
         private Vector2 target;
-        private float alphaMultiplier = 1f;
+        private float currentAlpha;
         
         #endregion
         
@@ -131,10 +124,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             
             // read properties from EntityData
             Color = data.HexColor("color", Color.Red);
-            FlickerFrequency = Math.Max(data.Float("flickerFrequency", 4f), 0f);
-            FlickerIntensity = Math.Max(data.Float("flickerIntensity", 8f), 1f);
+            Flicker = data.Bool("flicker", true);
             Thickness = Math.Max(data.Float("thickness", 6f), 0f);
-            Alpha = Calc.Clamp(data.Float("alpha", 0.4f), 0f, 1f);
+            currentAlpha = Alpha = Calc.Clamp(data.Float("alpha", 0.4f), 0f, 1f);
             KillPlayer = data.Bool("killPlayer", true);
             
             // same depth as springs
@@ -157,8 +149,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             );
 
             // add a SineWave if flickering is enabled
-            if (FlickerFrequency > 0 && FlickerIntensity >= 1)
-                Add(new SineWave(FlickerFrequency) {OnUpdate = v => alphaMultiplier = 1f + v / FlickerIntensity});
+            if (Flicker)
+                Add(new SineWave(flickerFrequency) {OnUpdate = v => currentAlpha = Alpha - (v + 1f) * 0.5f * Alpha / flickerRange});
 
             emitterSprite.Rotation = rotationForOrientation(orientation);
         }
@@ -268,7 +260,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (!Entity.Collidable || !(Entity is LaserEmitter {Collider: Hitbox hitbox} laserEmitter))
                     return;
 
-                var color = laserEmitter.Color * (laserEmitter.Alpha * laserEmitter.alphaMultiplier);
+                var color = laserEmitter.Color * laserEmitter.currentAlpha;
                 
                 Draw.Rect(hitbox.Bounds, color);
 
