@@ -168,8 +168,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void onPlayerCollide(Player player) {
-            if (KillPlayer)
-                player.Die(Vector2.Zero);
+            if (!KillPlayer) return;
+
+            Vector2 direction;
+            if (Orientation == Orientations.Left || Orientation == Orientations.Right)
+                direction = player.Position.Y <= Position.Y ? -Vector2.UnitY : Vector2.UnitY;
+            else
+                direction = player.Position.X <= Position.X ? -Vector2.UnitX : Vector2.UnitX;
+            
+            player.Die(direction);
         }
         
         private void updateBeam() {
