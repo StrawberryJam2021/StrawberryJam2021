@@ -23,34 +23,36 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         public override void OnEnter(Player player) {
             //Logger.Log("SJ2021/PUC", "enter");
             base.OnEnter(player);
-            if (!PocketUmbrellaController.instantiated) {
-                Scene.Add(new PocketUmbrellaController());
+            PocketUmbrellaController controller = Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>();
+            if (controller == null) {
+                Scene.Add(controller = new PocketUmbrellaController());
             }
-            prevVal = PocketUmbrellaController.Instance.Enabled;
-            prevCost = PocketUmbrellaController.Instance.StaminaCost;
-            prevCooldown = PocketUmbrellaController.Instance.Cooldown;
+            prevVal = controller.Enabled;
+            prevCost = controller.StaminaCost;
+            prevCooldown = controller.Cooldown;
             if (Enable) {
                 //Logger.Log("SJ2021/PUC", "enable");
-                PocketUmbrellaController.Instance.Enable();
-                PocketUmbrellaController.Instance.setCost(staminaCost);
-                PocketUmbrellaController.Instance.setCooldown(cooldown);
-                PocketUmbrellaController.Instance.player = player;
+                controller.Enable();
+                controller.setCost(staminaCost);
+                controller.setCooldown(cooldown);
+                controller.player = player;
             } else {
                 //Logger.Log("SJ2021/PUC", "disable");
-                PocketUmbrellaController.Instance.Disable();
+                Scene.Remove(controller);
             }
         }
 
         public override void OnLeave(Player player) {
             base.OnLeave(player);
-            if (revertOnLeave) {
+            PocketUmbrellaController controller = Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>();
+            if (revertOnLeave && controller != null) {
+                controller.setCost(prevCost);
+                controller.setCooldown(prevCooldown);
                 if (prevVal) {
-                    PocketUmbrellaController.Instance.Enable();
+                    controller.Enable();
                 } else {
-                    PocketUmbrellaController.Instance.Disable();
+                    Scene.Remove(controller);
                 }
-                PocketUmbrellaController.Instance.setCost(prevCost);
-                PocketUmbrellaController.Instance.setCooldown(prevCooldown);
             }
         }
 

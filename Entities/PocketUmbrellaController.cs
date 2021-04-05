@@ -10,27 +10,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     class PocketUmbrellaController : Entity {
 
         public Player player;
-        private static bool _instantiated = false;
         private Vector2 spawnOffset;
         private bool enabled = false;
         private float maxHoldDelay, holdDelay, staminaCost;
         public static FieldInfo gliderDestroyed_FI;
         public static MethodInfo pickup_MI, coroutine_MI, wallJumpCheck_MI;
-        private static PocketUmbrellaController _Instance;
-        public static bool instantiated {
-            get => _instantiated && Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>() != null;
-            private set => _instantiated = value;
-        }
-
-        public static PocketUmbrellaController Instance {
-            get => _Instance;
-            private set {
-                if (value != null) {
-                    _Instance = value;
-                    instantiated = true;
-                }
-            }
-        }
         public bool Enabled { get => enabled; private set => enabled = value; }
         public float StaminaCost { get => staminaCost; private set => staminaCost = value; }
         public float Cooldown { get => maxHoldDelay; }
@@ -45,25 +29,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Enabled = enabled;
             maxHoldDelay = cooldown;
             spawnOffset = new Vector2(0f, -12f);
-            if (_Instance == null) {
-                Instance = this;
-            } else {
-                if (enabled) {
-                    Instance.Enable();
-                } else {
-                    Instance.Disable();
-                }
-                Instance.setCost(cost);
-                Instance.setCooldown(cooldown);
-            }
-        }
-
-        public override void Added(Scene scene) {
-            base.Added(scene);
-            if (Instance != this) {
-                scene.Add(Instance);
-                RemoveSelf();
-            }
         }
 
         public static void Load() {
@@ -111,19 +76,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void Player_Added(On.Celeste.Player.orig_Added orig, Player self, Scene scene) {
             orig(self, scene);
-            if (!instantiated) {
+            if (Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>() == null) {
                 return;
             }
-            Instance.player = self;
+            Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>().player = self;
         }
 
         private static void checkDrop(Player player) {
-            if (!instantiated) {
-                return;
-            }
-            if (Instance.Enabled) {
+            if (Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>() != null && Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>().Enabled) {
                 if (player?.Holding?.Entity is PocketUmbrella umbrella) {
-                    Instance.dropUmbrella(umbrella);
+                    Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>().dropUmbrella(umbrella);
                 }
             }
         }
@@ -193,7 +155,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void dropUmbrella(PocketUmbrella umbrella) {
-            Instance.holdDelay = Instance.maxHoldDelay;
+            holdDelay = maxHoldDelay;
             gliderDestroyed_FI.SetValue(umbrella, true);
             umbrella.Collidable = false;
             umbrella.Hold.Active = false;
