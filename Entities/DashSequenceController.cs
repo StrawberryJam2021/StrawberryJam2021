@@ -33,7 +33,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 for (int i = 1; i <= DashCode.Length; i++) {
                     level.Session.SetFlag(FlagLabel + "-" + i, false);
                 }
-                level.Session.SetFlag(FailureFlag, false);
+                if (!string.IsNullOrEmpty(FailureFlag)) {
+                    level.Session.SetFlag(FailureFlag, false);
+                }
             }
             Add(DashListener = new DashListener() {
                 OnDash = OnDash
