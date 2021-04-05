@@ -224,6 +224,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             int low = 0, safety = 1000;
 
+            // first check if the laser hits the edge of the screen
+            resizeKillbox(high);
+            if (!CollideCheck<Solid>()) return;
+            
             // perform a binary search to hit the nearest solid
             while (safety-- > 0) {
                 int pivot = (int) (low + (high - low) / 2f);
