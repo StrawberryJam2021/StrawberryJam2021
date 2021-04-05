@@ -46,16 +46,17 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 On.Celeste.Player.Die += modDie;
             }
             Everest.Events.Level.OnExit += modOnExit;
-            Everest.Events.Player.OnDie += modPlayerdie;
             On.Celeste.DeathEffect.Draw += modDraw;
+            On.Celeste.Level.LoadLevel += modPlayerRespawn;
         }
 
         public static void Unload() {
             On.Celeste.PlayerHair.GetHairColor -= modPlayerGetHairColor;
             On.Celeste.Player.GetCurrentTrailColor -= modPlayerGetTrailColor;
-            Everest.Events.Player.OnDie -= modPlayerdie;
             On.Celeste.Player.Die -= modDie;
+            Everest.Events.Level.OnExit -= modOnExit;
             On.Celeste.DeathEffect.Draw -= modDraw;
+            On.Celeste.Level.LoadLevel -= modPlayerRespawn;
         }
 
         private static Color modPlayerGetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index) {
@@ -65,7 +66,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     return Player.NormalHairColor;
                 }
             }
-            return orig(self, 1);
+            return orig(self, index);
         }
 
         private static Color modPlayerGetTrailColor(On.Celeste.Player.orig_GetCurrentTrailColor orig, Player self) {
@@ -78,15 +79,17 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         private static PlayerDeadBody modDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible = false, bool registerDeathInStats = true) {
             if (IsInCurrentMap) {
-                PlayerDeadBody Deadbody = orig(self, Vector2.Zero, false, false);
-                if (player.Dashes > 0) {
-                    new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.NormalHairColor;
-                } else {
-                    new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.UsedHairColor;
+                PlayerDeadBody Deadbody = orig(self, direction, evenIfInvincible, registerDeathInStats);
+                if (Deadbody != null) {
+                    if (player.Dashes > 0) {
+                        new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.NormalHairColor;
+                    } else {
+                        new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.UsedHairColor;
+                    }
                 }
                 return Deadbody;
             }
-            return orig(self, direction, false, false);
+            return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
 
         private static void modDraw(On.Celeste.DeathEffect.orig_Draw orig, Vector2 position, Color color, float ease) {
@@ -102,10 +105,13 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         private static void modOnExit(Level level, LevelExit exit, LevelExit.Mode mode, Session session, HiresSnow snow) {
             IsInCurrentMap = false;
+            ResetOnDeath = false;
         }
 
-        private static void modPlayerdie(global::Celeste.Player player) {
-            if (ResetOnDeath) {
+        private static void modPlayerRespawn(On.Celeste.Level.orig_LoadLevel orig, global::Celeste.Level level, global::Celeste.Player.IntroTypes playerIntro, bool isFromLoader) {
+            orig(level, playerIntro, isFromLoader);
+            if (ResetOnDeath && IsInCurrentMap && playerIntro == Player.IntroTypes.Respawn) {
+                player = level.Tracker.GetEntity<Player>();
                 player.SceneAs<Level>().Session.Inventory.Dashes = NormalDashAmount;
                 player.Dashes = NormalDashAmount;
             }
