@@ -178,51 +178,62 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             
             player.Die(direction);
         }
+
+        private void resizeKillbox(float size) {
+            switch (Orientation) {
+                case Orientations.Up:
+                    killbox.Width = Thickness;
+                    killbox.Height = size;
+                    killbox.BottomCenter = Vector2.Zero;
+                    target = killbox.TopCenter;
+                    break;
+                
+                case Orientations.Down:
+                    killbox.Width = Thickness;
+                    killbox.Height = size;
+                    killbox.TopCenter = Vector2.Zero;
+                    target = killbox.BottomCenter;
+                    break;
+                
+                case Orientations.Left:
+                    killbox.Width = size;
+                    killbox.Height = Thickness;
+                    killbox.CenterRight = Vector2.Zero;
+                    target = killbox.CenterLeft;
+                    break;
+                
+                case Orientations.Right:
+                    killbox.Width = size;
+                    killbox.Height = Thickness;
+                    killbox.CenterLeft = Vector2.Zero;
+                    target = killbox.CenterRight;
+                    break;
+            }
+        }
         
         private void updateBeam() {
             var level = SceneAs<Level>();
 
-            bool killboxInBounds() =>
-                killbox.AbsoluteLeft >= level.Bounds.Left &&
-                killbox.AbsoluteRight <= level.Bounds.Right &&
-                killbox.AbsoluteTop >= level.Bounds.Top &&
-                killbox.AbsoluteBottom <= level.Bounds.Bottom;
+            float high = Orientation switch {
+                Orientations.Up => Position.Y - level.Bounds.Top,
+                Orientations.Down => level.Bounds.Bottom - Position.Y,
+                Orientations.Left => Position.X - level.Bounds.Left,
+                Orientations.Right => level.Bounds.Right - Position.X,
+                _ => 0
+            };
 
-            // default killbox to empty centred on the emitter
-            killbox.Width = 0;
-            killbox.Height = 0;
-            killbox.Center = Vector2.Zero;
+            int low = 0, safety = 1000;
 
-            // increase size of the killbox until we collide with a Solid
-            while (!CollideCheck<Solid>() && killboxInBounds()) {
-                switch (Orientation) {
-                    case Orientations.Up:
-                        killbox.Width = Thickness;
-                        killbox.Height++;
-                        killbox.BottomCenter = Vector2.Zero;
-                        target = killbox.TopCenter;
-                        break;
-                
-                    case Orientations.Down:
-                        killbox.Width = Thickness;
-                        killbox.Height++;
-                        killbox.TopCenter = Vector2.Zero;
-                        target = killbox.BottomCenter;
-                        break;
-                
-                    case Orientations.Left:
-                        killbox.Width++;
-                        killbox.Height = Thickness;
-                        killbox.CenterRight = Vector2.Zero;
-                        target = killbox.CenterLeft;
-                        break;
-                
-                    case Orientations.Right:
-                        killbox.Width++;
-                        killbox.Height = Thickness;
-                        killbox.CenterLeft = Vector2.Zero;
-                        target = killbox.CenterRight;
-                        break;
+            // perform a binary search to hit the nearest solid
+            while (safety-- > 0) {
+                int pivot = (int) (low + (high - low) / 2f);
+                resizeKillbox(pivot);
+                if (pivot == low)
+                    break;
+                if (CollideCheck<Solid>()) {
+                    high = pivot;
+                } else {
+                    low = pivot;
                 }
             }
         }
