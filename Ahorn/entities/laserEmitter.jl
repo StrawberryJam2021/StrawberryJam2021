@@ -12,28 +12,32 @@ const default_flicker_intensity=8.0
     x::Integer, y::Integer,
     color::String=default_color, alpha::Float64=default_alpha,
     flickerFrequency::Float64=default_flicker_frequency, flickerIntensity::Float64=default_flicker_intensity,
-    thickness::Float64=default_thickness
+    thickness::Float64=default_thickness,
+    killPlayer::Bool=true
 )
 
 @mapdef Entity "SJ2021/LaserEmitterDown" LaserEmitterDown(
     x::Integer, y::Integer,
     color::String=default_color, alpha::Float64=default_alpha,
     flickerFrequency::Float64=default_flicker_frequency, flickerIntensity::Float64=default_flicker_intensity,
-    thickness::Float64=default_thickness
+    thickness::Float64=default_thickness,
+    killPlayer::Bool=true
 )
 
 @mapdef Entity "SJ2021/LaserEmitterLeft" LaserEmitterLeft(
     x::Integer, y::Integer,
     color::String=default_color, alpha::Float64=default_alpha,
     flickerFrequency::Float64=default_flicker_frequency, flickerIntensity::Float64=default_flicker_intensity,
-    thickness::Float64=default_thickness
+    thickness::Float64=default_thickness,
+    killPlayer::Bool=true
 )
 
 @mapdef Entity "SJ2021/LaserEmitterRight" LaserEmitterRight(
     x::Integer, y::Integer,
     color::String=default_color, alpha::Float64=default_alpha,
     flickerFrequency::Float64=default_flicker_frequency, flickerIntensity::Float64=default_flicker_intensity,
-    thickness::Float64=default_thickness
+    thickness::Float64=default_thickness,
+    killPlayer::Bool=true
 )
 
 const colors = Dict{String, String}(

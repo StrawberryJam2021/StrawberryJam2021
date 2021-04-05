@@ -5,9 +5,10 @@ using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <summary>
-    /// Entity that emits a flickering laser beam that will kill the player.
+    /// Entity that emits a flickering laser beam.
     /// </summary>
     /// <remarks>
+    /// Will kill the player by default, but its functionality can be changed.<br/>
     /// Has four available orientations, indicated by the <see cref="Orientations"/> enum.<br/>
     /// Configurable values from Ahorn:<br/>
     /// <list type="bullet">
@@ -16,6 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <item><description>"flickerFrequency =&gt; <see cref="FlickerFrequency"/></description></item>
     /// <item><description>"flickerIntensity =&gt; <see cref="FlickerIntensity"/></description></item>
     /// <item><description>"thickness" =&gt; <see cref="Thickness"/></description></item>
+    /// <item><description>"killPlayer" =&gt; <see cref="KillPlayer"/></description></item>
     /// </list>
     /// </remarks>
     [CustomEntity("SJ2021/LaserEmitterUp = LoadUp",
@@ -101,6 +103,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// </summary>
         public float Alpha { get; }
 
+        /// <summary>
+        /// Whether or not colliding with the beam will kill the player.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to true.
+        /// </remarks>
+        public bool KillPlayer { get; }
+        
         #endregion
         
         #region Private Fields
@@ -125,6 +135,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             FlickerIntensity = Math.Max(data.Float("flickerIntensity", 8f), 1f);
             Thickness = Math.Max(data.Float("thickness", 6f), 0f);
             Alpha = Calc.Clamp(data.Float("alpha", 0.4f), 0f, 1f);
+            KillPlayer = data.Bool("killPlayer", true);
             
             // same depth as springs
             Depth = -8501;
@@ -142,7 +153,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     OnEnable = () => Collidable = true,
                     OnDisable = () => Collidable = false,
                 },
-                new PlayerCollider(player => player.Die(Vector2.Zero))
+                new PlayerCollider(onPlayerCollide)
             );
 
             // add a SineWave if flickering is enabled
@@ -164,6 +175,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             updateBeam();
         }
 
+        private void onPlayerCollide(Player player) {
+            if (KillPlayer)
+                player.Die(Vector2.Zero);
+        }
+        
         private void updateBeam() {
             var level = SceneAs<Level>();
 
