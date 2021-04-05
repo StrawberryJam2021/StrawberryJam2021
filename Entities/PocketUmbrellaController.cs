@@ -23,7 +23,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public PocketUmbrellaController(float cost, bool enabled, float cooldown = 0.2f) {
-            //Logger.Log("SJ2021/PUC", "ctor");
             AddTag(Tags.Global);
             StaminaCost = cost;
             Enabled = enabled;
