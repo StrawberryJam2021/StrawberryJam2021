@@ -14,7 +14,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private bool enabled = false;
         private float maxHoldDelay, holdDelay, staminaCost;
         public static FieldInfo gliderDestroyed_FI;
-        public static MethodInfo pickup_MI, coroutine_MI, wallJumpCheck_MI;
+        public static MethodInfo pickup_MI, destroy_coroutine_MI, wallJumpCheck_MI;
         public bool Enabled { get => enabled; private set => enabled = value; }
         public float StaminaCost { get => staminaCost; private set => staminaCost = value; }
         public float Cooldown { get => maxHoldDelay; }
@@ -39,7 +39,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             gliderDestroyed_FI = typeof(Glider).GetField("destroyed", BindingFlags.NonPublic | BindingFlags.Instance);
             pickup_MI = typeof(Player).GetMethod("Pickup", BindingFlags.NonPublic | BindingFlags.Instance);
-            coroutine_MI = typeof(Glider).GetMethod("DestroyAnimationRoutine", BindingFlags.NonPublic | BindingFlags.Instance);
+            destroy_coroutine_MI = typeof(Glider).GetMethod("DestroyAnimationRoutine", BindingFlags.NonPublic | BindingFlags.Instance);
             wallJumpCheck_MI = typeof(Player).GetMethod("WallJumpCheck", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
@@ -92,10 +92,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public void Enable() {
             Enabled = true;
-        }
-
-        public void Disable() {
-            Enabled = false;
         }
 
         public void setCost(float newcost) {
@@ -160,12 +156,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             umbrella.Collidable = false;
             umbrella.Hold.Active = false;
             Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
-            umbrella.Add(new Coroutine((System.Collections.IEnumerator) coroutine_MI.Invoke(umbrella, new object[] { })));
+            umbrella.Add(new Coroutine((System.Collections.IEnumerator) destroy_coroutine_MI.Invoke(umbrella, new object[] { })));
         }
 
         private bool exclusiveGrabCollide() {
-            if (player?.Scene?.Tracker?.GetComponents<Holdable>() == null) {
-                return false;
+            if (player?.Scene?.Tracker?.GetComponents<Holdable>().Count == 0) {
+                return true;
             }
             foreach (Component component in player?.Scene?.Tracker.GetComponents<Holdable>()) {
                 Holdable holdable = (Holdable) component;
