@@ -2,9 +2,9 @@ module SJ2021LaserEmitter
 
 using ..Ahorn, Maple
 
-const default_alpha=0.4
-const default_thickness=6.0
-const default_color="FF0000"
+const default_alpha = 0.4
+const default_thickness = 6.0
+const default_color = "FF0000"
 
 @mapdef Entity "SJ2021/LaserEmitterUp" LaserEmitterUp(
     x::Integer, y::Integer,
