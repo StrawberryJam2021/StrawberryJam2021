@@ -49,8 +49,13 @@ namespace Celeste.Mod.StrawberryJam2021 {
         public override void LoadContent(bool firstLoad) {
             base.LoadContent(firstLoad);
 
+            _GrabTempleGateSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/GrabTempleGateSprites.xml");
+            _BubbleEmitterSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/BubbleEmitterSprites.xml");
             _CustomEntitySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/CustomEntitySprites.xml");
+
             WormholeBooster.LoadParticles();
+            LoopBlock.InitializeTextures();
+
         }
     }
 }
