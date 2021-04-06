@@ -1,6 +1,7 @@
 # Dash Code Flag Sequence Controller
 placements.entities.SJ2021/DashSequenceController.tooltips.dashCode=The code the player needs to input. Should be in the form of "U,DR,L", with commas separating each direction. When writing diagonals, write them with vertical first, then horizontal, with no space. * is also a valid input, meaning you can dash any direction for it to work.
 placements.entities.SJ2021/DashSequenceController.tooltips.flagLabel=The starting label of the flags that will get activated. Every time a dash is successfully inputted, a flag with this label + "-#" will be set to true (e.g. "test" followed by a successful dash will set "test-1" to true).
+placements.entities.SJ2021/DashSequenceController.tooltips.flagOnFailure=Flag that will get set to true if the sequence has started, but fails partway through.
 
 # Sharded Refill
 placements.entities.SJ2021/RefillShard.tooltips.collectAmount=The amount of shards needed for collection. (0 for all)
@@ -8,3 +9,17 @@ placements.entities.SJ2021/RefillShard.tooltips.spawnRefill=Whether the shards g
 placements.entities.SJ2021/RefillShard.tooltips.oneUse=Whether the shards respawn after collection / Whether the spawned refill is single-use.
 placements.entities.SJ2021/RefillShard.tooltips.resetOnGround=Whether touching the ground causes the shards to reset (normal seed behavior).
 placements.entities.SJ2021/RefillShard.tooltips.twoDashes=Whether the refill gives you two dashes.
+
+# Sine Dust Spinner
+placements.entities.SJ2021/SineDustSpinner.tooltips.xPeriod=Period of the X-Sine in seconds. If X Linear is enabled, travel time in seconds before wrapping around (travel direction reversed if negative)
+placements.entities.SJ2021/SineDustSpinner.tooltips.yPeriod=Period of the Y-Sine in seconds. If Y Linear is enabled, travel time in seconds before wrapping around (travel direction reversed if negative)
+placements.entities.SJ2021/SineDustSpinner.tooltips.xPhase=X-Sine Phase in Rad*Pi
+placements.entities.SJ2021/SineDustSpinner.tooltips.yPhase=Y-Sine Phase in Rad*PI
+placements.entities.SJ2021/SineDustSpinner.tooltips.xLinear=Whether the X-Sine should be replaced with a linear, wrapping motion
+placements.entities.SJ2021/SineDustSpinner.tooltips.yLinear=Whether the Y-Sine should be replaced with a linear, wrapping motion
+
+# Bubble Emitter Fire Trigger
+placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of the emitters to fire. Will fire every emitter if empty
+
+# Dash With Holdable Trigger
+placements.triggers.SJ2021/HoldableDashTrigger.tooltips.mode="Toggle" will set or clear a session flag that allows dashing anywhere.\n"OnStay" will force the ability to be on/off while inside the trigger, regardless of what the session flag is set to.

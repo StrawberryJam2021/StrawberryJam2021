@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
+    <LangVersion>9.0</LangVersion>
     <TargetFrameworks>net452</TargetFrameworks>
     <AssemblyName>StrawberryJam2021</AssemblyName>
     <RootNamespace>Celeste.Mod.StrawberryJam2021</RootNamespace>
@@ -29,6 +29,10 @@
     </Reference>
     <Reference Include="CavernHelper">
       <HintPath>lib-stripped\CavernHelper.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="MaxHelpingHand">
+      <HintPath>lib-stripped\MaxHelpingHand.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
