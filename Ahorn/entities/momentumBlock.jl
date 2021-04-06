@@ -8,10 +8,6 @@ const placements = Ahorn.PlacementDict(
    "Boost Block (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
       MomentumBlock,
       "rectangle"
-   ),
-   "Momentum Block (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
-      MomentumBlock,
-      "rectangle"
    )
 )
 

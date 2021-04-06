@@ -55,7 +55,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public MTexture GetArrowTexture(float angle) {
             int value = (int) Math.Floor((0f - angle + (float) Math.PI * 2f) % ((float) Math.PI * 2f) / ((float) Math.PI * 2f) * 8f + 0.5f);
-            if(((8 > Width - 1) || (8 > Height - 1)))
+            if(((8 > Width - 1) || (8 > Height - 1))) //use a different texture if the size is small for readability
                 return GFX.Game.GetAtlasSubtextures("objects/StrawberryJam2021/momentumBlock/trianglearrow")[Calc.Clamp(value, 0, 7)];
             return GFX.Game.GetAtlasSubtextures("objects/moveBlock/arrow")[Calc.Clamp(value, 0, 7)];
         }
