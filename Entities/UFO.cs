@@ -17,6 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Wiggler bounceWiggler;
         private Vector2 lastSinePosition;
         private Vector2 anchorPosition;
+        bool HasFlung = false;
         public UFO(Vector2[] nodes, bool skippable) : base(nodes, skippable) {
             scale = Vector2.One;
             Add(new PlayerCollider(OnPlayer, new Hitbox(24f, 12f, -20f, -20f)));
@@ -44,6 +45,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 anchorPosition += Position - lastSinePosition;
             }
             lastSinePosition = Position;
+            Glider CollidingGlider = (Glider)Collide.First(this, Scene.Entities.FindAll<Glider>());
+            if (CollidingGlider != null && !HasFlung) {
+                HasFlung = true;
+                Add(new Coroutine(DoFlingRoutine2(CollidingGlider)));
+            }
 
         }
 
@@ -80,13 +86,38 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (player.Position.Y < Position.Y) {
                 player.Bounce(base.Top);
                 GotoHit(player.Center);
-               //MoveToX(anchorPosition.X);
+                //MoveToX(anchorPosition.X);
                 idleSine.Reset();
                 anchorPosition = (lastSinePosition = Position);
+                //GotoHit(player.Center);
+                //MoveToX(anchorPosition.X);
+                //.Reset();
+                //anchorPosition = (lastSinePosition = Position);
                 //eyeSpin = 1f;
             }
-
         }
+
+            IEnumerator DoFlingRoutine2(Glider Glider) {
+                Level level = Scene as Level;
+                Vector2 position = level.Camera.Position;
+                Vector2 screenSpaceFocusPoint = Glider.Position - position;
+                screenSpaceFocusPoint.X = Calc.Clamp(screenSpaceFocusPoint.X, 145f, 215f);
+                screenSpaceFocusPoint.Y = Calc.Clamp(screenSpaceFocusPoint.Y, 85f, 95f);
+                Add(new Coroutine(level.ZoomTo(screenSpaceFocusPoint, 1.1f, 0.2f)));
+                Engine.TimeRate = 0.8f;
+                Input.Rumble(RumbleStrength.Light, RumbleLength.Medium);
+                yield return 0.1f;
+                Celeste.Freeze(0.05f);
+                yield return 0.1f;
+                Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
+                Engine.TimeRate = 1f;
+                level.Shake();
+                Glider.Speed = FlingSpeed;
+                Add(new Coroutine(level.ZoomBack(0.1f)));
+
+            }
+
+        
     }
 
 }
