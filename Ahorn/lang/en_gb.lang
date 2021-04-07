@@ -18,6 +18,34 @@ placements.entities.SJ2021/SineDustSpinner.tooltips.yPhase=Y-Sine Phase in Rad*P
 placements.entities.SJ2021/SineDustSpinner.tooltips.xLinear=Whether the X-Sine should be replaced with a linear, wrapping motion
 placements.entities.SJ2021/SineDustSpinner.tooltips.yLinear=Whether the Y-Sine should be replaced with a linear, wrapping motion
 
+# Laser Emitter (Up)
+placements.entities.SJ2021/LaserEmitterUp.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.alpha=Base alpha if flickering is disabled.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.flicker=Whether or not the laser beam should flicker.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+
+# Laser Emitter (Down)
+placements.entities.SJ2021/LaserEmitterDown.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.alpha=Base alpha if flickering is disabled.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.flicker=Whether or not the laser beam should flicker.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+
+# Laser Emitter (Left)
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.alpha=Base alpha if flickering is disabled.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.flicker=Whether or not the laser beam should flicker.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+
+# Laser Emitter (Right)
+placements.entities.SJ2021/LaserEmitterRight.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.alpha=Base alpha if flickering is disabled.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.flicker=Whether or not the laser beam should flicker.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+
 # Bubble Emitter Fire Trigger
 placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of the emitters to fire. Will fire every emitter if empty
 
