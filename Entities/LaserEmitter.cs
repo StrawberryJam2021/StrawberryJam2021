@@ -43,26 +43,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         
         #endregion
         
-        #region Static Helper Methods
-
-        private static Vector2 directionForOrientation(Orientations orientation) => orientation switch {
-            Orientations.Up => Vector2.UnitY,
-            Orientations.Down => -Vector2.UnitY,
-            Orientations.Left => Vector2.UnitX,
-            Orientations.Right => -Vector2.UnitX,
-            _ => Vector2.Zero
-        };
-
-        private static float rotationForOrientation(Orientations orientation) => orientation switch {
-            Orientations.Up => 0f,
-            Orientations.Down => (float) Math.PI,
-            Orientations.Left => (float) -Math.PI / 2f,
-            Orientations.Right => (float) Math.PI / 2f,
-            _ => 0f
-        };
-
-        #endregion
-
         #region Properties
 
         /// <summary>
@@ -89,11 +69,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// <summary>
         /// The thickness of the beam (and corresponding <see cref="Hitbox"/> in pixels).
         /// </summary>
+        /// <remarks>
+        /// Defaults to 6 pixels.
+        /// </remarks>
         public float Thickness { get; }
         
         /// <summary>
         /// The base alpha value for the beam.
         /// </summary>
+        /// <remarks>
+        /// Defaults to 0.4 (40%).
+        /// </remarks>
         public float Alpha { get; }
 
         /// <summary>
@@ -135,7 +121,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         
         private Vector2 target;
         private float currentAlpha;
-        private float triggerCooldownRemaining = 0f;
+        private float triggerCooldownRemaining;
 
         private readonly string hexColor;
         
@@ -166,8 +152,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter"),
                 staticMover = new StaticMover {
                     OnAttach = p => Depth = p.Depth + 1,
-                    SolidChecker = s => CollideCheck(s, Position + directionForOrientation(orientation)),
-                    JumpThruChecker = jt => CollideCheck(jt, Position + directionForOrientation(orientation)),
+                    SolidChecker = s => CollideCheck(s, Position + orientation.Offset()),
+                    JumpThruChecker = jt => CollideCheck(jt, Position + orientation.Offset()),
                     OnEnable = () => Collidable = true,
                     OnDisable = () => Collidable = false,
                 },
@@ -178,7 +164,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (Flicker)
                 Add(new SineWave(flickerFrequency) {OnUpdate = v => currentAlpha = Alpha - (v + 1f) * 0.5f * Alpha / flickerRange});
 
-            emitterSprite.Rotation = rotationForOrientation(orientation);
+            emitterSprite.Rotation = orientation.Angle();
         }
 
         public override void Awake(Scene scene) {
@@ -345,5 +331,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Draw.Line(Entity.X, Entity.Y, Entity.X + laserEmitter.target.X, Entity.Y + laserEmitter.target.Y, color, thickness);
             }
         }
+    }
+    
+    public static class OrientationsExtensions {
+        public static Vector2 Offset(this LaserEmitter.Orientations orientation) => orientation switch {
+            LaserEmitter.Orientations.Up => Vector2.UnitY,
+            LaserEmitter.Orientations.Down => -Vector2.UnitY,
+            LaserEmitter.Orientations.Left => Vector2.UnitX,
+            LaserEmitter.Orientations.Right => -Vector2.UnitX,
+            _ => Vector2.Zero
+        };
+
+        public static float Angle(this LaserEmitter.Orientations orientation) => orientation switch {
+            LaserEmitter.Orientations.Up => 0f,
+            LaserEmitter.Orientations.Down => (float) Math.PI,
+            LaserEmitter.Orientations.Left => (float) -Math.PI / 2f,
+            LaserEmitter.Orientations.Right => (float) Math.PI / 2f,
+            _ => 0f
+        };
     }
 }
