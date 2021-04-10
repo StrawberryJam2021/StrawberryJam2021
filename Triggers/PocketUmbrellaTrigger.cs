@@ -16,10 +16,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             cooldown = data.Float("cooldown", 0.2f);
         }
 
-        public override void Added(Scene scene) {
-            base.Added(scene);
-        }
-
         public override void OnEnter(Player player) {
             base.OnEnter(player);
             PocketUmbrellaController controller = Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>();
@@ -30,9 +26,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             prevCost = controller.StaminaCost;
             prevCooldown = controller.Cooldown;
             if (Enable) {
-                controller.Enable();
-                controller.setCost(staminaCost);
-                controller.setCooldown(cooldown);
+                controller.Enabled = true;
+                controller.StaminaCost = staminaCost;
+                controller.Cooldown = cooldown;
                 controller.player = player;
             } else {
                 Scene.Remove(controller);
@@ -43,10 +39,10 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             base.OnLeave(player);
             PocketUmbrellaController controller = Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>();
             if (revertOnLeave && controller != null) {
-                controller.setCost(prevCost);
-                controller.setCooldown(prevCooldown);
+                controller.StaminaCost = prevCost;
+                controller.Cooldown = prevCooldown;
                 if (prevVal) {
-                    controller.Enable();
+                    controller.Enabled = true;
                 } else {
                     Scene.Remove(controller);
                 }

@@ -11,13 +11,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public Player player;
         private Vector2 spawnOffset;
-        private bool enabled = false;
-        private float maxHoldDelay, holdDelay, staminaCost;
+        private float holdDelay;
         public static FieldInfo gliderDestroyed_FI;
         public static MethodInfo pickup_MI, destroy_coroutine_MI, wallJumpCheck_MI;
-        public bool Enabled { get => enabled; private set => enabled = value; }
-        public float StaminaCost { get => staminaCost; private set => staminaCost = value; }
-        public float Cooldown { get => maxHoldDelay; }
+        public bool Enabled { get; set; }
+        public float StaminaCost { get; set; }
+        public float Cooldown { get; set; }
 
         public PocketUmbrellaController() : this (0, false) {
         }
@@ -26,7 +25,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             AddTag(Tags.Global);
             StaminaCost = cost;
             Enabled = enabled;
-            maxHoldDelay = cooldown;
+            Cooldown = cooldown;
             spawnOffset = new Vector2(0f, -12f);
         }
 
@@ -50,22 +49,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void Player_Throw(On.Celeste.Player.orig_Throw orig, Player self) {
             checkDrop(self);
-            if (!(self.Holding.Entity is PocketUmbrella)) {
+            if (self.Holding.Entity is  not PocketUmbrella) {
                 orig(self);
                 return;
             }
-            if (self.Holding != null) {
-                if (Input.MoveY.Value == 1) {
-                    self.Drop();
-                } else {
-                    Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
-                    self.Holding.Release(Vector2.UnitX * (float) self.Facing);
-                    //self.Speed.X = this.Speed.X + 80f * (float) (-(float) this.Facing);
-                    self.Play("event:/char/madeline/crystaltheo_throw", null, 0f);
-                    self.Sprite.Play("throw", false, false);
-                }
-                self.Holding = null;
+
+            if (Input.MoveY.Value == 1) {
+                self.Drop();
+            } else {
+                Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
+                self.Holding.Release(Vector2.UnitX * (float) self.Facing);
+                //self.Speed.X = this.Speed.X + 80f * (float) (-(float) this.Facing);
+                self.Play("event:/char/madeline/crystaltheo_throw", null, 0f);
+                self.Sprite.Play("throw", false, false);
             }
+            self.Holding = null;
         }
 
         private static void Player_Drop(On.Celeste.Player.orig_Drop orig, Player self) {
@@ -75,30 +73,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void Player_Added(On.Celeste.Player.orig_Added orig, Player self, Scene scene) {
             orig(self, scene);
-            if (Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>() == null) {
-                return;
+            PocketUmbrellaController controller = self.Scene.Tracker.GetEntity<PocketUmbrellaController>();
+            if (controller != null) {
+                controller.player = self;
             }
-            Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>().player = self;
         }
 
         private static void checkDrop(Player player) {
-            if (Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>() != null && Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>().Enabled) {
-                if (player?.Holding?.Entity is PocketUmbrella umbrella) {
-                    Engine.Scene.Tracker.GetEntity<PocketUmbrellaController>().dropUmbrella(umbrella);
+            PocketUmbrellaController controller = player.Scene.Tracker.GetEntity<PocketUmbrellaController>();
+            if (controller != null && controller.Enabled) {
+                if (player.Holding?.Entity is PocketUmbrella umbrella) {
+                    controller.dropUmbrella(umbrella);
                 }
             }
-        }
-
-        public void Enable() {
-            Enabled = true;
-        }
-
-        public void setCost(float newcost) {
-            StaminaCost = Math.Max(newcost, 0);
-        }
-
-        public void setCooldown(float cooldown) {
-            maxHoldDelay = cooldown;
         }
 
         public override void Update() {
@@ -110,8 +97,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (Enabled) {
                 if (grabCheck()) {
-                    if (player?.Holding == null && exclusiveGrabCollide() && shouldSpawnJelly()) {
-                        if (safelySpawnJelly(out PocketUmbrella umbrella)) {
+                    if (player?.Holding == null && exclusiveGrabCollide()) {
+                        if (trySpawnJelly(out PocketUmbrella umbrella)) {
                             Scene.Add(umbrella);
                             pickup_MI.Invoke(player, new object[] { umbrella.Hold });
                         }
@@ -126,8 +113,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return pressed;
         }
 
-        private bool safelySpawnJelly(out PocketUmbrella umbrella) {
+        private bool trySpawnJelly(out PocketUmbrella umbrella) {
             umbrella = new PocketUmbrella(player.Position + spawnOffset, false, false, StaminaCost);
+            if (!checkSpawnCondition()) {
+                return false;
+            }
             foreach (Entity entity in Scene.Tracker.GetEntities<SeekerBarrier>()) {
                 if (umbrella.Collider.Collide(entity.Collider)) {
                     return false;
@@ -136,13 +126,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return true;
         }
 
-        private bool shouldSpawnJelly() {
-            return player.Stamina > 20 && !player.Ducking && !wallJumpCheck(1) && !wallJumpCheck(-1) && playerStateCheck() && !player.OnGround(1); // && not near wall && not grounded (?)
+        private bool checkSpawnCondition() {
+            return player.Stamina > 20 && !player.Ducking && !wallJumpCheck(1) && !wallJumpCheck(-1) && playerStateCheck() && !player.OnGround(1);
         }
 
         private bool playerStateCheck() {
-            int state = player.StateMachine.State;
-            return state == Player.StNormal || state == Player.StDash || state == Player.StLaunch;
+            return player.StateMachine.State is Player.StNormal or Player.StDash or Player.StLaunch;
         }
 
         private bool wallJumpCheck(int dir) {
@@ -150,7 +139,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void dropUmbrella(PocketUmbrella umbrella) {
-            holdDelay = maxHoldDelay;
+            holdDelay = Cooldown;
             gliderDestroyed_FI.SetValue(umbrella, true);
             umbrella.Collidable = false;
             umbrella.Hold.Active = false;
