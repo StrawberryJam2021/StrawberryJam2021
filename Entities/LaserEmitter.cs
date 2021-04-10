@@ -200,7 +200,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 triggerCooldownRemaining = triggerCooldown;
                 
                 if (DisableLasers) {
-                    var emitters = level.Entities.OfType<LaserEmitter>().Where(e => e.hexColor == hexColor);
+                    var emitters = level.Entities.OfType<LaserEmitter>().Where(e => e.Color == Color);
                     foreach (var emitter in emitters)
                         emitter.Enabled = false;
                 }
