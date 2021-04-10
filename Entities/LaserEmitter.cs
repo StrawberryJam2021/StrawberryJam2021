@@ -106,6 +106,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// </remarks>
         public bool TriggerZipMovers { get; }
 
+        public bool Enabled {
+            get => Collidable;
+            set => Collidable = killZoneRect.Visible = value;
+        }
+        
         #endregion
         
         #region Private Fields
@@ -197,7 +202,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (DisableLasers) {
                     var emitters = level.Entities.OfType<LaserEmitter>().Where(e => e.hexColor == hexColor);
                     foreach (var emitter in emitters)
-                        emitter.Disable();
+                        emitter.Enabled = false;
                 }
 
                 if (TriggerZipMovers) {
