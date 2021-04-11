@@ -49,11 +49,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void Player_Throw(On.Celeste.Player.orig_Throw orig, Player self) {
-            checkDrop(self);
-            if (self.Holding.Entity is  not PocketUmbrella) {
+            if (self.Holding?.Entity is  not PocketUmbrella) {
                 orig(self);
                 return;
             }
+            checkDrop(self);
 
             if (Input.MoveY.Value == 1) {
                 self.Drop();
@@ -68,7 +68,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void Player_Drop(On.Celeste.Player.orig_Drop orig, Player self) {
-            checkDrop(self);
+            if (self.Holding?.Entity is PocketUmbrella) {
+                checkDrop(self);
+            }
             orig(self);
         }
 
@@ -83,9 +85,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void checkDrop(Player player) {
             PocketUmbrellaController controller = player.Scene.Tracker.GetEntity<PocketUmbrellaController>();
             if (controller != null && controller.Enabled) {
-                if (player.Holding?.Entity is PocketUmbrella umbrella) {
-                    controller.dropUmbrella(umbrella);
-                }
+                controller.dropUmbrella(umbrella);
             }
         }
 
