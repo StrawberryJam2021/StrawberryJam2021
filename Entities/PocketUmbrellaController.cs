@@ -85,7 +85,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void checkDrop(Player player) {
             PocketUmbrellaController controller = player.Scene.Tracker.GetEntity<PocketUmbrellaController>();
             if (controller != null && controller.Enabled) {
-                controller.dropUmbrella(umbrella);
+                controller.dropUmbrella(player.Holding.Entity as PocketUmbrella);
             }
         }
 
