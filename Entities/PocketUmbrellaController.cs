@@ -2,6 +2,7 @@
 using Celeste.Mod.Entities;
 using System.Reflection;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
@@ -95,7 +96,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
 
-            if (Enabled) {
+            if (Enabled && player?.Dead == false) {
                 if (grabCheck()) {
                     if (player?.Holding == null && exclusiveGrabCollide()) {
                         if (trySpawnJelly(out PocketUmbrella umbrella)) {
@@ -151,10 +152,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (player?.Scene?.Tracker?.GetComponents<Holdable>().Count == 0) {
                 return true;
             }
-            foreach (Component component in player?.Scene?.Tracker.GetComponents<Holdable>()) {
-                Holdable holdable = (Holdable) component;
-                if (holdable.Check(player)) {
-                    return false;
+            List<Component> components = player?.Scene?.Tracker?.GetComponents<Holdable>();
+            if (components is not null) {
+                foreach (Component component in components) {
+                    Holdable holdable = (Holdable) component;
+                    if (holdable.Check(player)) {
+                        return false;
+                    }
                 }
             }
             return true;
