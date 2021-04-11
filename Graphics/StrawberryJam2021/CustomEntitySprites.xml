@@ -51,12 +51,12 @@
     </wormholeBooster>
     
     <!--Rose Glider-->
-	<roseGliderBoxes path="objects/StrawberryJam2021/roseGlider/" start="idle">
-		<Loop id="idle" path="roseGliderBoxes" delay="0.1" frames="3-7,6-4"/>
-        <Loop id="idle_gust" path="roseGliderBoxes" delay="0.1" frames="3-0,1,2"/>
-	</roseGliderBoxes>
-    <roseGlider path="objects/StrawberryJam2021/roseGlider/" start="idle">
-		<Loop id="idle" path="roseGlider" delay="0.1" frames="3-7,6-4"/>
-        <Loop id="idle_gust" path="roseGlider" delay="0.1" frames="3-0,1,2"/>
+    <roseGlider path="objects/StrawberryJam2021/roseGlider/" start="idle_3">
+		<Loop id="idle_3" path="3charge/fly" delay="0.1" frames="3-7,6-4"/>
+		<Loop id="idle_gust_3" path="3charge/fly" delay="0.1" frames="3-0,1,2"/>
+		<Loop id="idle_2" path="2charge/fly" delay="0.1" frames="3-7,6-4"/>
+		<Loop id="idle_gust_2" path="2charge/fly" delay="0.1" frames="3-0,1,2"/>
+		<Loop id="idle_1" path="1charge/fly" delay="0.1" frames="3-7,6-4"/>
+		<Loop id="idle_gust_1" path="1charge/fly" delay="0.1" frames="3-0,1,2"/>
 	</roseGlider>
 </Sprites>

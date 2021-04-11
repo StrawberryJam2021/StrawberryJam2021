@@ -48,11 +48,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             prevLiftSpeed = Vector2.Zero;
 
             // todo sprite
-            Add(sprite = StrawberryJam2021Module.SpriteBank.Create("roseGliderBoxes"));
+            Add(sprite = StrawberryJam2021Module.SpriteBank.Create("roseGlider"));
             sprite.CenterOrigin();
             sprite.Origin.Y += 9;
             sprite.OnLoop = new Action<string>(handleSpriteLoop);
-            sprite.Play("idle");
+            sprite.Play("idle_3");
 
             Collider = new Hitbox(6, 10, -3, -5); // todo adjust
             onCollideH = new Collision(collideHandlerH);
@@ -85,13 +85,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void handleSpriteLoop(string id) {
-            if (id.Equals("idle") || id.Equals("idle_gust")) {
+            if (id.StartsWith("idle")) {
                 bool gust = prng.Next(0, 10) == 0;
-                if (gust) {
-                    sprite.Play("idle_gust");
-                } else {
-                    sprite.Play("idle");
-                }
+                sprite.Play((gust ? "idle_gust_" : "idle_") + charges);
             }
         }
 
@@ -194,8 +190,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 charges--;
                 level.ParticlesBG.Emit(boostParticles, 8, Position - Vector2.UnitY * 10, Vector2.UnitX * 5 + Vector2.UnitY * 3, (float) Math.PI);
                 // todo change sprite anim
+                if (charges > 0) {
+                    sprite.Play($"idle_{charges}");
+                } else {
+                    sprite.Play("death");
+                }
                 // todo petal particles
-                // todo launchbegin.invoke
                 boostDuration = boostDurationMax;
                 Input.Dash.ConsumeBuffer();
             } else if (shouldBeDestroyed()) {
@@ -229,25 +229,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     SpinMax = (float) Math.PI,
                     Size = 1f
                 };
-            }
-        }
-
-        public override void Render() {
-            base.Render();
-            // todo everything
-            switch (charges) {
-                case 3:
-                    Draw.HollowRect(Collider, Color.Green);
-                    break;
-                case 2:
-                    Draw.HollowRect(Collider, Color.YellowGreen);
-                    break;
-                case 1:
-                    Draw.HollowRect(Collider, Color.OrangeRed);
-                    break;
-                case 0:
-                    Draw.HollowRect(Collider, Color.Red);
-                    break;
             }
         }
 
