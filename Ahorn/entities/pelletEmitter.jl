@@ -4,28 +4,33 @@ using ..Ahorn, Maple
 
 const default_pellet_speed = 100.0
 const default_pellet_color = "FF0000"
+const default_frequency = 2.0
 
 @mapdef Entity "SJ2021/PelletEmitterUp" PelletEmitterUp(
     x::Integer, y::Integer,
     pelletSpeed::Float64=default_pellet_speed, pelletColor::String=default_pellet_color,
+    frequency::Float64=default_frequency, offset::Float64=0,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/PelletEmitterDown" PelletEmitterDown(
     x::Integer, y::Integer,
     pelletSpeed::Float64=default_pellet_speed, pelletColor::String=default_pellet_color,
+    frequency::Float64=default_frequency, offset::Float64=0,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/PelletEmitterLeft" PelletEmitterLeft(
     x::Integer, y::Integer,
     pelletSpeed::Float64=default_pellet_speed, pelletColor::String=default_pellet_color,
+    frequency::Float64=default_frequency, offset::Float64=0,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/PelletEmitterRight" PelletEmitterRight(
     x::Integer, y::Integer,
     pelletSpeed::Float64=default_pellet_speed, pelletColor::String=default_pellet_color,
+    frequency::Float64=default_frequency, offset::Float64=0,
     collideWithSolids::Bool=true
 )
 

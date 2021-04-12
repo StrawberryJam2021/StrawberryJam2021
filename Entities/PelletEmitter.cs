@@ -28,7 +28,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public float PelletSpeed { get; private set; }
         
-        public Color PelletColor { get; private set; }
+        public virtual Color PelletColor { get; private set; }
+        
+        public virtual float Frequency { get; private set; }
+        
+        public float Offset { get; private set; }
         
         public bool CollideWithSolids { get; private set; }
 
@@ -48,6 +52,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         protected override void ReadEntityData(EntityData data) {
             PelletSpeed = data.Float("pelletSpeed", 100f);
             PelletColor = data.HexColor("pelletColor", Color.Red);
+            Frequency = data.Float("frequency", 2f);
+            Offset = data.Float("offset");
             CollideWithSolids = data.Bool("collideWithSolids", true);
         }
 
@@ -68,13 +74,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(emitterSprite);
         }
 
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
+
+            timer = Offset;
+        }
+
         public override void Update() {
             base.Update();
 
-            timer -= Engine.DeltaTime;
-            if (timer < 0) {
-                Get<PelletFiringComponent>().Fire();
-                timer = 2f;
+            if (Frequency > 0) {
+                timer -= Engine.DeltaTime;
+                if (timer <= 0) {
+                    Get<PelletFiringComponent>().Fire();
+                    timer += Frequency;
+                }
             }
         }
     }
