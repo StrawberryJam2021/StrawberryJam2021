@@ -76,14 +76,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             prng = new Random($"{level.Session.Area.SID}_{level.Session.Level}_{id.ID}".GetHashCode());
         }
 
-        public static void Load() {
-
-        }
-
-        public static void Unload() {
-
-        }
-
         private void handleSpriteLoop(string id) {
             if (id.StartsWith("idle")) {
                 bool gust = prng.Next(0, 10) == 0;
