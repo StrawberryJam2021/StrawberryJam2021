@@ -22,22 +22,27 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private const float flickerRange = 4f;
         
         private Vector2 target;
-        private float alphaMultiplier;
+        private float alphaMultiplier = 1f;
         
         public LaserBeamComponent() : base(flickerFrequency) {
             Visible = true;
             OnUpdate = v => alphaMultiplier = 1 - (v + 1f) * 0.5f / flickerRange;
         }
 
+        public override void EntityAdded(Scene scene) {
+            base.EntityAdded(scene);
+            updateBeam();
+        }
+
         public override void Render() {
-            if (!Entity.Collidable || !(Entity is OrientableEntity hazardEmitter))
+            if (!Entity.Collidable || !(Entity is OrientableEntity orientableEntity))
                 return;
 
             var color = Color * Alpha * (Flicker ? alphaMultiplier : 1f);
                 
             Draw.Rect(Collider.Bounds, color);
 
-            float thickness = hazardEmitter.Orientation == OrientableEntity.Orientations.Left || hazardEmitter.Orientation == OrientableEntity.Orientations.Right
+            float thickness = orientableEntity.Orientation == OrientableEntity.Orientations.Left || orientableEntity.Orientation == OrientableEntity.Orientations.Right
                 ? Collider.Height / 3f
                 : Collider.Width / 3f;
 
@@ -86,14 +91,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
         
         private void updateBeam() {
-            if (!(Entity is OrientableEntity hazardEmitter)) return;
+            if (!(Entity is OrientableEntity orientableEntity)) return;
             var level = SceneAs<Level>();
 
-            float high = hazardEmitter.Orientation switch {
-                OrientableEntity.Orientations.Up => hazardEmitter.Position.Y - level.Bounds.Top,
-                OrientableEntity.Orientations.Down => level.Bounds.Bottom - hazardEmitter.Position.Y,
-                OrientableEntity.Orientations.Left => hazardEmitter.Position.X - level.Bounds.Left,
-                OrientableEntity.Orientations.Right => level.Bounds.Right - hazardEmitter.Position.X,
+            float high = orientableEntity.Orientation switch {
+                OrientableEntity.Orientations.Up => orientableEntity.Position.Y - level.Bounds.Top,
+                OrientableEntity.Orientations.Down => level.Bounds.Bottom - orientableEntity.Position.Y,
+                OrientableEntity.Orientations.Left => orientableEntity.Position.X - level.Bounds.Left,
+                OrientableEntity.Orientations.Right => level.Bounds.Right - orientableEntity.Position.X,
                 _ => 0
             };
 
@@ -101,7 +106,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // first check if the laser hits the edge of the screen
             resizeKillbox(high);
-            if (!CollideWithSolids || !hazardEmitter.CollideCheck<Solid>()) return;
+            if (!CollideWithSolids || !orientableEntity.CollideCheck<Solid>()) return;
             
             // perform a binary search to hit the nearest solid
             while (safety-- > 0) {
@@ -109,7 +114,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 resizeKillbox(pivot);
                 if (pivot == low)
                     break;
-                if (hazardEmitter.CollideCheck<Solid>()) {
+                if (orientableEntity.CollideCheck<Solid>()) {
                     high = pivot;
                 } else {
                     low = pivot;

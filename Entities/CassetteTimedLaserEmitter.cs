@@ -45,6 +45,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.AddComponents();
 
             Add(new CassetteListener {
+                OnEntry = () => Collidable = false,
                 OnSwap = index => Collidable = index == CassetteIndex
             });
         }
