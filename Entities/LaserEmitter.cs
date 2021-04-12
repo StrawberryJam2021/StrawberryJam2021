@@ -50,7 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// <remarks>
         /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
         /// </remarks>
-        public Color Color { get; private set; }
+        public virtual Color Color { get; private set; }
         
         /// <summary>
         /// Whether or not the beam should flicker.
@@ -141,7 +141,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             
             Add(new PlayerCollider(onPlayerCollide));
             
-            // laser beam should appear underneath everything else
             Add(new LaserBeamComponent {
                 Color = Color,
                 Thickness = Thickness,

@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Linq;
@@ -79,5 +80,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     InvokeOnTick(currentBeatIndex / beatsPerTick);
             }
         }
+        
+        public static Color ColorFromCassetteIndex(int index) => index switch {
+            0 => Calc.HexToColor("49aaf0"),
+            1 => Calc.HexToColor("f049be"),
+            2 => Calc.HexToColor("fcdc3a"),
+            3 => Calc.HexToColor("38e04e"),
+            _ => Color.White
+        };
     }
 }
