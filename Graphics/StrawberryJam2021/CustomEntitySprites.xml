@@ -50,6 +50,12 @@
         <Anim id="pop" path="boosterWormhole" delay="0.08" frames="9-17"/>
     </wormholeBooster>
     
+    <!--Laser Emitter-->
+    <laserEmitter path="objects/StrawberryJam2021/laserEmitter/" start="idle">
+        <Justify x="0.5" y="1"/>
+        <Anim id="idle" path="idle" delay="0.1" frames="0"/>
+    </laserEmitter>
+    
     <!--Rose Glider-->
     <roseGlider path="objects/StrawberryJam2021/roseGlider/" start="idle_3">
 		<Loop id="idle_3" path="3charge/fly" delay="0.1" frames="3-7,6-4"/>
