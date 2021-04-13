@@ -6,6 +6,7 @@ using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using System;
+using System.Collections;
 using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
@@ -58,6 +59,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             dashCoroutineHook = new ILHook(dashCoroutineInfo, IL_Player_DashCoroutine);
             IL.Celeste.Player.SuperWallJump += IL_Player_SuperWallJump;
             IL.Celeste.Player.SuperJump += IL_Player_SuperJump;
+            IL.Celeste.Player.DreamDashBegin += IL_Player_DreamDashBegin;
             On.Celeste.Player.Die += On_Player_Die;
         }
 
@@ -69,6 +71,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             dashCoroutineHook?.Dispose();
             IL.Celeste.Player.SuperWallJump -= IL_Player_SuperWallJump;
             IL.Celeste.Player.SuperJump -= IL_Player_SuperJump;
+            IL.Celeste.Player.DreamDashBegin -= IL_Player_DreamDashBegin;
             On.Celeste.Player.Die -= On_Player_Die;
         }
 
@@ -89,13 +92,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
+        private static bool IsDashingOrRespawning(Player player) {
+            int state = player.StateMachine.State;
+            return state == Player.StDash || state == Player.StIntroRespawn;
+        }
+
         private static void On_Player_Update(On.Celeste.Player.orig_Update orig, Player self) {
             bool wasDashing = self.DashAttacking || self.StateMachine.State == Player.StDash;
             orig(self);
             // having the player itself handle collision is nicer
             DashBoostField boostField = self.CollideFirst<DashBoostField>();
-            // don't slow down while the player is dashing or dead
-            if (!self.Dead && boostField != null && self.StateMachine.State != Player.StDash)
+            if (!self.Dead && boostField != null && !IsDashingOrRespawning(self))
                 CurrentTimeRateMult = boostField.TargetTimeRateMult;
             else
                 CurrentTimeRateMult = 1f;
@@ -108,7 +115,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static bool On_Player_UnderwaterMusicCheck(On.Celeste.Player.orig_UnderwaterMusicCheck orig, Player self) {
-            if (self.CollideCheck<DashBoostField>() && self.StateMachine.State != Player.StDash)
+            if (self.CollideCheck<DashBoostField>() && !IsDashingOrRespawning(self))
                 return true;
             return orig(self);
         }
@@ -119,6 +126,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (boostField != null) {
                 playerData.Set("dashBoosted", true);
                 playerData.Set("dashBoostSpeed", boostField.DashSpeedMult);
+                self.Add(new Coroutine(RefillDashIfRedDashBoost(self)));
             } else {
                 // just to be on the safe side
                 playerData.Set("dashBoosted", false);
@@ -143,24 +151,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return speed;
         }
 
+        private static Vector2 ModifySpeed(Vector2 speed, Player player) {
+            DynamicData playerData = new DynamicData(player);
+            if (SafeGet(playerData, "dashBoosted", defaultValue: false)) {
+                speed *= SafeGet(playerData, "dashBoostSpeed", defaultValue: 1f);
+            }
+            return speed;
+        }
+
         private static void IL_Player_DashCoroutine(ILContext il) {
             ILCursor cursor = new ILCursor(il);
             FieldInfo f_this = dashCoroutineInfo.DeclaringType.GetField("<>4__this");
-            // where dash speed is loaded
-            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(240f))) {
+            // right as Speed is set for the first time
+            if (cursor.TryGotoNext(MoveType.Before, instr => instr.MatchStfld<Player>("Speed"))) {
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.Emit(OpCodes.Ldfld, f_this);
-                cursor.EmitDelegate<Func<float, Player, float>>(ModifySpeed);
-            }
-            // convenient place to hook after Speed has been set
-            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCallOrCallvirt<Player>("CreateTrail"))) {
-                cursor.Emit(OpCodes.Ldarg_0);
-                cursor.Emit(OpCodes.Ldfld, f_this);
-                cursor.EmitDelegate<Action<Player>>(RefillDashIfRedDashBoost);
+                cursor.EmitDelegate<Func<Vector2, Player, Vector2>>(ModifySpeed);
             }
         }
 
-        private static void RefillDashIfRedDashBoost(Player player) {
+        private static IEnumerator RefillDashIfRedDashBoost(Player player) {
+            // wait a frame so that the player's speed will be correct
+            yield return null;
             DashBoostField boostField = player.CollideFirst<DashBoostField>();
             if (boostField?.Mode == Modes.Red) {
                 player.Dashes += 1;
@@ -188,6 +200,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void IL_Player_SuperJump(ILContext il) {
             ILCursor cursor = new ILCursor(il);
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(260f))) {
+                cursor.Emit(OpCodes.Ldarg_0);
+                cursor.EmitDelegate<Func<float, Player, float>>(ModifySpeed);
+            }
+        }
+
+        private static void IL_Player_DreamDashBegin(ILContext il) {
+            ILCursor cursor = new ILCursor(il);
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(240f))) {
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Func<float, Player, float>>(ModifySpeed);
             }
