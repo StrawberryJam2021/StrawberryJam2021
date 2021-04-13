@@ -3,11 +3,13 @@ using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <summary>
-    /// Renders the beam part of the laser emitter.
+    /// Calculates and renders the beam part of a laser emitter.
     /// </summary>
     /// <remarks>
-    /// Opacity of the beam edges is calculated as <see cref="LaserEmitter.Alpha"/> times <see cref="LaserEmitter.alphaMultiplier"/>.
-    /// The centre third of the beam is twice that opacity.
+    /// Opacity of the beam edges is calculated as <see cref="Alpha"/> times <see cref="alphaMultiplier"/>, where
+    /// the multiplier represents an optional flickering based on a <see cref="SineWave"/>.
+    /// The centre third of the beam is twice that opacity.<br/>
+    /// The size of the laser hitbox is calculated using a binary search algorithm for performance.
     /// </remarks>
     public class LaserBeamComponent : SineWave {
         public Color Color { get; set; }

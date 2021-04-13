@@ -7,28 +7,28 @@ const default_thickness = 6.0
 
 @mapdef Entity "SJ2021/CassetteTimedLaserEmitterUp" CassetteTimedLaserEmitterUp(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, startBeat::Integer=0, beatLength::Integer=2,
+    cassetteIndex::Integer=0, tickOffset::Integer=0, lengthInTicks::Integer=2,
     alpha::Float64=default_alpha, thickness::Float64=default_thickness, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedLaserEmitterDown" CassetteTimedLaserEmitterDown(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, startBeat::Integer=0, beatLength::Integer=2,
+    cassetteIndex::Integer=0, tickOffset::Integer=0, lengthInTicks::Integer=2,
     alpha::Float64=default_alpha, thickness::Float64=default_thickness, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedLaserEmitterLeft" CassetteTimedLaserEmitterLeft(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, startBeat::Integer=0, beatLength::Integer=2,
+    cassetteIndex::Integer=0, tickOffset::Integer=0, lengthInTicks::Integer=2,
     alpha::Float64=default_alpha, thickness::Float64=default_thickness, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedLaserEmitterRight" CassetteTimedLaserEmitterRight(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, startBeat::Integer=0, beatLength::Integer=2,
+    cassetteIndex::Integer=0, tickOffset::Integer=0, lengthInTicks::Integer=2,
     alpha::Float64=default_alpha, thickness::Float64=default_thickness, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )

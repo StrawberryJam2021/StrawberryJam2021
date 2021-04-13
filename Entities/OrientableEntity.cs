@@ -3,6 +3,12 @@ using Monocle;
 using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
+    /// <summary>
+    /// Base class for an entity that that has an orientation.
+    /// </summary>
+    /// <remarks>
+    /// Automatically applies a <see cref="StaticMover"/> to the backside of the entity.
+    /// </remarks>
     public abstract class OrientableEntity : Entity {
         #region Properties
         
@@ -23,7 +29,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // same depth as springs
             Depth = Depths.Above - 1;
         }
-
+        
+        /// <summary>
+        /// Adds the default components required for an <see cref="OrientableEntity"/>.
+        /// Should be overridden to apply extra functionality.
+        /// </summary>
         protected virtual void AddComponents() {
             Add(new StaticMover {
                 OnAttach = p => Depth = p.Depth + 1,
@@ -34,29 +44,33 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             });
         }
 
+        /// <summary>
+        /// Should be overridden to read any required data from Ahorn.
+        /// </summary>
         protected abstract void ReadEntityData(EntityData data);
         
         /// <summary>
-        /// The available orientations of an emitter, where the direction indicates which way the hazard travels.
+        /// The available orientations of an <see cref="OrientableEntity"/>, where the direction indicates the "front" of the entity.
+        /// The opposite direction is used for checking <see cref="StaticMover"/>s.
         /// </summary>
         public enum Orientations {
             /// <summary>
-            /// Indicates that the hazard fires from the emitter toward the top of the screen.
+            /// Indicates that the entity points toward the top of the screen.
             /// </summary>
             Up,
             
             /// <summary>
-            /// Indicates that the hazard fires from the emitter toward the bottom of the screen.
+            /// Indicates that the entity points toward the bottom of the screen.
             /// </summary>
             Down,
             
             /// <summary>
-            /// Indicates that the hazard fires from the emitter toward the left of the screen.
+            /// Indicates that the entity points toward the left of the screen.
             /// </summary>
             Left,
             
             /// <summary>
-            /// Indicates that the hazard fires from the emitter toward the right of the screen.
+            /// Indicates that the entity points toward the right of the screen.
             /// </summary>
             Right,
         }

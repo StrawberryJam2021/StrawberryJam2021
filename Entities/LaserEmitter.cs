@@ -12,12 +12,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// Has four available orientations, indicated by the <see cref="OrientableEntity.Orientations"/> enum.<br/>
     /// Configurable values from Ahorn:<br/>
     /// <list type="bullet">
-    /// <item><description>"color" =&gt; <see cref="Color"/></description></item>
     /// <item><description>"alpha" =&gt; <see cref="Alpha"/></description></item>
-    /// <item><description>"flicker" =&gt; <see cref="Flicker"/></description></item>
-    /// <item><description>"thickness" =&gt; <see cref="Thickness"/></description></item>
-    /// <item><description>"killPlayer" =&gt; <see cref="KillPlayer"/></description></item>
+    /// <item><description>"collideWithSolids" =&gt; <see cref="CollideWithSolids"/></description></item>
+    /// <item><description>"color" =&gt; <see cref="Color"/></description></item>
     /// <item><description>"disableLasers" =&gt; <see cref="DisableLasers"/></description></item>
+    /// <item><description>"flicker" =&gt; <see cref="Flicker"/></description></item>
+    /// <item><description>"killPlayer" =&gt; <see cref="KillPlayer"/></description></item>
+    /// <item><description>"thickness" =&gt; <see cref="Thickness"/></description></item>
     /// <item><description>"triggerZipMovers" =&gt; <see cref="TriggerZipMovers"/></description></item>
     /// </list>
     /// </remarks>
@@ -45,44 +46,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         #region Properties
 
         /// <summary>
-        /// The base <see cref="Microsoft.Xna.Framework.Color"/> used to render the beam.
-        /// </summary>
-        /// <remarks>
-        /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
-        /// </remarks>
-        public virtual Color Color { get; private set; }
-        
-        /// <summary>
-        /// Whether or not the beam should flicker.
-        /// </summary>
-        /// <remarks>
-        /// Defaults to true, flickering 4 times per second.
-        /// </remarks>
-        public bool Flicker { get; private set; }
-        
-        /// <summary>
-        /// The thickness of the beam (and corresponding <see cref="Hitbox"/> in pixels).
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 6 pixels.
-        /// </remarks>
-        public float Thickness { get; private set; }
-        
-        /// <summary>
         /// The base alpha value for the beam.
         /// </summary>
         /// <remarks>
         /// Defaults to 0.4 (40%).
         /// </remarks>
         public float Alpha { get; private set; }
-
+        
         /// <summary>
-        /// Whether or not colliding with the beam will kill the player.
+        /// Whether or not the beam will be blocked by <see cref="Solid"/>s.
         /// </summary>
         /// <remarks>
         /// Defaults to true.
         /// </remarks>
-        public bool KillPlayer { get; private set; }
+        public bool CollideWithSolids { get; private set; }
+        
+        /// <summary>
+        /// The base <see cref="Microsoft.Xna.Framework.Color"/> used to render the beam.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
+        /// </remarks>
+        public virtual Color Color { get; private set; }
         
         /// <summary>
         /// Whether or not colliding with this beam will disable all beams of the same color.
@@ -93,20 +78,36 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public bool DisableLasers { get; private set; }
         
         /// <summary>
+        /// Whether or not the beam should flicker.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to true, flickering 4 times per second.
+        /// </remarks>
+        public bool Flicker { get; private set; }
+        
+        /// <summary>
+        /// Whether or not colliding with the beam will kill the player.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to true.
+        /// </remarks>
+        public bool KillPlayer { get; private set; }
+        
+        /// <summary>
+        /// The thickness of the beam (and corresponding <see cref="Hitbox"/> in pixels).
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 6 pixels.
+        /// </remarks>
+        public float Thickness { get; private set; }
+        
+        /// <summary>
         /// Whether or not colliding with this beam will trigger AdventureHelper LinkedZipMovers of the same color.
         /// </summary>
         /// <remarks>
         /// Defaults to false.
         /// </remarks>
         public bool TriggerZipMovers { get; private set; }
-        
-        /// <summary>
-        /// Whether or not the beam will be blocked by <see cref="Solid"/>s.
-        /// </summary>
-        /// <remarks>
-        /// Defaults to true.
-        /// </remarks>
-        public bool CollideWithSolids { get; private set; }
 
         #endregion
         
@@ -125,15 +126,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         protected override void ReadEntityData(EntityData data) {
-            hexColor = data.Attr("color", "FF0000").ToLower();
-            Color = Calc.HexToColor(hexColor);
-            Flicker = data.Bool("flicker", true);
-            Thickness = Math.Max(data.Float("thickness", 6f), 0f);
             Alpha = Calc.Clamp(data.Float("alpha", 0.4f), 0f, 1f);
-            KillPlayer = data.Bool("killPlayer", true);
-            DisableLasers = data.Bool("disableLasers");
-            TriggerZipMovers = data.Bool("triggerZipMovers");
             CollideWithSolids = data.Bool("collideWithSolids", true);
+            Color = Calc.HexToColor(hexColor = data.Attr("color", "FF0000").ToLower());
+            DisableLasers = data.Bool("disableLasers");
+            Flicker = data.Bool("flicker", true);
+            KillPlayer = data.Bool("killPlayer", true);
+            Thickness = Math.Max(data.Float("thickness", 6f), 0f);
+            TriggerZipMovers = data.Bool("triggerZipMovers");
         }
         
         protected override void AddComponents() {
@@ -142,11 +142,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(new PlayerCollider(onPlayerCollide));
             
             Add(new LaserBeamComponent {
-                Color = Color,
-                Thickness = Thickness,
                 Alpha = Alpha,
+                CollideWithSolids = CollideWithSolids,
+                Color = Color,
                 Flicker = Flicker,
-                CollideWithSolids = CollideWithSolids
+                Thickness = Thickness,
             });
             
             Sprite emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");

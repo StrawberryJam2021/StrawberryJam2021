@@ -6,28 +6,28 @@ const default_pellet_speed = 100.0
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterUp" CassetteTimedPelletEmitterUp(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, startBeat::Integer=0,
+    cassetteIndex::Integer=0, tickOffset::Integer=0,
     pelletSpeed::Float64=default_pellet_speed, pelletCount::Integer=1,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterDown" CassetteTimedPelletEmitterDown(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, startBeat::Integer=0,
+    cassetteIndex::Integer=0, tickOffset::Integer=0,
     pelletSpeed::Float64=default_pellet_speed, pelletCount::Integer=1,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterLeft" CassetteTimedPelletEmitterLeft(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, startBeat::Integer=0,
+    cassetteIndex::Integer=0, tickOffset::Integer=0,
     pelletSpeed::Float64=default_pellet_speed, pelletCount::Integer=1,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterRight" CassetteTimedPelletEmitterRight(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, startBeat::Integer=0,
+    cassetteIndex::Integer=0, tickOffset::Integer=0,
     pelletSpeed::Float64=default_pellet_speed, pelletCount::Integer=1,
     collideWithSolids::Bool=true
 )
