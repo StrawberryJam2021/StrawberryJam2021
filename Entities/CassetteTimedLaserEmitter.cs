@@ -1,6 +1,7 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/CassetteTimedLaserEmitterUp = LoadUp",
@@ -30,6 +31,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public int CassetteIndex { get; private set; }
         
+        public int StartBeat { get; private set; }
+        
+        public int BeatLength { get; private set; }
+        
         #endregion
 
         public CassetteTimedLaserEmitter(EntityData data, Vector2 offset, Orientations orientation)
@@ -39,6 +44,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         protected override void ReadEntityData(EntityData data) {
             base.ReadEntityData(data);
             CassetteIndex = data.Int("cassetteIndex");
+            StartBeat = data.Int("startBeat");
+            BeatLength = data.Int("beatLength", 2);
         }
         
         protected override void AddComponents() {
@@ -46,7 +53,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Add(new CassetteListener {
                 OnEntry = () => Collidable = false,
-                OnSwap = index => Collidable = index == CassetteIndex
+                OnTick = (index, tick) => Collidable = index == CassetteIndex && tick >= StartBeat && tick < StartBeat + BeatLength
             });
         }
     }

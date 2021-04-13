@@ -10,6 +10,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         
         public Color PelletColor { get; set; }
         
+        public int PelletCount { get; set; }
+        
         public bool CollideWithSolids { get; set; }
 
         #endregion

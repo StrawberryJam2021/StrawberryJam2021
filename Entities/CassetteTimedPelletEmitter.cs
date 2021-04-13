@@ -30,6 +30,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public int CassetteIndex { get; private set; }
         
+        public int StartBeat { get; private set; }
+        
         protected CassetteTimedPelletEmitter(EntityData data, Vector2 offset, Orientations orientation)
             : base(data, offset, orientation)
         {
@@ -38,13 +40,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         protected override void ReadEntityData(EntityData data) {
             base.ReadEntityData(data);
             CassetteIndex = data.Int("cassetteIndex");
+            StartBeat = data.Int("startBeat");
         }
 
         protected override void AddComponents() {
             base.AddComponents();
+
             Add(new CassetteListener {
-                OnSwap = index => {
-                    if (index == CassetteIndex)
+                OnTick = (index, tick) => {
+                    if (index == CassetteIndex && tick == StartBeat)
                         Get<PelletFiringComponent>().Fire();
                 }
             });

@@ -6,25 +6,29 @@ const default_pellet_speed = 100.0
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterUp" CassetteTimedPelletEmitterUp(
     x::Integer, y::Integer,
-    pelletSpeed::Float64=default_pellet_speed, cassetteIndex::Int=0,
+    cassetteIndex::Integer=0, startBeat::Integer=0,
+    pelletSpeed::Float64=default_pellet_speed, pelletCount::Integer=1,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterDown" CassetteTimedPelletEmitterDown(
     x::Integer, y::Integer,
-    pelletSpeed::Float64=default_pellet_speed, cassetteIndex::Int=0,
+    cassetteIndex::Integer=0, startBeat::Integer=0,
+    pelletSpeed::Float64=default_pellet_speed, pelletCount::Integer=1,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterLeft" CassetteTimedPelletEmitterLeft(
     x::Integer, y::Integer,
-    pelletSpeed::Float64=default_pellet_speed, cassetteIndex::Int=0,
+    cassetteIndex::Integer=0, startBeat::Integer=0,
+    pelletSpeed::Float64=default_pellet_speed, pelletCount::Integer=1,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterRight" CassetteTimedPelletEmitterRight(
     x::Integer, y::Integer,
-    pelletSpeed::Float64=default_pellet_speed, cassetteIndex::Int=0,
+    cassetteIndex::Integer=0, startBeat::Integer=0,
+    pelletSpeed::Float64=default_pellet_speed, pelletCount::Integer=1,
     collideWithSolids::Bool=true
 )
 
@@ -33,6 +37,10 @@ const colorNames = Dict{String, Int}(
     "Rose" => 1,
     "Bright Sun" => 2,
     "Malachite" => 3
+)
+
+const editingOptions = Dict{String, Any}(
+    "cassetteIndex" => colorNames,
 )
 
 const placements = Ahorn.PlacementDict(
@@ -70,10 +78,10 @@ function Ahorn.selection(entity::CassetteTimedPelletEmitterRight)
     return Ahorn.Rectangle(x, y - 7, 8, 14)
 end
 
-Ahorn.editingOptions(entity::CassetteTimedPelletEmitterUp) = Dict{String, Any}( "cassetteIndex" => colorNames )
-Ahorn.editingOptions(entity::CassetteTimedPelletEmitterDown) = Dict{String, Any}( "cassetteIndex" => colorNames )
-Ahorn.editingOptions(entity::CassetteTimedPelletEmitterLeft) = Dict{String, Any}( "cassetteIndex" => colorNames )
-Ahorn.editingOptions(entity::CassetteTimedPelletEmitterRight) = Dict{String, Any}( "cassetteIndex" => colorNames )
+Ahorn.editingOptions(entity::CassetteTimedPelletEmitterUp) = editingOptions
+Ahorn.editingOptions(entity::CassetteTimedPelletEmitterDown) = editingOptions
+Ahorn.editingOptions(entity::CassetteTimedPelletEmitterLeft) = editingOptions
+Ahorn.editingOptions(entity::CassetteTimedPelletEmitterRight) = editingOptions
 
 sprite = "objects/StrawberryJam2021/laserEmitter/idle00"
 

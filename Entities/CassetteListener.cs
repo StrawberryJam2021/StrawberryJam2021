@@ -7,9 +7,9 @@ using System.Reflection;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class CassetteListener : Component {
         public Action OnEntry;
-        public Action<int> OnTick;
+        public Action<int, int> OnTick;
         public Action<int> OnSwap;
-        public Action<int> OnSixteenth;
+        public Action<int, int> OnSixteenth;
         
         private CassetteBlockManager cassetteBlockManager;
         
@@ -17,16 +17,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int lastBlockIndex = -1;
         private int lastBeatIndex = -1;
 
-        private int beatsPerTick;
-
         private static readonly FieldInfo currentIndexFieldInfo = typeof(CassetteBlockManager).GetField("currentIndex", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo beatIndexFieldInfo = typeof(CassetteBlockManager).GetField("beatIndex", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo beatsPerTickFieldInfo = typeof(CassetteBlockManager).GetField("beatsPerTick", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo ticksPerSwapFieldInfo = typeof(CassetteBlockManager).GetField("ticksPerSwap", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        public int CurrentIndex => cassetteBlockManager == null ? 0 : (int) currentIndexFieldInfo.GetValue(cassetteBlockManager);
+        public int CurrentSixteenth => cassetteBlockManager?.GetSixteenthNote() - 1 ?? 0;
+        public int CurrentTick => (CurrentBeat / BeatsPerTick) % TicksPerSwap;
+        public int CurrentBeat => cassetteBlockManager == null ? 0 : (int) beatIndexFieldInfo.GetValue(cassetteBlockManager);
+        
+        public int BeatsPerTick { get; private set; }
+        public int TicksPerSwap { get; private set; }
+        
         protected virtual void InvokeOnEntry() => OnEntry?.Invoke();
-        protected virtual void InvokeOnTick(int tick) => OnTick?.Invoke(tick);
+        protected virtual void InvokeOnTick(int index, int tick) => OnTick?.Invoke(index, tick);
         protected virtual void InvokeOnSwap(int index) => OnSwap?.Invoke(index);
-        protected virtual void InvokeOnSixteenth(int sixteenth) => OnSixteenth?.Invoke(sixteenth);
+        protected virtual void InvokeOnSixteenth(int index, int sixteenth) => OnSixteenth?.Invoke(index, sixteenth);
         
         public CassetteListener() : base(true, false)
         {
@@ -36,7 +43,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.EntityAwake();
             if (cassetteBlockManager == null) return;
 
-            beatsPerTick = (int) beatsPerTickFieldInfo.GetValue(cassetteBlockManager);
+            BeatsPerTick = cassetteBlockManager == null ? 4 : (int) beatsPerTickFieldInfo.GetValue(cassetteBlockManager);
+            TicksPerSwap = cassetteBlockManager == null ? 2 : (int) ticksPerSwapFieldInfo.GetValue(cassetteBlockManager);
             
             InvokeOnEntry();
         }
@@ -60,24 +68,26 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
             if (cassetteBlockManager == null) return;
-
-            int sixteenth = cassetteBlockManager.GetSixteenthNote() - 1;
+            
+            int sixteenth = CurrentSixteenth;
+            int currentBlockIndex = CurrentIndex;
+            int currentBeatIndex = CurrentBeat;
+            int currentTick = CurrentTick;
+            
             if (sixteenth != lastSixteenth) {
                 lastSixteenth = sixteenth;
-                InvokeOnSixteenth(sixteenth);
+                InvokeOnSixteenth(currentBlockIndex, sixteenth);
             }
 
-            int currentBlockIndex = (int)currentIndexFieldInfo.GetValue(cassetteBlockManager);
             if (currentBlockIndex != lastBlockIndex) {
                 lastBlockIndex = currentBlockIndex;
                 InvokeOnSwap(currentBlockIndex);
             }
-
-            int currentBeatIndex = (int) beatIndexFieldInfo.GetValue(cassetteBlockManager);
+            
             if (currentBeatIndex != lastBeatIndex) {
                 lastBeatIndex = currentBeatIndex;
-                if (currentBeatIndex % beatsPerTick == 0)
-                    InvokeOnTick(currentBeatIndex / beatsPerTick);
+                if (currentBeatIndex % BeatsPerTick == 0)
+                    InvokeOnTick(currentBlockIndex, currentTick);
             }
         }
         
