@@ -3,7 +3,10 @@ using Monocle;
 using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    public class PelletFiringComponent : Component {
+    /// <summary>
+    /// Performs the firing action for a pellet emitter, including pooling of shots.
+    /// </summary>
+    public abstract class PelletFiringComponent : Component {
         #region Properties
 
         public float PelletSpeed { get; set; }
@@ -39,81 +42,60 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public void Fire() {
             var direction = GetShotDirection?.Invoke() ?? Vector2.Zero;
             var origin = GetShotOrigin?.Invoke() ?? Vector2.Zero;
-            var shot = Engine.Pooler.Create<PelletShot>().Init(this, direction * PelletSpeed, PelletColor);
+
+            var shot = CreateShot();
+            var comp = shot.Get<PelletComponent>();
+            comp.Dead = false;
+            comp.Speed = direction * PelletSpeed;
+            comp.Color = PelletColor;
+            comp.CollideWithSolids = CollideWithSolids;
             shot.Position = Entity.Position + origin;
+            
             level?.Add(shot);
         }
+
+        protected abstract Entity CreateShot();
         
-        [Pooled]
-        [Tracked]
-        public class PelletShot : Entity {
-            #region Private Fields
+        public class PelletComponent : Component {
+            public Vector2 Speed { get; set; }
+            public Color Color { get; set; }
+            public bool CollideWithSolids { get; set; }
+            public bool Dead { get; set; }
 
-            private Sprite sprite;
-            private PelletFiringComponent component;
-            private Vector2 speed;
-            private Color color;
-            private bool dead;
-
-            #endregion
-            
-            public PelletShot()
-                : base(Vector2.Zero) {
-                Collider = new Hitbox(4f, 4f, -2f, -2f);
-                Depth = Depths.Top;
-
-                Add(sprite = GFX.SpriteBank.Create("badeline_projectile"));
-                Add(new PlayerCollider(onPlayerCollide));
-            }
-
-            public PelletShot Init(PelletFiringComponent component, Vector2 speed, Color color) {
-                this.component = component;
-                this.speed = speed;
-                this.color = color;
-                dead = false;
-                return this;
-            }
-            
-            public void Destroy() {
-                component = null;
-                dead = true;
-                RemoveSelf();
+            public PelletComponent() : base(true, false)
+            {
             }
 
             public override void Update() {
                 base.Update();
-
-                // fast fail if the pooled shot is no longer alive or if we have no emitter assigned
-                if (dead || component == null) return;
+            
+                // fast fail if the pooled shot is no longer alive
+                if (Dead) return;
 
                 var level = SceneAs<Level>();
                 
-                Position += speed * Engine.DeltaTime;
+                Entity.Position += Speed * Engine.DeltaTime;
 
-                if (!level.IsInBounds(this) || component.CollideWithSolids && CollideCheck<Solid>(Position))
+                if (!level.IsInBounds(Entity) || CollideWithSolids && Entity.CollideCheck<Solid>(Entity.Position))
                     Destroy();
             }
 
-            public override void Render() {
-                var position = sprite.Position;
-                
-                // render black outline
-                sprite.Color = Color.Black;
-                sprite.Position = position + Vector2.UnitX;
-                sprite.Render();
-                sprite.Position = position - Vector2.UnitX;
-                sprite.Render();
-                sprite.Position = position + Vector2.UnitY;
-                sprite.Render();
-                sprite.Position = position - Vector2.UnitY;
-                sprite.Render();
-                sprite.Color = color;
-                sprite.Position = position;
-                
-                base.Render();
+            public void Destroy() {
+                Dead = true;
+                Entity.RemoveSelf();
             }
-
-            private void onPlayerCollide(Player player) => player.Die((player.Center - Position).SafeNormalize());
         }
+    }
+    
+    /// <summary>
+    /// Generic version of <see cref="PelletFiringComponent"/> that allows mod developers to specify the pellet entity.
+    /// </summary>
+    /// <remarks>
+    /// The pellet entity should have the <see cref="Pooled"/> and <see cref="Tracked"/> attributes, as well as
+    /// an accompanying <see cref="PelletFiringComponent.PelletComponent"/>.
+    /// </remarks>
+    /// <typeparam name="TShot"></typeparam>
+    public class PelletFiringComponent<TShot> : PelletFiringComponent where TShot : Entity, new() {
+        protected override Entity CreateShot() => Engine.Pooler.Create<TShot>();
     }
 }

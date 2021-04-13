@@ -3,6 +3,21 @@ using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
+    /// <summary>
+    /// Entity that emits pellets that will kill the player on contact.
+    /// </summary>
+    /// <remarks>
+    /// Has four available orientations, indicated by the <see cref="OrientableEntity.Orientations"/> enum.<br/>
+    /// Configurable values from Ahorn:<br/>
+    /// <list type="bullet">
+    /// <item><description>"collideWithSolids" =&gt; <see cref="CollideWithSolids"/></description></item>
+    /// <item><description>"frequency" =&gt; <see cref="Frequency"/></description></item>
+    /// <item><description>"offset" =&gt; <see cref="Offset"/></description></item>
+    /// <item><description>"pelletColor" =&gt; <see cref="PelletColor"/></description></item>
+    /// <item><description>"pelletCount" =&gt; <see cref="PelletCount"/></description></item>
+    /// <item><description>"pelletSpeed" =&gt; <see cref="PelletSpeed"/></description></item>
+    /// </list>
+    /// </remarks>
     [CustomEntity("SJ2021/PelletEmitterUp = LoadUp",
         "SJ2021/PelletEmitterDown = LoadDown",
         "SJ2021/PelletEmitterLeft = LoadLeft",
@@ -25,18 +40,56 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         #endregion
 
         #region Properties
+        
+        /// <summary>
+        /// Whether or not pellets will be blocked by <see cref="Solid"/>s.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to true.
+        /// </remarks>
+        public bool CollideWithSolids { get; private set; }
 
-        public float PelletSpeed { get; private set; }
-        
-        public virtual Color PelletColor { get; private set; }
-        
-        public int PelletCount { get; private set; }
-        
+        /// <summary>
+        /// How often pellets should be fired, in seconds.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 2 seconds.
+        /// Setting a <see cref="Frequency"/> of 0 will disable autofire.
+        /// </remarks>
         public virtual float Frequency { get; private set; }
         
+        /// <summary>
+        /// The number of seconds to delay firing.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 0 (no offset).
+        /// Ignored if <see cref="Frequency"/> is 0.
+        /// </remarks>
         public float Offset { get; private set; }
         
-        public bool CollideWithSolids { get; private set; }
+        /// <summary>
+        /// The <see cref="Microsoft.Xna.Framework.Color"/> used to render the pellets.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
+        /// </remarks>
+        public virtual Color PelletColor { get; private set; }
+        
+        /// <summary>
+        /// The number of pellets that should be fired at once.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 1.
+        /// </remarks>
+        public int PelletCount { get; private set; }
+        
+        /// <summary>
+        /// The number of units per second that the pellet should travel.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 100.
+        /// </remarks>
+        public float PelletSpeed { get; private set; }
 
         #endregion
         
@@ -63,13 +116,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         protected override void AddComponents() {
             base.AddComponents();
             
-            Add(new PelletFiringComponent {
+            Add(new PelletFiringComponent<PelletShot> {
                 GetShotDirection = () => Orientation.Direction(),
                 GetShotOrigin = () => Orientation.Direction() * shotOriginOffset,
-                PelletSpeed = PelletSpeed,
+                CollideWithSolids = CollideWithSolids,
                 PelletColor = PelletColor,
                 PelletCount = PelletCount,
-                CollideWithSolids = CollideWithSolids
+                PelletSpeed = PelletSpeed
             });
             
             Sprite emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
@@ -94,6 +147,48 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     timer += Frequency;
                 }
             }
+        }
+        
+        [Pooled]
+        [Tracked]
+        public class PelletShot : Entity {
+            #region Private Fields
+
+            private Sprite sprite;
+            private PelletFiringComponent.PelletComponent pelletComponent;
+
+            #endregion
+            
+            public PelletShot()
+                : base(Vector2.Zero) {
+                Collider = new Hitbox(4f, 4f, -2f, -2f);
+                Depth = Depths.Top;
+
+                Add(sprite = GFX.SpriteBank.Create("badeline_projectile"));
+                Add(new PlayerCollider(onPlayerCollide));
+                Add(pelletComponent = new PelletFiringComponent.PelletComponent());
+            }
+
+            public override void Render() {
+                var position = sprite.Position;
+                
+                // render black outline
+                sprite.Color = Color.Black;
+                sprite.Position = position + Vector2.UnitX;
+                sprite.Render();
+                sprite.Position = position - Vector2.UnitX;
+                sprite.Render();
+                sprite.Position = position + Vector2.UnitY;
+                sprite.Render();
+                sprite.Position = position - Vector2.UnitY;
+                sprite.Render();
+                sprite.Color = pelletComponent.Color;
+                sprite.Position = position;
+                
+                base.Render();
+            }
+
+            private void onPlayerCollide(Player player) => player.Die((player.Center - Position).SafeNormalize());
         }
     }
 }
