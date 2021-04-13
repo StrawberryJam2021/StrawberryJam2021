@@ -79,6 +79,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         
         #endregion
 
+        #region Private Fields
+
+        private CassetteListener cassetteListener;
+        private int ticksRemaining;
+
+        #endregion
+
         public CassetteTimedLaserEmitter(EntityData data, Vector2 offset, Orientations orientation)
             : base(data, offset, orientation) {
         }
@@ -93,9 +100,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         protected override void AddComponents() {
             base.AddComponents();
 
-            Add(new CassetteListener {
+            Add(cassetteListener = new CassetteListener {
                 OnEntry = () => Collidable = false,
-                OnTick = (index, tick) => Collidable = index == CassetteIndex && tick >= TickOffset && tick < TickOffset + LengthInTicks
+                OnTick = (index, tick) => {
+                    if (--ticksRemaining == 0)
+                        Collidable = false;
+
+                    int currentTick = index * cassetteListener.TicksPerSwap + tick;
+                    int targetTick = CassetteIndex * cassetteListener.TicksPerSwap + TickOffset;
+                    
+                    if (currentTick == targetTick) {
+                        ticksRemaining = LengthInTicks;
+                        Collidable = true;
+                    }
+                }
             });
         }
     }
