@@ -130,7 +130,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private DashCollisionResults OnDashed(Player player, Vector2 dir) {
             if (dir.Y == 0 && !dashed) {
                 dashedDirX = dir.X;
-                scale = new Vector2(1f - Math.Abs(dashedDirX) * 0.4f, 1f + Math.Abs(dashedDirX) * 0.4f);
+
+                // Math.Abs(dashedDirX) is always 1.
+                scale = new Vector2(0.6f, 1.4f);
 
                 int dashes = player.Dashes;
                 float stamina = player.Stamina;
@@ -151,6 +153,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 targetSpeedX = -dir.X * 90f;
 
                 dashed = true;
+            } else if (dir.Y == -1) {
+                // Only has a visual purpose, not an used mechanic.
+                scale = new Vector2(1.4f, 0.8f);
+
+                waiting = false;
+                canRumble = true;
+                speed.Y = -90f;
+
+                return DashCollisionResults.Bounce;
             }
             return DashCollisionResults.NormalCollision;
         }
@@ -268,9 +279,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             for (int i = 0; i < w; i++) {
                 for (int j = 0; j < h; j++) {
-                    Vector2 pos = Center + (new Vector2(X + i * 8 + 4, Y + j * 8 + 4) - Center) * scale;
                     MTexture tile = tiles[i, j];
-                    if (tile != null) tile.DrawCentered(pos, color, scale);
+                    if (tile != null) {
+                        Vector2 pos = Center + (new Vector2(X + i * 8 + 4, Y + j * 8 + 4) - Center) * scale;
+                        tile.DrawCentered(pos, color, scale);
+                    }
                 }
             }
         }
