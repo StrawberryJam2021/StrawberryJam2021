@@ -10,10 +10,10 @@ RedDashBoostField(x::Integer, y::Integer) = DashBoostField(x, y, "Red")
 const modes = String["Blue", "Red"]
 
 const placements = Ahorn.PlacementDict(
-    "Dash Boost Field (Blue) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
+    "Nyom Buble (Blue) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         BlueDashBoostField
     ),
-    "Dash Boost Field (Red) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
+    "Nyom Buble (Red) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         RedDashBoostField
     )
 )

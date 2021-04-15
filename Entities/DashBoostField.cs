@@ -171,10 +171,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static IEnumerator RefillDashIfRedDashBoost(Player player) {
-            // wait a frame so that the player's speed will be correct
-            yield return null;
             DashBoostField boostField = player.CollideFirst<DashBoostField>();
             if (boostField?.Mode == Modes.Red) {
+                // wait a frame so that the player's speed will be correct
+                yield return null;
                 player.Dashes += 1;
                 Audio.Play(SFX.game_gen_diamond_touch);
                 Level level = player.SceneAs<Level>();
