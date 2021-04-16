@@ -38,6 +38,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private string overrideType;
         private string spikeType;
         private float lastDashTime;
+        private Vector2 dashDir;
 
         public DashThroughSpikes(Vector2 position, int size, Spikes.Directions direction, string type):
             base(position) {
@@ -129,7 +130,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void OnCollide(Player player) {
-            if (DashingIntoSpikes(player)) {
+            if (DashingIntoSpikes()) {
                 return;
             }
 
@@ -175,15 +176,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         const float dashTimeThreshold = 0.4f; //length of time until player is considered not dashing
         //returns bool based on if the player is still dashing, and their direction is toward the spikes (diagonals count)
-        private bool DashingIntoSpikes(Player player) {
+        private bool DashingIntoSpikes() {
             return base.Scene.TimeActive - lastDashTime < dashTimeThreshold
-                && (Math.Sign(player.DashDir.X) == -Math.Sign(DirectionVector.X) 
-                || Math.Sign(player.DashDir.Y) == -Math.Sign(DirectionVector.Y));
+                && (Math.Sign(dashDir.X) == -Math.Sign(DirectionVector.X) 
+                || Math.Sign(dashDir.Y) == -Math.Sign(DirectionVector.Y));
         }
 
         //Updates timestamp each time player dashes
         private void OnDash(Vector2 dir) {
             lastDashTime = base.Scene.TimeActive;
+            dashDir = dir;
         }
 
         private static int GetSize(EntityData data, Spikes.Directions dir) {
