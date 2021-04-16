@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    [TrackedAs(typeof(Spikes))]
     [CustomEntity(
         "SJ2021/DashThroughSpikesUp = LoadUp",
         "SJ2021/DashThroughSpikesDown = LoadDown",
