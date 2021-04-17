@@ -3,7 +3,7 @@ module SJ2021TripleBoostFlower
 using ..Ahorn, Maple
 
 @mapdef Entity "SJ2021/TripleBoostFlower" TripleBoostFlower(x::Integer, y::Integer, boostDelay::Number=0.2,
-    boostSpeed::Number=-160.0, boostDuration::Number=0.5)
+    boostSpeed::Number=-160.0, boostDuration::Number=0.5, fastFallSpeed::Number=120.0, slowFallSpeed::Number=24.0, normalFallSpeed::Number=40.0)
 
 const placements = Ahorn.PlacementDict(
     "triple Boost Flower (Strawberry Jam 2021)" => Ahorn.EntityPlacement(

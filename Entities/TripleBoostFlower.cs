@@ -8,6 +8,8 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using System.Reflection;
 using MonoMod.Utils;
+using MonoMod.Cil;
+using Mono.Cecil.Cil;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/TripleBoostFlower")]
@@ -25,17 +27,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Sprite sprite;
         private Random prng;
         private EntityID id;
+
+        public float FallSpeed { get; private set; }
+        public float FastFallSpeed { get; private set; }
+        public float SlowFallSpeed { get; private set; }
+
         private static ParticleType boostParticles;
         private static MethodInfo player_launchBegin = typeof(Player).GetMethod("LaunchBegin", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public TripleBoostFlower(EntityData data, Vector2 offset, EntityID id) : this(data.Position + offset, data.Float("boostDelay", 0.2f), data.Float("boostSpeed", -160f), data.Float("boostDuration", 0.5f)) {
+        public TripleBoostFlower(EntityData data, Vector2 offset, EntityID id) : this(data.Position + offset, data.Float("boostDelay", 0.2f), data.Float("boostSpeed", -160f), data.Float("boostDuration", 0.5f), data.Float("fastFallSpeed", 120f), data.Float("slowFallSpeed", 24f), data.Float("normalFallSpeed", 40f)) {
             this.id = id;
         }
 
 
-        public TripleBoostFlower(Vector2 position, float boostDelay, float boostSpeed, float boostDuration) : base (position) {
+        public TripleBoostFlower(Vector2 position, float boostDelay, float boostSpeed, float boostDuration, float fastFall, float slowFall, float fall) : base (position) {
 
             Depth = Depths.Player - 5;
+            FallSpeed = fall;
+            FastFallSpeed = fastFall;
+            SlowFallSpeed = slowFall;
             this.boostDelay = boostDelay;
             this.boostSpeed = boostSpeed;
             boostDurationMax = boostDuration;
@@ -67,6 +77,47 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hold.OnRelease = new Action<Vector2>(onRelease);
             hold.OnHitSpring = new Func<Spring, bool>(onHitSpring);
             
+        }
+
+        public static void Load() {
+            IL.Celeste.Player.NormalUpdate += patchPlayerNormalUpdate;
+        }
+
+        public static void Unload() {
+            IL.Celeste.Player.NormalUpdate -= patchPlayerNormalUpdate;
+        }
+
+        private static void patchPlayerNormalUpdate(ILContext il) {
+            ILCursor cursor = new ILCursor(il);
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(120f))) { // fastfall
+                cursor.Emit(OpCodes.Ldarg_0);
+                cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
+                    if (player?.Holding?.Entity is TripleBoostFlower flower) {
+                        return flower.FastFallSpeed;
+                    }
+                    return speed;
+                });
+            }
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(24f))) { // slowfall
+                cursor.Emit(OpCodes.Ldarg_0);
+                cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
+
+                    if (player?.Holding?.Entity is TripleBoostFlower flower) {
+                        return flower.SlowFallSpeed;
+                    }
+                    return speed;
+                });
+            }
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(40f))) { // normal fall
+                cursor.Emit(OpCodes.Ldarg_0);
+                cursor.EmitDelegate<Func<float, Player, float>>((speed, player) => {
+
+                    if (player?.Holding?.Entity is TripleBoostFlower flower) {
+                        return flower.FallSpeed;
+                    }
+                    return speed;
+                });
+            }
         }
 
         public override void Added(Scene scene) {
