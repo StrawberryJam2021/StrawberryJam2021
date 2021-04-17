@@ -64,5 +64,6 @@
 		<Loop id="idle_gust_2" path="2charge/fly" delay="0.1" frames="3-0,1,2"/>
 		<Loop id="idle_1" path="1charge/fly" delay="0.1" frames="3-7,6-4"/>
 		<Loop id="idle_gust_1" path="1charge/fly" delay="0.1" frames="3-0,1,2"/>
+		<Anim id="death" path="death" delay="0.1" />
 	</roseGlider>
 </Sprites>
