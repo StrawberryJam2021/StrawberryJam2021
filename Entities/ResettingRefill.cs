@@ -3,16 +3,14 @@ using ExtendedVariants.Module;
 using ExtendedVariants.Variants;
 using Microsoft.Xna.Framework;
 using Monocle;
+using On.Celeste.Pico8;
 using System.Collections;
 using System.Linq;
 using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    // ReSharper disable PossibleNullReferenceException
     [CustomEntity("SJ2021/ResettingRefill")]
     public class ResettingRefill : Refill {
-        private static bool _hooked;
-
         private readonly int dashes;
         private readonly bool extraJump;
         private readonly bool persistJump;
@@ -20,7 +18,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private readonly JumpCount jumpCountVariant = ExtendedVariantsModule.Instance.VariantHandlers[ExtendedVariantsModule.Variant.JumpCount] as JumpCount;
 
-        // ReSharper disable once InconsistentNaming
         private readonly MethodInfo RefillRoutine = typeof(Refill).GetMethod("RefillRoutine", BindingFlags.NonPublic | BindingFlags.Instance);
         private readonly FieldInfo respawnTimer = typeof(Refill).GetField("respawnTimer", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -32,7 +29,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 string texture = persistJump ? "ExtendedVariantMode/jumprefill" : "ExtendedVariantMode/jumprefillblue";
 
                 Remove(Components.Where(c =>
-                        c.GetType() == typeof(Sprite) || c.GetType() == typeof(Image) || c.GetType() == typeof(Wiggler))
+                        c.GetType() == typeof(Sprite) || 
+                        c.GetType() == typeof(Image) || 
+                        c.GetType() == typeof(Wiggler))
                     .ToArray());
 
                 Sprite sprite;
@@ -68,20 +67,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Add(new PlayerCollider(OnPlayer));
 
-            if (!_hooked) {
-                // Keep the player's hair color as blue when they touch the ground with 0 max dashes
-                On.Celeste.Player.UpdateHair += (orig, self, gravity) => {
-                    orig(self, gravity);
-                    float hairFlashTimer = (float) self.GetType().GetField("hairFlashTimer", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(self);
-                    int lastDashes = (int) self.GetType().GetField("lastDashes", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(self);
-                    if (self.Dashes == 0 && lastDashes == self.Dashes && hairFlashTimer <= 0.0) {
-                        self.Hair.Color = Player.UsedHairColor;
-                    }
-                };
-
-                _hooked = true;
-            }
-
             this.dashes = dashes;
             this.extraJump = extraJump;
             this.persistJump = persistJump;
@@ -90,12 +75,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public ResettingRefill(EntityData data, Vector2 offset)
             : this(data.Position + offset, data.Int(nameof(dashes)), data.Bool(nameof(extraJump)), data.Bool(nameof(persistJump)), data.Bool(nameof(oneUse))) {
-        }
-
-        public override void Added(Scene scene) {
-            base.Added(scene);
-
-            //Scene.Add(new ResettingRefillShockwave(Position, (int) (Width + 4), (int) (Height + 4)));
         }
 
         private void OnPlayer(Player player) {
@@ -113,7 +92,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             player.RefillStamina();
 
             // Everything after this line is roundabout ways of doing the same things Refill does
-            if (dashes == 0 || dashes == 1) {
+            if (dashes is 0 or 1) {
                 Audio.Play("event:/game/general/diamond_touch");
             } else if (dashes == 2) {
                 Audio.Play("event:/new_content/game/10_farewell/pinkdiamond_touch");
@@ -124,6 +103,31 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Add(new Coroutine((IEnumerator) RefillRoutine.Invoke(this, new object[] {player})));
             respawnTimer.SetValue(this, 2.5f);
+        }
+
+        private static readonly FieldInfo hairFlashTimer = typeof(Player).GetField("hairFlashTimer", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo lastDashes = typeof(Player).GetField("lastDashes", BindingFlags.NonPublic | BindingFlags.Instance);
+            
+        // Keep the player's hair color as blue when they touch the ground with 0 max dashes
+        private static void OnUpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player self, bool gravity) {
+            orig(self, gravity);
+
+            if (self.Scene.Tracker.GetEntity<ResettingRefill>() == null)
+                return;
+            
+            float hairFlashTimer = (float) ResettingRefill.hairFlashTimer.GetValue(self);
+            int lastDashes = (int) ResettingRefill.lastDashes.GetValue(self);
+            if (self.Dashes == 0 && lastDashes == self.Dashes && hairFlashTimer <= 0.0) {
+                self.Hair.Color = Player.UsedHairColor;
+            }
+        }
+
+        public static void Load() {
+            On.Celeste.Player.UpdateHair += OnUpdateHair;
+        }
+
+        public static void Unload() {
+            On.Celeste.Player.UpdateHair -= OnUpdateHair;
         }
     }
 }
