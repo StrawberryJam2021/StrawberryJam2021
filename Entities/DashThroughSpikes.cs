@@ -45,19 +45,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.size = size;
             switch (direction) {
                 case Spikes.Directions.Up:
-                    base.Collider = new Hitbox(size, 3f, 0f, -3f);
-                    base.Add(new LedgeBlocker(null));
+                    Collider = new Hitbox(size, 3f, 0f, -3f);
+                    Add(new LedgeBlocker(null));
                     break;
                 case Spikes.Directions.Down:
-                    base.Collider = new Hitbox(size, 3f, 0f, 0f);
+                    Collider = new Hitbox(size, 3f, 0f, 0f);
                     break;
                 case Spikes.Directions.Left:
-                    base.Collider = new Hitbox(3f, size, -3f, 0f);
-                    base.Add(new LedgeBlocker(null));
+                    Collider = new Hitbox(3f, size, -3f, 0f);
+                    Add(new LedgeBlocker(null));
                     break;
                 case Spikes.Directions.Right:
-                    base.Collider = new Hitbox(3f, size, 0f, 0f);
-                    base.Add(new LedgeBlocker(null));
+                    Collider = new Hitbox(3f, size, 0f, 0f);
+                    Add(new LedgeBlocker(null));
                     break;
             }
 
@@ -83,19 +83,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 switch (Direction) {
                     case Spikes.Directions.Up:
                         image.JustifyOrigin(0.5f, 1f);
-                        image.Position = Vector2.UnitX * ((float) i + 0.5f) * 8f + Vector2.UnitY;
+                        image.Position = Vector2.UnitX * (i + 0.5f) * 8f + Vector2.UnitY;
                         break;
                     case Spikes.Directions.Down:
                         image.JustifyOrigin(0.5f, 0f);
-                        image.Position = Vector2.UnitX * ((float) i + 0.5f) * 8f - Vector2.UnitY;
+                        image.Position = Vector2.UnitX * (i + 0.5f) * 8f - Vector2.UnitY;
                         break;
                     case Spikes.Directions.Left:
                         image.JustifyOrigin(1f, 0.5f);
-                        image.Position = Vector2.UnitY * ((float) i + 0.5f) * 8f + Vector2.UnitX;
+                        image.Position = Vector2.UnitY * (i + 0.5f) * 8f + Vector2.UnitX;
                         break;
                     case Spikes.Directions.Right:
                         image.JustifyOrigin(0f, 0.5f);
-                        image.Position = Vector2.UnitY * ((float) i + 0.5f) * 8f - Vector2.UnitX;
+                        image.Position = Vector2.UnitY * (i + 0.5f) * 8f - Vector2.UnitX;
                         break;
                 }
 
@@ -121,7 +121,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             switch (Direction) {
                 case Spikes.Directions.Up:
-                    if (player.Speed.Y >= 0f && player.Bottom <= base.Bottom) {
+                    if (player.Speed.Y >= 0f && player.Bottom <= Bottom) {
                         player.Die(new Vector2(0f, -1f), false, true);
                         return;
                     }
@@ -160,14 +160,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         const float dashTimeThreshold = 0.3f; //length of time until player is considered not dashing
         //returns bool based on if the player is still dashing, and their direction is toward the spikes (diagonals count)
         private bool DashingIntoSpikes() {
-            return base.Scene.TimeActive - lastDashTime < dashTimeThreshold
+            return Scene.TimeActive - lastDashTime < dashTimeThreshold
                 && (Math.Sign(dashDir.X) == -Math.Sign(DirectionVector.X) 
                 || Math.Sign(dashDir.Y) == -Math.Sign(DirectionVector.Y));
         }
 
         //Updates timestamp and dash direction each time player dashes
         private void OnDash(Vector2 dir) {
-            lastDashTime = base.Scene.TimeActive;
+            lastDashTime = Scene.TimeActive;
             dashDir = dir;
         }
 
@@ -181,13 +181,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private bool IsRiding(Solid solid) {
             switch (Direction) {
                 case Spikes.Directions.Up:
-                    return base.CollideCheckOutside(solid, Position + Vector2.UnitY);
+                    return CollideCheckOutside(solid, Position + Vector2.UnitY);
                 case Spikes.Directions.Down:
-                    return base.CollideCheckOutside(solid, Position - Vector2.UnitY);
+                    return CollideCheckOutside(solid, Position - Vector2.UnitY);
                 case Spikes.Directions.Left:
-                    return base.CollideCheckOutside(solid, Position + Vector2.UnitX);
+                    return CollideCheckOutside(solid, Position + Vector2.UnitX);
                 case Spikes.Directions.Right:
-                    return base.CollideCheckOutside(solid, Position - Vector2.UnitX);
+                    return CollideCheckOutside(solid, Position - Vector2.UnitX);
                 default:
                     return false;
             }
@@ -195,7 +195,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool IsRiding(JumpThru jumpThru) {
             Spikes.Directions direction = Direction;
-            return direction == Spikes.Directions.Up && base.CollideCheck(jumpThru, Position + Vector2.UnitY);
+            return direction == Spikes.Directions.Up && CollideCheck(jumpThru, Position + Vector2.UnitY);
         }
     }
 }
