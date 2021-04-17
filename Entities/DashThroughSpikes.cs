@@ -102,16 +102,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Add(image);
             }
         }
-       
-        
 
         private void OnShake(Vector2 amount) {
             imageOffset += amount;
-        }
-
-
-        public override void Update() {
-            base.Update();
         }
 
         public override void Render() {
@@ -185,7 +178,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return data.Width;
         }
 
-
         private bool IsRiding(Solid solid) {
             switch (Direction) {
                 case Spikes.Directions.Up:
@@ -200,7 +192,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     return false;
             }
         }
-
 
         private bool IsRiding(JumpThru jumpThru) {
             Spikes.Directions direction = Direction;
