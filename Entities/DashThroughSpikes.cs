@@ -42,7 +42,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public DashThroughSpikes(Vector2 position, int size, Spikes.Directions direction, string type):
             base(position) {
 
-            Depth = -50;
+            Depth = -1;
             Direction = direction;
             DirectionVector = SpikeDirToVector(direction);
             this.size = size;
@@ -88,7 +88,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures("danger/spikes/" + spikeType + "_" + dir);
             for (int j = 0; j < size / 8; j++) {
                 Image image = new Image(Calc.Random.Choose(atlasSubtextures));
-            image.SetColor(Color.DarkGray);
+            image.SetColor(Color.Black);
                 switch (Direction) {
                     case Spikes.Directions.Up:
                         image.JustifyOrigin(0.5f, 1f);
