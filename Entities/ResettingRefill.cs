@@ -4,22 +4,24 @@ using ExtendedVariants.Variants;
 using Microsoft.Xna.Framework;
 using Monocle;
 using On.Celeste.Pico8;
+using System;
 using System.Collections;
 using System.Linq;
 using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/ResettingRefill")]
+    [Tracked]
     public class ResettingRefill : Refill {
         private readonly int dashes;
         private readonly bool extraJump;
         private readonly bool persistJump;
         private readonly bool oneUse;
 
-        private readonly JumpCount jumpCountVariant = ExtendedVariantsModule.Instance.VariantHandlers[ExtendedVariantsModule.Variant.JumpCount] as JumpCount;
+        private static readonly JumpCount JumpCountVariant = ExtendedVariantsModule.Instance.VariantHandlers[ExtendedVariantsModule.Variant.JumpCount] as JumpCount;
 
-        private readonly MethodInfo RefillRoutine = typeof(Refill).GetMethod("RefillRoutine", BindingFlags.NonPublic | BindingFlags.Instance);
-        private readonly FieldInfo respawnTimer = typeof(Refill).GetField("respawnTimer", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly MethodInfo RefillRoutine = typeof(Refill).GetMethod("RefillRoutine", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo respawnTimer = typeof(Refill).GetField("respawnTimer", BindingFlags.NonPublic | BindingFlags.Instance);
 
         public ResettingRefill(Vector2 position, int dashes, bool extraJump, bool persistJump, bool oneUse)
             : base(position, dashes == 2, oneUse) {
@@ -29,8 +31,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 string texture = persistJump ? "ExtendedVariantMode/jumprefill" : "ExtendedVariantMode/jumprefillblue";
 
                 Remove(Components.Where(c =>
-                        c.GetType() == typeof(Sprite) || 
-                        c.GetType() == typeof(Image) || 
+                        c.GetType() == typeof(Sprite) ||
+                        c.GetType() == typeof(Image) ||
                         c.GetType() == typeof(Wiggler))
                     .ToArray());
 
@@ -82,12 +84,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             session.Inventory.Dashes = dashes;
             player.Dashes = dashes;
 
-            jumpCountVariant.SetValue(persistJump ? 2 : 1);
+            JumpCountVariant.SetValue(persistJump ? 2 : 1);
 
             if (extraJump)
-                jumpCountVariant.AddJumps(1, true, 1);
+                JumpCountVariant.AddJumps(1, true, 1);
             else
-                jumpCountVariant.AddJumps(0, true, 0);
+                JumpCountVariant.AddJumps(0, true, 0);
 
             player.RefillStamina();
 
@@ -107,14 +109,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static readonly FieldInfo hairFlashTimer = typeof(Player).GetField("hairFlashTimer", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly FieldInfo lastDashes = typeof(Player).GetField("lastDashes", BindingFlags.NonPublic | BindingFlags.Instance);
-            
+
         // Keep the player's hair color as blue when they touch the ground with 0 max dashes
         private static void OnUpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player self, bool gravity) {
             orig(self, gravity);
 
             if (self.Scene.Tracker.GetEntity<ResettingRefill>() == null)
                 return;
-            
+
             float hairFlashTimer = (float) ResettingRefill.hairFlashTimer.GetValue(self);
             int lastDashes = (int) ResettingRefill.lastDashes.GetValue(self);
             if (self.Dashes == 0 && lastDashes == self.Dashes && hairFlashTimer <= 0.0) {
@@ -122,12 +124,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
+        // Refresh jumps when we have an extra one and we touch a spring
+        private static void OnColliderInit(On.Celeste.PlayerCollider.orig_ctor orig, PlayerCollider self,
+            Action<Player> onCollide, Collider collider, Collider featherCollider) {
+            var newOnCollide = new Action<Player>(delegate(Player player) {
+                if (self.Entity is Spring && JumpCountVariant.GetValue() > 1) {
+                    JumpCountVariant.AddJumps(1, true, 1);
+                }
+
+                onCollide(player);
+            });
+
+            orig(self, newOnCollide, collider, featherCollider);
+        }
+
         public static void Load() {
             On.Celeste.Player.UpdateHair += OnUpdateHair;
+            On.Celeste.PlayerCollider.ctor += OnColliderInit;
         }
 
         public static void Unload() {
             On.Celeste.Player.UpdateHair -= OnUpdateHair;
+            On.Celeste.PlayerCollider.ctor -= OnColliderInit;
         }
     }
 }
