@@ -2,17 +2,10 @@
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/DashThroughSpikesUp" DashThroughSpikesUp(x::Integer, y::Integer, width::Integer=Maple.defaultSpikeWidth, type::String="default")
-@mapdef Entity "SJ2021/DashThroughSpikesDown" DashThroughSpikesDown(x::Integer, y::Integer, width::Integer=Maple.defaultSpikeWidth, type::String="default")
-@mapdef Entity "SJ2021/DashThroughSpikesLeft" DashThroughSpikesLeft(x::Integer, y::Integer, height::Integer=Maple.defaultSpikeHeight, type::String="default")
-@mapdef Entity "SJ2021/DashThroughSpikesRight" DashThroughSpikesRight(x::Integer, y::Integer, height::Integer=Maple.defaultSpikeHeight, type::String="default")
-
-const spikeTypes = String[
-    "default",
-    "outline",
-    "cliffside",
-    "reflection"
-]
+@mapdef Entity "SJ2021/DashThroughSpikesUp" DashThroughSpikesUp(x::Integer, y::Integer, width::Integer=Maple.defaultSpikeWidth)
+@mapdef Entity "SJ2021/DashThroughSpikesDown" DashThroughSpikesDown(x::Integer, y::Integer, width::Integer=Maple.defaultSpikeWidth)
+@mapdef Entity "SJ2021/DashThroughSpikesLeft" DashThroughSpikesLeft(x::Integer, y::Integer, height::Integer=Maple.defaultSpikeHeight)
+@mapdef Entity "SJ2021/DashThroughSpikesRight" DashThroughSpikesRight(x::Integer, y::Integer, height::Integer=Maple.defaultSpikeHeight)
 
 entities = Dict{String,Type}(
     "up" => DashThroughSpikesUp,
@@ -24,23 +17,13 @@ entities = Dict{String,Type}(
 const spikesUnion = Union{DashThroughSpikesUp,DashThroughSpikesDown,DashThroughSpikesLeft,DashThroughSpikesRight}
 
 const placements = Ahorn.PlacementDict()
-for variant in spikeTypes
-    for (dir, entity) in entities
-        key = "Dash Through Spikes ($dir, $(uppercasefirst(variant))) (Strawberry Jam 2021)"
-        placements[key] = Ahorn.EntityPlacement(
-            entity,
-            "rectangle",
-            Dict{String,Any}(
-                "type" => variant
-            )
-        )
-    end
+for (dir, entity) in entities
+    key = "Dash Through Spikes ($dir) (Strawberry Jam 2021)"
+    placements[key] = Ahorn.EntityPlacement(
+        entity,
+        "rectangle"
+    )
 end
-
-
-Ahorn.editingOptions(entity::spikesUnion) = Dict{String,Any}(
-    "type" => spikeTypes
-)
 
 directions = Dict{String,String}(
     "SJ2021/DashThroughSpikesUp" => "up",
@@ -113,7 +96,6 @@ end
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::spikesUnion)
     if haskey(directions, entity.name)
-        variant = get(entity.data, "type", "default")
         direction = get(directions, entity.name, "up")
     
         width = get(entity.data, "width", 8)
@@ -123,7 +105,7 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::spikesUnion)
             drawX = ox + offsets[direction][1]
             drawY = oy + offsets[direction][2]
 
-            Ahorn.drawSprite(ctx, "danger/spikes/$(variant)_$(direction)00", drawX, drawY)
+            Ahorn.drawSprite(ctx, "objects/StrawberryJam2021/dashThroughSpikes/dream_$(direction)00", drawX, drawY)
         end
     end
 end

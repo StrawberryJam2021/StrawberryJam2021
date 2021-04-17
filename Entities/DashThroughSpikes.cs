@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -37,7 +36,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float lastDashTime;
         private Vector2 dashDir;
 
-        public DashThroughSpikes(Vector2 position, int size, Spikes.Directions direction):
+        public DashThroughSpikes(Vector2 position, int size, Spikes.Directions direction) :
             base(position) {
 
             Depth = -1;
@@ -46,18 +45,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.size = size;
             switch (direction) {
                 case Spikes.Directions.Up:
-                    base.Collider = new Hitbox((float) size, 3f, 0f, -3f);
+                    base.Collider = new Hitbox(size, 3f, 0f, -3f);
                     base.Add(new LedgeBlocker(null));
                     break;
                 case Spikes.Directions.Down:
-                    base.Collider = new Hitbox((float) size, 3f, 0f, 0f);
+                    base.Collider = new Hitbox(size, 3f, 0f, 0f);
                     break;
                 case Spikes.Directions.Left:
-                    base.Collider = new Hitbox(3f, (float) size, -3f, 0f);
+                    base.Collider = new Hitbox(3f, size, -3f, 0f);
                     base.Add(new LedgeBlocker(null));
                     break;
                 case Spikes.Directions.Right:
-                    base.Collider = new Hitbox(3f, (float) size, 0f, 0f);
+                    base.Collider = new Hitbox(3f, size, 0f, 0f);
                     base.Add(new LedgeBlocker(null));
                     break;
             }
@@ -75,14 +74,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Added(Scene scene) {
             base.Added(scene);
-            AreaData areaData = AreaData.Get(scene);
 
             string dir = Direction.ToString().ToLower();
 
-            List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures("danger/spikes/default_" + dir);
             for (int i = 0; i < size / 8; i++) {
-                Image image = new Image(Calc.Random.Choose(atlasSubtextures));
-            image.SetColor(Color.Black);
+                Image image = new Image(GFX.Game[$"objects/StrawberryJam2021/dashThroughSpikes/dream_{dir}00"]);
+
                 switch (Direction) {
                     case Spikes.Directions.Up:
                         image.JustifyOrigin(0.5f, 1f);
@@ -101,10 +98,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         image.Position = Vector2.UnitY * ((float) i + 0.5f) * 8f - Vector2.UnitX;
                         break;
                 }
-                base.Add(image);
+
+            base.Add(image);
             }
-       
         }
+       
+        
 
         private void OnShake(Vector2 amount) {
             imageOffset += amount;
@@ -157,13 +156,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private Vector2 SpikeDirToVector(Spikes.Directions dir) {
-
             return dir switch {
                 Spikes.Directions.Up => -Vector2.UnitY,
                 Spikes.Directions.Down => Vector2.UnitY,
                 Spikes.Directions.Right => Vector2.UnitX,
                 _ => -Vector2.UnitX, //left or default case
-
             };
         }
 
@@ -175,7 +172,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 || Math.Sign(dashDir.Y) == -Math.Sign(DirectionVector.Y));
         }
 
-        //Updates timestamp each time player dashes
+        //Updates timestamp and dash direction each time player dashes
         private void OnDash(Vector2 dir) {
             lastDashTime = base.Scene.TimeActive;
             dashDir = dir;
