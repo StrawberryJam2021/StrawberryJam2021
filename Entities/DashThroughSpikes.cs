@@ -15,38 +15,35 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static Entity LoadUp(Level level, LevelData levelData, Vector2 offset, EntityData data) {
             Spikes.Directions dir = Spikes.Directions.Up;
-            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir, data.Attr("type", "default"));
+            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir);
         }
         public static Entity LoadDown(Level level, LevelData levelData, Vector2 offset, EntityData data) {
             Spikes.Directions dir = Spikes.Directions.Down;
-            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir, data.Attr("type", "default"));
+            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir);
         }
         public static Entity LoadLeft(Level level, LevelData levelData, Vector2 offset, EntityData data) {
             Spikes.Directions dir = Spikes.Directions.Left;
-            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir, data.Attr("type", "default"));
+            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir);
         }
         public static Entity LoadRight(Level level, LevelData levelData, Vector2 offset, EntityData data) {
             Spikes.Directions dir = Spikes.Directions.Right;
-            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir, data.Attr("type", "default"));
+            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir);
         }
 
         public Spikes.Directions Direction;
         private Vector2 DirectionVector;
         private Vector2 imageOffset;
         private int size;
-        private string overrideType;
-        private string spikeType;
         private float lastDashTime;
         private Vector2 dashDir;
 
-        public DashThroughSpikes(Vector2 position, int size, Spikes.Directions direction, string type):
+        public DashThroughSpikes(Vector2 position, int size, Spikes.Directions direction):
             base(position) {
 
             Depth = -1;
             Direction = direction;
             DirectionVector = SpikeDirToVector(direction);
             this.size = size;
-            overrideType = type;
             switch (direction) {
                 case Spikes.Directions.Up:
                     base.Collider = new Hitbox((float) size, 3f, 0f, -3f);
@@ -79,32 +76,29 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Added(Scene scene) {
             base.Added(scene);
             AreaData areaData = AreaData.Get(scene);
-            spikeType = areaData.Spike;
-            if (!string.IsNullOrEmpty(overrideType) && !overrideType.Equals("default")) {
-                spikeType = overrideType;
-            }
+
             string dir = Direction.ToString().ToLower();
 
-            List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures("danger/spikes/" + spikeType + "_" + dir);
-            for (int j = 0; j < size / 8; j++) {
+            List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures("danger/spikes/default_" + dir);
+            for (int i = 0; i < size / 8; i++) {
                 Image image = new Image(Calc.Random.Choose(atlasSubtextures));
             image.SetColor(Color.Black);
                 switch (Direction) {
                     case Spikes.Directions.Up:
                         image.JustifyOrigin(0.5f, 1f);
-                        image.Position = Vector2.UnitX * ((float) j + 0.5f) * 8f + Vector2.UnitY;
+                        image.Position = Vector2.UnitX * ((float) i + 0.5f) * 8f + Vector2.UnitY;
                         break;
                     case Spikes.Directions.Down:
                         image.JustifyOrigin(0.5f, 0f);
-                        image.Position = Vector2.UnitX * ((float) j + 0.5f) * 8f - Vector2.UnitY;
+                        image.Position = Vector2.UnitX * ((float) i + 0.5f) * 8f - Vector2.UnitY;
                         break;
                     case Spikes.Directions.Left:
                         image.JustifyOrigin(1f, 0.5f);
-                        image.Position = Vector2.UnitY * ((float) j + 0.5f) * 8f + Vector2.UnitX;
+                        image.Position = Vector2.UnitY * ((float) i + 0.5f) * 8f + Vector2.UnitX;
                         break;
                     case Spikes.Directions.Right:
                         image.JustifyOrigin(0f, 0.5f);
-                        image.Position = Vector2.UnitY * ((float) j + 0.5f) * 8f - Vector2.UnitX;
+                        image.Position = Vector2.UnitY * ((float) i + 0.5f) * 8f - Vector2.UnitX;
                         break;
                 }
                 base.Add(image);
@@ -173,7 +167,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             };
         }
 
-        const float dashTimeThreshold = 0.4f; //length of time until player is considered not dashing
+        const float dashTimeThreshold = 0.3f; //length of time until player is considered not dashing
         //returns bool based on if the player is still dashing, and their direction is toward the spikes (diagonals count)
         private bool DashingIntoSpikes() {
             return base.Scene.TimeActive - lastDashTime < dashTimeThreshold
