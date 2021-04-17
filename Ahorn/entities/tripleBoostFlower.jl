@@ -12,16 +12,17 @@ const placements = Ahorn.PlacementDict(
     )
 )
 
+sprite = "objects/StrawberryJam2021/roseGlider/3charge/idle00"
+
 function Ahorn.selection(entity::TripleBoostFlower)
     x, y = Ahorn.position(entity)
-
-    return Ahorn.Rectangle(x, y, 6, 10)
+    return Ahorn.getSpriteRectangle(sprite, x, y-10)
 end
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::TripleBoostFlower, room::Maple.Room)
-    x, y = Ahorn.position(entity)
-    
-    Ahorn.drawRectangle(ctx, 0, 0, 6, 10, (0.0, 1.0, 0.0, 0.4), (0.0, 1.0, 0.0, 1.0))
+    #x, y = Ahorn.position(entity)
+    Ahorn.drawSprite(ctx, sprite, 0, -10)
+    #Ahorn.drawRectangle(ctx, 0, 0, 6, 10, (0.0, 1.0, 0.0, 0.4), (0.0, 1.0, 0.0, 1.0))
 end
 
 end
