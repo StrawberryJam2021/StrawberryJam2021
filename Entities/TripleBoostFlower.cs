@@ -47,7 +47,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             gravity = 30f;
             prevLiftSpeed = Vector2.Zero;
 
-            // todo sprite
             Add(sprite = StrawberryJam2021Module.SpriteBank.Create("roseGlider"));
             sprite.CenterOrigin();
             sprite.Origin.Y += 9;
@@ -100,8 +99,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if ((int) player.Facing != lastFacing) {
                     lastFacing = (int) player.Facing;
                     Vector2 newOffset = new Vector2(Math.Abs(playerDynData.Get<Vector2>("carryOffset").X), playerDynData.Get<Vector2>("carryOffset").Y) * (Vector2.UnitX * (int) player.Facing);
-                    //Logger.Log("SJ2021/TripleBoostFlower", $"last {lastFacing}, new {(int) player.Facing}, text {player.Facing}, newoffset ({newOffset.X}, {newOffset.Y})");
-                    //playerDynData.Set("carryOffset", newOffset); todo update offset depending on player.Facing
                 }
                 if (Input.Dash.Pressed) {
                     consumeBoost();
@@ -143,8 +140,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             xAdjustSpeed = 40;
                         }
                         speed.X = Calc.Approach(speed.X, 0f, xAdjustSpeed * Engine.DeltaTime);
-                        // todo wind handling of y speed
-                        
                         if (noGravityTimer > 0f) {
                             noGravityTimer -= Engine.DeltaTime;
                         } else {
@@ -180,14 +175,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 player_launchBegin.Invoke(hold.Holder, new object[] { });
                 hold.Holder.Speed.Y = boostSpeed;
                 charges--;
-                level.ParticlesBG.Emit(boostParticles, 8, Position - Vector2.UnitY * 10, Vector2.UnitX * 5 + Vector2.UnitY * 3, (float) Math.PI);
-                // todo change sprite anim
+                // todo particles
+                //level.ParticlesBG.Emit(boostParticles, 8, Position - Vector2.UnitY * 10, Vector2.UnitX * 5 + Vector2.UnitY * 3, (float) Math.PI);
+
                 if (charges > 0) {
                     sprite.Play($"idle_{charges}");
-                } else {
-                    sprite.Play("death");
                 }
-                // todo petal particles
                 boostDuration = boostDurationMax;
                 Input.Dash.ConsumeBuffer();
             } else if (shouldBeDestroyed()) {
@@ -265,7 +258,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             speed = player.Speed;
             if (hold.IsHeld) {
                 hold.Holder.Drop();
-                Logger.Log("SJ2021/TripleBoostFlower", $"dropped due destruction: {hold.IsHeld}");
             }
             Collidable = false;
             hold.Active = false;
@@ -274,7 +266,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private IEnumerator destroySelfCoroutine() {
             // todo audio effect
-            // todo sprite play destroy
+            sprite.Play("death");
             yield return 1f;
             RemoveSelf();
             yield break;
