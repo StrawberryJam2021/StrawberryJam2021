@@ -1,16 +1,15 @@
-﻿using System;
-using System.Linq;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using System.Reflection;
 using MonoMod.Utils;
+using System;
+using System.Linq;
+using System.Reflection;
 
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 
     [CustomEntity("SJ2021/SwitchCrate")]
-    [Tracked]
     public class SwitchCrate : Actor {
 
         public static ParticleType P_Smash = LightningBreakerBox.P_Smash;
@@ -57,24 +56,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private string FlagName => GetFlagName(id);
 
-        Type ConveyorType;
+        public static Type ConveyorType;
 
         public SwitchCrate(Vector2 position, EntityID id)
             : base(position) {
-
-            EverestModule module = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "FactoryHelper");
-            Assembly assem = module.GetType().Assembly;
-            ConveyorType = assem.GetType("FactoryHelper.Components.ConveyorMover");
-            Component ConveyorMoverInstance = (Component)Activator.CreateInstance(ConveyorType);
+            Component ConveyorMoverInstance = (Component) Activator.CreateInstance(ConveyorType);
             Add(ConveyorMoverInstance);
             ConveyorType.GetField("OnMove").SetValue(ConveyorMoverInstance, new Action<float>(MoveOnConveyor));
-
 
             this.id = id;
             TimeToExplode = TimeToExplode * 60;
             previousPosition = position;
-            base.Depth = 100;
-            base.Collider = new Hitbox(8f, 11f, -4f, -2f);
+            Depth = 100;
+            Collider = new Hitbox(8f, 11f, -4f, -2f);
             Add(sprite = new Image(GFX.Game["objects/StrawberryJam2021/SwitchCrate/SwitchCrate"]));
             sprite.CenterOrigin();
             Add(Hold = new Holdable(0.1f));
@@ -83,7 +77,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Hold.SlowRun = true;
             Hold.OnPickup = OnPickup;
             Hold.OnRelease = OnRelease;
-            Hold.DangerousCheck = Dangerous;    
+            Hold.DangerousCheck = Dangerous;
             Hold.OnHitSeeker = HitSeeker;
             Hold.OnSwat = Swat;
             Hold.OnHitSpring = HitSpring;
@@ -92,8 +86,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             onCollideH = OnCollideH;
             onCollideV = OnCollideV;
             LiftSpeedGraceTime = 0.1f;
-            Add(new VertexLight(base.Collider.Center, Color.White, 1f, 32, 64));
-            base.Tag = Tags.TransitionUpdate;
+            Add(new VertexLight(Collider.Center, Color.White, 1f, 32, 64));
+            Tag = Tags.TransitionUpdate;
             Add(new MirrorReflection());
         }
 
@@ -105,20 +99,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Level = SceneAs<Level>();
             scene = scene1;
         }
+
         public override void Awake(Scene scene) {
             base.Awake(scene);
             player = base.Scene.Tracker.GetEntity<Player>();
-        }
-
-        private void MoveOnConveyor(float amount) {
-            float accY = 800f;
-            if (Math.Abs(Speed.Y) <= 30f) {
-                accY *= 0.5f;
-            }
-            Speed.Y = Calc.Approach(Speed.Y, 300f, accY * Engine.DeltaTime); 
-            Speed.X = Calc.Approach(Speed.X, amount, 200f * Engine.DeltaTime);
-            MoveH((Speed.X + 36.3f)* Engine.DeltaTime, OnCollideH);
-            MoveV(Speed.Y * Engine.DeltaTime, OnCollideV);
         }
 
         public override void Update() {
@@ -127,12 +111,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (swatTimer > 0f) {
                     swatTimer -= Engine.DeltaTime;
                 }
-                base.Depth = 100;
+                Depth = 100;
                 if (Hold.IsHeld) {
                     prevLiftSpeed = Vector2.Zero;
                 } else {
                     if (OnGround()) {
-                        if (OnFloor()) {
+                        if (OnSolidTile()) {
                             CurrentFloorTime++;
                             if (CurrentFloorTime >= TimeToExplode && !dead) {
                                 Die();
@@ -164,7 +148,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         }
                         float target = ((!OnGround(Position + Vector2.UnitX * 3f)) ? 20f : (OnGround(Position - Vector2.UnitX * 3f) ? 0f : (-20f)));
                         Speed.X = Calc.Approach(Speed.X, target, 800f * Engine.DeltaTime);
-                        Vector2 liftSpeed = base.LiftSpeed;
+                        Vector2 liftSpeed = LiftSpeed;
                         if (liftSpeed == Vector2.Zero && prevLiftSpeed != Vector2.Zero) {
                             Speed = prevLiftSpeed;
                             prevLiftSpeed = Vector2.Zero;
@@ -197,34 +181,34 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             Speed.Y = Calc.Approach(Speed.Y, 200f, num * Engine.DeltaTime);
                         }
                     }
-                    previousPosition = base.ExactPosition;
+                    previousPosition = ExactPosition;
                     MoveH(Speed.X * Engine.DeltaTime, onCollideH);
                     MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
                     if (base.Center.X > (float) Level.Bounds.Right) {
                         MoveH(32f * Engine.DeltaTime);
-                        if (base.Left - 8f > (float) Level.Bounds.Right) {
+                        if (Left - 8f > (float) Level.Bounds.Right) {
                             RemoveSelf();
                         }
-                    } else if (base.Left < (float) Level.Bounds.Left) {
-                        base.Left = Level.Bounds.Left;
+                    } else if (Left < (float) Level.Bounds.Left) {
+                        Left = Level.Bounds.Left;
                         Speed.X *= -0.4f;
-                    } else if (base.Top < (float) (Level.Bounds.Top - 4)) {
-                        base.Top = Level.Bounds.Top + 4;
+                    } else if (Top < (float) (Level.Bounds.Top - 4)) {
+                        Top = Level.Bounds.Top + 4;
                         Speed.Y = 0f;
-                    } else if (base.Bottom > (float) Level.Bounds.Bottom && SaveData.Instance.Assists.Invincible) {
-                        base.Bottom = Level.Bounds.Bottom;
+                    } else if (Bottom > (float) Level.Bounds.Bottom && SaveData.Instance.Assists.Invincible) {
+                        Bottom = Level.Bounds.Bottom;
                         Speed.Y = -300f;
                         Audio.Play("event:/game/general/assist_screenbottom", Position);
-                    } else if (base.Top > (float) Level.Bounds.Bottom) {
+                    } else if (Top > (float) Level.Bounds.Bottom) {
                         Die();
                     }
-                    if (base.X < (float) (Level.Bounds.Left + 10)) {
+                    if (X < (float) (Level.Bounds.Left + 10)) {
                         MoveH(32f * Engine.DeltaTime);
                     }
                     TempleGate templeGate = CollideFirst<TempleGate>();
                     if (templeGate != null && player != null) {
                         templeGate.Collidable = false;
-                        MoveH((float) (Math.Sign(player.X - base.X) * 32) * Engine.DeltaTime);
+                        MoveH((float) (Math.Sign(player.X - X) * 32) * Engine.DeltaTime);
                         templeGate.Collidable = true;
                     }
                 }
@@ -236,72 +220,79 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
         }
-        private void SmashParticles(Vector2 dir) {
-            float direction;
-            Vector2 position;
-            Vector2 positionRange;
-            int num;
-            if (dir == Vector2.UnitX) {
-                direction = 0f;
-                position = base.CenterRight - Vector2.UnitX * 12f;
-                positionRange = Vector2.UnitY * (base.Height - 6f) * 0.5f;
-                num = (int) (base.Height / 8f) * 4;
-            } else if (dir == -Vector2.UnitX) {
-                direction = (float) Math.PI;
-                position = base.CenterLeft + Vector2.UnitX * 12f;
-                positionRange = Vector2.UnitY * (base.Height - 6f) * 0.5f;
-                num = (int) (base.Height / 8f) * 4;
-            } else if (dir == Vector2.UnitY) {
-                direction = (float) Math.PI / 2f;
-                position = base.BottomCenter - Vector2.UnitY * 12f;
-                positionRange = Vector2.UnitX * (base.Width - 6f) * 0.5f;
-                num = (int) (base.Width / 8f) * 4;
+
+        private void OnPickup() {
+            Speed = Vector2.Zero;
+            AddTag(Tags.Persistent);
+            playerDynData = new DynData<Player>(player);
+            playerDynData.Set("CarryOffsetTarget", new Vector2(0f, -20f));
+        }
+
+        private void OnRelease(Vector2 force) {
+            RemoveTag(Tags.Persistent);
+            playerDynData.Set("CarryOffsetTarget", new Vector2(0f, -12f));
+            if (force.X != 0f && force.Y == 0f) {
+                force.Y = -0.4f;
+            }
+            Speed = force * 200f;
+            if (Speed != Vector2.Zero) {
+                noGravityTimer = 0.1f;
+            }
+        }
+
+        private void OnCollideH(CollisionData data) {
+            if (data.Hit is DashSwitch) {
+                (data.Hit as DashSwitch).OnDashCollide(null, Vector2.UnitX * Math.Sign(Speed.X));
+            }
+            if (data.Hit is SwitchCrateHolder) {
+                SwitchCrateHolder batterySwitch = data.Hit as SwitchCrateHolder;
+                batterySwitch.Hit(this, Vector2.UnitX * Math.Sign(Speed.X));
+            }
+            if (Math.Abs(Speed.X) > 100f) {
+                ImpactParticles(data.Direction);
+            }
+            Speed.X *= -0.4f;
+        }
+
+        private void OnCollideV(CollisionData data) {
+            if (data.Hit is DashSwitch) {
+                (data.Hit as DashSwitch).OnDashCollide(null, Vector2.UnitY * Math.Sign(Speed.Y));
+            }
+            if (data.Hit is SwitchCrateHolder) {
+                SwitchCrateHolder batterySwitch = data.Hit as SwitchCrateHolder;
+                batterySwitch.Hit(this, Vector2.UnitY * (float) Math.Sign(Speed.Y));
+            }
+            if (Speed.Y > 160f) {
+                ImpactParticles(data.Direction);
+            }
+            if (Speed.Y > 140f && !(data.Hit is SwapBlock) && !(data.Hit is DashSwitch)) {
+                Speed.Y *= -0.6f;
             } else {
-                direction = -(float) Math.PI / 2f;
-                position = base.TopCenter + Vector2.UnitY * 12f;
-                positionRange = Vector2.UnitX * (base.Width - 6f) * 0.5f;
-                num = (int) (base.Width / 8f) * 4;
-            }
-            num += 2;
-            SceneAs<Level>().Particles.Emit(P_Smash, num, position, positionRange, direction);
-        }
-
-        public void Swat(HoldableCollider hc, int dir) {
-            if (Hold.IsHeld && hitSeeker == null) {
-                swatTimer = 0.1f;
-                hitSeeker = hc;
-                Hold.Holder.Swat(dir);
+                Speed.Y = 0f;
             }
         }
 
-        public bool OnFloor(int downCheck = 1) {
+        public bool OnSolidTile(int downCheck = 1) {
             if (CollideCheckOutside<JumpThru>(Position + Vector2.UnitY * downCheck)) {
                 return false;
             }
-                if (scene.Tracker.Entities.ContainsKey(typeof(SolidTiles))) {
-                    if (!CollideCheck<SolidTiles>(Position + Vector2.UnitY * downCheck)) {
-                        return false;
-                    }
-                }
-            
-            return true;
-        }
-        public bool Dangerous(HoldableCollider holdableCollider) {
-            if (!Hold.IsHeld && Speed != Vector2.Zero) {
-                return hitSeeker != holdableCollider;
+            if (!CollideCheck<SolidTiles>(Position + Vector2.UnitY * downCheck)) {
+                    return false;
             }
-            return false;
+            
+
+            return true;
         }
 
         public void HitSeeker(Seeker seeker) {
             if (!Hold.IsHeld) {
-                Speed = (base.Center - seeker.Center).SafeNormalize(120f);
+                Speed = (Center - seeker.Center).SafeNormalize(120f);
             }
         }
 
         public void HitSpinner(Entity spinner) {
-            if (!Hold.IsHeld && Speed.Length() < 0.01f && base.LiftSpeed.Length() < 0.01f && (previousPosition - base.ExactPosition).Length() < 0.01f && OnGround()) {
-                int num = Math.Sign(base.X - spinner.X);
+            if (!Hold.IsHeld && Speed.Length() < 0.01f && LiftSpeed.Length() < 0.01f && (previousPosition - ExactPosition).Length() < 0.01f && OnGround()) {
+                int num = Math.Sign(X - spinner.X);
                 if (num == 0) {
                     num = 1;
                 }
@@ -335,66 +326,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             return false;
         }
-        public void Use() {
-                SceneAs<Level>().Session.SetFlag(FlagName);
-        }
-        public static string GetFlagName(EntityID id) {
-            return "battery_" + id.Key;
-        }
-        private void OnCollideH(CollisionData data) {
-            if (data.Hit is DashSwitch) {
-                (data.Hit as DashSwitch).OnDashCollide(null, Vector2.UnitX * Math.Sign(Speed.X));
-            }   
-            if (data.Hit is SwitchCrateHolder) {
-                SwitchCrateHolder batterySwitch = data.Hit as SwitchCrateHolder;
-                batterySwitch.Hit(this, Vector2.UnitX * Math.Sign(Speed.X));
-            }
-            if (Math.Abs(Speed.X) > 100f) {
-                ImpactParticles(data.Direction);
-            }
-            Speed.X *= -0.4f;
-        }
 
-        private void OnCollideV(CollisionData data) {
-            if (data.Hit is DashSwitch) {
-                (data.Hit as DashSwitch).OnDashCollide(null, Vector2.UnitY * Math.Sign(Speed.Y));
+        protected override void OnSquish(CollisionData data) {
+            if (!TrySquishWiggle(data, 3, 3) && !SaveData.Instance.Assists.Invincible) {
+                Die();
             }
-            if (data.Hit is SwitchCrateHolder) {
-                SwitchCrateHolder batterySwitch = data.Hit as SwitchCrateHolder;
-                batterySwitch.Hit(this, Vector2.UnitY * (float) Math.Sign(Speed.Y));
-            }
-            if (Speed.Y > 160f) {
-                ImpactParticles(data.Direction);
-            }
-            if (Speed.Y > 140f && !(data.Hit is SwapBlock) && !(data.Hit is DashSwitch)) {
-                Speed.Y *= -0.6f;
-            } else {
-                Speed.Y = 0f;
-            }
-        }
-
-        private void ImpactParticles(Vector2 dir) {
-            float direction;
-            Vector2 position;
-            Vector2 positionRange;
-            if (dir.X > 0f) {
-                direction = (float) Math.PI;
-                position = new Vector2(base.Right, base.Y - 4f);
-                positionRange = Vector2.UnitY * 6f;
-            } else if (dir.X < 0f) {
-                direction = 0f;
-                position = new Vector2(base.Left, base.Y - 4f);
-                positionRange = Vector2.UnitY * 6f;
-            } else if (dir.Y > 0f) {
-                direction = -(float) Math.PI / 2f;
-                position = new Vector2(base.X, base.Bottom);
-                positionRange = Vector2.UnitX * 6f;
-            } else {
-                direction = (float) Math.PI / 2f;
-                position = new Vector2(base.X, base.Top);
-                positionRange = Vector2.UnitX * 6f;
-            }
-            Level.Particles.Emit(P_Impact, 12, position, positionRange, direction);
         }
 
         public override bool IsRiding(Solid solid) {
@@ -404,31 +340,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return false;
         }
 
-        protected override void OnSquish(CollisionData data) {
-            if (!TrySquishWiggle(data, 3, 3) && !SaveData.Instance.Assists.Invincible) {
-                Die();
-            }
-        }
-
-        private void OnPickup() {
-            Speed = Vector2.Zero;
-            AddTag(Tags.Persistent);
-            playerDynData = new DynData<Player>(player);
-            playerDynData.Set("CarryOffsetTarget", new Vector2(0f, -20f));
-        }
-
-        private void OnRelease(Vector2 force) {
-            RemoveTag(Tags.Persistent);
-            playerDynData.Set("CarryOffsetTarget", new Vector2(0f, -12f));
-            if (force.X != 0f && force.Y == 0f) {
-                force.Y = -0.4f;
-            }
-            Speed = force * 200f;
-            if (Speed != Vector2.Zero) {
-                noGravityTimer = 0.1f;
-            }
-        }
-
         public void Die() {
             if (!dead) {
                 dead = true;
@@ -436,9 +347,103 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Audio.Play("event:/char/madeline/death", Position);
                 Add(new DeathEffect(Color.Gray, base.Center - Position));
                 sprite.Visible = false;
-                base.Depth = -1000000;
+                Depth = -1000000;
                 AllowPushing = false;
             }
+        }
+
+        public bool Dangerous(HoldableCollider holdableCollider) {
+            if (!Hold.IsHeld && Speed != Vector2.Zero) {
+                return hitSeeker != holdableCollider;
+            }
+            return false;
+        }
+
+        public void Swat(HoldableCollider hc, int dir) {
+            if (Hold.IsHeld && hitSeeker == null) {
+                swatTimer = 0.1f;
+                hitSeeker = hc;
+                Hold.Holder.Swat(dir);
+            }
+        }
+
+        public void Use() {
+            SceneAs<Level>().Session.SetFlag(FlagName);
+        }
+
+        public static string GetFlagName(EntityID id) {
+            return "battery_" + id.Key;
+        }
+
+        private void MoveOnConveyor(float amount) {
+            float accY = 800f;
+            if (Math.Abs(Speed.Y) <= 30f) {
+                accY *= 0.5f;
+            }
+            Speed.Y = Calc.Approach(Speed.Y, 300f, accY * Engine.DeltaTime);
+            Speed.X = Calc.Approach(Speed.X, amount, 200f * Engine.DeltaTime);
+            MoveH((Speed.X + 36.3f) * Engine.DeltaTime, OnCollideH);
+            MoveV(Speed.Y * Engine.DeltaTime, OnCollideV);
+        }
+
+        private void SmashParticles(Vector2 dir) {
+            float direction;
+            Vector2 position;
+            Vector2 positionRange;
+            int num;
+            if (dir == Vector2.UnitX) {
+                direction = 0f;
+                position = CenterRight - Vector2.UnitX * 12f;
+                positionRange = Vector2.UnitY * (Height - 6f) * 0.5f;
+                num = (int) (Height / 8f) * 4;
+            } else if (dir == -Vector2.UnitX) {
+                direction = (float) Math.PI;
+                position = CenterLeft + Vector2.UnitX * 12f;
+                positionRange = Vector2.UnitY * (Height - 6f) * 0.5f;
+                num = (int) (Height / 8f) * 4;
+            } else if (dir == Vector2.UnitY) {
+                direction = (float) Math.PI / 2f;
+                position = BottomCenter - Vector2.UnitY * 12f;
+                positionRange = Vector2.UnitX * (Width - 6f) * 0.5f;
+                num = (int) (Width / 8f) * 4;
+            } else {
+                direction = -(float) Math.PI / 2f;
+                position = TopCenter + Vector2.UnitY * 12f;
+                positionRange = Vector2.UnitX * (Width - 6f) * 0.5f;
+                num = (int) (Width / 8f) * 4;
+            }
+            num += 2;
+            SceneAs<Level>().Particles.Emit(P_Smash, num, position, positionRange, direction);
+        }
+
+        private void ImpactParticles(Vector2 dir) {
+            float direction;
+            Vector2 position;
+            Vector2 positionRange;
+            if (dir.X > 0f) {
+                direction = (float) Math.PI;
+                position = new Vector2(Right, Y - 4f);
+                positionRange = Vector2.UnitY * 6f;
+            } else if (dir.X < 0f) {
+                direction = 0f;
+                position = new Vector2(Left, Y - 4f);
+                positionRange = Vector2.UnitY * 6f;
+            } else if (dir.Y > 0f) {
+                direction = -(float) Math.PI / 2f;
+                position = new Vector2(X, Bottom);
+                positionRange = Vector2.UnitX * 6f;
+            } else {
+                direction = (float) Math.PI / 2f;
+                position = new Vector2(X, Top);
+                positionRange = Vector2.UnitX * 6f;
+            }
+            Level.Particles.Emit(P_Impact, 12, position, positionRange, direction);
+        }
+
+        public static void LoadParticles() {
+            EverestModule module = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "FactoryHelper");
+            Assembly assem = module.GetType().Assembly;
+            ConveyorType = assem.GetType("FactoryHelper.Components.ConveyorMover");
         }
 
     }

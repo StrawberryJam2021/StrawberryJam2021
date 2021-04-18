@@ -50,7 +50,7 @@ function Ahorn.selection(entity::SwitchCrateHolder)
 end
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::SwitchCrateHolder, room::Maple.Room)
-    texture = "batteries/battery_switch/insert8"
+    texture = "objects/StrawberryJam2021/SwitchCrate/switch.png"
     if get(entity.data, "horizontal", true)
         right = get(entity.data, "rightSide", false)
 
