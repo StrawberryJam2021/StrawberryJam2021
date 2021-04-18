@@ -10,6 +10,7 @@ RedDashBoostField(x::Integer, y::Integer) = DashBoostField(x, y, "Red")
 const modes = String["Blue", "Red"]
 
 const placements = Ahorn.PlacementDict(
+    # blame Archire for this name
     "Nyom Buble (Blue) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         BlueDashBoostField
     ),
