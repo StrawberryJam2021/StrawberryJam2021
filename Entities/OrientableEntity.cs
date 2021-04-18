@@ -23,18 +23,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             : base(data.Position + offset) {
             Orientation = orientation;
 
-            ReadEntityData(data);
-            AddComponents();
-            
             // same depth as springs
             Depth = Depths.Above - 1;
-        }
-        
-        /// <summary>
-        /// Adds the default components required for an <see cref="OrientableEntity"/>.
-        /// Should be overridden to apply extra functionality.
-        /// </summary>
-        protected virtual void AddComponents() {
+            
             Add(new StaticMover {
                 OnAttach = p => Depth = p.Depth + 1,
                 SolidChecker = s => CollideCheck(s, Position - Orientation.Direction()),
@@ -43,11 +34,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 OnDisable = () => Collidable = false,
             });
         }
-
-        /// <summary>
-        /// Should be overridden to read any required data from Ahorn.
-        /// </summary>
-        protected abstract void ReadEntityData(EntityData data);
         
         /// <summary>
         /// The available orientations of an <see cref="OrientableEntity"/>, where the direction indicates the "front" of the entity.

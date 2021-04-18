@@ -7,24 +7,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// Performs the firing action for a pellet emitter, including pooling of shots.
     /// </summary>
     public abstract class PelletFiringComponent : Component {
-        #region Properties
-
-        public float PelletSpeed { get; set; }
-        
-        public Color PelletColor { get; set; }
-        
-        public int PelletCount { get; set; }
-        
-        public bool CollideWithSolids { get; set; }
-
-        #endregion
-        
-        public Func<Vector2> GetShotOrigin;
-        public Func<Vector2> GetShotDirection;
+        public int Count { get; set; }
+        public PelletComponent.PelletComponentSettings Settings { get; set; }
 
         private Level level;
         
-        public PelletFiringComponent()
+        protected PelletFiringComponent()
             : base(true, false)
         {
         }
@@ -39,27 +27,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             level = null;
         }
 
-        public void Fire() {
-            var direction = GetShotDirection?.Invoke() ?? Vector2.Zero;
-            var origin = GetShotOrigin?.Invoke() ?? Vector2.Zero;
-
-            var shot = CreateShot();
-            var comp = shot.Get<PelletComponent>();
-            comp.Dead = false;
-            comp.Speed = direction * PelletSpeed;
-            comp.Color = PelletColor;
-            comp.CollideWithSolids = CollideWithSolids;
-            shot.Position = Entity.Position + origin;
-            
-            level?.Add(shot);
+        public void Fire(Action<PelletComponent> action = null) {
+            // TODO: delay extra shots
+            for (int i = 0; i < Count; i++) {
+                var shot = CreateShot();
+                var comp = shot.Get<PelletComponent>();
+                comp.Dead = false;
+                comp.Settings = Settings;
+                action?.Invoke(comp);
+                shot.Position = Entity.Position + comp.Settings.Origin;
+                level?.Add(shot);
+            }
         }
 
         protected abstract Entity CreateShot();
         
         public class PelletComponent : Component {
-            public Vector2 Speed { get; set; }
-            public Color Color { get; set; }
-            public bool CollideWithSolids { get; set; }
+            public PelletComponentSettings Settings;
             public bool Dead { get; set; }
 
             public PelletComponent() : base(true, false)
@@ -74,15 +58,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 var level = SceneAs<Level>();
                 
-                Entity.Position += Speed * Engine.DeltaTime;
+                Entity.Position += Settings.Direction * Settings.Speed * Engine.DeltaTime;
 
-                if (!level.IsInBounds(Entity) || CollideWithSolids && Entity.CollideCheck<Solid>(Entity.Position))
+                if (!level.IsInBounds(Entity) || Settings.CollideWithSolids && Entity.CollideCheck<Solid>(Entity.Position))
                     Destroy();
             }
 
             public void Destroy() {
                 Dead = true;
                 Entity.RemoveSelf();
+            }
+            
+            public struct PelletComponentSettings {
+                public bool CollideWithSolids;
+                public Color Color;
+                public Vector2 Direction;
+                public Vector2 Origin;
+                public float Speed;
             }
         }
     }
@@ -94,8 +86,34 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// The pellet entity should have the <see cref="Pooled"/> and <see cref="Tracked"/> attributes, as well as
     /// an accompanying <see cref="PelletFiringComponent.PelletComponent"/>.
     /// </remarks>
-    /// <typeparam name="TShot"></typeparam>
     public class PelletFiringComponent<TShot> : PelletFiringComponent where TShot : Entity, new() {
         protected override Entity CreateShot() => Engine.Pooler.Create<TShot>();
+    }
+
+    /// <summary>
+    /// A pellet firing component that fires at a regular interval.
+    /// </summary>
+    public class AutomaticPelletFiringComponent<TShot> : PelletFiringComponent<TShot> where TShot : Entity, new() {
+        public float Frequency { get; set; }
+        public float Offset { get; set; }
+        
+        private float timer = 2f;
+        
+        public override void EntityAwake() {
+            base.EntityAwake();
+            timer = Offset;
+        }
+        
+        public override void Update() {
+            base.Update();
+            
+            if (Frequency > 0) {
+                timer -= Engine.DeltaTime;
+                if (timer <= 0) {
+                    Fire();
+                    timer += Frequency;
+                }
+            }
+        }
     }
 }

@@ -1,21 +1,49 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System;
+using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <summary>
     /// Entity that emits pellets that will kill the player on contact.
     /// Pellets are automatically fired in time with cassette blocks.
+    /// Has four available orientations, indicated by the <see cref="OrientableEntity.Orientations"/> enum.
     /// </summary>
     /// <remarks>
-    /// Has four available orientations, indicated by the <see cref="OrientableEntity.Orientations"/> enum.<br/>
-    /// Configurable values from Ahorn:<br/>
+    /// Emitter configurable values from Ahorn:
     /// <list type="bullet">
-    /// <item><description>"collideWithSolids" =&gt; <see cref="PelletEmitter.CollideWithSolids"/></description></item>
-    /// <item><description>"cassetteIndex" =&gt; <see cref="CassetteIndex"/></description></item>
-    /// <item><description>"pelletCount" =&gt; <see cref="PelletEmitter.PelletCount"/></description></item>
-    /// <item><description>"pelletSpeed" =&gt; <see cref="PelletEmitter.PelletSpeed"/></description></item>
-    /// <item><description>"tickOffset" =&gt; <see cref="TickOffset"/></description></item>
+    /// <item><term>cassetteIndices</term><description>=&gt; <see cref="CassetteIndices"/><br/>
+    /// Which of the cassette swap indices will fire pellets.
+    /// This also affects the color of the pellets, matching the cassette block colors from Celeste.
+    /// Setting to [-1] (default) will fire on every cassette swap.
+    /// </description></item>
+    /// <item><term>ticks</term><description>=&gt; <see cref="Ticks"/><br/>
+    /// Which of the audible "ticks" after a cassette swap will fire a pellet.
+    /// Defined in entity data as a comma-separated list of integers.
+    /// Defaults to [0] (fire once, immediately on cassette swap).
+    /// Setting to [0,1] will fire on both ticks of a standard "2 tick per swap" rhythm.
+    /// Setting to [-1] will fire on every tick regardless of how many ticks per swap.
+    /// </description></item>
+    /// <item><term>pelletCount</term><description>=&gt; <see cref="PelletFiringComponent.Count"/><br/>
+    /// The number of pellets that should be fired at once.
+    /// Defaults to 1.
+    /// </description></item>
+    /// </list>
+    /// Pellet configurable values from Ahorn:
+    /// <list type="bullet">
+    /// <item><term>collideWithSolids</term><description>=&gt; <see cref="PelletFiringComponent.PelletComponent.PelletComponentSettings.CollideWithSolids"/><br/>
+    /// Whether or not pellets will be blocked by <see cref="Solid"/>s.
+    /// Defaults to true.
+    /// </description></item>
+    /// <item><term>pelletColor</term><description>=&gt; <see cref="PelletFiringComponent.PelletComponent.PelletComponentSettings.Color"/><br/>
+    /// The <see cref="Microsoft.Xna.Framework.Color"/> used to render the pellets.
+    /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
+    /// </description></item>
+    /// <item><term>pelletSpeed</term><description>=&gt; <see cref="PelletFiringComponent.PelletComponent.PelletComponentSettings.Speed"/><br/>
+    /// The number of units per second that the pellet should travel.
+    /// Defaults to 100.
+    /// </description></item>
     /// </list>
     /// </remarks>
     [CustomEntity("SJ2021/CassetteTimedPelletEmitterUp = LoadUp",
@@ -25,64 +53,36 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class CassetteTimedPelletEmitter : PelletEmitter {
         #region Static Loader Methods
         
-        public new static Entity LoadUp(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
+        public static Entity LoadUp(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
             new CassetteTimedPelletEmitter(data, offset, Orientations.Up);
         
-        public new static Entity LoadDown(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
+        public static Entity LoadDown(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
             new CassetteTimedPelletEmitter(data, offset, Orientations.Down);
         
-        public new static Entity LoadLeft(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
+        public static Entity LoadLeft(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
             new CassetteTimedPelletEmitter(data, offset, Orientations.Left);
         
-        public new static Entity LoadRight(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
+        public static Entity LoadRight(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
             new CassetteTimedPelletEmitter(data, offset, Orientations.Right);
         
         #endregion
         
-        /// <summary>
-        /// The cassette index swap on which to fire pellets.
-        /// </summary>
-        /// <remarks>
-        /// This also affects the color of the pellets, matching the cassette block colors from Celeste.
-        /// </remarks>
-        public int CassetteIndex { get; private set; }
-        
-        /// <summary>
-        /// Ignored for <see cref="CassetteTimedPelletEmitter"/>.
-        /// </summary>
-        public override float Frequency => 0;
-
-        /// <summary>
-        /// Ignored for <see cref="CassetteTimedPelletEmitter"/>.
-        /// </summary>
-        public override Color PelletColor => CassetteListener.ColorFromCassetteIndex(CassetteIndex);
-        
-        /// <summary>
-        /// The number of audible "ticks" that should be heard after a cassette swap before pellets are fired.
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 0 (fire immediately on cassette swap).
-        /// </remarks>
-        public int TickOffset { get; private set; }
+        public int[] CassetteIndices { get; private set; }
+        public int[] Ticks { get; private set; }
         
         protected CassetteTimedPelletEmitter(EntityData data, Vector2 offset, Orientations orientation)
             : base(data, offset, orientation)
         {
-        }
-
-        protected override void ReadEntityData(EntityData data) {
-            base.ReadEntityData(data);
-            CassetteIndex = data.Int("cassetteIndex");
-            TickOffset = data.Int("tickOffset");
-        }
-
-        protected override void AddComponents() {
-            base.AddComponents();
-
+            string indices = data.Attr("cassetteIndices");
+            CassetteIndices = indices.Split(',').Select(s => int.TryParse(s, out int i) ? Calc.Clamp(i, 0, 3) : 0).ToArray();
+            
+            string ticks = data.Attr("ticks", "0");
+            Ticks = ticks.Split(',').Select(s => int.TryParse(s, out int i) ? Math.Max(i, 0) : 0).ToArray();
+            
             Add(new CassetteListener {
                 OnTick = (index, tick) => {
-                    if (index == CassetteIndex && tick == TickOffset)
-                        Get<PelletFiringComponent>().Fire();
+                    if ((!CassetteIndices.Any() || CassetteIndices.Contains(index)) && (!Ticks.Any() || Ticks.Contains(tick)))
+                        Get<PelletFiringComponent>().Fire(comp => comp.Settings.Color = CassetteListener.ColorFromCassetteIndex(index));
                 }
             });
         }

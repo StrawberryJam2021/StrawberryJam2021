@@ -3,44 +3,35 @@ module SJ2021CassetteTimedPelletEmitter
 using ..Ahorn, Maple
 
 const default_pellet_speed = 100.0
+const default_cassette_indices = ""
+const default_ticks = "0"
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterUp" CassetteTimedPelletEmitterUp(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, tickOffset::Integer=0,
-    pelletSpeed::Float64=default_pellet_speed, pelletCount::Integer=1,
+    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, count::Integer=1,
+    pelletSpeed::Real=default_pellet_speed,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterDown" CassetteTimedPelletEmitterDown(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, tickOffset::Integer=0,
-    pelletSpeed::Float64=default_pellet_speed, pelletCount::Integer=1,
+    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, count::Integer=1,
+    pelletSpeed::Real=default_pellet_speed,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterLeft" CassetteTimedPelletEmitterLeft(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, tickOffset::Integer=0,
-    pelletSpeed::Float64=default_pellet_speed, pelletCount::Integer=1,
+    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, count::Integer=1,
+    pelletSpeed::Real=default_pellet_speed,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterRight" CassetteTimedPelletEmitterRight(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, tickOffset::Integer=0,
-    pelletSpeed::Float64=default_pellet_speed, pelletCount::Integer=1,
+    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, count::Integer=1,
+    pelletSpeed::Real=default_pellet_speed,
     collideWithSolids::Bool=true
-)
-
-const colorNames = Dict{String, Int}(
-    "Blue" => 0,
-    "Rose" => 1,
-    "Bright Sun" => 2,
-    "Malachite" => 3
-)
-
-const editingOptions = Dict{String, Any}(
-    "cassetteIndex" => colorNames,
 )
 
 const placements = Ahorn.PlacementDict(
@@ -77,11 +68,6 @@ function Ahorn.selection(entity::CassetteTimedPelletEmitterRight)
     x, y = Ahorn.position(entity)
     return Ahorn.Rectangle(x, y - 7, 8, 14)
 end
-
-Ahorn.editingOptions(entity::CassetteTimedPelletEmitterUp) = editingOptions
-Ahorn.editingOptions(entity::CassetteTimedPelletEmitterDown) = editingOptions
-Ahorn.editingOptions(entity::CassetteTimedPelletEmitterLeft) = editingOptions
-Ahorn.editingOptions(entity::CassetteTimedPelletEmitterRight) = editingOptions
 
 sprite = "objects/StrawberryJam2021/laserEmitter/idle00"
 

@@ -8,29 +8,29 @@ const default_frequency = 2.0
 
 @mapdef Entity "SJ2021/PelletEmitterUp" PelletEmitterUp(
     x::Integer, y::Integer,
-    pelletSpeed::Float64=default_pellet_speed, pelletColor::String=default_pellet_color, pelletCount::Integer=1,
-    frequency::Float64=default_frequency, offset::Float64=0,
+    frequency::Real=default_frequency, offset::Real=0, count::Integer=1,
+    pelletSpeed::Real=default_pellet_speed, pelletColor::String=default_pellet_color,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/PelletEmitterDown" PelletEmitterDown(
     x::Integer, y::Integer,
-    pelletSpeed::Float64=default_pellet_speed, pelletColor::String=default_pellet_color, pelletCount::Integer=1,
-    frequency::Float64=default_frequency, offset::Float64=0,
+    frequency::Real=default_frequency, offset::Real=0, count::Integer=1,
+    pelletSpeed::Real=default_pellet_speed, pelletColor::String=default_pellet_color,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/PelletEmitterLeft" PelletEmitterLeft(
     x::Integer, y::Integer,
-    pelletSpeed::Float64=default_pellet_speed, pelletColor::String=default_pellet_color, pelletCount::Integer=1,
-    frequency::Float64=default_frequency, offset::Float64=0,
+    frequency::Real=default_frequency, offset::Real=0, count::Integer=1,
+    pelletSpeed::Real=default_pellet_speed, pelletColor::String=default_pellet_color,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/PelletEmitterRight" PelletEmitterRight(
     x::Integer, y::Integer,
-    pelletSpeed::Float64=default_pellet_speed, pelletColor::String=default_pellet_color, pelletCount::Integer=1,
-    frequency::Float64=default_frequency, offset::Float64=0,
+    frequency::Real=default_frequency, offset::Real=0, count::Integer=1,
+    pelletSpeed::Real=default_pellet_speed, pelletColor::String=default_pellet_color,
     collideWithSolids::Bool=true
 )
 
