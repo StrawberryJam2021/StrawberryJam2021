@@ -2,46 +2,38 @@ module SJ2021CassetteTimedLaserEmitter
 
 using ..Ahorn, Maple
 
+const default_cassette_indices = "0"
+const default_ticks = "0"
+const default_length = 2
 const default_alpha = 0.4
 const default_thickness = 6.0
 
 @mapdef Entity "SJ2021/CassetteTimedLaserEmitterUp" CassetteTimedLaserEmitterUp(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, tickOffset::Integer=0, lengthInTicks::Integer=2,
-    alpha::Float64=default_alpha, thickness::Float64=default_thickness, flicker::Bool=true,
+    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, lengthInTicks::Integer=default_length,
+    alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedLaserEmitterDown" CassetteTimedLaserEmitterDown(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, tickOffset::Integer=0, lengthInTicks::Integer=2,
-    alpha::Float64=default_alpha, thickness::Float64=default_thickness, flicker::Bool=true,
+    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, lengthInTicks::Integer=default_length,
+    alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedLaserEmitterLeft" CassetteTimedLaserEmitterLeft(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, tickOffset::Integer=0, lengthInTicks::Integer=2,
-    alpha::Float64=default_alpha, thickness::Float64=default_thickness, flicker::Bool=true,
+    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, lengthInTicks::Integer=default_length,
+    alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedLaserEmitterRight" CassetteTimedLaserEmitterRight(
     x::Integer, y::Integer,
-    cassetteIndex::Integer=0, tickOffset::Integer=0, lengthInTicks::Integer=2,
-    alpha::Float64=default_alpha, thickness::Float64=default_thickness, flicker::Bool=true,
+    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, lengthInTicks::Integer=default_length,
+    alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
-)
-
-const colorNames = Dict{String, Int}(
-    "Blue" => 0,
-    "Rose" => 1,
-    "Bright Sun" => 2,
-    "Malachite" => 3
-)
-
-const editingOptions = Dict{String, Any}(
-    "cassetteIndex" => colorNames,
 )
 
 const placements = Ahorn.PlacementDict(
@@ -78,11 +70,6 @@ function Ahorn.selection(entity::CassetteTimedLaserEmitterRight)
     x, y = Ahorn.position(entity)
     return Ahorn.Rectangle(x, y - 7, 8, 14)
 end
-
-Ahorn.editingOptions(entity::CassetteTimedLaserEmitterUp) = editingOptions
-Ahorn.editingOptions(entity::CassetteTimedLaserEmitterDown) = editingOptions
-Ahorn.editingOptions(entity::CassetteTimedLaserEmitterLeft) = editingOptions
-Ahorn.editingOptions(entity::CassetteTimedLaserEmitterRight) = editingOptions
 
 sprite = "objects/StrawberryJam2021/laserEmitter/idle00"
 

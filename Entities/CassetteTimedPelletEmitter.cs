@@ -13,34 +13,35 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <remarks>
     /// Emitter configurable values from Ahorn:
     /// <list type="bullet">
-    /// <item><term>cassetteIndices</term><description>=&gt; <see cref="CassetteIndices"/><br/>
+    /// <item><term>cassetteIndices</term><description>
     /// Which of the cassette swap indices will fire pellets.
     /// This also affects the color of the pellets, matching the cassette block colors from Celeste.
-    /// Setting to [-1] (default) will fire on every cassette swap.
+    /// Defaults to [0] (first cassette index only).
+    /// Setting to [-1] will fire on every cassette swap.
     /// </description></item>
-    /// <item><term>ticks</term><description>=&gt; <see cref="Ticks"/><br/>
+    /// <item><term>ticks</term><description>
     /// Which of the audible "ticks" after a cassette swap will fire a pellet.
     /// Defined in entity data as a comma-separated list of integers.
     /// Defaults to [0] (fire once, immediately on cassette swap).
     /// Setting to [0,1] will fire on both ticks of a standard "2 tick per swap" rhythm.
     /// Setting to [-1] will fire on every tick regardless of how many ticks per swap.
     /// </description></item>
-    /// <item><term>pelletCount</term><description>=&gt; <see cref="PelletFiringComponent.Count"/><br/>
+    /// <item><term>pelletCount</term><description>
     /// The number of pellets that should be fired at once.
     /// Defaults to 1.
     /// </description></item>
     /// </list>
     /// Pellet configurable values from Ahorn:
     /// <list type="bullet">
-    /// <item><term>collideWithSolids</term><description>=&gt; <see cref="PelletFiringComponent.PelletComponent.PelletComponentSettings.CollideWithSolids"/><br/>
+    /// <item><term>collideWithSolids</term><description>
     /// Whether or not pellets will be blocked by <see cref="Solid"/>s.
     /// Defaults to true.
     /// </description></item>
-    /// <item><term>pelletColor</term><description>=&gt; <see cref="PelletFiringComponent.PelletComponent.PelletComponentSettings.Color"/><br/>
+    /// <item><term>pelletColor</term><description>
     /// The <see cref="Microsoft.Xna.Framework.Color"/> used to render the pellets.
     /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
     /// </description></item>
-    /// <item><term>pelletSpeed</term><description>=&gt; <see cref="PelletFiringComponent.PelletComponent.PelletComponentSettings.Speed"/><br/>
+    /// <item><term>pelletSpeed</term><description>
     /// The number of units per second that the pellet should travel.
     /// Defaults to 100.
     /// </description></item>
@@ -67,13 +68,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         
         #endregion
         
-        public int[] CassetteIndices { get; private set; }
-        public int[] Ticks { get; private set; }
+        public int[] CassetteIndices { get; }
+        public int[] Ticks { get; }
         
         protected CassetteTimedPelletEmitter(EntityData data, Vector2 offset, Orientations orientation)
             : base(data, offset, orientation)
         {
-            string indices = data.Attr("cassetteIndices");
+            string indices = data.Attr("cassetteIndices", "-1");
             CassetteIndices = indices.Split(',').Select(s => int.TryParse(s, out int i) ? Calc.Clamp(i, 0, 3) : 0).ToArray();
             
             string ticks = data.Attr("ticks", "0");
@@ -81,7 +82,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             
             Add(new CassetteListener {
                 OnTick = (index, tick) => {
-                    if ((!CassetteIndices.Any() || CassetteIndices.Contains(index)) && (!Ticks.Any() || Ticks.Contains(tick)))
+                    if ((CassetteIndices.FirstOrDefault() == -1 || CassetteIndices.Contains(index)) && (Ticks.FirstOrDefault() == -1 || Ticks.Contains(tick)))
                         Get<PelletFiringComponent>().Fire(comp => comp.Settings.Color = CassetteListener.ColorFromCassetteIndex(index));
                 }
             });

@@ -3,7 +3,7 @@ module SJ2021CassetteTimedPelletEmitter
 using ..Ahorn, Maple
 
 const default_pellet_speed = 100.0
-const default_cassette_indices = ""
+const default_cassette_indices = "0"
 const default_ticks = "0"
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterUp" CassetteTimedPelletEmitterUp(

@@ -2,6 +2,7 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
+using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <summary>
@@ -9,20 +10,60 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// The laser beam turns on and off in time with cassette blocks.
     /// </summary>
     /// <remarks>
-    /// Will kill the player by default, but its functionality can be changed.<br/>
-    /// Has four available orientations, indicated by the <see cref="OrientableEntity.Orientations"/> enum.<br/>
-    /// Configurable values from Ahorn:<br/>
+    /// Emitter configurable values from Ahorn:
     /// <list type="bullet">
-    /// <item><description>"alpha" =&gt; <see cref="LaserEmitter.Alpha"/></description></item>
-    /// <item><description>"collideWithSolids" =&gt; <see cref="LaserEmitter.CollideWithSolids"/></description></item>
-    /// <item><description>"cassetteIndex" =&gt; <see cref="CassetteIndex"/></description></item>
-    /// <item><description>"disableLasers" =&gt; <see cref="LaserEmitter.DisableLasers"/></description></item>
-    /// <item><description>"flicker" =&gt; <see cref="LaserEmitter.Flicker"/></description></item>
-    /// <item><description>"killPlayer" =&gt; <see cref="LaserEmitter.KillPlayer"/></description></item>
-    /// <item><description>"lengthInTicks" =&gt; <see cref="LengthInTicks"/></description></item>
-    /// <item><description>"thickness" =&gt; <see cref="LaserEmitter.Thickness"/></description></item>
-    /// <item><description>"tickOffset" =&gt; <see cref="TickOffset"/></description></item>
-    /// <item><description>"triggerZipMovers" =&gt; <see cref="LaserEmitter.TriggerZipMovers"/></description></item>
+    /// <item><term>cassetteIndices</term><description>
+    /// Which of the cassette swap indices should enable the laser.
+    /// This also affects the color of the beam, matching the cassette block colors from Celeste.
+    /// Defaults to [0] (first cassette index only).
+    /// Setting to [-1] will fire on every cassette swap.
+    /// </description></item>
+    /// <item><term>ticks</term><description>
+    /// Which of the audible "ticks" after a cassette swap should enable the laser.
+    /// Defined in entity data as a comma-separated list of integers.
+    /// Defaults to [0] (fire once, immediately on cassette swap).
+    /// Setting to [0,1] will fire on both ticks of a standard "2 tick per swap" rhythm.
+    /// Setting to [-1] will fire on every tick regardless of how many ticks per swap.
+    /// </description></item>
+    /// <item><term>lengthInTicks</term><description>
+    /// The number of audible ticks that the laser should be enabled for.
+    /// Defaults to 2 (an entire cassette swap length).
+    /// </description></item>
+    /// </list>
+    /// Laser configurable values from Ahorn:
+    /// <list type="bullet">
+    /// <item><term>alpha</term><description>
+    /// The base alpha value for the beam.
+    /// Defaults to 0.4 (40%).
+    /// </description></item>
+    /// <item><term>collideWithSolids</term><description>
+    /// Whether or not the beam will be blocked by <see cref="Solid"/>s.
+    /// Defaults to true.
+    /// </description></item>
+    /// <item><term>color</term><description>
+    /// The base <see cref="Microsoft.Xna.Framework.Color"/> used to render the beam.
+    /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
+    /// </description></item>
+    /// <item><term>disableLasers</term><description>
+    /// Whether or not colliding with this beam will disable all beams of the same color.
+    /// Defaults to false.
+    /// </description></item>
+    /// <item><term>flicker</term><description>
+    /// Whether or not the beam should flicker.
+    /// Defaults to true, flickering 4 times per second.
+    /// </description></item>
+    /// <item><term>killPlayer</term><description>
+    /// Whether or not colliding with the beam will kill the player.
+    /// Defaults to true.
+    /// </description></item>
+    /// <item><term>thickness</term><description>
+    /// The thickness of the beam (and corresponding <see cref="Hitbox"/> in pixels).
+    /// Defaults to 6 pixels.
+    /// </description></item>
+    /// <item><term>triggerZipMovers</term><description>
+    /// Whether or not colliding with this beam will trigger AdventureHelper LinkedZipMovers of the same color.
+    /// Defaults to false.
+    /// </description></item>
     /// </list>
     /// </remarks>
     [CustomEntity("SJ2021/CassetteTimedLaserEmitterUp = LoadUp",
@@ -48,34 +89,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         
         #region Properties
         
-        /// <summary>
-        /// The cassette index swap on which to activate the beam.
-        /// </summary>
-        /// <remarks>
-        /// This also affects the color of the beam, matching the cassette block colors from Celeste.
-        /// </remarks>
-        public int CassetteIndex { get; private set; }
-        
-        /// <summary>
-        /// Ignored for <see cref="CassetteTimedLaserEmitter"/>.
-        /// </summary>
-        public override Color Color => CassetteListener.ColorFromCassetteIndex(CassetteIndex);
-        
-        /// <summary>
-        /// The number of audible ticks that the laser will remain active.
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 2, which is (by default) the length a cassette is active before it swaps.
-        /// </remarks>
-        public int LengthInTicks { get; private set; }
-        
-        /// <summary>
-        /// The number of audible ticks after a swap before the laser activates.
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 0 (no delay).
-        /// </remarks>
-        public int TickOffset { get; private set; }
+        public int[] CassetteIndices { get; }
+        public int[] Ticks { get; }
+        public int LengthInTicks { get; }
         
         #endregion
 
@@ -88,17 +104,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public CassetteTimedLaserEmitter(EntityData data, Vector2 offset, Orientations orientation)
             : base(data, offset, orientation) {
-        }
-
-        protected override void ReadEntityData(EntityData data) {
-            base.ReadEntityData(data);
-            CassetteIndex = data.Int("cassetteIndex");
-            TickOffset = data.Int("tickOffset");
+            string indices = data.Attr("cassetteIndices", "0");
+            CassetteIndices = indices.Split(',').Select(s => int.TryParse(s, out int i) ? Calc.Clamp(i, 0, 3) : 0).ToArray();
+            
+            string ticks = data.Attr("ticks", "0");
+            Ticks = ticks.Split(',').Select(s => int.TryParse(s, out int i) ? Math.Max(i, 0) : 0).ToArray();
+            
             LengthInTicks = data.Int("lengthInTicks", 2);
-        }
-        
-        protected override void AddComponents() {
-            base.AddComponents();
 
             Add(cassetteListener = new CassetteListener {
                 OnEntry = () => Collidable = false,
@@ -106,11 +118,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     if (--ticksRemaining == 0)
                         Collidable = false;
 
-                    int currentTick = index * cassetteListener.TicksPerSwap + tick;
-                    int targetTick = CassetteIndex * cassetteListener.TicksPerSwap + TickOffset;
-                    
-                    if (currentTick == targetTick) {
+                    if ((CassetteIndices.FirstOrDefault() == -1 || CassetteIndices.Contains(index)) && (Ticks.FirstOrDefault() == -1 || Ticks.Contains(tick))) {
                         ticksRemaining = LengthInTicks;
+                        Get<LaserBeamComponent>().Color = CassetteListener.ColorFromCassetteIndex(index);
                         Collidable = true;
                     }
                 }

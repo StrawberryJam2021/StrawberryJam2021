@@ -8,25 +8,25 @@ const default_color = "FF0000"
 
 @mapdef Entity "SJ2021/LaserEmitterUp" LaserEmitterUp(
     x::Integer, y::Integer,
-    color::String=default_color, alpha::Float64=default_alpha, thickness::Float64=default_thickness, flicker::Bool=true,
+    color::String=default_color, alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/LaserEmitterDown" LaserEmitterDown(
     x::Integer, y::Integer,
-    color::String=default_color, alpha::Float64=default_alpha, thickness::Float64=default_thickness, flicker::Bool=true,
+    color::String=default_color, alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/LaserEmitterLeft" LaserEmitterLeft(
     x::Integer, y::Integer,
-    color::String=default_color, alpha::Float64=default_alpha, thickness::Float64=default_thickness, flicker::Bool=true,
+    color::String=default_color, alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/LaserEmitterRight" LaserEmitterRight(
     x::Integer, y::Integer,
-    color::String=default_color, alpha::Float64=default_alpha, thickness::Float64=default_thickness, flicker::Bool=true,
+    color::String=default_color, alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
