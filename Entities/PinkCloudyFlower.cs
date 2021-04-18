@@ -16,11 +16,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Holdable hold;
         private bool waiting, returning;
         private float speed;
+        private Action orig_onPickup;
+        private Action<Vector2> orig_onRelease;
 
         public PinkCloudyFlower(EntityData data, Vector2 offset) : base(data, offset) {
             Get<Sprite>().SetColor(Color.MediumOrchid);
             carryOffset = new Vector2(-16, -20);
             hold = Get<Holdable>();
+            orig_onPickup = hold.OnPickup;
+            orig_onRelease = hold.OnRelease;
+
+            hold.OnPickup = onPickup;
+            hold.OnRelease = onRelease;
             platform = new JumpThru(Position + carryOffset, 32, false);
         }
 
@@ -32,9 +39,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
 
-            if (platform.GetPlayerRider() == null)
-            {
-                hold.Active = true;
+            if (platform.GetPlayerRider() == null) {
+                Collidable = true;
             }
 
             platformUpdate();
@@ -45,16 +51,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Player playerRider = platform.GetPlayerRider();
                 if (playerRider != null && playerRider.Speed.Y >= 0f) {
                     //this.canRumble = true;
-                    hold.Active = false;
+                    Collidable = false;
                     speed = 180f;
                     waiting = false;
                     Audio.Play("event:/game/04_cliffside/cloud_blue_boost", Position);
+                    platform.MoveV(speed * Engine.DeltaTime);
+                    platform.MoveTowardsX(Position.X + carryOffset.X, Math.Abs(Speed.X) * Engine.DeltaTime);
                     return;
                 }
                 platform.MoveTo(Position + carryOffset);
             } else if (returning) {
                 speed = Calc.Approach(speed, 180f, 600f * Engine.DeltaTime);
                 platform.MoveTowardsY(Position.Y + carryOffset.Y, speed * Engine.DeltaTime);
+                platform.MoveTowardsX(Position.X + carryOffset.X, Math.Abs(Speed.X) * Engine.DeltaTime);
                 if (platform.ExactPosition.Y == Position.Y + carryOffset.Y) {
                     returning = false;
                     waiting = true;
@@ -70,7 +79,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         Player playerRider2 = platform.GetPlayerRider();
                         if (playerRider2 != null && playerRider2.Speed.Y >= 0f) {
                             playerRider2.Speed.Y = -200f;
-                            hold.Active = false;
+                            Collidable = false;
                         }
                         returning = true;
                     }
@@ -80,11 +89,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     num = -220f;
                 }
                 platform.MoveV(speed * Engine.DeltaTime, num);
+                platform.MoveTowardsX(Position.X + carryOffset.X, Math.Abs(Speed.X) * Engine.DeltaTime);
             }
         }
 
-        public override void Render() {
-            base.Render();
+        private void onPickup() {
+            platform.AddTag(Tags.Persistent);
+            orig_onPickup();
+        }
+
+        private void onRelease(Vector2 force) {
+            platform.RemoveTag(Tags.Persistent);
+            orig_onRelease(force);
         }
     }
 }
