@@ -30,6 +30,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DashBoostField.Load();
             FlagDashSwitch.Load();
             PocketUmbrellaController.Load();
+            MultiNodeBadelineBlock.Load();
         }
 
         public override void Unload() {
@@ -46,6 +47,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DashBoostField.Unload();
             FlagDashSwitch.Unload();
             PocketUmbrellaController.Unload();
+            MultiNodeBadelineBlock.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
