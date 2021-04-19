@@ -30,18 +30,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public Spikes.Directions Direction;
-        private Vector2 DirectionVector;
+        private Vector2 directionVector;
         private Vector2 imageOffset;
         private int size;
-        private float lastDashTime;
-        private Vector2 dashDir;
 
         public DashThroughSpikes(Vector2 position, int size, Spikes.Directions direction) :
             base(position) {
 
             Depth = -1;
             Direction = direction;
-            DirectionVector = SpikeDirToVector(direction);
+            directionVector = SpikeDirToVector(direction);
             this.size = size;
             switch (direction) {
                 case Spikes.Directions.Up:
@@ -60,8 +58,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Add(new LedgeBlocker(null));
                     break;
             }
-
-            Add(new DashListener(new Action<Vector2>(OnDash)));
 
             Add(new PlayerCollider(new Action<Player>(OnCollide)));
 
@@ -114,8 +110,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Position = position;
         }
 
+
+        private const float collideCooldownTime = 0.15f;
+        private float lastCollide;
         private void OnCollide(Player player) {
-            if (DashingIntoSpikes()) {
+            if (Scene.TimeActive - lastCollide < collideCooldownTime) {
+                return;
+            }
+            lastCollide = Scene.TimeActive;
+            if (DashingIntoSpikes(player)) {
                 return;
             }
 
@@ -157,18 +160,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             };
         }
 
-        const float dashTimeThreshold = 0.3f; //length of time until player is considered not dashing
-        //returns bool based on if the player is still dashing, and their direction is toward the spikes (diagonals count)
-        private bool DashingIntoSpikes() {
-            return Scene.TimeActive - lastDashTime < dashTimeThreshold
-                && (Math.Sign(dashDir.X) == -Math.Sign(DirectionVector.X) 
-                || Math.Sign(dashDir.Y) == -Math.Sign(DirectionVector.Y));
-        }
 
-        //Updates timestamp and dash direction each time player dashes
-        private void OnDash(Vector2 dir) {
-            lastDashTime = Scene.TimeActive;
-            dashDir = dir;
+        const int DASH_STATE = 2;
+        const int RED_BOOSTER_STATE = 5;
+        const int DREAMDASHING_STATE = 9;
+        //returns bool based on if the player is still dashing, and their direction is toward the spikes (diagonals count)
+        private bool DashingIntoSpikes(Player player) {
+            return (player.StateMachine.State == DASH_STATE 
+                || player.StateMachine.State == RED_BOOSTER_STATE
+                || player.StateMachine.State == DREAMDASHING_STATE)
+                && (Math.Sign(player.DashDir.X) == -Math.Sign(directionVector.X) 
+                || Math.Sign(player.DashDir.Y) == -Math.Sign(directionVector.Y));
         }
 
         private static int GetSize(EntityData data, Spikes.Directions dir) {
