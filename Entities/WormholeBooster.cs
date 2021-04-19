@@ -75,7 +75,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(sprite);
             color = Calc.HexToColor("7800bd");
             self["particleType"] = P_WBurst;
-            
+
         }
         public override void Awake(Scene scene) {
             base.Awake(scene);
@@ -207,9 +207,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static IEnumerator increaseDelay(On.Celeste.Player.orig_BoostCoroutine orig, Player self) {
             if (!TeleportingDNI) {
-                IEnumerator original = orig(self);
-                while (original.MoveNext())
-                    yield return original.Current;
+                yield return new SwapImmediately(orig(self));
             } else {
                 yield return 0.45f;
                 self.StateMachine.State = 2;
