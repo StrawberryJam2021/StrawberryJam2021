@@ -161,14 +161,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
 
-        const int DASH_STATE = 2;
-        const int RED_BOOSTER_STATE = 5;
+        const int dashState = 2;
+        const int redBoosterState = 5;
+        const int squashState = 6;
         const int DREAMDASHING_STATE = 9;
         //returns bool based on if the player is still dashing, and their direction is toward the spikes (diagonals count)
         private bool DashingIntoSpikes(Player player) {
-            return (player.StateMachine.State == DASH_STATE 
-                || player.StateMachine.State == RED_BOOSTER_STATE
-                || player.StateMachine.State == DREAMDASHING_STATE)
+            return (player.StateMachine.State == dashState 
+                || player.StateMachine.State == redBoosterState
+                || player.StateMachine.State == DREAMDASHING_STATE
+                || player.StateMachine.State == squashState)
                 && (Math.Sign(player.DashDir.X) == -Math.Sign(directionVector.X) 
                 || Math.Sign(player.DashDir.Y) == -Math.Sign(directionVector.Y));
         }
