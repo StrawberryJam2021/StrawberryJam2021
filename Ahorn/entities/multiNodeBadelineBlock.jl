@@ -9,7 +9,7 @@ using ..Ahorn, Maple
     nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 
 const placements = Ahorn.PlacementDict(
-    "Badeline Boss Moving Block (Multi-node) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
+    "Badeline Boss Moving Block (Multi-Node) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         MultiNodeBadelineBlock,
         "rectangle",
         Dict{String, Any}(),

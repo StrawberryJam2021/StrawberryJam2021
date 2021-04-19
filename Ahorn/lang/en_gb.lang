@@ -51,3 +51,6 @@ placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of th
 
 # Dash With Holdable Trigger
 placements.triggers.SJ2021/HoldableDashTrigger.tooltips.mode="Toggle" will set or clear a session flag that allows dashing anywhere.\n"OnStay" will force the ability to be on/off while inside the trigger, regardless of what the session flag is set to.
+
+# Multi-Node Badeline Moving Block
+placements.entities.SJ2021/MultiNodeBadelineBlock.tooltips.nodeIndex=The node index of the Badeline boss this should fall down on.
