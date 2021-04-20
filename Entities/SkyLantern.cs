@@ -148,7 +148,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static IEnumerator OnPickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player self) {
 
             if (self.Holding.Entity is not SkyLantern jelly) {
-                yield return new SwapImmediately(orig(self));
+                IEnumerator origEnum = orig(self);
+                while (origEnum.MoveNext()) yield return origEnum.Current;
                 yield break;
             }
 
