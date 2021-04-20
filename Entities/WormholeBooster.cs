@@ -207,7 +207,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static IEnumerator increaseDelay(On.Celeste.Player.orig_BoostCoroutine orig, Player self) {
             if (!TeleportingDNI) {
-                yield return new SwapImmediately(orig(self));
+                IEnumerator origEnum = orig(self);
+                while (origEnum.MoveNext()) yield return origEnum.Current;
             } else {
                 yield return 0.45f;
                 self.StateMachine.State = 2;
