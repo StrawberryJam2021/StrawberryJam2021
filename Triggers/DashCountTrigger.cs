@@ -85,8 +85,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     } else {
                         new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.UsedHairColor;
                     }
-                    return Deadbody;
                 }
+                return Deadbody;
             }
             return orig(self, direction, evenIfInvincible, registerDeathInStats);
         }
