@@ -89,31 +89,4 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class PelletFiringComponent<TShot> : PelletFiringComponent where TShot : Entity, new() {
         protected override Entity CreateShot() => Engine.Pooler.Create<TShot>();
     }
-
-    /// <summary>
-    /// A pellet firing component that fires at a regular interval.
-    /// </summary>
-    public class AutomaticPelletFiringComponent<TShot> : PelletFiringComponent<TShot> where TShot : Entity, new() {
-        public float Frequency { get; set; }
-        public float Offset { get; set; }
-        
-        private float timer = 2f;
-        
-        public override void EntityAwake() {
-            base.EntityAwake();
-            timer = Offset;
-        }
-        
-        public override void Update() {
-            base.Update();
-            
-            if (Frequency > 0) {
-                timer -= Engine.DeltaTime;
-                if (timer <= 0) {
-                    Fire();
-                    timer += Frequency;
-                }
-            }
-        }
-    }
 }
