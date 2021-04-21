@@ -87,20 +87,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         
         #endregion
         
-        #region Properties
-        
         public int[] CassetteIndices { get; }
         public int[] Ticks { get; }
         public int LengthInTicks { get; }
         
-        #endregion
-
-        #region Private Fields
-
-        private CassetteListener cassetteListener;
         private int ticksRemaining;
-
-        #endregion
 
         public CassetteTimedLaserEmitter(EntityData data, Vector2 offset, Orientations orientation)
             : base(data, offset, orientation) {
@@ -112,7 +103,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             
             LengthInTicks = data.Int("lengthInTicks", 2);
 
-            Add(cassetteListener = new CassetteListener {
+            Add(new CassetteListener {
                 OnEntry = () => Collidable = false,
                 OnTick = (index, tick) => {
                     if (--ticksRemaining == 0)
@@ -120,7 +111,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                     if ((CassetteIndices.FirstOrDefault() == -1 || CassetteIndices.Contains(index)) && (Ticks.FirstOrDefault() == -1 || Ticks.Contains(tick))) {
                         ticksRemaining = LengthInTicks;
-                        Get<LaserBeamComponent>().Color = CassetteListener.ColorFromCassetteIndex(index);
+                        Color = CassetteListener.ColorFromCassetteIndex(index);
                         Collidable = true;
                     }
                 }

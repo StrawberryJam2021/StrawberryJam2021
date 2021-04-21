@@ -8,6 +8,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// Entity that emits a flickering laser beam.
     /// </summary>
     /// <remarks>
+    /// Opacity of the beam edges is calculated as <see cref="Alpha"/> times <see cref="alphaMultiplier"/>, where
+    /// the multiplier represents an optional flickering based on a <see cref="SineWave"/>.
+    /// The centre third of the beam is twice that opacity.<br/>
+    /// 
     /// Configurable values from Ahorn:
     /// <list type="bullet">
     /// <item><term>alpha</term><description>
@@ -89,7 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// <remarks>
         /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
         /// </remarks>
-        public Color Color { get; }
+        public Color Color { get; protected set; }
         
         /// <summary>
         /// Whether or not colliding with this beam will disable all beams of the same color.
@@ -136,9 +140,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         #region Private Fields
         
         private const float triggerCooldown = 1f;
+        private const float flickerFrequency = 4f;
+        private const float flickerRange = 4f;
+        
+        private readonly string hexColor;
         
         private float triggerCooldownRemaining;
-        private string hexColor;
+        private float alphaMultiplier = 1f;
         
         #endregion
         
@@ -152,18 +160,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             KillPlayer = data.Bool("killPlayer", true);
             Thickness = Math.Max(data.Float("thickness", 6f), 0f);
             TriggerZipMovers = data.Bool("triggerZipMovers");
-        
-            Add(new PlayerCollider(onPlayerCollide));
+
+            Add(new PlayerCollider(onPlayerCollide),
+                new LaserColliderComponent {CollideWithSolids = CollideWithSolids, Thickness = Thickness,},
+                new SineWave(flickerFrequency) {OnUpdate = v => alphaMultiplier = 1 - (v + 1f) * 0.5f / flickerRange}
+            );
             
-            Add(new LaserBeamComponent {
-                Alpha = Alpha,
-                CollideWithSolids = CollideWithSolids,
-                Color = Color,
-                Flicker = Flicker,
-                Thickness = Thickness,
-            });
-            
-            Collider = Get<LaserBeamComponent>().Collider;
+            Collider = Get<LaserColliderComponent>().Collider;
             
             Sprite emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
             emitterSprite.Rotation = Orientation.Angle();
@@ -176,6 +179,29 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (triggerCooldownRemaining > 0)
                 triggerCooldownRemaining -= triggerCooldown * Engine.DeltaTime;
+        }
+
+        public override void Render() {
+            var color = Color * Alpha * (Flicker ? alphaMultiplier : 1f);
+            
+            Draw.Rect(Collider.Bounds, color);
+
+            Vector2 target = Orientation switch {
+                Orientations.Up => Collider.TopCenter,
+                Orientations.Down => Collider.BottomCenter,
+                Orientations.Left => Collider.CenterLeft,
+                Orientations.Right => Collider.CenterRight,
+                _ => Vector2.Zero
+            };
+            
+            float lineThickness = Orientation == Orientations.Left || Orientation == Orientations.Right
+                ? Collider.Height / 3f
+                : Collider.Width / 3f;
+
+            Draw.Line(X, Y, X + target.X, Y + target.Y, color, lineThickness);
+            
+            // render the emitter etc. after the beam
+            base.Render();
         }
 
         private void onPlayerCollide(Player player) {
