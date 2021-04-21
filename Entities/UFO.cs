@@ -16,10 +16,6 @@ public class UFO : Actor {
         Leaving
     }
 
-    public static ParticleType P_Feather;
-
-    public const float SkipDist = 100f;
-
     public static readonly Vector2 FlingSpeed = new Vector2(380f, -100f);
 
     private Image sprite;
