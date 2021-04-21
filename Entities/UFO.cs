@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using Celeste;
 using Microsoft.Xna.Framework;
 using Monocle;
-using Celeste.Mod;
-using Celeste.Mod.StrawberryJam2021.Entities;
 using Celeste.Mod.Entities;
 
 [CustomEntity("SJ2021/UFO")]
@@ -25,8 +23,6 @@ public class UFO : Actor {
 
     public static readonly Vector2 FlingSpeed = new Vector2(380f, -100f);
 
-    private Vector2 spriteOffset = new Vector2(0f, 8f);
-
     private Image sprite;
 
     private States state;
@@ -37,8 +33,6 @@ public class UFO : Actor {
 
     private float flingAccel;
 
-    private Color trailColor = Calc.HexToColor("639bff");
-
     private EntityData entityData;
 
     private SoundSource moveSfx;
@@ -46,8 +40,6 @@ public class UFO : Actor {
     private int segmentIndex;
 
     public List<Vector2[]> NodeSegments;
-
-    public List<bool> SegmentsWaiting;
 
     public bool LightningRemoved;
 
@@ -57,36 +49,34 @@ public class UFO : Actor {
 
     private Vector2 hitSpeed;
 
-    private Collision onCollideV;
+    float RaySizeX = 13f;
 
-    Scene scene;
+    float RaySizeY = 60f;
 
 
-    public UFO(Vector2[] nodes, bool skippable) : base(nodes[0]) {
+    public UFO(Vector2[] nodes) : base(nodes[0]) {
         base.Depth = -1;
-        onCollideV = OnCollideV;
         Add(sprite = new Image(GFX.Game["objects/StrawberryJam2021/UFO/UFO"]));
         sprite.CenterOrigin();
-        base.Collider = new Hitbox(24f, 48f, -12f, -12f);
+        Collider = new Hitbox(24f, 24f, -12f, -12f);
         Add(new PlayerCollider(OnPlayer));
         Add(moveSfx = new SoundSource());
         NodeSegments = new List<Vector2[]>();
         NodeSegments.Add(nodes);
-        SegmentsWaiting = new List<bool>();
-        SegmentsWaiting.Add(skippable);
         bounceWiggler = Wiggler.Create(0.6f, 2.5f, delegate (float v) {
             sprite.Rotation = v * 20f * ((float) Math.PI / 180f);
         });
         Add(bounceWiggler);
     }
 
-    public UFO(EntityData data, Vector2 levelOffset) : this(data.NodesWithPosition(levelOffset), data.Bool("waiting")) {
+    public UFO(EntityData data, Vector2 levelOffset) : this(data.NodesWithPosition(levelOffset)) {
         entityData = data;
+        RaySizeX = data.Int("RaySizeX");
+        RaySizeY = data.Int("RaySizeY");
     }
 
     public override void Awake(Scene scene) {
         base.Awake(scene);
-        this.scene = scene;
         List<UFO> list = base.Scene.Entities.FindAll<UFO>();
         for (int num = list.Count - 1; num >= 0; num--) {
             if (list[num].entityData.Level.Name != entityData.Level.Name) {
@@ -97,7 +87,6 @@ public class UFO : Actor {
         if (list[0] == this) {
             for (int i = 1; i < list.Count; i++) {
                 NodeSegments.Add(list[i].NodeSegments[0]);
-                SegmentsWaiting.Add(list[i].SegmentsWaiting[0]);
                 list[i].RemoveSelf();
             }
         }
@@ -106,12 +95,6 @@ public class UFO : Actor {
             RemoveSelf();
         }
     }
-
-    private void Skip() {
-        state = States.Move;
-        Add(new Coroutine(MoveRoutine()));
-    }
-
 
     private void OnCollideV(CollisionData data) {
         if (!(data.Direction.Y > 0f)) {
@@ -131,21 +114,9 @@ public class UFO : Actor {
 
     private void OnPlayer(Player player) {
         if (state == States.Wait) {
-            if (player.Position.Y > Position.Y) {
-                flingSpeed = player.Speed * 0.4f;
-                flingSpeed.Y = 120f;
-                flingTargetSpeed = Vector2.Zero;
-                flingAccel = 1000f;
-                player.Speed = Vector2.Zero;
-                state = States.Fling;
-                Add(new Coroutine(DoFlingRoutine(player)));
-                Audio.Play("event:/new_content/game/10_farewell/bird_throw", base.Center);
-            }
-            else {
-                bounceWiggler.Start();
-                player.Bounce(base.Top);
-                GotoHit(player.Center);
-            }
+            bounceWiggler.Start();
+            player.Bounce(base.Top);
+            GotoHit(player.Center);
         }
     }
 
@@ -155,15 +126,12 @@ public class UFO : Actor {
         Audio.Play("event:/new_content/game/10_farewell/puffer_boop", Position);
     }
 
-
     public override void Update() {
         base.Update();
         switch (state) {
             case States.Wait: {
                     Player entity = base.Scene.Tracker.GetEntity<Player>();
                     if (entity != null && entity.X - base.X >= 100f) {
-                        Skip();
-                    } else if (SegmentsWaiting[segmentIndex] && LightningRemoved) {
                         Skip();
                     } else if (entity != null) {
                         float scaleFactor = Calc.ClampedMap((entity.Center - Position).Length(), 16f, 64f, 12f, 0f);
@@ -191,18 +159,30 @@ public class UFO : Actor {
             MoveH(hitSpeed.X * Engine.DeltaTime, OnCollideV);
             hitSpeed.X = Calc.Approach(hitSpeed.X, 0f, 150f * Engine.DeltaTime);
             hitSpeed = Calc.Approach(hitSpeed, Vector2.Zero, 320f * Engine.DeltaTime);
-        
-        Glider CollidingGlider = (Glider)Collide.First(this, Scene.Entities.FindAll<Glider>());
 
-        if(CollidingGlider != null && state == States.Wait && player.Holding != null && player.Holding.Entity != CollidingGlider || CollidingGlider != null && state == States.Wait && player.Holding == null) {
-            flingSpeed = CollidingGlider.Speed * 0.4f;
+
+        if (CheckIfInRay(player.Position, player.Bottom, player.Top)) {
+            flingSpeed = player.Speed * 0.4f;
             flingSpeed.Y = 120f;
             flingTargetSpeed = Vector2.Zero;
             flingAccel = 1000f;
-            CollidingGlider.Speed = Vector2.Zero;
+            player.Speed = Vector2.Zero;
             state = States.Fling;
-            Add(new Coroutine(DoFlingRoutineJelly(CollidingGlider)));
+            Add(new Coroutine(DoFlingRoutine(player)));
             Audio.Play("event:/new_content/game/10_farewell/bird_throw", base.Center);
+        } else {
+            foreach (Glider CollidingGlider in Scene.Entities.FindAll<Glider>()) {
+                if (CheckIfInRay(CollidingGlider.Position, CollidingGlider.Bottom, CollidingGlider.Top)) {
+                    flingSpeed = CollidingGlider.Speed * 0.4f;
+                    flingSpeed.Y = 120f;
+                    flingTargetSpeed = Vector2.Zero;
+                    flingAccel = 1000f;
+                    CollidingGlider.Speed = Vector2.Zero;
+                    state = States.Fling;
+                    Add(new Coroutine(DoFlingRoutineJelly(CollidingGlider)));
+                    Audio.Play("event:/new_content/game/10_farewell/bird_throw", base.Center);
+                }
+            }
         }
 
         Spring CollidingSpring = (Spring) Collide.First(this, Scene.Entities.FindAll<Spring>());
@@ -233,6 +213,18 @@ public class UFO : Actor {
             }
             typeof(Spring).GetMethod("BounceAnimate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(CollidingSpring, null);
         }
+    }
+
+    bool CheckIfInRay(Vector2 EntityPosition, float EntityBottom, float EntityTop) {
+        if(EntityPosition.X >= Position.X - RaySizeX && EntityPosition.X <= Position.X + RaySizeX && EntityTop < Position.Y + RaySizeY + 12 && EntityBottom > Top + 5f && state == States.Wait) {
+            return true;
+        }
+        return false;
+    }
+
+    private void Skip() {
+        state = States.Move;
+        Add(new Coroutine(MoveRoutine()));
     }
 
     private IEnumerator DoFlingRoutine(Player player) {
@@ -266,6 +258,7 @@ public class UFO : Actor {
         yield return 0.3f;
         Add(new Coroutine(MoveRoutine()));
     }
+
     private IEnumerator DoFlingRoutineJelly(Glider Jelly) {
         Level level = Scene as Level;
         Vector2 position = level.Camera.Position;
@@ -350,5 +343,8 @@ public class UFO : Actor {
 
     public override void Render() {
         base.Render();
+        if (state == States.Wait) {
+            Draw.Rect(Position.X - RaySizeX, Position.Y + 12, RaySizeX * 2, RaySizeY, Color.White);
+        }
     }
 }
