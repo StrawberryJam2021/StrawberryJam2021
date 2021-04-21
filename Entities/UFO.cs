@@ -13,7 +13,6 @@ public class UFO : Actor {
         Wait,
         Fling,
         Move,
-        WaitForLightningClear,
         Leaving
     }
 
@@ -40,8 +39,6 @@ public class UFO : Actor {
     private int segmentIndex;
 
     public List<Vector2[]> NodeSegments;
-
-    public bool LightningRemoved;
 
     Player player;
 
@@ -144,12 +141,6 @@ public class UFO : Actor {
                     flingSpeed = Calc.Approach(flingSpeed, flingTargetSpeed, flingAccel * Engine.DeltaTime);
                 }
                 Position += flingSpeed * Engine.DeltaTime;
-                break;
-            case States.WaitForLightningClear:
-                if (base.Scene.Entities.FindFirst<Lightning>() == null || base.X > (float) (base.Scene as Level).Bounds.Right) {
-                    state = States.Leaving;
-                    Add(new Coroutine(LeaveRoutine()));
-                }
                 break;
             case States.Move:
                 break;
@@ -310,7 +301,8 @@ public class UFO : Actor {
         sprite.Scale = Vector2.One;
         if (atEnding) {
             sprite.Scale.X = 1f;
-            state = States.WaitForLightningClear;
+            state = States.Leaving;
+            Add(new Coroutine(LeaveRoutine()));
             yield break;
         }
         sprite.Scale.X = -1f;
