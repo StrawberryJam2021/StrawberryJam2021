@@ -182,24 +182,27 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
-            var color = Color * Alpha * (Flicker ? alphaMultiplier : 1f);
-            
-            Draw.Rect(Collider.Bounds, color);
+            // only render beam if we're collidable
+            if (Collidable) {
+                var color = Color * Alpha * (Flicker ? alphaMultiplier : 1f);
 
-            Vector2 target = Orientation switch {
-                Orientations.Up => Collider.TopCenter,
-                Orientations.Down => Collider.BottomCenter,
-                Orientations.Left => Collider.CenterLeft,
-                Orientations.Right => Collider.CenterRight,
-                _ => Vector2.Zero
-            };
-            
-            float lineThickness = Orientation == Orientations.Left || Orientation == Orientations.Right
-                ? Collider.Height / 3f
-                : Collider.Width / 3f;
+                Draw.Rect(Collider.Bounds, color);
 
-            Draw.Line(X, Y, X + target.X, Y + target.Y, color, lineThickness);
-            
+                Vector2 target = Orientation switch {
+                    Orientations.Up => Collider.TopCenter,
+                    Orientations.Down => Collider.BottomCenter,
+                    Orientations.Left => Collider.CenterLeft,
+                    Orientations.Right => Collider.CenterRight,
+                    _ => Vector2.Zero
+                };
+
+                float lineThickness = Orientation == Orientations.Left || Orientation == Orientations.Right
+                    ? Collider.Height / 3f
+                    : Collider.Width / 3f;
+
+                Draw.Line(X, Y, X + target.X, Y + target.Y, color, lineThickness);
+            }
+
             // render the emitter etc. after the beam
             base.Render();
         }
