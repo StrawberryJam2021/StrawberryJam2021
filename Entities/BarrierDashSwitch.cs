@@ -28,7 +28,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
                 sprite.AddLoop("idle", "", 0.08f, idleFrames);
                 sprite.AddLoop("pushed", "", 0.08f, 27);
-                sprite.Add("push", "", 0.08f, "pushed", 21, 22, 23, 24, 25, 26, 27);
+                sprite.Add("push", "", 0.07f, "pushed", 21, 22, 23, 24, 25, 26, 27);
                 switch (side) {
                     case Sides.Right:
                         sprite.Position = new Vector2(8f, 8f);
