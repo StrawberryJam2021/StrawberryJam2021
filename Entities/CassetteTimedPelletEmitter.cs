@@ -54,16 +54,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class CassetteTimedPelletEmitter : PelletEmitter {
         #region Static Loader Methods
         
-        public static Entity LoadUp(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
+        public new static Entity LoadUp(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
             new CassetteTimedPelletEmitter(data, offset, Orientations.Up);
         
-        public static Entity LoadDown(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
+        public new static Entity LoadDown(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
             new CassetteTimedPelletEmitter(data, offset, Orientations.Down);
         
-        public static Entity LoadLeft(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
+        public new static Entity LoadLeft(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
             new CassetteTimedPelletEmitter(data, offset, Orientations.Left);
         
-        public static Entity LoadRight(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
+        public new static Entity LoadRight(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
             new CassetteTimedPelletEmitter(data, offset, Orientations.Right);
         
         #endregion
@@ -79,11 +79,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             
             string ticks = data.Attr("ticks", "0");
             Ticks = ticks.Split(',').Select(s => int.TryParse(s, out int i) ? Math.Max(i, 0) : 0).ToArray();
-            
+
+            Frequency = 0;
+
             Add(new CassetteListener {
                 OnTick = (index, tick) => {
                     if ((CassetteIndices.FirstOrDefault() == -1 || CassetteIndices.Contains(index)) && (Ticks.FirstOrDefault() == -1 || Ticks.Contains(tick)))
-                        Get<PelletFiringComponent>().Fire(comp => comp.Settings.Color = CassetteListener.ColorFromCassetteIndex(index));
+                        Fire(shot => shot.Color = CassetteListener.ColorFromCassetteIndex(index));
                 }
             });
         }
