@@ -37,7 +37,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public DashThroughSpikes(Vector2 position, int size, Spikes.Directions direction) :
             base(position) {
 
-            Depth = -1;
+            Depth = Depths.Player - 1;
             Direction = direction;
             directionVector = SpikeDirToVector(direction);
             this.size = size;
@@ -95,7 +95,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         break;
                 }
 
-            base.Add(image);
+                base.Add(image);
             }
         }
 
@@ -109,7 +109,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Render();
             Position = position;
         }
-
 
         private const float collideCooldownTime = 0.15f;
         private float lastCollide;
