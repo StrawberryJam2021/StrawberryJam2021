@@ -1,8 +1,8 @@
-﻿module SJ2021MomentumBlock
+﻿module SJ2021VariantToggleController
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/VariantToggleController" VariantToggleController(x::Integer, y::Integer, flag::String="", variantList::String="")
+@mapdef Entity "SJ2021/VariantToggleController" VariantToggleController(x::Integer, y::Integer, flag::String="", variantList::String="", defaultValue::Bool=true)
 
 const placements = Ahorn.PlacementDict(
    "Variant Toggle Controller (Strawberry Jam 2021)" => Ahorn.EntityPlacement(

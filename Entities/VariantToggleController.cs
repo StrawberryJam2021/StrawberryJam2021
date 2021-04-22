@@ -11,17 +11,20 @@ using ExtendedVariants.Module;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/VariantToggleController")]
     class VariantToggleController : Entity {
-        private string flag;
-        private bool isFlagged;
+        private string flag; //the flag that controls the variants
+        private bool isFlagged; //last flag state
+        private bool defaultValue;
+        private bool forceUpdate;
         private List<KeyValuePair<ExtendedVariants.Module.ExtendedVariantsModule.Variant, int>> variantValues;
 
         public VariantToggleController(EntityData data, Vector2 offset) 
-            : this(data.Position + offset, data.Attr("flag"), data.Attr("variantList")) {
+            : this(data.Position + offset, data.Attr("flag"), data.Attr("variantList"), data.Bool("defaultValue", true)) {
         }
 
-        public VariantToggleController(Vector2 position, string flagName, string variantList) 
+        public VariantToggleController(Vector2 position, string flagName, string variantList, bool defValue) 
             : base(position) {
             flag = flagName;
+            defaultValue = defValue;
             variantValues = ParseParameterList(variantList);
         }
 
@@ -32,6 +35,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Awake(Scene scene) {
             isFlagged = false;
+            if (!string.IsNullOrEmpty(flag)) {
+                SceneAs<Level>().Session.SetFlag(flag, defaultValue);
+                forceUpdate = true;
+            }
         }
 
         private void UpdateVariants() {
@@ -49,17 +56,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void UpdateFlag() {
-            if (string.IsNullOrEmpty(flag) || isFlagged == SceneAs<Level>().Session.GetFlag(flag))
+            if (string.IsNullOrEmpty(flag) || (isFlagged == SceneAs<Level>().Session.GetFlag(flag) && !forceUpdate))
                 return; //if we have no flag or it hasn't changed, skip updating the variant
+            //we only want to clear forceUpdate if an update wasn't already ganna happen
+            if (forceUpdate && isFlagged == SceneAs<Level>().Session.GetFlag(flag))
+                forceUpdate = false;
             isFlagged = SceneAs<Level>().Session.GetFlag(flag);
             UpdateVariants();
         }
 
         static private List<KeyValuePair<ExtendedVariantsModule.Variant, int>> ParseParameterList(string list) {
             List<KeyValuePair<ExtendedVariantsModule.Variant, int>> variantList = new List<KeyValuePair<ExtendedVariantsModule.Variant, int>>();
-            if (String.IsNullOrEmpty(list))
+            if (string.IsNullOrEmpty(list))
                 return variantList;
             string[] keyValueList = list.Split(',');
+            //comma separated list of Variant:Value pairs
             foreach(string keyValue in keyValueList) {
                 string[] variantKeyValue = keyValue.Split(':');
                 if(variantKeyValue.Length >= 2) {
