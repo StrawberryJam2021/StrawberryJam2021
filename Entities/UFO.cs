@@ -126,14 +126,14 @@ public class UFO : Actor {
         base.Update();
         switch (state) {
             case States.Wait: 
-                    Player entity = base.Scene.Tracker.GetEntity<Player>();
-                    if (entity != null && entity.X - base.X >= 100f) {
-                        Skip();
-                    } else if (entity != null) {
-                        float scaleFactor = Calc.ClampedMap((entity.Center - Position).Length(), 16f, 64f, 12f, 0f);
-                        Vector2 value = (entity.Center - Position).SafeNormalize();
-                    }
-                    break;
+                Player entity = base.Scene.Tracker.GetEntity<Player>();
+                if (entity != null && entity.X - base.X >= 100f) {
+                    Skip();
+                } else if (entity != null) {
+                    float scaleFactor = Calc.ClampedMap((entity.Center - Position).Length(), 16f, 64f, 12f, 0f);
+                    Vector2 value = (entity.Center - Position).SafeNormalize();
+                }
+                break;
             case States.Fling:
                 if (flingAccel > 0f) {
                     flingSpeed = Calc.Approach(flingSpeed, flingTargetSpeed, flingAccel * Engine.DeltaTime);

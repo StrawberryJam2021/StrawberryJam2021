@@ -2,7 +2,7 @@ module SJ2021UFO
 
 using ..Ahorn, Maple
 
-@mapdef Entity(Strawberry Jam 2021) "SJ2021/UFO" UFO(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], RaySizeX::Integer = 13, RaySizeY::Integer = 60)
+@mapdef Entity "SJ2021/UFO" UFO(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], RaySizeX::Integer = 13, RaySizeY::Integer = 60)
 
 const placements = Ahorn.PlacementDict(
     "UFO (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
@@ -20,9 +20,9 @@ function Ahorn.selection(entity::UFO)
     for node in nodes
         nx, ny = node
         push!(res, Ahorn.getSpriteRectangle(UFOsprite, nx, ny))
-	end
+    end
 	
-	return res
+    return res
 end
 
 function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::UFO, room::Maple.Room)
