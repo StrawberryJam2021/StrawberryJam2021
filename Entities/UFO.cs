@@ -46,7 +46,7 @@ public class UFO : Actor {
 
     float RaySizeY = 60f;
 
-    System.Reflection.MethodInfo SpringBounce;
+    public static System.Reflection.MethodInfo SpringBounce;
 
 
     public UFO(Vector2[] nodes) : base(nodes[0]) {
@@ -62,7 +62,7 @@ public class UFO : Actor {
             sprite.Rotation = v * 20f * ((float) Math.PI / 180f);
         });
         Add(bounceWiggler);
-        SpringBounce = typeof(Spring).GetMethod("BounceAnimate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
     }
 
     public UFO(EntityData data, Vector2 levelOffset) : this(data.NodesWithPosition(levelOffset)) {
@@ -341,5 +341,9 @@ public class UFO : Actor {
         if (state == States.Wait) {
             Draw.Rect(Position.X - RaySizeX, Position.Y + 12, RaySizeX * 2, RaySizeY, Color.White);
         }
+    }
+
+    public static void Load() {
+        SpringBounce = typeof(Spring).GetMethod("BounceAnimate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
     }
 }

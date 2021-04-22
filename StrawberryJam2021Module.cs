@@ -29,6 +29,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DashCountTrigger.Load();
             DashBoostField.Load();
             FlagDashSwitch.Load();
+            UFO.Load();
         }
 
         public override void Unload() {
