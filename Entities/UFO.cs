@@ -46,6 +46,8 @@ public class UFO : Actor {
 
     float RaySizeY = 60f;
 
+    System.Reflection.MethodInfo SpringBounce;
+
 
     public UFO(Vector2[] nodes) : base(nodes[0]) {
         base.Depth = -1;
@@ -60,6 +62,7 @@ public class UFO : Actor {
             sprite.Rotation = v * 20f * ((float) Math.PI / 180f);
         });
         Add(bounceWiggler);
+        SpringBounce = typeof(Spring).GetMethod("BounceAnimate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
     }
 
     public UFO(EntityData data, Vector2 levelOffset) : this(data.NodesWithPosition(levelOffset)) {
@@ -122,7 +125,7 @@ public class UFO : Actor {
     public override void Update() {
         base.Update();
         switch (state) {
-            case States.Wait: {
+            case States.Wait: 
                     Player entity = base.Scene.Tracker.GetEntity<Player>();
                     if (entity != null && entity.X - base.X >= 100f) {
                         Skip();
@@ -131,7 +134,6 @@ public class UFO : Actor {
                         Vector2 value = (entity.Center - Position).SafeNormalize();
                     }
                     break;
-                }
             case States.Fling:
                 if (flingAccel > 0f) {
                     flingSpeed = Calc.Approach(flingSpeed, flingTargetSpeed, flingAccel * Engine.DeltaTime);
@@ -142,13 +144,13 @@ public class UFO : Actor {
                 break;
         }
 
-            MoveV(hitSpeed.Y * Engine.DeltaTime, OnCollideV);
-            MoveH(hitSpeed.X * Engine.DeltaTime, OnCollideV);
-            hitSpeed.X = Calc.Approach(hitSpeed.X, 0f, 150f * Engine.DeltaTime);
-            hitSpeed = Calc.Approach(hitSpeed, Vector2.Zero, 320f * Engine.DeltaTime);
+        MoveV(hitSpeed.Y * Engine.DeltaTime, OnCollideV);
+        MoveH(hitSpeed.X * Engine.DeltaTime, OnCollideV);
+        hitSpeed.X = Calc.Approach(hitSpeed.X, 0f, 150f * Engine.DeltaTime);
+        hitSpeed = Calc.Approach(hitSpeed, Vector2.Zero, 320f * Engine.DeltaTime);
 
 
-        if (CheckIfInRay(player.Position, player.Bottom, player.Top)) {
+        if (CheckIfInRay(player.Position, player.Bottom, player.Top, false, null)) {
             flingSpeed = player.Speed * 0.4f;
             flingSpeed.Y = 120f;
             flingTargetSpeed = Vector2.Zero;
@@ -159,7 +161,7 @@ public class UFO : Actor {
             Audio.Play("event:/new_content/game/10_farewell/bird_throw", base.Center);
         } else {
             foreach (Glider CollidingGlider in Scene.Entities.FindAll<Glider>()) {
-                if (CheckIfInRay(CollidingGlider.Position, CollidingGlider.Bottom, CollidingGlider.Top)) {
+                if (CheckIfInRay(CollidingGlider.Position, CollidingGlider.Bottom, CollidingGlider.Top, true, CollidingGlider)) {
                     flingSpeed = CollidingGlider.Speed * 0.4f;
                     flingSpeed.Y = 120f;
                     flingTargetSpeed = Vector2.Zero;
@@ -198,13 +200,19 @@ public class UFO : Actor {
                     }
                     break;
             }
-            typeof(Spring).GetMethod("BounceAnimate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(CollidingSpring, null);
+            SpringBounce.Invoke(CollidingSpring, null);
+            
         }
     }
 
-    bool CheckIfInRay(Vector2 EntityPosition, float EntityBottom, float EntityTop) {
+    bool CheckIfInRay(Vector2 EntityPosition, float EntityBottom, float EntityTop, bool IsJelly, Glider CollidingGlider) {
         if(EntityPosition.X >= Position.X - RaySizeX && EntityPosition.X <= Position.X + RaySizeX && EntityTop < Position.Y + RaySizeY + 12 && EntityBottom > Top + 5f && state == States.Wait) {
-            return true;
+            if (!IsJelly) {
+                return true;
+            }
+            if(player.Holding != null && player.Holding.Entity == CollidingGlider && CheckIfInRay(player.Position, player.Bottom, player.Top, false, null)) {
+                return true;
+            }
         }
         return false;
     }
@@ -315,7 +323,6 @@ public class UFO : Actor {
     private IEnumerator MoveOnCurve(Vector2 from, Vector2 anchor, Vector2 to) {
         SimpleCurve curve = new SimpleCurve(from, to, anchor);
         float duration = curve.GetLengthParametric(32) / 500f;
-        _ = from;
         Vector2 was = from;
         for (float t = 0.016f; t <= 1f; t += Engine.DeltaTime / duration) {
             Position = curve.GetPoint(t).Floor();
