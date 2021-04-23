@@ -25,8 +25,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private DynData<Player> playerDynData;
         private Level level;
         private Sprite sprite;
-        private Random prng;
-        private EntityID id;
 
         public float FallSpeed { get; private set; }
         public float FastFallSpeed { get; private set; }
@@ -35,8 +33,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static ParticleType boostParticles;
         private static MethodInfo player_launchBegin = typeof(Player).GetMethod("LaunchBegin", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public TripleBoostFlower(EntityData data, Vector2 offset, EntityID id) : this(data.Position + offset, data.Float("boostDelay", 0.2f), data.Float("boostSpeed", -160f), data.Float("boostDuration", 0.5f), data.Float("fastFallSpeed", 120f), data.Float("slowFallSpeed", 24f), data.Float("normalFallSpeed", 40f)) {
-            this.id = id;
+        public TripleBoostFlower(EntityData data, Vector2 offset) : this(data.Position + offset, data.Float("boostDelay", 0.2f), data.Float("boostSpeed", -160f), data.Float("boostDuration", 0.5f), data.Float("fastFallSpeed", 120f), data.Float("slowFallSpeed", 24f), data.Float("normalFallSpeed", 40f)) {
         }
 
 
@@ -60,7 +57,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(sprite = StrawberryJam2021Module.SpriteBank.Create("roseGlider"));
             sprite.CenterOrigin();
             sprite.Origin.Y += 9;
-            sprite.OnLoop = new Action<string>(handleSpriteLoop);
             sprite.Play("idle_3");
 
             Collider = new Hitbox(6, 10, -3, -5); // todo adjust
@@ -123,14 +119,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Added(Scene scene) {
             base.Added(scene);
             level = SceneAs<Level>();
-            prng = new Random($"{level.Session.Area.SID}_{level.Session.Level}_{id.ID}".GetHashCode());
-        }
-
-        private void handleSpriteLoop(string id) {
-            if (id.StartsWith("idle")) {
-                bool gust = prng.Next(0, 10) == 0;
-                sprite.Play((gust ? "idle_gust_" : "idle_") + charges);
-            }
         }
 
         public override void Update() {
@@ -147,10 +135,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             if (hold.IsHeld) {
-                if ((int) player.Facing != lastFacing) {
-                    lastFacing = (int) player.Facing;
-                    Vector2 newOffset = new Vector2(Math.Abs(playerDynData.Get<Vector2>("carryOffset").X), playerDynData.Get<Vector2>("carryOffset").Y) * (Vector2.UnitX * (int) player.Facing);
-                }
                 if (Input.Dash.Pressed) {
                     consumeBoost();
                     if (destroyed)
