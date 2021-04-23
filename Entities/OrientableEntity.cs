@@ -28,8 +28,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             
             Add(new StaticMover {
                 OnAttach = p => Depth = p.Depth + 1,
-                SolidChecker = s => CollideCheck(s, Position - Orientation.Direction()),
-                JumpThruChecker = jt => CollideCheck(jt, Position - Orientation.Direction()),
+                SolidChecker = s => Collide.CheckPoint(s, Position - Orientation.Direction()),
+                JumpThruChecker = jt => Collide.CheckPoint(jt, Position - Orientation.Direction()),
                 OnEnable = () => Collidable = true,
                 OnDisable = () => Collidable = false,
             });
