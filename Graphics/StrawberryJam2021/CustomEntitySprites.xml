@@ -59,11 +59,11 @@
     <!--Rose Glider-->
     <roseGlider path="objects/StrawberryJam2021/roseGlider/" start="idle_3">
         <Anim id="idle_3" path="3charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_3:9,idle_gust_3:1"/>
-		<Anim id="idle_gust_3" path="3charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_3:9,idle_gust_3:1"/>
-		<Anim id="idle_2" path="2charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_2:9,idle_gust_2:1"/>
-		<Anim id="idle_gust_2" path="2charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_2:9,idle_gust_2:1"/>
-		<Anim id="idle_1" path="1charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_1:9,idle_gust_1:1"/>
-		<Anim id="idle_gust_1" path="1charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_1:9,idle_gust_1:1"/>
-		<Anim id="death" path="death" delay="0.1" />
+        <Anim id="idle_gust_3" path="3charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_3:9,idle_gust_3:1"/>
+        <Anim id="idle_2" path="2charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_2:9,idle_gust_2:1"/>
+        <Anim id="idle_gust_2" path="2charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_2:9,idle_gust_2:1"/>
+        <Anim id="idle_1" path="1charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_1:9,idle_gust_1:1"/>
+        <Anim id="idle_gust_1" path="1charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_1:9,idle_gust_1:1"/>
+        <Anim id="death" path="death" delay="0.1" />
     </roseGlider>
 </Sprites>
