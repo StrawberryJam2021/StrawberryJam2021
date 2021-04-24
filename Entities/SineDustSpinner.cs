@@ -24,20 +24,39 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             yAmplitude = data.Height / 2;
 
             if (xLinear) {
-                Add(xTween = Tween.Create(Tween.TweenMode.Looping, duration: Math.Abs(xPeriod)));
+                Add(xTween = Tween.Create(Tween.TweenMode.Looping, duration: getAdjustedPeriodTime(Math.Abs(xPeriod))));
                 xTween.Start(xPeriod < 0);
             } else if (data.Float("xPeriod", 1f) != 0) {
                 Add(xSine = new SineWave(1 / xPeriod, xPhase));
             }
             if (yLinear) {
-                Add(yTween = Tween.Create(Tween.TweenMode.Looping, duration: Math.Abs(yPeriod)));
+                Add(yTween = Tween.Create(Tween.TweenMode.Looping, duration: getAdjustedPeriodTime(Math.Abs(yPeriod))));
                 yTween.Start(yPeriod < 0);
             } else if (data.Float("yPeriod", 1f) != 0) {
                 Add(ySine = new SineWave(1 / yPeriod, yPhase));
             }
-
+            Logger.Log("SDS", $"ydur {Math.Abs(yPeriod)}, xdur {Math.Abs(xPeriod)}");
             Position = Position + Vector2.UnitX * data.Width / 2 + Vector2.UnitY * data.Height / 2;
             origPos = Position;
+        }
+
+        /* there is some weird desync issue with some period values (e.g. 4) where, because (n*Engine.DeltaTime) != (x += Engine.DeltaTime n times), the dusty desyncs.
+         * this function makes sure that *if* this difference is big enough to cause a tick difference from what it should be, the period gets adjusted to a different 
+         * period that results in the intended amount of ticks.
+         */
+        private float getAdjustedPeriodTime(float origTime) {
+            int actualTicks = 0;
+            int intendedTicks = (int) Math.Ceiling(origTime / Engine.DeltaTime);
+            float time = origTime;
+            for (; !(time <= 0); actualTicks++) {
+                time -= Engine.DeltaTime;
+            }
+            if (actualTicks > intendedTicks) {
+                return origTime - (Engine.DeltaTime - 0.01f);
+            } else if (actualTicks < intendedTicks) {
+                return origTime + (Engine.DeltaTime - 0.01f);
+            }
+            return origTime;
         }
 
         public override void Update() {
