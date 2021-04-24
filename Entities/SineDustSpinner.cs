@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -11,6 +12,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2 origPos, lastPos;
         private float xAmplitude, yAmplitude;
         private bool xLinear, yLinear;
+
+        private static MethodInfo get_TimeLeft;
+
+        public static void Load() {
+            get_TimeLeft = typeof(Tween).GetMethod("set_TimeLeft", BindingFlags.NonPublic | BindingFlags.Instance);
+        }
 
         public SineDustSpinner(EntityData data, Vector2 offset) : base(data, offset) {
             Collider = new Circle(6, 0, 0);
@@ -26,12 +33,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (xLinear) {
                 Add(xTween = Tween.Create(Tween.TweenMode.Looping, duration: getAdjustedPeriodTime(Math.Abs(xPeriod))));
                 xTween.Start(xPeriod < 0);
+                get_TimeLeft.Invoke(xTween, new object[] { xTween.Duration * xPhase });
             } else if (data.Float("xPeriod", 1f) != 0) {
                 Add(xSine = new SineWave(1 / xPeriod, xPhase));
             }
             if (yLinear) {
                 Add(yTween = Tween.Create(Tween.TweenMode.Looping, duration: getAdjustedPeriodTime(Math.Abs(yPeriod))));
                 yTween.Start(yPeriod < 0);
+                get_TimeLeft.Invoke(yTween, new object[] { yTween.Duration * yPhase });
             } else if (data.Float("yPeriod", 1f) != 0) {
                 Add(ySine = new SineWave(1 / yPeriod, yPhase));
             }

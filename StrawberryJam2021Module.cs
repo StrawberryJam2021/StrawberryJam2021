@@ -31,6 +31,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             FlagDashSwitch.Load();
             PocketUmbrellaController.Load();
             BarrierDashSwitch.Load();
+            SineDustSpinner.Load();
         }
 
         public override void Unload() {
