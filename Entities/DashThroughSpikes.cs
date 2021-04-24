@@ -110,13 +110,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Position = position;
         }
 
-        private const float collideCooldownTime = 0.15f;
-        private float lastCollide;
         private void OnCollide(Player player) {
-            if (Scene.TimeActive - lastCollide < collideCooldownTime) {
-                return;
-            }
-            lastCollide = Scene.TimeActive;
             if (DashingIntoSpikes(player)) {
                 return;
             }
