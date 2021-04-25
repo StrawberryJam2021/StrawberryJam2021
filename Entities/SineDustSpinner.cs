@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
@@ -21,6 +22,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public SineDustSpinner(EntityData data, Vector2 offset) : base(data, offset) {
             Collider = new Circle(6, 0, 0);
+
+            // change the sprite to be the same as for moving dusties
+            Remove(Sprite);
+            Sprite.RemoveSelf();
+
+            DustEdge edge;
+            Remove(edge = Get<DustEdge>());
+            edge.RemoveSelf();
+
+            Add(Sprite = new DustGraphic(true, false, false));
 
             float xPeriod = data.Float("xPeriod", 1f), xPhase = data.Float("xPhase", 0f) * (float) Math.PI,
                 yPeriod = data.Float("yPeriod", 1f), yPhase = data.Float("yPhase", 0f) * (float) Math.PI;
