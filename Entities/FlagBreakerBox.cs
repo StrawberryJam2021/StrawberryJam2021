@@ -10,8 +10,6 @@ using Monocle;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/FlagBreakerBox")]
     class FlagBreakerBox : Solid {
-        public static ParticleType P_Smash;
-        public static ParticleType P_Sparks;
         private Sprite sprite;
         private SineWave sine;
         private Vector2 start;

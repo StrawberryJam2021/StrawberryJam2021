@@ -31,7 +31,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         public override void OnEnter(Player player) {
             base.OnEnter(player);
-            if(!string.IsNullOrEmpty(controllerFlag))
+            if (!string.IsNullOrEmpty(controllerFlag))
                 isEnabled = SceneAs<Level>().Session.GetFlag(controllerFlag);
             //if the trigger is enabled, change the flag state to set
             if (!string.IsNullOrEmpty(flag) && isEnabled) {
@@ -54,7 +54,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             base.OnStay(player);
             if (!string.IsNullOrEmpty(controllerFlag) && SceneAs<Level>().Session.GetFlag(controllerFlag) != isEnabled) {
                 isEnabled = SceneAs<Level>().Session.GetFlag(controllerFlag);
-                //if the player is already inside the trigger, we need to update it
+                //if the player is already inside the trigger, we need to update it because of the new enabled state
                 if (isEnabled)
                     Enable();
                 else
