@@ -54,7 +54,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             } else if (data.Float("yPeriod", 1f) != 0) {
                 Add(ySine = new SineWave(1 / yPeriod, yPhase));
             }
-            Logger.Log("SDS", $"ydur {Math.Abs(yPeriod)}, xdur {Math.Abs(xPeriod)}");
             Position = Position + Vector2.UnitX * data.Width / 2 + Vector2.UnitY * data.Height / 2;
             origPos = Position;
         }
