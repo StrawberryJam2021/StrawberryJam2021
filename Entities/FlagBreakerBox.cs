@@ -67,9 +67,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             musicProgress = e.Int("music_progress", -1);
             musicStoreInSession = e.Bool("music_session", false);
             aliveState = e.Bool("aliveState", true);
-    }
+        }
 
-    public override void Awake(Scene scene) {
+        public override void Awake(Scene scene) {
             base.Awake(scene);
             if (!string.IsNullOrEmpty(flag))
                SceneAs<Level>().Session.SetFlag(flag, aliveState); //set the flag to default state on loading
@@ -121,30 +121,30 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             float direction;
             Vector2 position;
             Vector2 positionRange;
-            int num;
+            int particleAmount;
             if (dir == Vector2.UnitX) {
                 direction = 0f;
                 position = CenterRight - Vector2.UnitX * 12f;
                 positionRange = Vector2.UnitY * (Height - 6f) * 0.5f;
-                num = (int) (Height / 8f) * 4;
+                particleAmount = (int) (Height / 8f) * 4;
             } else if (dir == -Vector2.UnitX) {
-                direction = 3.1415927f;
+                direction = (float)Math.PI;
                 position = CenterLeft + Vector2.UnitX * 12f;
                 positionRange = Vector2.UnitY * (Height - 6f) * 0.5f;
-                num = (int) (Height / 8f) * 4;
+                particleAmount = (int) (Height / 8f) * 4;
             } else if (dir == Vector2.UnitY) {
-                direction = 1.5707964f;
+                direction = (float) Math.PI/2;
                 position = BottomCenter - Vector2.UnitY * 12f;
                 positionRange = Vector2.UnitX * (Width - 6f) * 0.5f;
-                num = (int) (Width / 8f) * 4;
+                particleAmount = (int) (Width / 8f) * 4;
             } else {
-                direction = -1.5707964f;
+                direction = (float) -Math.PI/2;
                 position = TopCenter + Vector2.UnitY * 12f;
                 positionRange = Vector2.UnitX * (Width - 6f) * 0.5f;
-                num = (int) (Width / 8f) * 4;
+                particleAmount = (int) (Width / 8f) * 4;
             }
-            num += 2;
-            SceneAs<Level>().Particles.Emit(LightningBreakerBox.P_Smash, num, position, positionRange, direction);
+            particleAmount += 2;
+            SceneAs<Level>().Particles.Emit(LightningBreakerBox.P_Smash, particleAmount, position, positionRange, direction);
         }
 
         public override void Update() {
@@ -160,14 +160,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
             if (Collidable) {
-                bool flag = HasPlayerRider();
-                sink = Calc.Approach(sink, (float) (flag ? 1 : 0), 2f * Engine.DeltaTime);
+                bool hasPlayerRider = HasPlayerRider();
+                sink = Calc.Approach(sink, (float) (hasPlayerRider ? 1 : 0), 2f * Engine.DeltaTime);
                 sine.Rate = MathHelper.Lerp(1f, 0.5f, sink);
-                Vector2 vector = start;
-                vector.Y += sink * 6f + sine.Value * MathHelper.Lerp(4f, 2f, sink);
-                vector += bounce.Value * bounceDir * 12f;
-                MoveToX(vector.X);
-                MoveToY(vector.Y);
+                Vector2 target = start;
+                target.Y += sink * 6f + sine.Value * MathHelper.Lerp(4f, 2f, sink);
+                target += bounce.Value * bounceDir * 12f;
+                MoveToX(target.X);
+                MoveToY(target.Y);
                 if (smashParticles) {
                     smashParticles = false;
                     SmashParticles(bounceDir.Perpendicular());

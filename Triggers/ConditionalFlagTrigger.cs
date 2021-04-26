@@ -17,24 +17,20 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private string controllerFlag; //the flag that enables these triggers
         private bool priorState; //the prior state
         private bool flagValue; //value to set the flag to on entry
-        private bool resetOnLeave; //whether or not to reset on leaving the trigger
-        private bool isEnabled;
+        private bool revertOnLeave; //whether or not to reset on leaving the trigger
 
         public ConditionalFlagTrigger(EntityData data, Vector2 offset)
             : base(data, offset) {
             flag = data.Attr("flag");
             flagValue = data.Bool("flagValue", true);
-            resetOnLeave = data.Bool("resetOnLeave", true);
+            revertOnLeave = data.Bool("revertOnLeave", true);
             controllerFlag = data.Attr("controllerFlag");
-            isEnabled = true;
         }
 
         public override void OnEnter(Player player) {
             base.OnEnter(player);
-            if (!string.IsNullOrEmpty(controllerFlag))
-                isEnabled = SceneAs<Level>().Session.GetFlag(controllerFlag);
             //if the trigger is enabled, change the flag state to set
-            if (!string.IsNullOrEmpty(flag) && isEnabled) {
+            if (!string.IsNullOrEmpty(flag)) {
                 priorState = SceneAs<Level>().Session.GetFlag(flag);
                 SceneAs<Level>().Session.SetFlag(flag, flagValue);
             }
@@ -42,38 +38,16 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         public override void OnLeave(Player player) {
             base.OnLeave(player);
-            if (!string.IsNullOrEmpty(controllerFlag))
-                isEnabled = SceneAs<Level>().Session.GetFlag(controllerFlag);
             //if the trigger is enabled, change the flag state to it's prior state
-            if (!string.IsNullOrEmpty(flag) && isEnabled && resetOnLeave) {
+            if (!string.IsNullOrEmpty(flag) && revertOnLeave) {
                 SceneAs<Level>().Session.SetFlag(flag, priorState);
             }
         }
 
-        public override void OnStay(Player player) {
-            base.OnStay(player);
-            if (!string.IsNullOrEmpty(controllerFlag) && SceneAs<Level>().Session.GetFlag(controllerFlag) != isEnabled) {
-                isEnabled = SceneAs<Level>().Session.GetFlag(controllerFlag);
-                //if the player is already inside the trigger, we need to update it because of the new enabled state
-                if (isEnabled)
-                    Enable();
-                else
-                    Disable();
-            }
-        }
-
-        public void Disable() {
-            isEnabled = false;
-            if (!string.IsNullOrEmpty(flag) && resetOnLeave)
-                SceneAs<Level>().Session.SetFlag(flag, priorState);
-        }
-
-        public void Enable() {
-            isEnabled = true;
-            if (!string.IsNullOrEmpty(flag)) {
-                priorState = SceneAs<Level>().Session.GetFlag(flag);
-                SceneAs<Level>().Session.SetFlag(flag, flagValue);
-            }
+        public override void Update() {
+            base.Update();
+            if (!string.IsNullOrEmpty(controllerFlag))
+                Collidable = SceneAs<Level>().Session.GetFlag(controllerFlag);
         }
     }
 }
