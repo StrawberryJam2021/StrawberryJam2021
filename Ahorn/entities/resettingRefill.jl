@@ -41,6 +41,10 @@ const placements = Ahorn.PlacementDict(
     )
 )
 
+Ahorn.editingIgnored(entity::ResettingRefill, multiple::Bool=false) = multiple ?
+    String["x", "y", "width", "height", "nodes", "dashes", "extraJump", "persistJump"] :
+    String["dashes", "extraJump", "persistJump"]
+
 spriteExtraJump = "objects/ExtendedVariantMode/jumprefillblue/idle00"
 spritePersistJump = "objects/ExtendedVariantMode/jumprefill/idle00"
 spriteOneDash = "objects/refill/idle00"
