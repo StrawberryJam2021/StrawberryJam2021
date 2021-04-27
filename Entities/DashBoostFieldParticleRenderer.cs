@@ -24,7 +24,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private List<Particle> particles = new List<Particle>();
 
         private DashBoostField BoostField => Entity as DashBoostField;
-        private float ParticlePositionRadius => BoostField.Radius * 1.75f;
+        // thank you to Vexatos for being better at math than me
+        private float ParticlePositionRadius => (float) Math.Sqrt(BoostField.Radius * (BoostField.Radius + 75f));
 
         public DashBoostFieldParticleRenderer()
             : base(active: true, visible: true) { }
