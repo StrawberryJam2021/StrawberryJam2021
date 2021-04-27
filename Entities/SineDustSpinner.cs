@@ -13,10 +13,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float xAmplitude, yAmplitude;
         private bool xLinear, yLinear;
 
-        private static MethodInfo get_TimeLeft;
+        private static MethodInfo set_TimeLeft;
 
         public static void Load() {
-            get_TimeLeft = typeof(Tween).GetMethod("set_TimeLeft", BindingFlags.NonPublic | BindingFlags.Instance);
+            set_TimeLeft = typeof(Tween).GetMethod("set_TimeLeft", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
         public SineDustSpinner(EntityData data, Vector2 offset) : base(data, offset) {
@@ -24,11 +24,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // change the sprite to be the same as for moving dusties
             Remove(Sprite);
-            Sprite.RemoveSelf();
-
-            DustEdge edge;
-            Remove(edge = Get<DustEdge>());
-            edge.RemoveSelf();
+            Remove(Get<DustEdge>());
 
             Add(Sprite = new DustGraphic(true, false, false));
 
@@ -43,14 +39,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (xLinear) {
                 Add(xTween = Tween.Create(Tween.TweenMode.Looping, duration: getAdjustedPeriodTime(Math.Abs(xPeriod))));
                 xTween.Start(xPeriod < 0);
-                get_TimeLeft.Invoke(xTween, new object[] { xTween.Duration * xPhase });
+                set_TimeLeft.Invoke(xTween, new object[] { xTween.Duration * xPhase });
             } else if (data.Float("xPeriod", 1f) != 0) {
                 Add(xSine = new SineWave(1 / xPeriod, xPhase));
             }
             if (yLinear) {
                 Add(yTween = Tween.Create(Tween.TweenMode.Looping, duration: getAdjustedPeriodTime(Math.Abs(yPeriod))));
                 yTween.Start(yPeriod < 0);
-                get_TimeLeft.Invoke(yTween, new object[] { yTween.Duration * yPhase });
+                set_TimeLeft.Invoke(yTween, new object[] { yTween.Duration * yPhase });
             } else if (data.Float("yPeriod", 1f) != 0) {
                 Add(ySine = new SineWave(1 / yPeriod, yPhase));
             }
