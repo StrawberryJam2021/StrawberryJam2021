@@ -18,14 +18,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public float TargetTimeRateMult;
         public float Radius;
 
-        public static float CurrentTimeRateMult;
-
         private Image boostFieldTexture;
 
         public const Modes DefaultMode = Modes.Blue;
         public const float DefaultDashSpeedMult = 1.7f;
         public const float DefaultTimeRateMult = 0.65f;
         public const float DefaultRadius = 1.5f;
+
+        public static ParticleType P_RedRefill;
+        public static float CurrentTimeRateMult;
 
         private static BindingFlags privateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
         private static MethodInfo dashCoroutineInfo = typeof(Player).GetMethod("DashCoroutine", privateInstance).GetStateMachineTarget();
@@ -75,6 +76,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             IL.Celeste.Player.SuperJump -= IL_Player_SuperJump;
             IL.Celeste.Player.DreamDashBegin -= IL_Player_DreamDashBegin;
             On.Celeste.Player.Die -= On_Player_Die;
+        }
+
+        public static void LoadParticles() {
+            P_RedRefill = new ParticleType(Refill.P_Shatter) {
+                Color = Calc.HexToColor("ffb0b0"),
+                Color2 = Calc.HexToColor("ffd8d8"),
+            };
         }
 
         private static float ModifyTimeRate(float timeRate) {
@@ -181,8 +189,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Audio.Play(SFX.game_gen_diamond_touch);
                 Level level = player.SceneAs<Level>();
                 float angle = player.Speed.Angle();
-                level.ParticlesFG.Emit(Refill.P_Shatter, 5, player.Position, Vector2.One * 4f, angle - (float) Math.PI / 2f);
-                level.ParticlesFG.Emit(Refill.P_Shatter, 5, player.Position, Vector2.One * 4f, angle + (float) Math.PI / 2f);
+                level.ParticlesFG.Emit(P_RedRefill, 5, player.Position, Vector2.One * 4f, angle - (float) Math.PI / 2f);
+                level.ParticlesFG.Emit(P_RedRefill, 5, player.Position, Vector2.One * 4f, angle + (float) Math.PI / 2f);
             }
         }
 
