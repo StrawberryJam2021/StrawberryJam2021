@@ -11,20 +11,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Calc.HexToColor("4040ff"),
                 Calc.HexToColor("8080ff"),
                 Calc.HexToColor("b0b0ff"),
-                //Calc.HexToColor("d0d0ff"),
             },
             [Modes.Red] = new[] {
                 Calc.HexToColor("ff4040"),
                 Calc.HexToColor("ff8080"),
                 Calc.HexToColor("ffb0b0"),
-                //Calc.HexToColor("ffd0d0"),
             }
         };
 
         private const float density = 0.02f;
 
         private List<Particle> particles = new List<Particle>();
-        //private int particleCount;
 
         private DashBoostField BoostField => Entity as DashBoostField;
         private float ParticlePositionRadius => BoostField.Radius * 1.75f;
@@ -81,7 +78,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             public Particle(DashBoostFieldParticleRenderer parent) {
                 this.parent = parent;
-                Reset(/*Calc.Random.NextFloat()*/);
+                Reset();
             }
 
             public void Reset(float percent = 0f) {
