@@ -16,7 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         int NormalDashAmountprivate = 1;
         int NumberOfDashes = 1;
         bool ResetOnDeathPrivate = false;
-        private static Scene scene2;
+        private static Scene scene;
 
         public DashCountTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             NumberOfDashes = data.Int("NumberOfDashes",1);
@@ -25,9 +25,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         public override void Added(Scene scene) {
-            base.Added(scene);
+            base.Added(Scene);
             IsInCurrentMap = true;
-            scene2 = scene;
+            DashCountTrigger.scene = scene;
         }
 
         public override void OnEnter(Player player) {
@@ -93,8 +93,10 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         private static void modDraw(On.Celeste.DeathEffect.orig_Draw orig, Vector2 position, Color color, float ease) {
-            if (IsInCurrentMap) {
-                if(scene2.Entities.FindFirst<Player>() != null)
+            if (player == null) {
+                player = scene.Entities.FindFirst<Player>();
+            }
+            if (IsInCurrentMap && player != null) {
                 if (player.Dashes > 0) {
                     color = Player.NormalHairColor;
                 } else {
