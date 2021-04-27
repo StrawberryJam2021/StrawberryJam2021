@@ -14,7 +14,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private string flag; //the flag that controls the variants
         private bool isFlagged; //last flag state
         private bool defaultValue;
-        private bool forceUpdate;
         private Dictionary<ExtendedVariantsModule.Variant, int> variantValues;
 
         public VariantToggleController(EntityData data, Vector2 offset) 
@@ -37,7 +36,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             isFlagged = false;
             if (!string.IsNullOrEmpty(flag)) {
                 SceneAs<Level>().Session.SetFlag(flag, defaultValue);
-                forceUpdate = true;
             }
         }
 
@@ -56,11 +54,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void UpdateFlag() {
-            if (string.IsNullOrEmpty(flag) || (isFlagged == SceneAs<Level>().Session.GetFlag(flag) && !forceUpdate))
-                return; //if we have no flag or it hasn't changed, skip updating the variant
-            //we only want to clear forceUpdate if an update wasn't already ganna happen
-            if (forceUpdate && isFlagged == SceneAs<Level>().Session.GetFlag(flag))
-                forceUpdate = false;
+            if (string.IsNullOrEmpty(flag) || (isFlagged == SceneAs<Level>().Session.GetFlag(flag)))
+                return;
             isFlagged = SceneAs<Level>().Session.GetFlag(flag);
             UpdateVariants();
         }
