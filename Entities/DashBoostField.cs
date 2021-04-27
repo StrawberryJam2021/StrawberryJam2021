@@ -16,6 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public Modes Mode;
         public float DashSpeedMult;
         public float TargetTimeRateMult;
+        public float Radius;
 
         public static float CurrentTimeRateMult;
 
@@ -24,8 +25,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public const Modes DefaultMode = Modes.Blue;
         public const float DefaultDashSpeedMult = 1.7f;
         public const float DefaultTimeRateMult = 0.65f;
-
-        public const float CollisionRadius = 1.5f * 8;
+        public const float DefaultRadius = 1.5f;
 
         private static BindingFlags privateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
         private static MethodInfo dashCoroutineInfo = typeof(Player).GetMethod("DashCoroutine", privateInstance).GetStateMachineTarget();
@@ -36,14 +36,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Mode = data.Enum("mode", DefaultMode);
             DashSpeedMult = data.Float("dashSpeedMultiplier", DefaultDashSpeedMult);
             TargetTimeRateMult = data.Float("timeRateMultiplier", DefaultTimeRateMult);
+            Radius = data.Float("radius", DefaultRadius) * 8;
 
             Depth = Depths.Above;
-            Collider = new Circle(CollisionRadius);
+            Collider = new Circle(Radius);
             string textureColor = Mode == Modes.Blue ? "blue" : "red";
             Add(boostFieldTexture = new Image(GFX.Game[$"objects/StrawberryJam2021/dashBoostField/{textureColor}"]));
             boostFieldTexture.CenterOrigin();
             Color lightColor = Mode == Modes.Blue ? Calc.HexToColor("e0e0ff") : Calc.HexToColor("ffe0e0");
             Add(new VertexLight(lightColor, 1f, 16, 32));
+            Add(new DashBoostFieldParticleRenderer());
         }
 
         public enum Modes {

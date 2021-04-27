@@ -3,7 +3,7 @@ module SJ2021DashBoostField
 using ..Ahorn, Maple
 
 @mapdef Entity "SJ2021/DashBoostField" DashBoostField(x::Integer, y::Integer, mode::String="Blue",
-    dashSpeedMultiplier::Number=1.7, timeRateMultiplier::Number=0.65)
+    dashSpeedMultiplier::Number=1.7, timeRateMultiplier::Number=0.65, radius::Number=1.5)
 BlueDashBoostField(x::Integer, y::Integer) = DashBoostField(x, y, "Blue")
 RedDashBoostField(x::Integer, y::Integer) = DashBoostField(x, y, "Red")
 
