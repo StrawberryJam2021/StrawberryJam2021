@@ -114,8 +114,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.EntityAwake();
             if (cassetteBlockManager == null) return;
 
-            BeatsPerTick = cassetteBlockManager == null ? 4 : (int) beatsPerTickFieldInfo.GetValue(cassetteBlockManager);
-            TicksPerSwap = cassetteBlockManager == null ? 2 : (int) ticksPerSwapFieldInfo.GetValue(cassetteBlockManager);
+            int beatsPerTick = (int) beatsPerTickFieldInfo.GetValue(cassetteBlockManager);
+            int ticksPerSwap = (int) ticksPerSwapFieldInfo.GetValue(cassetteBlockManager);
+
+            if (beatsPerTick > 0) BeatsPerTick = beatsPerTick;
+            if (ticksPerSwap > 0) TicksPerSwap = ticksPerSwap;
             
             InvokeOnEntry();
         }
