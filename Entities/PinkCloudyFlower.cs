@@ -15,7 +15,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2 carryOffset;
         private Holdable hold;
         private bool waiting, returning;
-        private float speed;
+        private float speedY;
         private Action orig_onPickup;
         private Action<Vector2> orig_onRelease;
 
@@ -50,32 +50,31 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (waiting) {
                 Player playerRider = platform.GetPlayerRider();
                 if (playerRider != null && playerRider.Speed.Y >= 0f) {
-                    //this.canRumble = true;
                     Collidable = false;
-                    speed = 180f;
+                    speedY = 180f;
                     waiting = false;
                     Audio.Play("event:/game/04_cliffside/cloud_blue_boost", Position);
-                    platform.MoveV(speed * Engine.DeltaTime);
+                    platform.MoveV(speedY * Engine.DeltaTime);
                     platform.MoveTowardsX(Position.X + carryOffset.X, Math.Abs(Speed.X) * Engine.DeltaTime);
                     return;
                 }
                 platform.MoveTo(Position + carryOffset);
             } else if (returning) {
-                speed = Calc.Approach(speed, 180f, 600f * Engine.DeltaTime);
-                platform.MoveTowardsY(Position.Y + carryOffset.Y, speed * Engine.DeltaTime);
+                speedY = Calc.Approach(speedY, 180f, 600f * Engine.DeltaTime);
+                platform.MoveTowardsY(Position.Y + carryOffset.Y, speedY * Engine.DeltaTime);
                 platform.MoveTowardsX(Position.X + carryOffset.X, Math.Abs(Speed.X) * Engine.DeltaTime);
                 if (platform.ExactPosition.Y == Position.Y + carryOffset.Y) {
                     returning = false;
                     waiting = true;
-                    speed = 0f;
+                    speedY = 0f;
                     return;
                 }
             } else {
                 if (platform.Y >= Position.Y + carryOffset.Y) {
-                    speed -= 1200f * Engine.DeltaTime;
+                    speedY -= 1200f * Engine.DeltaTime;
                 } else {
-                    speed += 1200f * Engine.DeltaTime;
-                    if (speed >= -100f) {
+                    speedY += 1200f * Engine.DeltaTime;
+                    if (speedY >= -100f) {
                         Player playerRider2 = platform.GetPlayerRider();
                         if (playerRider2 != null && playerRider2.Speed.Y >= 0f) {
                             playerRider2.Speed.Y = -200f;
@@ -84,11 +83,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         returning = true;
                     }
                 }
-                float num = speed;
-                if (num < 0f) {
-                    num = -220f;
+                float liftSpeed = speedY;
+                if (liftSpeed < 0f) {
+                    liftSpeed = -220f;
                 }
-                platform.MoveV(speed * Engine.DeltaTime, num);
+                platform.MoveV(speedY * Engine.DeltaTime, liftSpeed);
                 platform.MoveTowardsX(Position.X + carryOffset.X, Math.Abs(Speed.X) * Engine.DeltaTime);
             }
         }
