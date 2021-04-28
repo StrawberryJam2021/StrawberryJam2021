@@ -11,7 +11,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <remarks>
     /// Provided events are:
     /// <list type="bullet">
-    /// <item><description><see cref="OnEntry"/> =&gt; Invoked when the entity is added to the scene.</description></item>
     /// <item><description><see cref="OnSwap"/> =&gt; Invoked when cassette blocks swap.</description></item>
     /// <item><description><see cref="OnTick"/> =&gt; Invoked when a "click" sound is heard.</description></item>
     /// <item><description><see cref="OnSixteenth"/> =&gt; Invoked the first frame of a sixteenth beat.</description></item>
@@ -19,11 +18,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// </remarks>
     public class CassetteListener : Component {
         #region Events
-        
-        /// <summary>
-        /// Invoked when the entity is added to the scene.
-        /// </summary>
-        public Action OnEntry;
         
         /// <summary>
         /// Invoked when a "click" sound is heard.
@@ -50,7 +44,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// </remarks>
         public Action<int, int> OnSixteenth;
         
-        protected virtual void InvokeOnEntry() => OnEntry?.Invoke();
         protected virtual void InvokeOnTick(int index, int tick) => OnTick?.Invoke(index, tick);
         protected virtual void InvokeOnSwap(int index) => OnSwap?.Invoke(index);
         protected virtual void InvokeOnSixteenth(int index, int sixteenth) => OnSixteenth?.Invoke(index, sixteenth);
@@ -119,8 +112,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (beatsPerTick > 0) BeatsPerTick = beatsPerTick;
             if (ticksPerSwap > 0) TicksPerSwap = ticksPerSwap;
-            
-            InvokeOnEntry();
         }
 
         public override void EntityAdded(Scene scene) {
