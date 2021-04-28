@@ -10,7 +10,8 @@ const placements = Ahorn.PlacementDict(
         "point",
         Dict{String, Any}(
             "dashes" => 0,
-            "extraJump" => true
+            "extraJump" => true,
+            "persistJump" => false
         )
     ),
 
@@ -28,7 +29,9 @@ const placements = Ahorn.PlacementDict(
         ResettingRefill,
         "point",
         Dict{String, Any}(
-            "dashes" => 1
+            "dashes" => 1,
+            "extraJump" => false,
+            "persistJump" => false
         )
     ),
 
@@ -36,14 +39,12 @@ const placements = Ahorn.PlacementDict(
         ResettingRefill,
         "point",
         Dict{String, Any}(
-            "dashes" => 2
+            "dashes" => 2,
+            "extraJump" => false,
+            "persistJump" => false
         )
     )
 )
-
-Ahorn.editingIgnored(entity::ResettingRefill, multiple::Bool=false) = multiple ?
-    String["x", "y", "width", "height", "nodes", "dashes", "extraJump", "persistJump"] :
-    String["dashes", "extraJump", "persistJump"]
 
 spriteExtraJump = "objects/ExtendedVariantMode/jumprefillblue/idle00"
 spritePersistJump = "objects/ExtendedVariantMode/jumprefill/idle00"
