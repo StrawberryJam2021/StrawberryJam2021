@@ -75,12 +75,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// <summary>
         /// The number of beats that make up a single audible tick.
         /// </summary>
-        public int BeatsPerTick { get; private set; } = 4;
+        public int BeatsPerTick => beatsPerTick ?? 4;
         
         /// <summary>
         /// The number of audible ticks that make up a single cassette swap.
         /// </summary>
-        public int TicksPerSwap { get; private set; } = 2;
+        public int TicksPerSwap => ticksPerSwap ?? 2;
 
         #endregion
         
@@ -91,6 +91,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int lastSixteenth = -1;
         private int lastBlockIndex = -1;
         private int lastBeatIndex = -1;
+        
+        private int? beatsPerTick;
+        private int? ticksPerSwap;
 
         private static readonly FieldInfo currentIndexFieldInfo = typeof(CassetteBlockManager).GetField("currentIndex", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo beatIndexFieldInfo = typeof(CassetteBlockManager).GetField("beatIndex", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -105,13 +108,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void EntityAwake() {
             base.EntityAwake();
-            if (cassetteBlockManager == null) return;
-
-            int beatsPerTick = (int) beatsPerTickFieldInfo.GetValue(cassetteBlockManager);
-            int ticksPerSwap = (int) ticksPerSwapFieldInfo.GetValue(cassetteBlockManager);
-
-            if (beatsPerTick > 0) BeatsPerTick = beatsPerTick;
-            if (ticksPerSwap > 0) TicksPerSwap = ticksPerSwap;
+            beatsPerTick = ticksPerSwap = null;
         }
 
         public override void EntityAdded(Scene scene) {
@@ -133,6 +130,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
             if (cassetteBlockManager == null) return;
+            
+            beatsPerTick ??= (int) beatsPerTickFieldInfo.GetValue(cassetteBlockManager);
+            ticksPerSwap ??= (int) ticksPerSwapFieldInfo.GetValue(cassetteBlockManager);
             
             int sixteenth = CurrentSixteenth;
             int currentBlockIndex = CurrentIndex;
