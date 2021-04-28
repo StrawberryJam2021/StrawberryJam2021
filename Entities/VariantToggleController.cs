@@ -37,18 +37,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!string.IsNullOrEmpty(flag)) {
                 SceneAs<Level>().Session.SetFlag(flag, defaultValue);
             }
+            UpdateVariants();
         }
 
         private void UpdateVariants() {
             if (isFlagged) {
                 foreach (KeyValuePair<ExtendedVariantsModule.Variant, int> variant in variantValues) {
-                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, variant.Value, false);
+                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, variant.Value, false, false, false);
                 }
             } 
             else {
                 foreach (KeyValuePair<ExtendedVariantsModule.Variant, int> variant in variantValues) {
                     int defaultValue = ExtendedVariants.ExtendedVariantTrigger.GetDefaultValueForVariant(variant.Key);
-                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, defaultValue, false);
+                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, defaultValue, false, false, false);
                 }
             }
         }
