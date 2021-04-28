@@ -94,7 +94,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         private static void modDraw(On.Celeste.DeathEffect.orig_Draw orig, Vector2 position, Color color, float ease) {
             if (player == null) {
-                player = scene.Entities.FindFirst<Player>();
+                player = scene.Tracker.GetEntity<Player>();
             }
             if (IsInCurrentMap && player != null) {
                 if (player.Dashes > 0) {
