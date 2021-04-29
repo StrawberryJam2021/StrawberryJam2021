@@ -18,7 +18,7 @@ end
 
 function Ahorn.selection(entity::VariantToggleController)
     x, y = Ahorn.position(entity)
-    return [Ahorn.Rectangle(x, y, 8, 8)]
+    return Ahorn.Rectangle(x, y, 8, 8)
 end
 
 end
