@@ -14,7 +14,7 @@ directions = Dict{String, Tuple{Bool, String, Bool}}(
 )
 
 for (dir, data) in directions
-    key = "SwitchCrateHolder ($(uppercasefirst(dir)))"
+    key = "SwitchCrateHolder ($(uppercasefirst(dir))) (Strawberry Jam 2021)"
     horiz, datakey, val = data
     placements[key] = Ahorn.EntityPlacement(
         SwitchCrateHolder,
@@ -73,3 +73,4 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::SwitchCrateHolder, 
 end
 
 end
+

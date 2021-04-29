@@ -43,7 +43,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
             _CustomEntitySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/CustomEntitySprites.xml");
             WormholeBooster.LoadParticles();
-            SwitchCrate.LoadParticles();
+            SwitchCrate.LoadTypes();
         }
     }
 }
