@@ -259,7 +259,6 @@ public class UFO : Actor {
         Vector2 position = level.Camera.Position;
         Engine.TimeRate = 0.8f;
         Input.Rumble(RumbleStrength.Light, RumbleLength.Medium);
-        Console.WriteLine("1");
         while (flingSpeed != Vector2.Zero) {
             yield return null;
         }
