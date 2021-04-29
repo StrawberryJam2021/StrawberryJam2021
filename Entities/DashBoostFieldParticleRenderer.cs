@@ -44,11 +44,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (particle.Percent >= 1f)
                     particle.Reset();
                 particle.Percent += Engine.DeltaTime / particle.Duration;
-                particle.Alpha = (particle.Percent >= 0.7f) 
-                    ? Calc.ClampedMap(particle.Percent, 0.7f, 1f, 1f, 0f) 
-                    : Calc.ClampedMap(particle.Percent, 0f, 0.3f);
-
                 particle.Position += particle.Velocity * Engine.DeltaTime;
+            }
+        }
+
+        public override void Render() {
+            base.Render();
+            foreach (Particle particle in particles) {
+                particle.Alpha = (particle.Percent >= 0.7f)
+                    ? Calc.ClampedMap(particle.Percent, 0.7f, 1f, 1f, 0f)
+                    : Calc.ClampedMap(particle.Percent, 0f, 0.3f);
                 // minor position correction
                 Vector2 boostFieldCenter = BoostField.Position - new Vector2(0.5f, 0.5f);
                 // err on the side of generosity
@@ -60,12 +65,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     float angle = Calc.Angle(BoostField.Position, particle.Position);
                     particle.RenderPosition = boostFieldCenter + Calc.AngleToVector(angle, maximumDistance);
                 }
-            }
-        }
-
-        public override void Render() {
-            base.Render();
-            foreach (Particle particle in particles) {
                 Draw.Point(particle.RenderPosition, particle.Color * particle.Alpha);
             }
         }
@@ -83,7 +82,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             public Particle(DashBoostFieldParticleRenderer parent) {
                 this.parent = parent;
-                Reset();
+                Reset(Calc.Random.NextFloat());
             }
 
             public void Reset(float percent = 0f) {

@@ -44,10 +44,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             string textureColor = Mode == Modes.Blue ? "blue" : "red";
             Add(boostFieldTexture = new Image(GFX.Game[$"objects/StrawberryJam2021/dashBoostField/{textureColor}"]));
             boostFieldTexture.CenterOrigin();
-            Color lightColor = Mode == Modes.Blue ? Calc.HexToColor("e4e4ff") : Calc.HexToColor("ffe4e4");
+            Color lightColor = Mode == Modes.Blue ? Calc.HexToColor("e8e8ff") : Calc.HexToColor("ffe8e8");
             //Add(new VertexLight(lightColor, 1f, 16, 32));
             Add(new VertexLight(lightColor, 1f, (int) (Radius * 1.15f), (int) (Radius * 1.75f)));
-            Add(new DashBoostFieldParticleRenderer());
+            DashBoostFieldParticleRenderer particleRenderer = new DashBoostFieldParticleRenderer();
+            Add(particleRenderer);
+
+            Tag = Tags.TransitionUpdate;
+            Add(new TransitionListener {
+                OnInBegin = () => Active = particleRenderer.Active = false,
+                OnInEnd = () => Active = particleRenderer.Active = true,
+                OnOutBegin = () => Active = particleRenderer.Active = false
+            });
         }
 
         public enum Modes {
@@ -113,7 +121,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             orig(self);
             // having the player itself handle collision is nicer
             DashBoostField boostField = self.CollideFirst<DashBoostField>();
-            if (!self.Dead && boostField != null && !IsDashingOrRespawning(self))
+            if (!self.Dead && boostField != null && boostField.Active && !IsDashingOrRespawning(self))
                 CurrentTimeRateMult = boostField.TargetTimeRateMult;
             else
                 CurrentTimeRateMult = 1f;
@@ -134,7 +142,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void On_Player_DashBegin(On.Celeste.Player.orig_DashBegin orig, Player self) {
             DynamicData playerData = new DynamicData(self);
             DashBoostField boostField = self.CollideFirst<DashBoostField>();
-            if (boostField != null) {
+            if (boostField != null && boostField.Active) {
                 playerData.Set("dashBoosted", true);
                 playerData.Set("dashBoostSpeed", boostField.DashSpeedMult);
                 self.Add(new Coroutine(RefillDashIfRedDashBoost(self)));
