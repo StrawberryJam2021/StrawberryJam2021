@@ -75,8 +75,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Player.Die -= On_Player_Die;
         }
 
-        private static float ModifyTimeRate(float timeRate) {
-            if (!(Engine.Scene as Level).Paused) {
+        private static float ModifyTimeRate(float timeRate, Level level) {
+            if (!level.Paused) {
                 timeRate *= CurrentTimeRateMult;
             }
             return timeRate;
@@ -88,7 +88,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (cursor.TryGotoNext(MoveType.After,
                 instr => instr.MatchLdcR4(10f),
                 instr => instr.MatchDiv())) {
-                cursor.EmitDelegate<Func<float, float>>(ModifyTimeRate);
+
+                cursor.Emit(OpCodes.Ldarg_0);
+                cursor.EmitDelegate<Func<float, Level, float>>(ModifyTimeRate);
             }
         }
 
