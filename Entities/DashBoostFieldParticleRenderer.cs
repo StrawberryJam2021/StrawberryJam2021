@@ -49,12 +49,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     : Calc.ClampedMap(particle.Percent, 0f, 0.3f);
 
                 particle.Position += particle.Velocity * Engine.DeltaTime;
-                if (Vector2.Distance(BoostField.Position, particle.Position) <= BoostField.Radius) {
+                // minor position correction
+                Vector2 boostFieldCenter = BoostField.Position - new Vector2(0.5f, 0.5f);
+                // err on the side of generosity
+                float maximumDistance = BoostField.Radius - 1f;
+                if (Vector2.Distance(boostFieldCenter, particle.Position) <= maximumDistance) {
                     particle.RenderPosition = particle.Position;
                 } else {
                     // clamp particle's render position to boost field radius to create a sort of halo
                     float angle = Calc.Angle(BoostField.Position, particle.Position);
-                    particle.RenderPosition = BoostField.Position + Calc.AngleToVector(angle, BoostField.Radius);
+                    particle.RenderPosition = boostFieldCenter + Calc.AngleToVector(angle, maximumDistance);
                 }
             }
         }
