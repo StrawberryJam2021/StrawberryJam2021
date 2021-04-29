@@ -18,7 +18,7 @@ end
 
 
 
-sprite = "objects/StrawberryJam2021/SwitchCrate/SwitchCrate.png"
+sprite = "objects/StrawberryJam2021/SwitchCrate/idle00.png"
 
 Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::SwitchCrate, room::Maple.Room) = Ahorn.drawSprite(ctx, sprite, 0, -8)
 
