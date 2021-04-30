@@ -38,13 +38,22 @@ Ahorn.editingOptions(entity::DashBoostField) = Dict{String, Any}(
 function Ahorn.selection(entity::DashBoostField)
     x, y = Ahorn.position(entity)
 
-    return Ahorn.Rectangle(x - 12, y - 12, 24, 24)
+    return Ahorn.Rectangle(x - 8, y - 8, 16, 16)
 end
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::DashBoostField, room::Maple.Room)
     sprite = getSprite(entity)
 
     Ahorn.drawSprite(ctx, sprite, 0, 0)
+
+    radius = get(entity.data, "radius", 1.5) * 8
+    mode = get(entity.data, "mode", "Blue")
+    if mode == "Blue"
+        color = (0.1, 0.3, 1.0, 0.6)
+    elseif mode == "Red"
+        color = (1.0, 0.2, 0.2, 0.6)
+    end
+    Ahorn.drawCircle(ctx, 0, 0, radius, color)
 end
 
 end
