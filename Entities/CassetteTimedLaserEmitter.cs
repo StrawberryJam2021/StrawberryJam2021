@@ -104,7 +104,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             LengthInTicks = data.Int("lengthInTicks", 2);
 
             Add(new CassetteListener {
-                OnEntry = () => Collidable = false,
                 OnTick = (index, tick) => {
                     if (--ticksRemaining == 0)
                         Collidable = false;
@@ -116,6 +115,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                 }
             });
+        }
+
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
+            Collidable = false;
         }
     }
 }
