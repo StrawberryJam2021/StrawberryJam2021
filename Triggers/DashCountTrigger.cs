@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
+using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
@@ -62,8 +63,11 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static Color modPlayerGetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index) {
             if (self.Entity is Player player2) {
                 player = player2;
-                if (player.Dashes > 0 && IsInCurrentMap) {
-                    return Player.NormalHairColor;
+                if (IsInCurrentMap) {
+                    if (player.Dashes > 0) {
+                        return Player.NormalHairColor;
+                    }
+                    return Player.UsedHairColor;
                 }
             }
             return orig(self, index);
@@ -94,13 +98,15 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         private static void modDraw(On.Celeste.DeathEffect.orig_Draw orig, Vector2 position, Color color, float ease) {
             if (IsInCurrentMap) {
-                if (player == null) {
+                if (player == null && scene.Tracker.Entities.ContainsKey(typeof(Player))) {
                     player = scene.Tracker.GetEntity<Player>();
                 }
-                if (player.Dashes > 0) {
-                    color = Player.NormalHairColor;
-                } else {
-                    color = Player.UsedHairColor;
+                if(player != null) { 
+                    if (player.Dashes > 0) {
+                        color = Player.NormalHairColor;
+                    } else {
+                        color = Player.UsedHairColor;
+                    }
                 }
             }
             orig(position, color, ease);
