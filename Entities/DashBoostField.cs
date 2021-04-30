@@ -48,7 +48,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(boostFieldTexture = new Image(GFX.Game[$"objects/StrawberryJam2021/dashBoostField/{textureColor}"]));
             boostFieldTexture.CenterOrigin();
             Color lightColor = Mode == Modes.Blue ? Calc.HexToColor("e8e8ff") : Calc.HexToColor("ffe8e8");
-            //Add(new VertexLight(lightColor, 1f, 16, 32));
             int startFade = (int) (Radius + 5f);
             int endFade = (int) (Radius + 5f);
             Add(new VertexLight(new Vector2(-0.5f, -0.5f), lightColor, 1f, startFade, endFade));
