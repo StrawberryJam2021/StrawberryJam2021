@@ -31,6 +31,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static BindingFlags privateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
         private static MethodInfo dashCoroutineInfo = typeof(Player).GetMethod("DashCoroutine", privateInstance).GetStateMachineTarget();
         private static ILHook dashCoroutineHook;
+
+        // for some reason the default Center isn't actually the exact center
+        public new Vector2 Center => Position - new Vector2(0.5f, 0.5f);
         
         public DashBoostField(EntityData data, Vector2 offset)
             : base(data.Position + offset) {
@@ -46,7 +49,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             boostFieldTexture.CenterOrigin();
             Color lightColor = Mode == Modes.Blue ? Calc.HexToColor("e8e8ff") : Calc.HexToColor("ffe8e8");
             //Add(new VertexLight(lightColor, 1f, 16, 32));
-            Add(new VertexLight(lightColor, 1f, (int) (Radius * 1.15f), (int) (Radius * 1.75f)));
+            int startFade = (int) (Radius + 5f);
+            int endFade = (int) (Radius + 5f);
+            Add(new VertexLight(new Vector2(-0.5f, -0.5f), lightColor, 1f, startFade, endFade));
             DashBoostFieldParticleRenderer particleRenderer = new DashBoostFieldParticleRenderer();
             Add(particleRenderer);
 

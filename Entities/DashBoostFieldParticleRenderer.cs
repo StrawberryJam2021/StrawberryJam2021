@@ -54,16 +54,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 particle.Alpha = (particle.Percent >= 0.7f)
                     ? Calc.ClampedMap(particle.Percent, 0.7f, 1f, 1f, 0f)
                     : Calc.ClampedMap(particle.Percent, 0f, 0.3f);
-                // minor position correction
-                Vector2 boostFieldCenter = BoostField.Position - new Vector2(0.5f, 0.5f);
                 // err on the side of generosity
                 float maximumDistance = BoostField.Radius - 1f;
-                if (Vector2.Distance(boostFieldCenter, particle.Position) <= maximumDistance) {
+                if (Vector2.Distance(BoostField.Center, particle.Position) <= maximumDistance) {
                     particle.RenderPosition = particle.Position;
                 } else {
                     // clamp particle's render position to boost field radius to create a sort of halo
-                    float angle = Calc.Angle(BoostField.Position, particle.Position);
-                    particle.RenderPosition = boostFieldCenter + Calc.AngleToVector(angle, maximumDistance);
+                    float angle = Calc.Angle(BoostField.Center, particle.Position);
+                    particle.RenderPosition = BoostField.Center + Calc.AngleToVector(angle, maximumDistance);
                 }
                 Draw.Point(particle.RenderPosition, particle.Color * particle.Alpha);
             }
@@ -95,7 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     offsetY = Calc.Random.Range(-parent.ParticlePositionRadius, parent.ParticlePositionRadius);
                     offset = new Vector2(offsetX, offsetY);
                 } while (Vector2.Distance(Vector2.Zero, offset) > parent.ParticlePositionRadius);
-                Position = parent.BoostField.Position + offset;
+                Position = parent.BoostField.Center + offset;
                 Color = Calc.Random.Choose(colors[parent.BoostField.Mode]);
                 float speed = Calc.Random.Range(4f, 8f);
                 Velocity = Calc.AngleToVector(Calc.Random.NextAngle(), speed);
