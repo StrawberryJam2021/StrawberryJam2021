@@ -23,23 +23,23 @@
         <Anim id="hit" path="TempleDoor" delay="0.08" frames="0-4" goto="idle"/>
     </grabTempleGate>
 
-	<!--Exploding Strawberry-->
-	<explodingStrawberry path="objects/StrawberryJam2021/explodingStrawberry/" start="idle">
-		<Center/>
-		<Anim id="idle" path="explodeberry" delay="0.1" frames="0"/>
-		<Anim id="explode" path="explodeberry" delay="0.1" frames="0-11"/>
-		<Anim id="ghostexplode" path="explodeghostberry" delay="0.1" frames="0-11"/>
-	</explodingStrawberry>
+    <!--Exploding Strawberry-->
+    <explodingStrawberry path="objects/StrawberryJam2021/explodingStrawberry/" start="idle">
+        <Center/>
+        <Anim id="idle" path="explodeberry" delay="0.1" frames="0"/>
+        <Anim id="explode" path="explodeberry" delay="0.1" frames="0-11"/>
+        <Anim id="ghostexplode" path="explodeghostberry" delay="0.1" frames="0-11"/>
+    </explodingStrawberry>
 
-	<!--Sky Lantern-->
-	<skyLantern path="objects/StrawberryJam2021/skyLantern/" start="idle">
-		<Justify x="0.5" y="0.9"/>
-		<Anim id="idle" path="idle" delay="0.1"/>
-		<Anim id="held" path="held" delay="0.1"/>
-		<Anim id="fall" path="fall" delay="0.06" goto="fallLoop"/>
-		<Loop id="fallLoop" path="fallLoop" delay="0.06"/>
-		<Anim id="death" path="death" delay="0.06"/>
-	</skyLantern>
+    <!--Sky Lantern-->
+    <skyLantern path="objects/StrawberryJam2021/skyLantern/" start="idle">
+        <Justify x="0.5" y="0.9"/>
+        <Anim id="idle" path="idle" delay="0.1"/>
+        <Anim id="held" path="held" delay="0.1"/>
+        <Anim id="fall" path="fall" delay="0.06" goto="fallLoop"/>
+        <Loop id="fallLoop" path="fallLoop" delay="0.06"/>
+        <Anim id="death" path="death" delay="0.06"/>
+    </skyLantern>
 
     <!--Wormhole Booster-->
     <wormholeBooster path="objects/StrawberryJam2021/boosterWormhole/" start="loop">
@@ -64,5 +64,14 @@
         <Loop id="opened" path="opened" delay="0.06"/>
         <Anim id="break" path="break" delay="0.06"/>
     </flagBreakerBox>
+
+    <!--Strawberry Jam Jars-->
+    <jamJar_trailer path="objects/StrawberryJam2021/jamJar/trailer/" start="empty">
+        <Justify x="0.5" y="1"/>
+        <Loop id="empty" path="jarempty_idle" delay="0.1"/>
+        <Anim id="before_fill" path="jarempty_idle" delay="0.1" frames="8-15" goto="fill"/>
+        <Anim id="fill" path="jarfill_" delay="0.1" goto="full"/>
+        <Loop id="full" path="jarfull_idle" delay="0.1"/>
+    </jamJar_trailer>
 
 </Sprites>

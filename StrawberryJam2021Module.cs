@@ -9,6 +9,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public static StrawberryJam2021Module Instance;
 
+        public override Type SaveDataType => typeof(StrawberryJam2021SaveData);
+        public static StrawberryJam2021SaveData SaveData => (StrawberryJam2021SaveData) Instance._SaveData;
+
         public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
         private SpriteBank _CustomEntitySpriteBank;
 

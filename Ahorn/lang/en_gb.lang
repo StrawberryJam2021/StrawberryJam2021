@@ -70,3 +70,7 @@ placements.entities.SJ2021/FlagBreakerBox.tooltips.music=The music to play when 
 placements.entities.SJ2021/FlagBreakerBox.tooltips.flipX=Whether or not to flip the sprite across the X axis.
 placements.entities.SJ2021/FlagBreakerBox.tooltips.music_progress=The progress to set the music to when the box is broken.
 placements.entities.SJ2021/FlagBreakerBox.tooltips.music_session=Whether or not to store the music changes in the session.
+
+# Strawberry Jam Jar
+placements.entities.SJ2021/StrawberryJamJar.tooltips.map=The jar will be filled up when the map that has this ID is completed.\nThis is the same ID as the one the Chapter Panel Trigger from Collab Utils uses.
+placements.entities.SJ2021/StrawberryJamJar.tooltips.sprite=The sprite this jar will use.
