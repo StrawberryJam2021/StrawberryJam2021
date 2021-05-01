@@ -1,4 +1,5 @@
 using Celeste.Mod.StrawberryJam2021.Entities;
+using Celeste.Mod.StrawberryJam2021.Triggers;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
@@ -17,29 +18,46 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public override void Load() {
             SelfUpdater.Load();
-            AntiGravJelly.Load();
+            SkyLantern.Load();
             BubbleCollider.Load();
             ExplodingStrawberry.Load();
             CrystalBombBadelineBoss.Load();
             MaskedDecal.Load();
+            FloatingBubble.Load();
+            HoldableDashTrigger.Load();
             WormholeBooster.Load();
+            DashCountTrigger.Load();
+            DashBoostField.Load();
+            FlagDashSwitch.Load();
+            PocketUmbrellaController.Load();
+            BarrierDashSwitch.Load();
         }
 
         public override void Unload() {
             SelfUpdater.Unload();
-            AntiGravJelly.Unload();
+            SkyLantern.Unload();
             BubbleCollider.Unload();
             ExplodingStrawberry.Unload();
             CrystalBombBadelineBoss.Unload();
             MaskedDecal.Unload();
+            FloatingBubble.Unload();
+            HoldableDashTrigger.Unload();
             WormholeBooster.Unload();
+            DashCountTrigger.Unload();
+            DashBoostField.Unload();
+            FlagDashSwitch.Unload();
+            PocketUmbrellaController.Unload();
+            BarrierDashSwitch.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
             base.LoadContent(firstLoad);
 
             _CustomEntitySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/CustomEntitySprites.xml");
+
             WormholeBooster.LoadParticles();
+            LoopBlock.InitializeTextures();
+
         }
     }
 }

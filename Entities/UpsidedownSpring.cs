@@ -53,7 +53,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void onHoldable(Holdable holdable) {
-            if (holdable.Entity is AntiGravJelly) {
+            if (holdable.Entity is SkyLantern) {
                 holdable.HitSpring(this);
                 BounceAnimate();
             }
