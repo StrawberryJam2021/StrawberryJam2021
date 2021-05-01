@@ -1,5 +1,6 @@
 ﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using MonoMod.Utils;
 using System;
@@ -11,6 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     class WormholeBooster : Booster {
         private PlayerCollider coll;
         private DynData<Booster> self;
+        public Sprite sprite;
         public static bool TeleDeath; // if true, the next boost from a Wormhole Booster will kill the player
         public static bool TeleportingDNI; // if true, the player can't interact with other boosters, used to avoid teleportation loops
         public static ParticleType P_Teleporting;
@@ -18,7 +20,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static ParticleType P_WAppear;
         private static MethodInfo BoostPlayer = typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod);
         private Color color;
-
+        public DisplacementRenderHook displaceHook;
+        private MTexture displace;
+        private Sprite displacementMask;
+        private float displaceEase = 1;
         public static void Load() {
             On.Celeste.Player.NormalBegin += allowTeleport;
             On.Celeste.Player.DashBegin += killPlayer;
@@ -70,18 +75,32 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Remove(c);
             Add(coll = new PlayerCollider(onWormholeActivate));
             Remove(self.Get<Sprite>("sprite"));
-            Sprite sprite = StrawberryJam2021Module.SpriteBank.Create("wormholeBooster");
+            sprite = StrawberryJam2021Module.SpriteBank.Create("wormholeBooster");
             self["sprite"] = sprite;
             Add(sprite);
+            Add(displacementMask = StrawberryJam2021Module.SpriteBank.Create("wormholeMask"));
+            displacementMask.Stop();
+            displacementMask.Visible = false;
             color = Calc.HexToColor("7800bd");
             self["particleType"] = P_WBurst;
+            displace = GFX.Game["util/wormhole_disp"];
+            Add(displaceHook = new DisplacementRenderHook(BlackHoleDisplacement));
             
         }
+        private void BlackHoleDisplacement() {
+            if (!self.Get<Sprite>("sprite").Visible) {
+                displaceEase -= 8 * Engine.RawDeltaTime;
+            }
+            displaceEase = Calc.Clamp(displaceEase, 0, 1);
+            displace.Draw(Position, displace.Center, Color.White * displaceEase, 0.4f);
+            displacementMask.GetFrame(sprite.CurrentAnimationID, sprite.CurrentAnimationFrame).Draw(Position - new Vector2(16), Vector2.Zero, Calc.HexToColor("827E00")*displaceEase);
+        }
+
         public override void Awake(Scene scene) {
             base.Awake(scene);
             self.Get<Entity>("outline").RemoveSelf();
         }
-
+        
         public IEnumerator TeleportCoroutine(Player player) {
             WormholeBooster nearest = FindNearestBooster();
             if (nearest == null) {
