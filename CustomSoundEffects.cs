@@ -10,5 +10,8 @@
 
         // Boost Block
         public const string game_boost_block_boost = "event:/strawberry_jam_2021/game/boost_block/boost";
+
+        // Jam Jars (Demo)
+        public const string game_jars_open_demo = "event:/strawberry_jam_2021/game/jars/open_demo";
     }
 }
