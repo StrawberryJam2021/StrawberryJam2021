@@ -16,7 +16,12 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
             var session = SceneAs<Level>().Session;
 
-            jumpCountVariant.SetValue(1);
+            ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(
+                ExtendedVariantsModule.Variant.JumpCount,
+                1,
+                false, false, false
+            );
+
             session.Inventory.Dashes = 1;
         }
     }

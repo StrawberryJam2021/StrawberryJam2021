@@ -23,6 +23,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static readonly MethodInfo RefillRoutine = typeof(Refill).GetMethod("RefillRoutine", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly FieldInfo respawnTimer = typeof(Refill).GetField("respawnTimer", BindingFlags.NonPublic | BindingFlags.Instance);
 
+        private static readonly FieldInfo sprite = typeof(Refill).GetField("sprite", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo outline = typeof(Refill).GetField("outline", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo flash = typeof(Refill).GetField("flash", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo wiggler = typeof(Refill).GetField("wiggler", BindingFlags.NonPublic | BindingFlags.Instance);
+
         public ResettingRefill(Vector2 position, int dashes, bool extraJump, bool persistJump, bool oneUse)
             : base(position, dashes == 2, oneUse) {
             Remove(Components.Get<PlayerCollider>());
@@ -61,10 +66,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     sprite.Scale = flash.Scale = Vector2.One * (1f + v * 0.2f);
                 }));
 
-                typeof(Refill).GetField("sprite", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, sprite);
-                typeof(Refill).GetField("outline", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, outline);
-                typeof(Refill).GetField("flash", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, flash);
-                typeof(Refill).GetField("wiggler", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, wiggler);
+                ResettingRefill.sprite.SetValue(this, sprite);
+                ResettingRefill.outline.SetValue(this, outline);
+                ResettingRefill.flash.SetValue(this, flash);
+                ResettingRefill.wiggler.SetValue(this, wiggler);
             }
 
             Add(new PlayerCollider(OnPlayer));
@@ -76,7 +81,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public ResettingRefill(EntityData data, Vector2 offset)
-            : this(data.Position + offset, data.Int(nameof(dashes)), data.Bool(nameof(extraJump)), data.Bool(nameof(persistJump)), data.Bool(nameof(oneUse))) {
+            : this(data.Position + offset, data.Int(nameof(dashes)), data.Bool(nameof(extraJump)),
+                data.Bool(nameof(persistJump)), data.Bool(nameof(oneUse))) {
         }
 
         private void OnPlayer(Player player) {
@@ -84,7 +90,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             session.Inventory.Dashes = dashes;
             player.Dashes = dashes;
 
-            JumpCountVariant.SetValue(persistJump ? 2 : 1);
+            ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(
+                ExtendedVariantsModule.Variant.JumpCount,
+                persistJump ? 2 : 1,
+                false, false, false
+            );
 
             if (extraJump)
                 JumpCountVariant.AddJumps(1, true, 1);
@@ -96,7 +106,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // Everything after this line is roundabout ways of doing the same things Refill does
             if (dashes is 0 or 1) {
                 Audio.Play("event:/game/general/diamond_touch");
-            } else if (dashes == 2) {
+            } else if (dashes is 2) {
                 Audio.Play("event:/new_content/game/10_farewell/pinkdiamond_touch");
             }
 
