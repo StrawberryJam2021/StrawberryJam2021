@@ -134,28 +134,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        // Refresh jumps when we have an extra one and we touch a spring
-        private static void OnColliderInit(On.Celeste.PlayerCollider.orig_ctor orig, PlayerCollider self,
-            Action<Player> onCollide, Collider collider, Collider featherCollider) {
-            var newOnCollide = new Action<Player>(delegate(Player player) {
-                if (self.Entity is Spring && JumpCountVariant.GetValue() > 1) {
-                    JumpCountVariant.AddJumps(1, true, 1);
-                }
-
-                onCollide(player);
-            });
-
-            orig(self, newOnCollide, collider, featherCollider);
-        }
-
         public static void Load() {
             On.Celeste.Player.UpdateHair += OnUpdateHair;
-            On.Celeste.PlayerCollider.ctor += OnColliderInit;
         }
 
         public static void Unload() {
             On.Celeste.Player.UpdateHair -= OnUpdateHair;
-            On.Celeste.PlayerCollider.ctor -= OnColliderInit;
         }
     }
 }
