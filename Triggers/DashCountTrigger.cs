@@ -81,11 +81,11 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             if (IsInCurrentMap) {
                 PlayerDeadBody Deadbody = orig(self, direction, evenIfInvincible, registerDeathInStats);
                 if (Deadbody != null) {
-                        if (self.Dashes > 0) {
-                            new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.NormalHairColor;
-                        } else {
-                            new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.UsedHairColor;
-                        }
+                    if (self.Dashes > 0) {
+                        new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.NormalHairColor;
+                    } else {
+                        new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.UsedHairColor;
+                    }
                     
                 }
                 return Deadbody;
