@@ -117,7 +117,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             if (ResetOnDeath && IsInCurrentMap && playerIntro == Player.IntroTypes.Respawn) {
                 Player player = level.Tracker.GetEntity<Player>();
                 if (player != null) {
-                    player = level.Tracker.GetEntity<Player>();
                     player.SceneAs<Level>().Session.Inventory.Dashes = NormalDashAmount;
                     player.Dashes = NormalDashAmount;
                 }
