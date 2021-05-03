@@ -81,14 +81,12 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             if (IsInCurrentMap) {
                 PlayerDeadBody Deadbody = orig(self, direction, evenIfInvincible, registerDeathInStats);
                 if (Deadbody != null) {
-                    Player player = Engine.Scene.Tracker.GetEntity<Player>();
-                    if (player != null) {
-                        if (player.Dashes > 0) {
+                        if (self.Dashes > 0) {
                             new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.NormalHairColor;
                         } else {
                             new DynData<PlayerDeadBody>(Deadbody)["initialHairColor"] = Player.UsedHairColor;
                         }
-                    }
+                    
                 }
                 return Deadbody;
             }
@@ -117,7 +115,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static void modPlayerRespawn(On.Celeste.Level.orig_LoadLevel orig, global::Celeste.Level level, global::Celeste.Player.IntroTypes playerIntro, bool isFromLoader) {
             orig(level, playerIntro, isFromLoader);
             if (ResetOnDeath && IsInCurrentMap && playerIntro == Player.IntroTypes.Respawn) {
-                Player player = Engine.Scene.Tracker.GetEntity<Player>();
+                Player player = level.Tracker.GetEntity<Player>();
                 if (player != null) {
                     player = level.Tracker.GetEntity<Player>();
                     player.SceneAs<Level>().Session.Inventory.Dashes = NormalDashAmount;
