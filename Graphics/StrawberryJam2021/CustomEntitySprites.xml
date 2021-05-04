@@ -55,7 +55,16 @@
         <Justify x="0.5" y="1"/>
         <Anim id="idle" path="idle" delay="0.1" frames="0"/>
     </laserEmitter>
-    
+
+    <!--Flag Breaker Box-->
+    <flagBreakerBox path="objects/StrawberryJam2021/flagBreakerBox/" start="idle">
+        <Justify x="0.5" y="0.5"/>
+        <Loop id="idle" path="idle" delay="0.1"/>
+        <Anim id="open" path="open" delay="0.06" frames="1-3" goto="opened"/>
+        <Loop id="opened" path="opened" delay="0.06"/>
+        <Anim id="break" path="break" delay="0.06"/>
+    </flagBreakerBox>
+	
     <!--Rose Glider-->
     <roseGlider path="objects/StrawberryJam2021/roseGlider/" start="idle_3">
         <Anim id="idle_3" path="3charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_3:9,idle_gust_3:1"/>
