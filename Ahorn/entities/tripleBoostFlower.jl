@@ -20,9 +20,7 @@ function Ahorn.selection(entity::TripleBoostFlower)
 end
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::TripleBoostFlower, room::Maple.Room)
-    #x, y = Ahorn.position(entity)
     Ahorn.drawSprite(ctx, sprite, 0, -10)
-    #Ahorn.drawRectangle(ctx, 0, 0, 6, 10, (0.0, 1.0, 0.0, 0.4), (0.0, 1.0, 0.0, 1.0))
 end
 
 end
