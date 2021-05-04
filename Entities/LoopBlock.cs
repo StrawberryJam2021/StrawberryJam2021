@@ -128,7 +128,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private DashCollisionResults OnDashed(Player player, Vector2 dir) {
-            if (dir.Y == 0 && !dashed) {
+            if (dir.Y == 0) {
                 dashedDirX = dir.X;
 
                 // Math.Abs(dashedDirX) is always 1.
@@ -149,6 +149,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (speed.Y < 0) {
                     player.Speed.Y += Math.Max(speed.Y, -80);
                 }
+
                 speed.X = dir.X * 180f;
                 targetSpeedX = -dir.X * 90f;
 
