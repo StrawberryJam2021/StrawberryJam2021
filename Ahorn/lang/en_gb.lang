@@ -51,3 +51,11 @@ placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of th
 
 # Dash With Holdable Trigger
 placements.triggers.SJ2021/HoldableDashTrigger.tooltips.mode="Toggle" will set or clear a session flag that allows dashing anywhere.\n"OnStay" will force the ability to be on/off while inside the trigger, regardless of what the session flag is set to.
+
+# Triple Boost Flower
+placements.entities.SJ2021/TripleBoostFlower.tooltips.boostDelay=Cooldown between boosts, in seconds
+placements.entities.SJ2021/TripleBoostFlower.tooltips.boostSpeed=Y-Speed during the boost
+placements.entities.SJ2021/TripleBoostFlower.tooltips.boostDuration=Duration of the boost, in seconds
+placements.entities.SJ2021/TripleBoostFlower.tooltips.fastFallSpeed=Falling speed while holding down
+placements.entities.SJ2021/TripleBoostFlower.tooltips.slowFallSpeed=Falling speed while holding up
+placements.entities.SJ2021/TripleBoostFlower.tooltips.normalFallSpeed=Falling speed while not holding anything
