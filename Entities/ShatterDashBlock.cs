@@ -32,9 +32,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float speedDec;
         private float shakeTime;
 
-        public ShatterDashBlock(EntityData data, Vector2 offset, EntityID id) : base(data.Position + offset, data.Width, data.Height, true)
-        {
-            base.Depth = -12999;
+        public ShatterDashBlock(EntityData data, Vector2 offset, EntityID id) : base(data.Position + offset, data.Width, data.Height, true) {
+            base.Depth = Depths.FakeWalls + 1;
             this.id = id;
             permanent = data.Bool("permanent");
             width = data.Width;
@@ -55,8 +54,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!blendIn) {
                 tileGrid = GFX.FGAutotiler.GenerateBox(tileType, (int) width / 8, (int) height / 8).TileGrid;
                 Add(new LightOcclude());
-            } 
-            else {
+            } else {
                 Level level = SceneAs<Level>();
                 Rectangle tileBounds = level.Session.MapData.TileBounds;
                 VirtualMap<char> solidsData = level.SolidsData;
@@ -75,21 +73,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-       
+
 
         public void Break(Player player, Vector2 direction, bool playSound = true, bool playDebrisSound = true) {
             if (playSound) {
                 if (tileType == '1') {
-                    Audio.Play("event:/game/general/wall_break_dirt", Position);
-                }
-                else if (tileType == '3') {
-                    Audio.Play("event:/game/general/wall_break_ice", Position);
-                }
-                else if (tileType == '9') {
-                    Audio.Play("event:/game/general/wall_break_wood", Position);
-                }
-                else {
-                    Audio.Play("event:/game/general/wall_break_stone", Position);
+                    Audio.Play(SFX.game_gen_wallbreak_dirt, Position);
+                } else if (tileType == '3') {
+                    Audio.Play(SFX.game_gen_wallbreak_ice, Position);
+                } else if (tileType == '9') {
+                    Audio.Play(SFX.game_gen_wallbreak_wood, Position);
+                } else {
+                    Audio.Play(SFX.game_gen_wallbreak_stone, Position);
                 }
             }
             for (int i = 0; (float) i < base.Width / 8f; i++) {
@@ -97,16 +92,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     base.Scene.Add(Engine.Pooler.Create<Debris>().Init(Position + new Vector2(4 + i * 8, 4 + j * 8), tileType, playDebrisSound).BlastFrom(player.Center));
                 }
             }
-            
+
             Celeste.Freeze(delay);
             Collidable = false;
             SceneAs<Level>().DirectionalShake(direction * -1, shakeTime);
             player.Speed -= Vector2.UnitX.RotateTowards(direction.Angle(), 6.3f) * speedDec;
-            
+
             if (permanent) {
                 RemoveAndFlagAsGone();
-            }
-            else {
+            } else {
                 RemoveSelf();
             }
         }
