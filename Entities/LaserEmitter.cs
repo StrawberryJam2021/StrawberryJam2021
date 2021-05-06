@@ -2,31 +2,57 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
-using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <summary>
     /// Entity that emits a flickering laser beam.
     /// </summary>
     /// <remarks>
-    /// Will kill the player by default, but its functionality can be changed.<br/>
-    /// Has four available orientations, indicated by the <see cref="Orientations"/> enum.<br/>
-    /// Configurable values from Ahorn:<br/>
+    /// Opacity of the beam edges is calculated as <see cref="Alpha"/> times <see cref="alphaMultiplier"/>, where
+    /// the multiplier represents an optional flickering based on a <see cref="SineWave"/>.
+    /// The centre third of the beam is twice that opacity.<br/>
+    /// 
+    /// Configurable values from Ahorn:
     /// <list type="bullet">
-    /// <item><description>"color" =&gt; <see cref="Color"/></description></item>
-    /// <item><description>"alpha" =&gt; <see cref="Alpha"/></description></item>
-    /// <item><description>"flicker" =&gt; <see cref="Flicker"/></description></item>
-    /// <item><description>"thickness" =&gt; <see cref="Thickness"/></description></item>
-    /// <item><description>"killPlayer" =&gt; <see cref="KillPlayer"/></description></item>
-    /// <item><description>"disableLasers" =&gt; <see cref="DisableLasers"/></description></item>
-    /// <item><description>"triggerZipMovers" =&gt; <see cref="TriggerZipMovers"/></description></item>
+    /// <item><term>alpha</term><description>
+    /// The base alpha value for the beam.
+    /// Defaults to 0.4 (40%).
+    /// </description></item>
+    /// <item><term>collideWithSolids</term><description>
+    /// Whether or not the beam will be blocked by <see cref="Solid"/>s.
+    /// Defaults to true.
+    /// </description></item>
+    /// <item><term>color</term><description>
+    /// The base <see cref="Microsoft.Xna.Framework.Color"/> used to render the beam.
+    /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
+    /// </description></item>
+    /// <item><term>disableLasers</term><description>
+    /// Whether or not colliding with this beam will disable all beams of the same color.
+    /// Defaults to false.
+    /// </description></item>
+    /// <item><term>flicker</term><description>
+    /// Whether or not the beam should flicker.
+    /// Defaults to true, flickering 4 times per second.
+    /// </description></item>
+    /// <item><term>killPlayer</term><description>
+    /// Whether or not colliding with the beam will kill the player.
+    /// Defaults to true.
+    /// </description></item>
+    /// <item><term>thickness</term><description>
+    /// The thickness of the beam (and corresponding <see cref="Hitbox"/> in pixels).
+    /// Defaults to 6 pixels.
+    /// </description></item>
+    /// <item><term>triggerZipMovers</term><description>
+    /// Whether or not colliding with this beam will trigger AdventureHelper LinkedZipMovers of the same color.
+    /// Defaults to false.
+    /// </description></item>
     /// </list>
     /// </remarks>
     [CustomEntity("SJ2021/LaserEmitterUp = LoadUp",
         "SJ2021/LaserEmitterDown = LoadDown",
         "SJ2021/LaserEmitterLeft = LoadLeft",
         "SJ2021/LaserEmitterRight = LoadRight")]
-    public class LaserEmitter : Entity {
+    public class LaserEmitter : OrientableEntity {
         #region Static Loader Methods
         
         public static Entity LoadUp(Level level, LevelData levelData, Vector2 offset, EntityData data) =>
@@ -46,9 +72,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         #region Properties
 
         /// <summary>
-        /// The orientation of the emitter, where the direction indicates which way the beam travels.
+        /// The base alpha value for the beam.
         /// </summary>
-        public Orientations Orientation { get; }
+        /// <remarks>
+        /// Defaults to 0.4 (40%).
+        /// </remarks>
+        public float Alpha { get; }
+        
+        /// <summary>
+        /// Whether or not the beam will be blocked by <see cref="Solid"/>s.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to true.
+        /// </remarks>
+        public bool CollideWithSolids { get; }
         
         /// <summary>
         /// The base <see cref="Microsoft.Xna.Framework.Color"/> used to render the beam.
@@ -56,39 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// <remarks>
         /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
         /// </remarks>
-        public Color Color { get; }
-        
-        /// <summary>
-        /// Whether or not the beam should flicker.
-        /// </summary>
-        /// <remarks>
-        /// Defaults to true, flickering 4 times per second.
-        /// </remarks>
-        public bool Flicker { get; }
-        
-        /// <summary>
-        /// The thickness of the beam (and corresponding <see cref="Hitbox"/> in pixels).
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 6 pixels.
-        /// </remarks>
-        public float Thickness { get; }
-        
-        /// <summary>
-        /// The base alpha value for the beam.
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 0.4 (40%).
-        /// </remarks>
-        public float Alpha { get; }
-
-        /// <summary>
-        /// Whether or not colliding with the beam will kill the player.
-        /// </summary>
-        /// <remarks>
-        /// Defaults to true.
-        /// </remarks>
-        public bool KillPlayer { get; }
+        public Color Color { get; protected set; }
         
         /// <summary>
         /// Whether or not colliding with this beam will disable all beams of the same color.
@@ -99,6 +104,30 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public bool DisableLasers { get; }
         
         /// <summary>
+        /// Whether or not the beam should flicker.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to true, flickering 4 times per second.
+        /// </remarks>
+        public bool Flicker { get; }
+        
+        /// <summary>
+        /// Whether or not colliding with the beam will kill the player.
+        /// </summary>
+        /// <remarks>
+        /// Defaults to true.
+        /// </remarks>
+        public bool KillPlayer { get; }
+        
+        /// <summary>
+        /// The thickness of the beam (and corresponding <see cref="Hitbox"/> in pixels).
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 6 pixels.
+        /// </remarks>
+        public float Thickness { get; }
+        
+        /// <summary>
         /// Whether or not colliding with this beam will trigger AdventureHelper LinkedZipMovers of the same color.
         /// </summary>
         /// <remarks>
@@ -106,91 +135,76 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// </remarks>
         public bool TriggerZipMovers { get; }
 
-        public bool Enabled {
-            get => Collidable;
-            set => Collidable = killZoneRect.Visible = value;
-        }
-        
         #endregion
         
         #region Private Fields
         
+        private const float triggerCooldown = 1f;
         private const float flickerFrequency = 4f;
         private const float flickerRange = 4f;
-        private const float triggerCooldown = 1f;
-
-        private readonly StaticMover staticMover;
-        private readonly Sprite emitterSprite;
-        private readonly LaserKillZoneRect killZoneRect;
-        private readonly Hitbox killbox;
         
-        private Vector2 target;
-        private float currentAlpha;
-        private float triggerCooldownRemaining;
-
         private readonly string hexColor;
+        
+        private float triggerCooldownRemaining;
+        private float alphaMultiplier = 1f;
         
         #endregion
         
         public LaserEmitter(EntityData data, Vector2 offset, Orientations orientation)
-            : base(data.Position + offset) {
-            Orientation = orientation;
-            
-            // read properties from EntityData
-            hexColor = data.Attr("color", "FF0000").ToLower();
-            Color = Calc.HexToColor(hexColor);
-            Flicker = data.Bool("flicker", true);
-            Thickness = Math.Max(data.Float("thickness", 6f), 0f);
-            currentAlpha = Alpha = Calc.Clamp(data.Float("alpha", 0.4f), 0f, 1f);
-            KillPlayer = data.Bool("killPlayer", true);
+            : base(data, offset, orientation) {
+            Alpha = Calc.Clamp(data.Float("alpha", 0.4f), 0f, 1f);
+            CollideWithSolids = data.Bool("collideWithSolids", true);
+            Color = Calc.HexToColor(hexColor = data.Attr("color", "FF0000").ToLower());
             DisableLasers = data.Bool("disableLasers");
+            Flicker = data.Bool("flicker", true);
+            KillPlayer = data.Bool("killPlayer", true);
+            Thickness = Math.Max(data.Float("thickness", 6f), 0f);
             TriggerZipMovers = data.Bool("triggerZipMovers");
-            
-            // same depth as springs
-            Depth = Depths.Above - 1;
-            
-            // create collider killbox
-            Collider = killbox = new Hitbox(Thickness, Thickness);
 
-            // add main components
-            Add(killZoneRect = new LaserKillZoneRect(),
-                emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter"),
-                staticMover = new StaticMover {
-                    OnAttach = p => Depth = p.Depth + 1,
-                    SolidChecker = s => CollideCheck(s, Position + orientation.Offset()),
-                    JumpThruChecker = jt => CollideCheck(jt, Position + orientation.Offset()),
-                    OnEnable = () => Collidable = true,
-                    OnDisable = () => Collidable = false,
-                },
-                new PlayerCollider(onPlayerCollide)
+            Add(new PlayerCollider(onPlayerCollide),
+                new LaserColliderComponent {CollideWithSolids = CollideWithSolids, Thickness = Thickness,},
+                new SineWave(flickerFrequency) {OnUpdate = v => alphaMultiplier = 1 - (v + 1f) * 0.5f / flickerRange}
             );
-
-            // add a SineWave if flickering is enabled
-            if (Flicker)
-                Add(new SineWave(flickerFrequency) {OnUpdate = v => currentAlpha = Alpha - (v + 1f) * 0.5f * Alpha / flickerRange});
-
-            emitterSprite.Rotation = orientation.Angle();
-        }
-
-        public override void Awake(Scene scene) {
-            base.Awake(scene);
             
-            updateBeam();
+            Collider = Get<LaserColliderComponent>().Collider;
+            
+            Sprite emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
+            emitterSprite.Rotation = Orientation.Angle();
+            
+            Add(emitterSprite);
         }
-        
+
         public override void Update() {
             base.Update();
 
             if (triggerCooldownRemaining > 0)
                 triggerCooldownRemaining -= triggerCooldown * Engine.DeltaTime;
-            
-            updateBeam();
         }
 
-        public void Disable() {
-            // TODO: nice animations
-            killZoneRect.Visible = false;
-            Collidable = false;
+        public override void Render() {
+            // only render beam if we're collidable
+            if (Collidable) {
+                var color = Color * Alpha * (Flicker ? alphaMultiplier : 1f);
+
+                Draw.Rect(Collider.Bounds, color);
+
+                Vector2 target = Orientation switch {
+                    Orientations.Up => Collider.TopCenter,
+                    Orientations.Down => Collider.BottomCenter,
+                    Orientations.Left => Collider.CenterLeft,
+                    Orientations.Right => Collider.CenterRight,
+                    _ => Vector2.Zero
+                };
+
+                float lineThickness = Orientation == Orientations.Left || Orientation == Orientations.Right
+                    ? Collider.Height / 3f
+                    : Collider.Width / 3f;
+
+                Draw.Line(X, Y, X + target.X, Y + target.Y, color, lineThickness);
+            }
+
+            // render the emitter etc. after the beam
+            base.Render();
         }
 
         private void onPlayerCollide(Player player) {
@@ -200,9 +214,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 triggerCooldownRemaining = triggerCooldown;
                 
                 if (DisableLasers) {
-                    var emitters = level.Entities.OfType<LaserEmitter>().Where(e => e.Color == Color);
-                    foreach (var emitter in emitters)
-                        emitter.Enabled = false;
+                    level.Entities.With<LaserEmitter>(emitter => {
+                        if (emitter.Color == Color)
+                            emitter.Collidable = false;
+                    });
                 }
 
                 if (TriggerZipMovers) {
@@ -214,145 +229,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (KillPlayer) {
                 Vector2 direction;
                 if (Orientation == Orientations.Left || Orientation == Orientations.Right)
-                    direction = player.Position.Y <= Position.Y ? -Vector2.UnitY : Vector2.UnitY;
+                    direction = player.Center.Y <= Position.Y ? -Vector2.UnitY : Vector2.UnitY;
                 else
-                    direction = player.Position.X <= Position.X ? -Vector2.UnitX : Vector2.UnitX;
+                    direction = player.Center.X <= Position.X ? -Vector2.UnitX : Vector2.UnitX;
 
                 player.Die(direction);
             }
         }
-
-        private void resizeKillbox(float size) {
-            switch (Orientation) {
-                case Orientations.Up:
-                    killbox.Width = Thickness;
-                    killbox.Height = size;
-                    killbox.BottomCenter = Vector2.Zero;
-                    target = killbox.TopCenter;
-                    break;
-                
-                case Orientations.Down:
-                    killbox.Width = Thickness;
-                    killbox.Height = size;
-                    killbox.TopCenter = Vector2.Zero;
-                    target = killbox.BottomCenter;
-                    break;
-                
-                case Orientations.Left:
-                    killbox.Width = size;
-                    killbox.Height = Thickness;
-                    killbox.CenterRight = Vector2.Zero;
-                    target = killbox.CenterLeft;
-                    break;
-                
-                case Orientations.Right:
-                    killbox.Width = size;
-                    killbox.Height = Thickness;
-                    killbox.CenterLeft = Vector2.Zero;
-                    target = killbox.CenterRight;
-                    break;
-            }
-        }
-        
-        private void updateBeam() {
-            var level = SceneAs<Level>();
-
-            float high = Orientation switch {
-                Orientations.Up => Position.Y - level.Bounds.Top,
-                Orientations.Down => level.Bounds.Bottom - Position.Y,
-                Orientations.Left => Position.X - level.Bounds.Left,
-                Orientations.Right => level.Bounds.Right - Position.X,
-                _ => 0
-            };
-
-            int low = 0, safety = 1000;
-
-            // first check if the laser hits the edge of the screen
-            resizeKillbox(high);
-            if (!CollideCheck<Solid>()) return;
-            
-            // perform a binary search to hit the nearest solid
-            while (safety-- > 0) {
-                int pivot = (int) (low + (high - low) / 2f);
-                resizeKillbox(pivot);
-                if (pivot == low)
-                    break;
-                if (CollideCheck<Solid>()) {
-                    high = pivot;
-                } else {
-                    low = pivot;
-                }
-            }
-        }
-
-        /// <summary>
-        /// The available orientations of an emitter, where the direction indicates which way the beam travels.
-        /// </summary>
-        public enum Orientations {
-            /// <summary>
-            /// Indicates that the beam fires from the emitter toward the top of the screen.
-            /// </summary>
-            Up,
-            
-            /// <summary>
-            /// Indicates that the beam fires from the emitter toward the bottom of the screen.
-            /// </summary>
-            Down,
-            
-            /// <summary>
-            /// Indicates that the beam fires from the emitter toward the left of the screen.
-            /// </summary>
-            Left,
-            
-            /// <summary>
-            /// Indicates that the beam fires from the emitter toward the right of the screen.
-            /// </summary>
-            Right,
-        }
-
-        /// <summary>
-        /// Renders the beam part of the laser emitter.
-        /// </summary>
-        /// <remarks>
-        /// Opacity of the beam edges is calculated as <see cref="LaserEmitter.Alpha"/> times <see cref="LaserEmitter.alphaMultiplier"/>.
-        /// The centre third of the beam is twice that opacity.
-        /// </remarks>
-        public class LaserKillZoneRect : Component {
-            public LaserKillZoneRect() : base(true, true) {
-            }
-
-            public override void Render() {
-                if (!Entity.Collidable || !(Entity is LaserEmitter {Collider: Hitbox hitbox} laserEmitter))
-                    return;
-
-                var color = laserEmitter.Color * laserEmitter.currentAlpha;
-                
-                Draw.Rect(hitbox.Bounds, color);
-
-                float thickness = laserEmitter.Orientation == Orientations.Left || laserEmitter.Orientation == Orientations.Right
-                    ? hitbox.Height / 3f
-                    : hitbox.Width / 3f;
-
-                Draw.Line(Entity.X, Entity.Y, Entity.X + laserEmitter.target.X, Entity.Y + laserEmitter.target.Y, color, thickness);
-            }
-        }
-    }
-    
-    public static class OrientationsExtensions {
-        public static Vector2 Offset(this LaserEmitter.Orientations orientation) => orientation switch {
-            LaserEmitter.Orientations.Up => Vector2.UnitY,
-            LaserEmitter.Orientations.Down => -Vector2.UnitY,
-            LaserEmitter.Orientations.Left => Vector2.UnitX,
-            LaserEmitter.Orientations.Right => -Vector2.UnitX,
-            _ => Vector2.Zero
-        };
-
-        public static float Angle(this LaserEmitter.Orientations orientation) => orientation switch {
-            LaserEmitter.Orientations.Up => 0f,
-            LaserEmitter.Orientations.Down => (float) Math.PI,
-            LaserEmitter.Orientations.Left => (float) -Math.PI / 2f,
-            LaserEmitter.Orientations.Right => (float) Math.PI / 2f,
-            _ => 0f
-        };
     }
 }

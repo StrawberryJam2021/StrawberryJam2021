@@ -51,3 +51,30 @@ placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of th
 
 # Dash With Holdable Trigger
 placements.triggers.SJ2021/HoldableDashTrigger.tooltips.mode="Toggle" will set or clear a session flag that allows dashing anywhere.\n"OnStay" will force the ability to be on/off while inside the trigger, regardless of what the session flag is set to.
+
+# Conditional Flag Trigger
+placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.flag=The flag to set when  the player enters and leaves.
+placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.flagValue=The value to set the flag to when the player is in the trigger.
+placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.controllerFlag=The flag that enables and disables the trigger.
+placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.revertOnLeave=Whether or not to reset the flag to it's origional state when the player leaves the trigger.
+
+# Variant Toggle Controller
+placements.entities.SJ2021/VariantToggleController.tooltips.flag=The flag that controls the variants (variants set on true).
+placements.entities.SJ2021/VariantToggleController.tooltips.variantList=A comma separated of list of variantName value pairs representing the variant changes. In the form "variantName:value,vairant2Name:value2,..."
+placements.entities.SJ2021/VariantToggleController.tooltips.defaultValue=The value to set the flag to when the room is loaded (true sets variants on entry).
+
+# Flag Breaker box
+placements.entities.SJ2021/FlagBreakerBox.tooltips.flag=The flag to control.
+placements.entities.SJ2021/FlagBreakerBox.tooltips.aliveState=The value to set the flag to when the box is alive (sets to the oposite when destroyed).
+placements.entities.SJ2021/FlagBreakerBox.tooltips.music=The music to play when the box is broken.
+placements.entities.SJ2021/FlagBreakerBox.tooltips.flipX=Whether or not to flip the sprite across the X axis.
+placements.entities.SJ2021/FlagBreakerBox.tooltips.music_progress=The progress to set the music to when the box is broken.
+placements.entities.SJ2021/FlagBreakerBox.tooltips.music_session=Whether or not to store the music changes in the session.
+
+# Triple Boost Flower
+placements.entities.SJ2021/TripleBoostFlower.tooltips.boostDelay=Cooldown between boosts, in seconds
+placements.entities.SJ2021/TripleBoostFlower.tooltips.boostSpeed=Y-Speed during the boost
+placements.entities.SJ2021/TripleBoostFlower.tooltips.boostDuration=Duration of the boost, in seconds
+placements.entities.SJ2021/TripleBoostFlower.tooltips.fastFallSpeed=Falling speed while holding down
+placements.entities.SJ2021/TripleBoostFlower.tooltips.slowFallSpeed=Falling speed while holding up
+placements.entities.SJ2021/TripleBoostFlower.tooltips.normalFallSpeed=Falling speed while not holding anything
