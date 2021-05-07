@@ -12,13 +12,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked]
     class TheoRespawn : Entity {
 
-        public TheoRespawn(EntityData data, Vector2 offset) : base(data.Position + offset) {
+        public string flag;
 
+        public TheoRespawn(EntityData data, Vector2 offset) : base(data.Position + offset) {
+            flag = data.Attr("flag");
         }
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
             Level level = SceneAs<Level>();
+            // Remove this if a flag is defined but not active in the session
+            if (!string.IsNullOrWhiteSpace(flag) && !level.Session.GetFlag(flag)) {
+                RemoveSelf();
+                return;
+            }
+           
             float thisDist = Vector2.Distance(Position, level.Session.RespawnPoint.Value);
 
             foreach(TheoRespawn respawn in scene.Tracker.GetEntities<TheoRespawn>()) {
