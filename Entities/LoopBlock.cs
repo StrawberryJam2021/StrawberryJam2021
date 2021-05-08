@@ -9,8 +9,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         // The third dimension is to store the same tiles with different details and variations.
         private static readonly MTexture[,,] outerEdges = new MTexture[3, 3, 3];
-        private static readonly MTexture[,,] innerCorners = new MTexture[2, 2, 3];
         private static readonly MTexture[,,] wallEdges = new MTexture[3, 2, 3];
+        // This one has no variation, always used 4 times, or never.
+        private static readonly MTexture[,] innerCorners = new MTexture[2, 2];
+        // Center tile doesn't need to be stored in a structured 2d array, but it has 8 variations.
+        private static readonly MTexture[] centerTiles = new MTexture[8];
 
         private Vector2 start;
         private Vector2 speed;
@@ -89,16 +92,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                         MTexture texture = null;
                         if (filler) {
-                            // missing tile in tileset
+                            texture = centerTiles[Calc.Random.Next(8)];
                         } else if (innerEdge) {
                             if (!downright)
-                                texture = innerCorners[0, 0, index];
+                                texture = innerCorners[0, 0];
                             else if (!downleft)
-                                texture = innerCorners[1, 0, index];
+                                texture = innerCorners[1, 0];
                             else if (!upright)
-                                texture = innerCorners[0, 1, index];
+                                texture = innerCorners[0, 1];
                             else if (!upleft)
-                                texture = innerCorners[1, 1, index];
+                                texture = innerCorners[1, 1];
                         } else {
                             if (!up && down && left && right)
                                 texture = outerEdges[1, 0, index];
@@ -297,6 +300,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             MTexture tiles = GFX.Game["objects/StrawberryJam2021/loopBlock/tiles"];
             for (int i = 0; i < 3; i++) {
                 int tx = i * 8;
+
                 outerEdges[0, 0, i] = tiles.GetSubtexture(tx, 0, 8, 8); // outer top left
                 outerEdges[2, 0, i] = tiles.GetSubtexture(24 + tx, 0, 8, 8); // outer top right
                 outerEdges[0, 2, i] = tiles.GetSubtexture(tx, 8, 8, 8); // outer bottom left
@@ -313,11 +317,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 wallEdges[2, 0, i] = tiles.GetSubtexture(tx, 48, 8, 8); // outer inner horizontal
                 wallEdges[2, 1, i] = tiles.GetSubtexture(24 + tx, 48, 8, 8); // outer inner vertical
 
-                innerCorners[0, 0, i] = tiles.GetSubtexture(tx, 56, 8, 8); // inner top left
-                innerCorners[1, 0, i] = tiles.GetSubtexture(24 + tx, 56, 8, 8); // inner top right
-                innerCorners[0, 1, i] = tiles.GetSubtexture(tx, 64, 8, 8); // inner bottom left
-                innerCorners[1, 1, i] = tiles.GetSubtexture(24 + tx, 64, 8, 8); // inner bottom right
+                if (i > 0) {
+                    centerTiles[i - 1] = tiles.GetSubtexture(tx, 56, 8, 8); // center 0, 1
+                    centerTiles[i + 1] = tiles.GetSubtexture(24 + tx, 56, 8, 8); // center 2, 3
+                    centerTiles[i + 3] = tiles.GetSubtexture(tx, 64, 8, 8); // center 4, 5
+                    centerTiles[i + 5] = tiles.GetSubtexture(24 + tx, 64, 8, 8); // center 6, 7
+                }
             }
+
+            innerCorners[0, 0] = tiles.GetSubtexture(0, 56, 8, 8); // inner top left
+            innerCorners[1, 0] = tiles.GetSubtexture(24, 56, 8, 8); // inner top right
+            innerCorners[0, 1] = tiles.GetSubtexture(0, 64, 8, 8); // inner bottom left
+            innerCorners[1, 1] = tiles.GetSubtexture(24, 64, 8, 8); // inner bottom right
         }
     }
 }
