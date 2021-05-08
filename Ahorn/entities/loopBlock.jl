@@ -65,9 +65,13 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::LoopBlock, room::Ma
             ty = 0
 
             if full
-                # missing
-                continue
+                # hacky
+                r = mod(get(tileRands, (j, i), 0), 4)
+                tx = round(mod(r / 2, 1)) + 1
+                ty = floor(r / 2) + 7
+                tileChoice = 0
             elseif innerCorner
+                tileChoice = 0
                 if !downright
                     ty = 7
                 elseif !downleft
