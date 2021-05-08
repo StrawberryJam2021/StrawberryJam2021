@@ -29,7 +29,11 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DashCountTrigger.Load();
             DashBoostField.Load();
             FlagDashSwitch.Load();
-            UFO.Load();
+            PocketUmbrellaController.Load();
+            BarrierDashSwitch.Load();
+            TripleBoostFlower.Load();
+            ResettingRefill.Load();
+            SineDustSpinner.Load();
         }
 
         public override void Unload() {
@@ -45,13 +49,20 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DashCountTrigger.Unload();
             DashBoostField.Unload();
             FlagDashSwitch.Unload();
+            PocketUmbrellaController.Unload();
+            BarrierDashSwitch.Unload();
+            TripleBoostFlower.Unload();
+            ResettingRefill.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
             base.LoadContent(firstLoad);
 
             _CustomEntitySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/CustomEntitySprites.xml");
+
             WormholeBooster.LoadParticles();
+            LoopBlock.InitializeTextures();
+
         }
     }
 }
