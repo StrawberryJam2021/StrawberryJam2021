@@ -32,6 +32,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private int edgeThickness;
 
+        private const float sideBoostSpeed = 345f;
+
         public LoopBlock(EntityData data, Vector2 offset) 
             : this(data.Position + offset, data.Width, data.Height, data.Int("edgeThickness", 1), data.HexColor("color")) { }
 
@@ -141,7 +143,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 // Because of the Celeste.Freeze call in Player.ExplodeLaunch,
                 // they would remain unscaled during the freeze time, which looked a bit weird.
                 RescaleSpikes(); 
-                player.ExplodeLaunch(new Vector2(Center.X, player.Center.Y), false, false);
+                player.ExplodeLaunch(new Vector2(Center.X, player.Center.Y), false, true);
+
+                player.Speed.X = -sideBoostSpeed * dir.X;
 
                 player.Dashes = dashes;
                 player.Stamina = stamina;
