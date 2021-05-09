@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Reflection;
-
 using Celeste.Mod.Entities;
-
 using Microsoft.Xna.Framework;
-
 using Monocle;
-
-// https://docs.microsoft.com/en-gb/cpp/linux/connect-to-your-remote-linux-computer?view=msvc-160
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/SineDustSpinner")]
@@ -31,8 +25,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Add(Sprite = new DustGraphic(true, false, false));
 
-
-
             xPeriod = data.Float("xPeriod", 1f);
             xPhase = data.Float("xPhase", 0f);
             yPeriod = data.Float("yPeriod", 1f);
@@ -51,7 +43,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 + Vector2.UnitY * getOffset(yPeriod, yPhase, yAmplitude, yLinear, 0f)
                 + Vector2.UnitX * getOffset(xPeriod, xPhase, xAmplitude, xLinear, 0f);
             Sprite.EyeDirection = Vector2.Normalize(Position - p);
-
         }
 
         public override void Awake(Scene scene) {
@@ -80,7 +71,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return 0;
 
             float time = (timeOverride != -1) ? timeOverride : TimeSinceAwake;
-
             int adjust = linear ? 1 : 2;
 
             phase %= adjust;
