@@ -1,5 +1,4 @@
-﻿// Celeste.FlingBird
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Celeste;
@@ -50,7 +49,7 @@ public class UFO : Actor {
 
 
     public UFO(Vector2[] nodes) : base(nodes[0]) {
-        base.Depth = -1;
+        base.Depth = Depths.Above;
         Add(sprite = new Image(GFX.Game["objects/StrawberryJam2021/UFO/UFO"]));
         sprite.CenterOrigin();
         Collider = new Hitbox(24f, 24f, -12f, -12f);
@@ -256,7 +255,6 @@ public class UFO : Actor {
 
     private IEnumerator DoFlingRoutineJelly(Glider Jelly) {
         Level level = Scene as Level;
-        Vector2 position = level.Camera.Position;
         Engine.TimeRate = 0.8f;
         Input.Rumble(RumbleStrength.Light, RumbleLength.Medium);
         while (flingSpeed != Vector2.Zero) {
@@ -277,7 +275,7 @@ public class UFO : Actor {
         Add(new Coroutine(level.ZoomBack(0.1f)));
         flingTargetSpeed = Vector2.Zero;
         flingAccel = 4000f;
-        Jelly.Speed = FlingBird.FlingSpeed/1.5f;
+        Jelly.Speed = FlingSpeed/1.5f;
         yield return 0.3f;
         Add(new Coroutine(MoveRoutine()));
     }
