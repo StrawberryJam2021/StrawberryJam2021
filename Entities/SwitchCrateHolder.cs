@@ -28,8 +28,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private Vector2 pressDirection;
 
-        private float startY;
-
         private bool persistent;
 
         private EntityID id;
@@ -40,16 +38,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool alwaysFlag;
 
-        private static bool particlesSetup = false;
-
         private string FlagName => GetFlagName(id);
 
         public SwitchCrateHolder(Vector2 position, Sides side, bool persistent, bool allGates, bool alwaysFlag, EntityID id)
             : base(position, 0f, 0f, safe: true) {
-            if (!particlesSetup) {
-                SetupParticles();
-                particlesSetup = true;
-            }
             this.side = side;
             this.persistent = persistent;
             this.allGates = allGates;
@@ -68,7 +60,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     sprite.Position = new Vector2(-2f, -2f);
                     sprite.Rotation = (float) Math.PI / 2f;
                     pressDirection = Vector2.UnitY;
-                    startY = base.Y;
                     break;
                 case Sides.Down:
                     sprite.Position = new Vector2(18f, 10f);
@@ -92,7 +83,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             : this(data.Position + offset, direction(data), data.Bool("persistent"), data.Bool("allGates"), data.Bool("alwaysFlag"), id) {
         }
 
-        private static void SetupParticles() {
+        public static void SetupParticles() {
             P_Signal.Color = Color.Aqua;
             P_Signal.ColorMode = ParticleType.ColorModes.Choose;
             P_Signal.LifeMax = 0.6f;
@@ -211,7 +202,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     gate.SwitchOpen();
                 }
             }
-            base.Scene.Entities.FindFirst<TempleMirrorPortal>()?.OnSwitchHit(Math.Sign(base.X - (float) (base.Scene as Level).Bounds.Center.X));
             if (persistent || alwaysFlag) {
                 SceneAs<Level>().Session.SetFlag(FlagName);
             }

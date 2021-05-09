@@ -29,6 +29,7 @@
     </Reference>
     <Reference Include="Batteries">
       <HintPath>..\Batteries\Batteries.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="CavernHelper">
       <HintPath>lib-stripped\CavernHelper.dll</HintPath>

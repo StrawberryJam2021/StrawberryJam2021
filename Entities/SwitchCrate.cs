@@ -68,7 +68,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             this.id = id;
             previousPosition = position;
-            Depth = 100;
+            Depth = Depths.Pickups;
             Collider = new Hitbox(8f, 11f, -4f, -2f);
 
             sprite = new Sprite(GFX.Game, "objects/StrawberryJam2021/SwitchCrate/");
@@ -94,6 +94,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Hold.SpeedGetter = () => Speed;
             onCollideH = OnCollideH;
             onCollideV = OnCollideV;
+            Hold.OnCarry = pos => Position = pos + new Vector2(0f, -8f);
             LiftSpeedGraceTime = 0.1f;
             Add(new VertexLight(Collider.Center, Color.White, 1f, 32, 64));
             Tag = Tags.TransitionUpdate;
@@ -221,14 +222,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void OnPickup() {
             Speed = Vector2.Zero;
             AddTag(Tags.Persistent);
-            playerDynData = new DynData<Player>(player);
-            playerDynData.Set("CarryOffsetTarget", new Vector2(0f, -20f));
             IsHeld = true;
         }
 
         private void OnRelease(Vector2 force) {
             RemoveTag(Tags.Persistent);
-            playerDynData.Set("CarryOffsetTarget", new Vector2(0f, -12f));
             if (force.X != 0f && force.Y == 0f) {
                 force.Y = -0.4f;
             }
