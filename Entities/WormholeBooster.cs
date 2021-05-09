@@ -20,6 +20,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static ParticleType P_WAppear;
         private static MethodInfo BoostPlayer = typeof(Booster).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod);
         private Color color;
+        private static readonly Color displaceColor = Calc.HexToColor("827E00");
         public DisplacementRenderHook displaceHook;
         private MTexture displace;
         private Sprite displacementMask;
@@ -83,7 +84,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             displacementMask.Visible = false;
             color = Calc.HexToColor("7800bd");
             self["particleType"] = P_WBurst;
-            displace = GFX.Game["util/wormhole_disp"];
+            displace = GFX.Game["util/StrawberryJam2021/wormhole_disp"];
             Add(displaceHook = new DisplacementRenderHook(BlackHoleDisplacement));
             
         }
@@ -93,7 +94,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             displaceEase = Calc.Clamp(displaceEase, 0, 1);
             displace.Draw(Position, displace.Center, Color.White * displaceEase, 0.4f);
-            displacementMask.GetFrame(sprite.CurrentAnimationID, sprite.CurrentAnimationFrame).Draw(Position - new Vector2(16), Vector2.Zero, Calc.HexToColor("827E00")*displaceEase);
+            displacementMask.GetFrame(sprite.CurrentAnimationID, sprite.CurrentAnimationFrame).Draw(Position - new Vector2(16), Vector2.Zero, displaceColor*displaceEase);
         }
 
         public override void Awake(Scene scene) {
