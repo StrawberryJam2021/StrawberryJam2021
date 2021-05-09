@@ -80,7 +80,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public SwitchCrateHolder(EntityData data, Vector2 offset, EntityID id)
-            : this(data.Position + offset, direction(data), data.Bool("persistent"), data.Bool("allGates"), data.Bool("alwaysFlag"), id) {
+            : this(data.Position + offset, data.Enum<Sides>("direction"), data.Bool("persistent"), data.Bool("allGates"), data.Bool("alwaysFlag"), id) {
         }
 
         public static void SetupParticles() {
@@ -90,19 +90,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             P_Signal.LifeMin = 0.3f;
             P_Signal.SpeedMultiplier = 0.1f;
             P_Signal.DirectionRange = (float) Math.PI / 5f;
-        }
-
-        private static Sides direction(EntityData data) {
-            if (data.Bool("horizontal")) {
-                if (data.Bool("rightSide")) {
-                    return Sides.Right;
-                }
-                return Sides.Left;
-            }
-            if (data.Bool("ceiling")) {
-                return Sides.Down;
-            }
-            return Sides.Up;
         }
 
         public override void Awake(Scene scene) {

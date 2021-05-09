@@ -2,74 +2,60 @@ module SJ2021SwitchCrateHolder
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/SwitchCrateHolder" SwitchCrateHolder(x::Integer, y::Integer, rightSide::Bool=false, persistent::Bool=false, horizontal::Bool=true, alwaysFlag::Bool=false)
+@mapdef Entity "SJ2021/SwitchCrateHolder" SwitchCrateHolder(x::Integer, y::Integer, persistent::Bool=false, alwaysFlag::Bool=false)
 
-const placements = Ahorn.PlacementDict()
+const directions = [ "Up", "Down", "Left", "Right"]
 
-directions = Dict{String, Tuple{Bool, String, Bool}}(
-    "up" => (false, "ceiling", false),
-    "down" => (false, "ceiling", true),
-    "left" => (true, "rightSide", false),
-    "right" => (true, "rightSide", true),
-)
-
-for (dir, data) in directions
-    key = "SwitchCrateHolder ($(uppercasefirst(dir))) (Strawberry Jam 2021)"
-    horiz, datakey, val = data
-    placements[key] = Ahorn.EntityPlacement(
+const placements = Ahorn.PlacementDict(
+    "Switch Crate Holder ($dir) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         SwitchCrateHolder,
         "rectangle",
         Dict{String, Any}(
-            "horizontal" => horiz,
-            datakey => val
+            "direction" => dir,
         )
-    )
-end
+    ) for dir in directions
+)
+
+Ahorn.editingOptions(entity::SwitchCrateHolder) = Dict{String, Any}(
+    "direction" => directions
+)
 
 function Ahorn.selection(entity::SwitchCrateHolder)
     x, y = Ahorn.position(entity)
-    if get(entity.data, "horizontal", true)
-        left = get(entity.data, "rightSide", false)
-
-        if left
-            return Ahorn.Rectangle(x, y - 1, 10, 16)
-
-        else
-            return Ahorn.Rectangle(x - 2, y, 10, 16)
-        end
-    else
-        ceiling = get(entity.data, "ceiling", false)
-
-        if ceiling
-            return Ahorn.Rectangle(x, y, 16, 12)
-
-        else
-            return Ahorn.Rectangle(x, y - 4, 16, 12)
-        end
+    dir = get(entity.data, "direction", "Up")
+    if dir == "Up"
+        return Ahorn.Rectangle(x, y - 4, 16, 12)
+    elseif dir == "Down"
+        return Ahorn.Rectangle(x, y, 16, 12)
+    elseif dir == "Left"
+        return Ahorn.Rectangle(x - 2, y, 10, 16)
+    elseif dir == "Right"
+        return Ahorn.Rectangle(x, y, 10, 16)
     end
 end
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::SwitchCrateHolder, room::Maple.Room)
-    texture = "objects/StrawberryJam2021/SwitchCrate/switch.png"
-    if get(entity.data, "horizontal", true)
-        right = get(entity.data, "rightSide", false)
-
-        if right
-            Ahorn.drawSprite(ctx, texture, 30, 28, rot=pi)
-
-        else
-            Ahorn.drawSprite(ctx, texture, -2, 8)
-        end
-    else
-        ceiling = get(entity.data, "ceiling", false)
-
-        if ceiling
-            Ahorn.drawSprite(ctx, texture, 8, 30, rot=-pi / 2)
-
-        else
-            Ahorn.drawSprite(ctx, texture, 28, -2, rot=pi / 2)
-        end
+    texture = "objects/StrawberryJam2021/SwitchCrate/switch"
+    dir = get(entity.data, "direction", "Up")
+    if dir == "Up"
+        Ahorn.drawSprite(ctx, texture, 28, -2, rot=pi / 2)
+    elseif dir == "Down"
+        Ahorn.drawSprite(ctx, texture, 8, 30, rot=-pi / 2)
+    elseif dir == "Left"
+        Ahorn.drawSprite(ctx, texture, -2, 8)
+    elseif dir == "Right"
+        Ahorn.drawSprite(ctx, texture, 30, 28, rot=pi)
     end
+end
+
+function Ahorn.flipped(entity::SwitchCrateHolder, horizontal::Bool)
+    dir = get(entity.data, "direction", "Up")
+    if horizontal
+        entity.data["direction"] = (dir == "Right" ? "Left" : "Right")
+    else
+        entity.data["direction"] = (dir == "Up" ? "Down" : "Up")
+    end
+    return entity
 end
 
 end
