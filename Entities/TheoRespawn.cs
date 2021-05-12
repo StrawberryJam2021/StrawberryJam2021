@@ -18,14 +18,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             flag = data.Attr("flag");
         }
 
-        public override void Awake(Scene scene) {
-            base.Awake(scene);
+        public override void Added(Scene scene) {
+            base.Added(scene);
+
             Level level = SceneAs<Level>();
             // Remove this if a flag is defined but not active in the session
             if (!string.IsNullOrWhiteSpace(flag) && !level.Session.GetFlag(flag)) {
                 RemoveSelf();
                 return;
             }
+        }
+
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
+
+            Level level = SceneAs<Level>();
            
             float thisDist = Vector2.Distance(Position, level.Session.RespawnPoint.Value);
 
