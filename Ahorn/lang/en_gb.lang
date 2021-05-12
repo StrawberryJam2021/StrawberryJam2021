@@ -20,31 +20,51 @@ placements.entities.SJ2021/SineDustSpinner.tooltips.yLinear=Whether the Y-Sine s
 
 # Laser Emitter (Up)
 placements.entities.SJ2021/LaserEmitterUp.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.colorChannel=Color of linked zip movers that will be triggered if enabled.
 placements.entities.SJ2021/LaserEmitterUp.tooltips.alpha=Base alpha if flickering is disabled.
 placements.entities.SJ2021/LaserEmitterUp.tooltips.flicker=Whether or not the laser beam should flicker.
 placements.entities.SJ2021/LaserEmitterUp.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
 placements.entities.SJ2021/LaserEmitterUp.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.collideWithSolids=Whether or not the laser beam will stop at solids.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same color channel.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same color channel.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser color.
 
 # Laser Emitter (Down)
 placements.entities.SJ2021/LaserEmitterDown.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.colorChannel=Color of linked zip movers that will be triggered if enabled.
 placements.entities.SJ2021/LaserEmitterDown.tooltips.alpha=Base alpha if flickering is disabled.
 placements.entities.SJ2021/LaserEmitterDown.tooltips.flicker=Whether or not the laser beam should flicker.
 placements.entities.SJ2021/LaserEmitterDown.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
 placements.entities.SJ2021/LaserEmitterDown.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.collideWithSolids=Whether or not the laser beam will stop at solids.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same color channel.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same color channel.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser color.
 
 # Laser Emitter (Left)
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.colorChannel=Color of linked zip movers that will be triggered if enabled.
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.alpha=Base alpha if flickering is disabled.
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.flicker=Whether or not the laser beam should flicker.
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.collideWithSolids=Whether or not the laser beam will stop at solids.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same color channel.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same color channel.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser color.
 
 # Laser Emitter (Right)
 placements.entities.SJ2021/LaserEmitterRight.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.colorChannel=Color of linked zip movers that will be triggered if enabled.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.alpha=Base alpha if flickering is disabled.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.flicker=Whether or not the laser beam should flicker.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.collideWithSolids=Whether or not the laser beam will stop at solids.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same color channel.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same color channel.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser color.
 
 # Bubble Emitter Fire Trigger
 placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of the emitters to fire. Will fire every emitter if empty
