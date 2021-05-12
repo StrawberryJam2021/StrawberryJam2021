@@ -39,6 +39,10 @@
       <HintPath>lib-stripped\MaxHelpingHand.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="ExtendedVariantMode">
+      <HintPath>lib-stripped\ExtendedVariantMode.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
   <Choose>

@@ -76,3 +76,11 @@ placements.entities.SJ2021/DashBoostField.tooltips.mode=The color of the object.
 placements.entities.SJ2021/DashBoostField.tooltips.dashSpeedMultiplier=How much the player's dash should be boosted.
 placements.entities.SJ2021/DashBoostField.tooltips.timeRateMultiplier=How much the game should down while the player is inside (1 is normal speed, 0.5 is half, etc.)
 placements.entities.SJ2021/DashBoostField.tooltips.radius=The radius of the effect, in tiles.
+
+# Triple Boost Flower
+placements.entities.SJ2021/TripleBoostFlower.tooltips.boostDelay=Cooldown between boosts, in seconds
+placements.entities.SJ2021/TripleBoostFlower.tooltips.boostSpeed=Y-Speed during the boost
+placements.entities.SJ2021/TripleBoostFlower.tooltips.boostDuration=Duration of the boost, in seconds
+placements.entities.SJ2021/TripleBoostFlower.tooltips.fastFallSpeed=Falling speed while holding down
+placements.entities.SJ2021/TripleBoostFlower.tooltips.slowFallSpeed=Falling speed while holding up
+placements.entities.SJ2021/TripleBoostFlower.tooltips.normalFallSpeed=Falling speed while not holding anything
