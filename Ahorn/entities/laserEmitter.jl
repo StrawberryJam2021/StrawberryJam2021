@@ -4,7 +4,7 @@ using ..Ahorn, Maple
 
 const default_alpha = 0.4
 const default_thickness = 6.0
-const default_style = "Tinted"
+const default_style = "Rounded"
 
 # color is used to render the beam and tint the emitter
 # FF2626 (HSV 0,85,100) is the default red as requested by hennyburgr/SchaapMakker 
@@ -14,7 +14,7 @@ const default_color = "FF2626"
 # defaults to fullbright red as a matter of convenience
 const default_color_channel = "FF0000"
 
-const styles = ["Simple", "Tinted"]
+const styles = ["Simple", "Rounded"]
 
 @mapdef Entity "SJ2021/LaserEmitterUp" LaserEmitterUp(
     x::Integer, y::Integer,

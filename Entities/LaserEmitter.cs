@@ -135,7 +135,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// The rendering style to use.
         /// </summary>
         /// <remarks>
-        /// Defaults to "Tinted".
+        /// Defaults to <see cref="EmitterStyle.Rounded"/>.
         /// </remarks>
         public EmitterStyle Style { get; }
         
@@ -186,7 +186,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             DisableLasers = data.Bool("disableLasers");
             Flicker = data.Bool("flicker", true);
             KillPlayer = data.Bool("killPlayer", true);
-            Style = data.Enum("style", EmitterStyle.Tinted);
+            Style = data.Enum("style", EmitterStyle.Rounded);
             Thickness = Math.Max(data.Float("thickness", 6f), 0f);
             TriggerZipMovers = data.Bool("triggerZipMovers");
 
@@ -197,36 +197,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             
             Collider = Get<LaserColliderComponent>().Collider;
 
-            switch (Style) {
-                default:
-                case EmitterStyle.Simple:
-                    addSimpleSprite();
-                    break;
-                
-                case EmitterStyle.Tinted:
-                    addTintedSprites();
-                    break;
-            }
-        }
-
-        private void addSimpleSprite() {
-            emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
-            emitterSprite.Play("simple");
-            emitterSprite.Rotation = Orientation.Angle();
-            Add(emitterSprite);
-        }
-
-        private void addTintedSprites() {
-            emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
-            emitterSprite.Play("tinted_base");
-            emitterSprite.Rotation = Orientation.Angle();
-            Add(emitterSprite);
+            if (Style == EmitterStyle.Simple) {
+                emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
+                emitterSprite.Play("simple");
+                emitterSprite.Rotation = Orientation.Angle();
+                Add(emitterSprite);
+            } else if (Style == EmitterStyle.Rounded) {
+                emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
+                emitterSprite.Play("rounded_base");
+                emitterSprite.Rotation = Orientation.Angle();
+                Add(emitterSprite);
             
-            tintSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
-            tintSprite.Play("tinted_tint");
-            tintSprite.Color = Color;
-            tintSprite.Rotation = Orientation.Angle();
-            Add(tintSprite);
+                tintSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
+                tintSprite.Play("rounded_tint");
+                tintSprite.Color = Color;
+                tintSprite.Rotation = Orientation.Angle();
+                Add(tintSprite);
+            }
         }
 
         public override void Update() {
@@ -308,7 +295,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public enum EmitterStyle {
             Simple,
-            Tinted,
+            Rounded,
         }
     }
 }
