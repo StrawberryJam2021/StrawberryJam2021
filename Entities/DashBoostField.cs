@@ -16,34 +16,50 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public Modes Mode;
         public float DashSpeedMult;
         public float TargetTimeRateMult;
-
-        public static float CurrentTimeRateMult;
+        public float Radius;
 
         private Image boostFieldTexture;
 
         public const Modes DefaultMode = Modes.Blue;
         public const float DefaultDashSpeedMult = 1.7f;
         public const float DefaultTimeRateMult = 0.65f;
+        public const float DefaultRadius = 1.5f;
 
-        public const float CollisionRadius = 1.5f * 8;
+        public static ParticleType P_RedRefill;
+        public static float CurrentTimeRateMult;
 
         private static BindingFlags privateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
         private static MethodInfo dashCoroutineInfo = typeof(Player).GetMethod("DashCoroutine", privateInstance).GetStateMachineTarget();
         private static ILHook dashCoroutineHook;
+
+        // for some reason the default Center isn't actually the exact center
+        public new Vector2 Center => Position - new Vector2(0.5f, 0.5f);
         
         public DashBoostField(EntityData data, Vector2 offset)
             : base(data.Position + offset) {
             Mode = data.Enum("mode", DefaultMode);
             DashSpeedMult = data.Float("dashSpeedMultiplier", DefaultDashSpeedMult);
             TargetTimeRateMult = data.Float("timeRateMultiplier", DefaultTimeRateMult);
+            Radius = data.Float("radius", DefaultRadius) * 8;
 
             Depth = Depths.Above;
-            Collider = new Circle(CollisionRadius);
+            Collider = new Circle(Radius);
             string textureColor = Mode == Modes.Blue ? "blue" : "red";
             Add(boostFieldTexture = new Image(GFX.Game[$"objects/StrawberryJam2021/dashBoostField/{textureColor}"]));
             boostFieldTexture.CenterOrigin();
-            Color lightColor = Mode == Modes.Blue ? Calc.HexToColor("e0e0ff") : Calc.HexToColor("ffe0e0");
-            Add(new VertexLight(lightColor, 1f, 16, 32));
+            Color lightColor = Mode == Modes.Blue ? Calc.HexToColor("e8e8ff") : Calc.HexToColor("ffe8e8");
+            int startFade = (int) (Radius + 5f);
+            int endFade = (int) (Radius + 5f);
+            Add(new VertexLight(new Vector2(-0.5f, -0.5f), lightColor, 1f, startFade, endFade));
+            DashBoostFieldParticleRenderer particleRenderer = new DashBoostFieldParticleRenderer();
+            Add(particleRenderer);
+
+            Tag = Tags.TransitionUpdate;
+            Add(new TransitionListener {
+                OnInBegin = () => Active = particleRenderer.Active = false,
+                OnInEnd = () => Active = particleRenderer.Active = true,
+                OnOutBegin = () => Active = particleRenderer.Active = false
+            });
         }
 
         public enum Modes {
@@ -75,6 +91,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Player.Die -= On_Player_Die;
         }
 
+        public static void LoadParticles() {
+            P_RedRefill = new ParticleType(Refill.P_Shatter) {
+                Color = Calc.HexToColor("ffb0b0"),
+                Color2 = Calc.HexToColor("ffd8d8"),
+            };
+        }
+
         private static float ModifyTimeRate(float timeRate, Level level) {
             if (!level.Paused) {
                 timeRate *= CurrentTimeRateMult;
@@ -104,7 +127,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             orig(self);
             // having the player itself handle collision is nicer
             DashBoostField boostField = self.CollideFirst<DashBoostField>();
-            if (!self.Dead && boostField != null && !IsDashingOrRespawning(self))
+            if (!self.Dead && boostField != null && boostField.Active && !IsDashingOrRespawning(self))
                 CurrentTimeRateMult = boostField.TargetTimeRateMult;
             else
                 CurrentTimeRateMult = 1f;
@@ -125,7 +148,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void On_Player_DashBegin(On.Celeste.Player.orig_DashBegin orig, Player self) {
             DynamicData playerData = new DynamicData(self);
             DashBoostField boostField = self.CollideFirst<DashBoostField>();
-            if (boostField != null) {
+            if (boostField != null && boostField.Active) {
                 playerData.Set("dashBoosted", true);
                 playerData.Set("dashBoostSpeed", boostField.DashSpeedMult);
                 self.Add(new Coroutine(RefillDashIfRedDashBoost(self)));
@@ -181,8 +204,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Audio.Play(SFX.game_gen_diamond_touch);
                 Level level = player.SceneAs<Level>();
                 float angle = player.Speed.Angle();
-                level.ParticlesFG.Emit(Refill.P_Shatter, 5, player.Position, Vector2.One * 4f, angle - (float) Math.PI / 2f);
-                level.ParticlesFG.Emit(Refill.P_Shatter, 5, player.Position, Vector2.One * 4f, angle + (float) Math.PI / 2f);
+                level.ParticlesFG.Emit(P_RedRefill, 5, player.Position, Vector2.One * 4f, angle - (float) Math.PI / 2f);
+                level.ParticlesFG.Emit(P_RedRefill, 5, player.Position, Vector2.One * 4f, angle + (float) Math.PI / 2f);
             }
         }
 
