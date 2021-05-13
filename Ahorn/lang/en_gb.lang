@@ -91,6 +91,12 @@ placements.entities.SJ2021/FlagBreakerBox.tooltips.flipX=Whether or not to flip 
 placements.entities.SJ2021/FlagBreakerBox.tooltips.music_progress=The progress to set the music to when the box is broken.
 placements.entities.SJ2021/FlagBreakerBox.tooltips.music_session=Whether or not to store the music changes in the session.
 
+# Dash Boost Field / Nyom Buble
+placements.entities.SJ2021/DashBoostField.tooltips.mode=The color of the object. Red will instantly refill the player if they dash inside of it, while Blue will not.
+placements.entities.SJ2021/DashBoostField.tooltips.dashSpeedMultiplier=How much the player's dash should be boosted.
+placements.entities.SJ2021/DashBoostField.tooltips.timeRateMultiplier=How much the game should down while the player is inside (1 is normal speed, 0.5 is half, etc.)
+placements.entities.SJ2021/DashBoostField.tooltips.radius=The radius of the effect, in tiles.
+
 # Triple Boost Flower
 placements.entities.SJ2021/TripleBoostFlower.tooltips.boostDelay=Cooldown between boosts, in seconds
 placements.entities.SJ2021/TripleBoostFlower.tooltips.boostSpeed=Y-Speed during the boost
