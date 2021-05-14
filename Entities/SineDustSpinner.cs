@@ -66,11 +66,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
 
-        private float getOffset(float period, float phase, float amplitude, bool linear, float timeOverride = -1) {
+        private float getOffset(float period, float phase, float amplitude, bool linear, float? timeOverride = null) {
             if (period == 0)
                 return 0;
 
-            float time = (timeOverride != -1) ? timeOverride : TimeSinceAwake;
+            float time = (timeOverride is not null) ? timeOverride.Value : TimeSinceAwake;
             int adjust = linear ? 1 : 2;
 
             phase %= adjust;
