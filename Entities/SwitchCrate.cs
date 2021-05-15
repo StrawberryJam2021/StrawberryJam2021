@@ -38,13 +38,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private float swatTimer;
 
-        float TimeToExplode = 2;
+        float TimeToExplode;
 
         bool IsMounted = false;
 
         private EntityID id;
-
-        private DynData<Player> playerDynData;
 
         private Player player;
 
@@ -107,7 +105,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public SwitchCrate(EntityData data, Vector2 offset, EntityID id) : this(data.Position + offset, id) {
-            TimeToExplode = data.Float("TimeToExplode");
+            TimeToExplode = data.Float("TimeToExplode", 1);
             DepleteOnJumpThru = data.Bool("DepleteOnJumpThru");
         }
 

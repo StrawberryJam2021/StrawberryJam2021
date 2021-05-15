@@ -38,10 +38,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool alwaysFlag;
 
-        private string FlagName => GetFlagName(id);
+        private string FlagName;
 
         public SwitchCrateHolder(Vector2 position, Sides side, bool persistent, bool allGates, bool alwaysFlag, EntityID id)
             : base(position, 0f, 0f, safe: true) {
+            FlagName = "batterySwitch_" + id.Key;
             this.side = side;
             this.persistent = persistent;
             this.allGates = allGates;
@@ -228,10 +229,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 batteryGates.Add(batteryGate);
             }
             return batteryGates;
-        }
-
-        public static string GetFlagName(EntityID id) {
-            return "batterySwitch_" + id.Key;
         }
     }
 }
