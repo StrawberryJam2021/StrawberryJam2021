@@ -46,7 +46,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private Player player;
 
-        private string FlagName => GetFlagName(id);
+        private string FlagName;
 
         public static Type ConveyorType;
 
@@ -64,6 +64,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(ConveyorMoverInstance);
             ConveyorType.GetField("OnMove").SetValue(ConveyorMoverInstance, new Action<float>(MoveOnConveyor));
 
+            FlagName = "battery_" + id.Key;
             this.id = id;
             previousPosition = position;
             Depth = Depths.Pickups;
@@ -370,10 +371,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public void Use() {
             SceneAs<Level>().Session.SetFlag(FlagName);
-        }
-
-        public static string GetFlagName(EntityID id) {
-            return "battery_" + id.Key;
         }
 
         private void MoveOnConveyor(float amount) {
