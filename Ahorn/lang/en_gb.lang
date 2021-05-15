@@ -78,3 +78,6 @@ placements.entities.SJ2021/TripleBoostFlower.tooltips.boostDuration=Duration of 
 placements.entities.SJ2021/TripleBoostFlower.tooltips.fastFallSpeed=Falling speed while holding down
 placements.entities.SJ2021/TripleBoostFlower.tooltips.slowFallSpeed=Falling speed while holding up
 placements.entities.SJ2021/TripleBoostFlower.tooltips.normalFallSpeed=Falling speed while not holding anything
+
+# Theo Respawn
+placements.entities.SJ2021/TheoRespawn.tooltips.flag=The flag that must be active for this Theo Respawn to activate.
