@@ -53,12 +53,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             UpdateFlag();
         }
 
-        public static MTexture GetArrowTexture(float angle) {
+        public MTexture GetArrowTexture(float angle) {
             int value = (int) Math.Floor((0f - angle + (float) Math.PI * 2f) % ((float) Math.PI * 2f) / ((float) Math.PI * 2f) * 8f + 0.5f);
+            if(((8 > Width - 1) || (8 > Height - 1))) //use a different texture if the size is small for readability
+                return GFX.Game.GetAtlasSubtextures("objects/StrawberryJam2021/momentumBlock/trianglearrow")[Calc.Clamp(value, 0, 7)];
             return GFX.Game.GetAtlasSubtextures("objects/moveBlock/arrow")[Calc.Clamp(value, 0, 7)];
         }
 
         public static Vector2 ClampLiftBoost(Vector2 liftBoost) {
+            //clamp to the game's cap
             liftBoost.X = Calc.Clamp(liftBoost.X, -MAX_SPEED_X, MAX_SPEED_X);
             liftBoost.Y = Calc.Clamp(liftBoost.Y, MAX_SPEED_Y, 0);
             return liftBoost;
@@ -87,12 +90,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
         
         public override void Render() {
+            Draw.Rect(Position, Width, Height, Color.Black);
             Draw.HollowRect(Position, Width, Height, isFlagged ? speedColorFlagged : speedColor);
-            Draw.Rect(Center.X - 4f, Center.Y - 4f, 8f, 8f, isFlagged ? speedColorFlagged : speedColor);
-            if (isFlagged)
-                arrowTextureFlagged.DrawCentered(Center);
-            else
-                arrowTexture.DrawCentered(Center);            
+
+            MTexture currentTexture = isFlagged ? arrowTextureFlagged : arrowTexture;
+            //draw the colored rectangle below the arrow texture
+            Draw.Rect(Center.X - currentTexture.Width / 2, Center.Y - currentTexture.Height / 2, currentTexture.Width, currentTexture.Height, isFlagged ? speedColorFlagged : speedColor);
+            currentTexture.DrawCentered(Center);
         }
 
         private void UpdateFlag() {

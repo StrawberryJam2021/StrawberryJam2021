@@ -45,7 +45,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        protected readonly struct CassetteTimerState {
+        protected struct CassetteTimerState {
             public readonly int Beat;
             public readonly bool ChangedSinceLastBeat;
 
