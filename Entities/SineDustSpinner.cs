@@ -47,7 +47,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Awake(Scene scene) {
             // add 2/3rds of a second to the awake offset to account for the time the transition takes
-            AwakeOffset = scene.TimeActive + (2f / 3);
+            // except when the player is in the respawn state while this entity is added, then we need to wait 0.6f for the respawn to complete
+            AwakeOffset = scene.TimeActive + (scene.Tracker.GetEntity<Player>().StateMachine.State != Player.StIntroRespawn ? (2f / 3) : 0.6f);
         }
 
         public override void Update() {
