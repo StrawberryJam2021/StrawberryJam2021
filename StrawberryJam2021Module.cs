@@ -62,7 +62,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
             WormholeBooster.LoadParticles();
             LoopBlock.InitializeTextures();
-
+            DashBoostField.LoadParticles();
         }
     }
 }

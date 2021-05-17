@@ -71,6 +71,12 @@ placements.entities.SJ2021/FlagBreakerBox.tooltips.flipX=Whether or not to flip 
 placements.entities.SJ2021/FlagBreakerBox.tooltips.music_progress=The progress to set the music to when the box is broken.
 placements.entities.SJ2021/FlagBreakerBox.tooltips.music_session=Whether or not to store the music changes in the session.
 
+# Dash Boost Field / Nyom Buble
+placements.entities.SJ2021/DashBoostField.tooltips.mode=The color of the object. Red will instantly refill the player if they dash inside of it, while Blue will not.
+placements.entities.SJ2021/DashBoostField.tooltips.dashSpeedMultiplier=How much the player's dash should be boosted.
+placements.entities.SJ2021/DashBoostField.tooltips.timeRateMultiplier=How much the game should down while the player is inside (1 is normal speed, 0.5 is half, etc.)
+placements.entities.SJ2021/DashBoostField.tooltips.radius=The radius of the effect, in tiles.
+
 # Triple Boost Flower
 placements.entities.SJ2021/TripleBoostFlower.tooltips.boostDelay=Cooldown between boosts, in seconds
 placements.entities.SJ2021/TripleBoostFlower.tooltips.boostSpeed=Y-Speed during the boost
@@ -81,3 +87,11 @@ placements.entities.SJ2021/TripleBoostFlower.tooltips.normalFallSpeed=Falling sp
 
 # Theo Respawn
 placements.entities.SJ2021/TheoRespawn.tooltips.flag=The flag that must be active for this Theo Respawn to activate.
+
+# Crystal Bomb Badeline Boss
+placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.music=The music event that should be triggered if "Can Change Music" is checked.
+# (these are copied from the original finalBoss)
+placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.patternIndex=Determines what pattern of attack Badeline uses.\n 0 - Badeline transforms into the boss after being hit once\n 1 - Shoots orbs\n 2 - Shoots laser followed by one orb\n 3 - Shoots five streams of two orbs\n 4 - Shoots five streams of two orbs followed by one laser\n 5 - Shoots laser followed by three streams of two orbs\n 6 - Shoots lasers\n 7 - Shoots orbs with less delay\n 8 - Shoots lasers with less delay\n 9 - Shoots streams of two orbs\n 10 - Does nothing\n 11 - Shoots orbs with more delay\n 12 - Does nothing\n 13 - Shoots orbs after getting hit once\n 14 - Shoots lasers with very short delay\n 15 - Shoots lasers with more delay
+placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.cameraLockY=Whether the camera should be locked vertically, functioning similarly as a killbox.
+placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.canChangeMusic=Whether the boss should be able to change the music to the boss track.
+placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.cameraPastY=Locks the camera from vertically rising, and changes the bottom screen killbox plane to be under Badeline's current position.

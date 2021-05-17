@@ -78,7 +78,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void DestroyIfBarrierDashSwitch(Glider glider, Platform hit) {
             if (hit is BarrierDashSwitch) {
-                DynamicData gliderData = new DynamicData(glider);
+                DynamicData gliderData = new DynamicData(typeof(Glider), glider);
                 gliderData.Set("destroyed", true);
                 glider.Collidable = false;
                 glider.Add(new Coroutine(gliderData.Invoke<IEnumerator>("DestroyAnimationRoutine")));

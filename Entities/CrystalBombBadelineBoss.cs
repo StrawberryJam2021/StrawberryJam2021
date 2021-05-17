@@ -1,7 +1,9 @@
 ﻿using Celeste.Mod.CavernHelper;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
 using Monocle;
+using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using System;
@@ -14,6 +16,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class CrystalBombBadelineBoss : FinalBoss {
         private DynamicData baseData;
         private Action<Player> base_OnPlayer;
+
+        private string music;
 
         private Circle playerCollider;
         // be more lenient with death hitbox
@@ -31,6 +35,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             playerCollider = new Circle(playerCollideRadius, 0f, -6f);
             Remove(Get<PlayerCollider>());
             Add(new PlayerCollider(OnPlayer, playerCollider));
+
+            music = data.Attr("music", "");
         }
 
         public override void Update() {
@@ -58,12 +64,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             crystalBombExplodeHook = new Hook(crystalBombExplodeInfo, crystalBombExplodeHookInfo);
             On.Celeste.Seeker.RegenerateCoroutine += On_Seeker_RegenerateCoroutine;
             On.Celeste.Puffer.Explode += On_Puffer_Explode;
+            IL.Celeste.FinalBoss.OnPlayer += IL_FinalBoss_OnPlayer;
         }
 
         public static void Unload() {
             crystalBombExplodeHook?.Dispose();
             On.Celeste.Seeker.RegenerateCoroutine -= On_Seeker_RegenerateCoroutine;
             On.Celeste.Puffer.Explode -= On_Puffer_Explode;
+            IL.Celeste.FinalBoss.OnPlayer -= IL_FinalBoss_OnPlayer;
         }
 
         private static void On_CrystalBomb_Explode(Action<CrystalBomb> orig, CrystalBomb self) {
@@ -102,6 +110,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 boss.OnHit();
             }
             self.Collider = origCollider;
+        }
+
+        private static void IL_FinalBoss_OnPlayer(ILContext il) {
+            ILCursor cursor = new ILCursor(il);
+            while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdstr("event:/music/lvl6/badeline_fight"))) {
+                cursor.Emit(OpCodes.Ldarg_0);
+                cursor.EmitDelegate<Func<string, FinalBoss, string>>(ChangeMusic);
+            }
+        }
+
+        private static string ChangeMusic(string origMusic, FinalBoss self) {
+            if (self is CrystalBombBadelineBoss crystalBoss && !string.IsNullOrEmpty(crystalBoss.music)) {
+                return crystalBoss.music;
+            } else {
+                return origMusic;
+            }
         }
     }
 }
