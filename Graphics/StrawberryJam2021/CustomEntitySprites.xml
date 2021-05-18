@@ -59,9 +59,11 @@
     </wormholeMask>
     
     <!--Laser Emitter-->
-    <laserEmitter path="objects/StrawberryJam2021/laserEmitter/" start="idle">
+    <laserEmitter path="objects/StrawberryJam2021/laserEmitter/" start="simple">
         <Justify x="0.5" y="1"/>
-        <Anim id="idle" path="idle" delay="0.1" frames="0"/>
+        <Anim id="simple" path="simple" delay="0.1" frames="0"/>
+        <Anim id="rounded_base" path="rounded_base" delay="0.1" frames="0"/>
+        <Anim id="rounded_tint" path="rounded_tint" delay="0.1" frames="0"/>
     </laserEmitter>
 
     <!--Flag Breaker Box-->
