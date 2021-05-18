@@ -37,6 +37,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(new PlayerCollider(OnPlayer, playerCollider));
 
             music = data.Attr("music", "");
+            if (data.Bool("disableCameraLock")) {
+                Remove(Get<CameraLocker>());
+            }
         }
 
         public override void Update() {
