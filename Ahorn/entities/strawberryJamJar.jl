@@ -17,11 +17,11 @@ Ahorn.editingOptions(entity::StrawberryJamJar) = Dict{String, Any}(
 function Ahorn.selection(entity::StrawberryJamJar)
     x, y = Ahorn.position(entity)
 
-    return Ahorn.getSpriteRectangle("objects/StrawberryJam2021/jamJar/$(entity.sprite)/jarfull_idle00", x, y - 20)
+    return Ahorn.getSpriteRectangle("objects/StrawberryJam2021/jamJar/$(entity.sprite)/jarfull_idle00", x, y, jx=0.5, jy=1)
 end
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::StrawberryJamJar)
-    Ahorn.drawSprite(ctx, "objects/StrawberryJam2021/jamJar/$(entity.sprite)/jarfull_idle00", 0, -20)
+    Ahorn.drawSprite(ctx, "objects/StrawberryJam2021/jamJar/$(entity.sprite)/jarfull_idle00", 0, 0, jx=0.5, jy=1)
 end
 
 end
