@@ -116,3 +116,7 @@ placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.cameraLockY=Whether 
 placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.canChangeMusic=Whether the boss should be able to change the music to the boss track.
 placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.cameraPastY=Locks the camera from vertically rising, and changes the bottom screen killbox plane to be under Badeline's current position.
 placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.disableCameraLock=Disables all camera locking, both horizontal and vertical.\nOverrides the "Camera Past Y" and "Camera Lock Y" settings.
+
+# Strawberry Jam Jar
+placements.entities.SJ2021/StrawberryJamJar.tooltips.map=The jar will be filled up when the map that has this ID is completed.\nThis is the same ID as the one the Chapter Panel Trigger from Collab Utils uses.
+placements.entities.SJ2021/StrawberryJamJar.tooltips.sprite=The sprite this jar will use.
