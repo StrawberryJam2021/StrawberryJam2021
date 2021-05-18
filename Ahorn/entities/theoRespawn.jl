@@ -2,7 +2,7 @@
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/TheoRespawn" TheoRespawn(x::Integer, y::Integer)
+@mapdef Entity "SJ2021/TheoRespawn" TheoRespawn(x::Integer, y::Integer, flag::String="")
 
 const placements = Ahorn.PlacementDict(
     "Theo Respawn (Strawberry Jam 2021)" => Ahorn.EntityPlacement(

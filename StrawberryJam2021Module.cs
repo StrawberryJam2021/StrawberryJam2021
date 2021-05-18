@@ -34,6 +34,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             FlagDashSwitch.Load();
             PocketUmbrellaController.Load();
             BarrierDashSwitch.Load();
+            TripleBoostFlower.Load();
+            ResettingRefill.Load();
         }
 
         public override void Unload() {
@@ -51,6 +53,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             FlagDashSwitch.Unload();
             PocketUmbrellaController.Unload();
             BarrierDashSwitch.Unload();
+            TripleBoostFlower.Unload();
+            ResettingRefill.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -60,7 +64,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
             WormholeBooster.LoadParticles();
             LoopBlock.InitializeTextures();
-
+            DashBoostField.LoadParticles();
         }
     }
 }

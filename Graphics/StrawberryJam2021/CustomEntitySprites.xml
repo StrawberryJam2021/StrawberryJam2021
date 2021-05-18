@@ -50,10 +50,20 @@
         <Anim id="pop" path="boosterWormhole" delay="0.08" frames="9-17"/>
     </wormholeBooster>
     
+    <wormholeMask path="objects/StrawberryJam2021/boosterDisplacementMask/" start="loop">
+        <Justify x="0.5" y="0.5"/>
+        <Loop id="loop" path="boosterWormhole" delay="0.1" frames="0-4"/>
+        <Loop id="inside" path="boosterWormhole" delay="0.1" frames="5-8"/>
+        <Loop id="spin" path="boosterWormhole" delay="0.06" frames="18-25"/>
+        <Anim id="pop" path="boosterWormhole" delay="0.08" frames="9-17"/>
+    </wormholeMask>
+    
     <!--Laser Emitter-->
-    <laserEmitter path="objects/StrawberryJam2021/laserEmitter/" start="idle">
+    <laserEmitter path="objects/StrawberryJam2021/laserEmitter/" start="simple">
         <Justify x="0.5" y="1"/>
-        <Anim id="idle" path="idle" delay="0.1" frames="0"/>
+        <Anim id="simple" path="simple" delay="0.1" frames="0"/>
+        <Anim id="rounded_base" path="rounded_base" delay="0.1" frames="0"/>
+        <Anim id="rounded_tint" path="rounded_tint" delay="0.1" frames="0"/>
     </laserEmitter>
 
     <!--Flag Breaker Box-->
@@ -64,6 +74,17 @@
         <Loop id="opened" path="opened" delay="0.06"/>
         <Anim id="break" path="break" delay="0.06"/>
     </flagBreakerBox>
+	
+    <!--Rose Glider-->
+    <roseGlider path="objects/StrawberryJam2021/roseGlider/" start="idle_3">
+        <Anim id="idle_3" path="3charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_3:9,idle_gust_3:1"/>
+        <Anim id="idle_gust_3" path="3charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_3:9,idle_gust_3:1"/>
+        <Anim id="idle_2" path="2charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_2:9,idle_gust_2:1"/>
+        <Anim id="idle_gust_2" path="2charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_2:9,idle_gust_2:1"/>
+        <Anim id="idle_1" path="1charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_1:9,idle_gust_1:1"/>
+        <Anim id="idle_gust_1" path="1charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_1:9,idle_gust_1:1"/>
+        <Anim id="death" path="death" delay="0.1" />
+    </roseGlider>
 
     <!--Strawberry Jam Jars-->
     <jamJar_trailer path="objects/StrawberryJam2021/jamJar/trailer/" start="empty">
@@ -73,5 +94,4 @@
         <Anim id="fill" path="jarfill_" delay="0.1" goto="full"/>
         <Loop id="full" path="jarfull_idle" delay="0.1"/>
     </jamJar_trailer>
-
 </Sprites>

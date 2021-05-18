@@ -12,6 +12,7 @@ using Monocle;
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
     [CustomEntity("SJ2021/ConditionalFlagTrigger")]
+    [Tracked]
     class ConditionalFlagTrigger : Trigger {
         private string flag; //the flag to set when the trigger is set
         private string controllerFlag; //the flag that enables these triggers
@@ -31,7 +32,11 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             base.OnEnter(player);
             //if the trigger is enabled, change the flag state to set
             if (!string.IsNullOrEmpty(flag)) {
-                priorState = SceneAs<Level>().Session.GetFlag(flag);
+                ConditionalFlagTrigger active = GetActiveTrigger();
+                if (active != null)
+                    priorState = active.priorState;
+                else
+                    priorState = SceneAs<Level>().Session.GetFlag(flag);
                 SceneAs<Level>().Session.SetFlag(flag, flagValue);
             }
         }
@@ -40,8 +45,29 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             base.OnLeave(player);
             //if the trigger is enabled, change the flag state to it's prior state
             if (!string.IsNullOrEmpty(flag) && revertOnLeave) {
-                SceneAs<Level>().Session.SetFlag(flag, priorState);
+
+                if(!FoundActiveTrigger())
+                    SceneAs<Level>().Session.SetFlag(flag, priorState);
             }
+        }
+
+        private bool FoundActiveTrigger() {
+            bool found = false;
+            List<Entity> tracked = Scene.Tracker.GetEntities<ConditionalFlagTrigger>();
+            foreach (ConditionalFlagTrigger current in tracked) {
+                if (current != this && current.Triggered && current.flag == flag)
+                    found = true;
+            }
+            return found;
+        }
+
+        private ConditionalFlagTrigger GetActiveTrigger() {
+            List<Entity> tracked = Scene.Tracker.GetEntities<ConditionalFlagTrigger>();
+            foreach (ConditionalFlagTrigger current in tracked) {
+                if (current != this && current.Triggered && current.flag == flag)
+                    return current;
+            }
+            return null;
         }
 
         public override void Update() {

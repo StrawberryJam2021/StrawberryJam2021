@@ -2,7 +2,10 @@ module SJ2021CrystalBombBadelineBoss
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/CrystalBombBadelineBoss" CrystalBombBadelineBoss(x::Integer, y::Integer, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], patternIndex::Integer=1, cameraPastY::Number=120.0, cameraLockY::Bool=true, canChangeMusic::Bool=true)
+@mapdef Entity "SJ2021/CrystalBombBadelineBoss" CrystalBombBadelineBoss(x::Integer, y::Integer, 
+    nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[], patternIndex::Integer=1, 
+    cameraPastY::Number=120.0, cameraLockY::Bool=true, canChangeMusic::Bool=true, music::String="",
+    disableCameraLock::Bool=false)
 
 const placements = Ahorn.PlacementDict(
     "Badeline Boss (Crystal Bomb)\n(Strawberry Jam 2021)" => Ahorn.EntityPlacement(
