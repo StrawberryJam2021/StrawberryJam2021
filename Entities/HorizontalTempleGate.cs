@@ -178,6 +178,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
                 spritealt.Play("idle");
                 spritealt.SetAnimationFrame(0);
             }
+            if (this.Inverted) {
+                drawWidthMoveSpeed = 200f;
+                drawWidth = this.width;
+                SetWidth(OpenWidth);
+                this.open = true;
+            }
         }
         public override void Awake(Scene scene)
         {
