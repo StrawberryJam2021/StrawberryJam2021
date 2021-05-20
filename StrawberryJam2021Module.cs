@@ -36,7 +36,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             BarrierDashSwitch.Load();
             TripleBoostFlower.Load();
             ResettingRefill.Load();
-            SineDustSpinner.Load();
+            //SineDustSpinner.Load();
             HorizontalTempleGate.Load();
         }
 
