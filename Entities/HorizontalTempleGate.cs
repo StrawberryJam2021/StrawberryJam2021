@@ -81,7 +81,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         var data = new DynData<DashSwitch>(self);
                         foreach (HorizontalTempleGate entity in self.Scene.Tracker.GetEntities<HorizontalTempleGate>()) {
                             if (entity.Type == HorizontalTempleGate.Types.NearestSwitch && entity.LevelID == data.Get<EntityID>("id").Level) {
-                                entity.PerformChange();
+                                entity.SwitchOpen();
                             }
                         }
                     });
@@ -113,6 +113,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             templeGate = null;
                         }
                         hTempleGate.ClaimedByASwitch = true;
+                        hTempleGate.SwitchOpen();
                     }
                     return templeGate;
                 });
@@ -163,8 +164,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 new Hitbox(targetX, 8f, 0, 0),
                 new Hitbox(48f - targetX, 8f, targetX, 0)
             };
-            ((ColliderList) base.Collider).Add(colliders[0]);
-            ((ColliderList) base.Collider).Add(colliders[1]);
+            if(this.OpenDirection != OpenDirections.Right) {
+                ((ColliderList) base.Collider).Add(colliders[0]);
+            }
+            if (this.OpenDirection != OpenDirections.Left) {
+                ((ColliderList) base.Collider).Add(colliders[1]);
+            }
 
             sprites = new Sprite[2];
             Add(sprites[0] = StrawberryJam2021Module.SpriteBank.Create("horizontalTempleGateLeft"));
@@ -181,7 +186,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 this.open = true;
             } else {
                 // init gate as closed
-                this.drawWidth = this.Width * this.moveSpeedMultiplier;
+                this.drawWidth = 48f * this.moveSpeedMultiplier;
                 SetWidth((int) this.drawWidth);
                 this.open = false;
             }
@@ -192,21 +197,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             else if (this.Type == Types.FlagActive) {
                 Add(new Coroutine(CheckFlag(this.Flag), false));
             }
-            else if(this.Type == Types.NearestSwitch) {
-                Add(new Coroutine(CheckNearestSwitch(), false));
-            }
         }
-        /*
+
         public void SwitchOpen()//applies a delay to utilization of Open in the case the door is opened by a dash switch. I don't know why this was implemented, but for consistency with the vanilla temple gate this is being used.
         {
             foreach(Sprite s in sprites) {
                 s.Play("open");
             }
-            Alarm.Set(this, 0.2f, delegate {
-                shaker.ShakeFor(0.2f, removeOnFinish: false);
-                Alarm.Set(this, 0.2f, Open);
-            });
-        }*/
+            if (Inverted) {
+                Alarm.Set(this, 0.2f, delegate {
+                    shaker.ShakeFor(0.2f, removeOnFinish: false);
+                    Alarm.Set(this, 0.2f, Close);
+                });
+            } else {
+                Alarm.Set(this, 0.2f, delegate {
+                    shaker.ShakeFor(0.2f, removeOnFinish: false);
+                    Alarm.Set(this, 0.2f, Open);
+                });
+            }
+        }
 
         public void Open() {
             Audio.Play("event:/game/05_mirror_temple/gate_main_open", Position);
@@ -223,7 +232,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Audio.Play("event:/game/05_mirror_temple/gate_main_close", Position);
             widthMoveSpeed = 300f;
             shaker.ShakeFor(0.2f, removeOnFinish: false);
-            SetWidth((int) (this.Width * moveSpeedMultiplier));
+            SetWidth((int) (48f * moveSpeedMultiplier));
 
             foreach (Sprite s in sprites) {
                 s.Play("hit");
@@ -249,13 +258,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        private IEnumerator CheckNearestSwitch() {
-            while (!ClaimedByASwitch) {
-                yield return null;
-            }
-            yield return PerformChange();
-        }
-
         private IEnumerator CheckTouchSwitches() {
             while (!Switch.Check(Scene)) {
                 yield return null;
@@ -272,7 +274,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void SetWidth(int width) {
-            //this.Collidable = (width != 0);
             this.targetWidth = width;
             float x = X;
             if (this.OpenDirection != OpenDirections.Right) {
@@ -288,7 +289,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (this.OpenDirection != OpenDirections.Left) {
                 float oldWidth = colliders[1].Width;
                 colliders[1].Width = width;
-                colliders[1].Position.X = 48f - width;
+                colliders[1].Position.X = 48 - width;
                 // attempt to push/kill player
                 if (oldWidth < width) {
                     X -= oldWidth - width;
