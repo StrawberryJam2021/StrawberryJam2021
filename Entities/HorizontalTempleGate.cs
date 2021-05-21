@@ -109,11 +109,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                     if (hTempleGate != null && (templeGate == null || dist < Vector2.DistanceSquared(self.Position, templeGate.Position))) {
                         if (templeGate != null) {
-                            templeGate = null;
                             templeGate.ClaimedByASwitch = false;
+                            templeGate = null;
                         }
                         hTempleGate.ClaimedByASwitch = true;
-                        hTempleGate.PerformChange();
                     }
                     return templeGate;
                 });
@@ -124,13 +123,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Player.OnSquish -= Player_OnSquish;
         }
 
-        
+
 
 
         //comment to indicate end of lilybeevee's IL hook
         //the bulk of the rest of this code is primarily based on the vanilla templegate, modified for a horizontal direction and to function with Ahorn and Everest. Likely reading the vanilla templegate's code will provide better indication to what this code's counterparts' purposes are.
         public HorizontalTempleGate(EntityData data, Vector2 offset)
             : base(data.Position + offset, 48f, 8f, safe: true) {
+
+            LevelID = data.Level.Name;
 
             this.Type = data.Enum<Types>("type", Types.FlagActive);
             this.OpenDirection = data.Enum<OpenDirections>("direction", OpenDirections.Left);
@@ -188,8 +189,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (this.Type == Types.TouchSwitches) {
                 Add(new Coroutine(CheckTouchSwitches(), false));
             }
-            if (this.Type == Types.FlagActive) {
+            else if (this.Type == Types.FlagActive) {
                 Add(new Coroutine(CheckFlag(this.Flag), false));
+            }
+            else if(this.Type == Types.NearestSwitch) {
+                Add(new Coroutine(CheckNearestSwitch(), false));
             }
         }
         /*
@@ -243,6 +247,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             } else {
                 Open();
             }
+        }
+
+        private IEnumerator CheckNearestSwitch() {
+            while (!ClaimedByASwitch) {
+                yield return null;
+            }
+            yield return PerformChange();
         }
 
         private IEnumerator CheckTouchSwitches() {
