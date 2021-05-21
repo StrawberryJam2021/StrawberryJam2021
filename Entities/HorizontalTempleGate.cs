@@ -37,7 +37,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public OpenDirections OpenDirection;
         public Types Type;
 
-        // maximum distance between foot of door and targetX
+        // maximum distance between foot of door and edge
         private const float MinEdgeSpace = 4f;
 
         // how far the foot of the door is from the wall
@@ -61,7 +61,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         //The full section between this comment and the next was written by lilybeevee, intended to allow this entity to function with dash switches while in the same room as a regular temple gate. This doesn't yet work and is where I'm currently stumped.
         public static void Load() {
             IL.Celeste.DashSwitch.OnDashed += DashSwitch_OnDashed;
+            On.Celeste.Player.OnSquish += Player_OnSquish;
         }
+
+        static void Player_OnSquish(On.Celeste.Player.orig_OnSquish orig, Player self, CollisionData data) {
+            Logger.Log("SJ2021/HorizontalTempleGate", "Squished");
+            orig(self, data);
+        }
+
 
         private static void DashSwitch_OnDashed(ILContext il) {
             var cursor = new ILCursor(il);
@@ -114,7 +121,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
         public static void Unload() {
             IL.Celeste.DashSwitch.OnDashed -= DashSwitch_OnDashed;
+            On.Celeste.Player.OnSquish -= Player_OnSquish;
         }
+
+        
 
 
         //comment to indicate end of lilybeevee's IL hook
@@ -134,7 +144,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             this.moveSpeedMultiplier = 1f;
             // foot of gate when closed
-            float targetX;
+            float targetX = 48f;
             switch (this.OpenDirection) {
                 case OpenDirections.Left:
                     targetX = 48f;
@@ -143,7 +153,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     targetX = 0f;
                     break;
                 case OpenDirections.Center:
-                    this.targetX = 24f;
+                    targetX = 24f;
                     this.moveSpeedMultiplier = 0.5f;
                     break;
             }
@@ -251,15 +261,30 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void SetWidth(int width) {
-            this.Collidable = (width != 0);
+            //this.Collidable = (width != 0);
             this.targetWidth = width;
+            float x = X;
             if (this.OpenDirection != OpenDirections.Right) {
+                float oldWidth = colliders[0].Width;
                 colliders[0].Width = width;
+                // if we're growing, try to push/kill the player
+                if (oldWidth < width) {
+                    X -= width - oldWidth;
+                    MoveHExact((int) (width - oldWidth));
+                }
             }
+            X = x;
             if (this.OpenDirection != OpenDirections.Left) {
+                float oldWidth = colliders[1].Width;
                 colliders[1].Width = width;
                 colliders[1].Position.X = 48f - width;
+                // attempt to push/kill player
+                if (oldWidth < width) {
+                    X -= oldWidth - width;
+                    MoveHExact((int) (oldWidth - width));
+                }
             }
+            X = x;
         }
 
         public override void Update() {
