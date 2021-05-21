@@ -22,6 +22,21 @@
         <Anim id="open" path="TempleDoor" delay="0.1" frames="6-14" goto="idle"/>
         <Anim id="hit" path="TempleDoor" delay="0.08" frames="0-4" goto="idle"/>
     </grabTempleGate>
+    
+    <!--Horizontal Temple Gate-->
+    <horizontalTempleGateLeft path="objects/StrawberryJam2021/horizontalTempleGate/left/" start="idle">
+        <Justify x="0" y="0.25"/>
+        <Loop id="idle" path="TempleDoor" delay="0.1" frames="0"/>
+        <Anim id="open" path="TempleDoor" delay="0.1" frames="6-14" goto="idle"/>
+        <Anim id="hit" path="TempleDoor" delay="0.08" frames="0-4" goto="idle"/>
+    </horizontalTempleGateLeft>
+    
+    <horizontalTempleGateRight path="objects/StrawberryJam2021/horizontalTempleGate/right/" start="idle">
+        <Justify x="0" y="0.25"/>
+        <Loop id="idle" path="TempleDoor" delay="0.1" frames="0"/>
+        <Anim id="open" path="TempleDoor" delay="0.1" frames="6-14" goto="idle"/>
+        <Anim id="hit" path="TempleDoor" delay="0.08" frames="0-4" goto="idle"/>
+    </horizontalTempleGateRight>
 
     <!--Exploding Strawberry-->
     <explodingStrawberry path="objects/StrawberryJam2021/explodingStrawberry/" start="idle">
