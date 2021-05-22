@@ -10,3 +10,9 @@
       Version: 1.13.4
     - Name: ExtendedVariantMode
       Version: 0.19.15
+    - Name: FactoryHelper
+      Version: 1.2.5
+    - Name: Batteries
+      Version: 1.1.0
+    - Name: VortexHelper
+      Version: 1.1.0
