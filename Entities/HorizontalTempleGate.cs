@@ -9,6 +9,7 @@ using MonoMod.Utils;
 using MonoMod.Cil;
 using Celeste.Mod;
 using Mono.Cecil.Cil;
+using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked(false)]
@@ -25,6 +26,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Right,
             Center
         }
+        private static readonly FieldInfo GetPrivateRiders = typeof(Solid).GetField("riders", BindingFlags.NonPublic | BindingFlags.Static);
+        private static HashSet<Actor> riders => (HashSet<Actor>)GetPrivateRiders.GetValue(null);
 
         private string LevelID;
 
@@ -276,27 +279,65 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void SetWidth(int width) {
             this.targetWidth = width;
             float x = X;
+            float oldWidth = 0f;
             if (this.OpenDirection != OpenDirections.Right) {
-                float oldWidth = colliders[0].Width;
+                oldWidth = colliders[0].Width;
                 colliders[0].Width = width;
                 // if we're growing, try to push/kill the player
-                if (oldWidth < width) {
+                // there's a separate check if we're in center mode
+                if (oldWidth < width && this.OpenDirection != OpenDirections.Center) {
                     X -= width - oldWidth;
                     MoveHExact((int) (width - oldWidth));
                 }
+                X = x;
             }
-            X = x;
             if (this.OpenDirection != OpenDirections.Left) {
-                float oldWidth = colliders[1].Width;
+                oldWidth = colliders[1].Width;
                 colliders[1].Width = width;
                 colliders[1].Position.X = 48 - width;
                 // attempt to push/kill player
-                if (oldWidth < width) {
+                if (oldWidth < width && this.OpenDirection != OpenDirections.Center) {
                     X -= oldWidth - width;
                     MoveHExact((int) (oldWidth - width));
                 }
+                X = x;
             }
-            X = x;
+            if(this.OpenDirection == OpenDirections.Center && oldWidth < width) {
+                MoveRiders((int) (width - oldWidth));
+            }
+            Collidable = true;
+        }
+
+        public void MoveRiders(int width) {
+            // Move/Kill riders when we're centered
+            GetRiders();
+            float right = base.Right;
+            float left = base.Left;
+            Player player = null;
+            player = base.Scene.Tracker.GetEntity<Player>();
+
+            foreach (Actor entity in base.Scene.Tracker.GetEntities<Actor>()) {
+                if (entity.AllowPushing) {
+                    bool collidable = entity.Collidable;
+                    entity.Collidable = true;
+                    int move = (entity.CenterX > (left + right) / 2) ? -width : width;
+                    if (!entity.TreatNaive && CollideCheck(entity, Position)) {
+                        // yeah i kinda gave up here and just decided to hard center the entity
+                        entity.CenterX = this.CenterX-1f;
+                        entity.MoveHExact(1, entity.SquishCallback, this);
+                    } else if (riders.Contains(entity)) {
+                        entity.CenterX = this.CenterX - 1f;
+                        if (entity.TreatNaive) {
+                            entity.NaiveMove(Vector2.UnitX);
+                        } else {
+                            entity.MoveHExact(1, null, null);
+                        }
+
+                    }
+                    entity.Collidable = collidable;
+                }
+            }
+            riders.Clear();
         }
 
         public override void Update() {
