@@ -64,12 +64,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         //The full section between this comment and the next was written by lilybeevee, intended to allow this entity to function with dash switches while in the same room as a regular temple gate. This doesn't yet work and is where I'm currently stumped.
         public static void Load() {
             IL.Celeste.DashSwitch.OnDashed += DashSwitch_OnDashed;
-            On.Celeste.Player.OnSquish += Player_OnSquish;
-        }
-
-        static void Player_OnSquish(On.Celeste.Player.orig_OnSquish orig, Player self, CollisionData data) {
-            Logger.Log("SJ2021/HorizontalTempleGate", "Squished");
-            orig(self, data);
         }
 
 
@@ -124,10 +118,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
         public static void Unload() {
             IL.Celeste.DashSwitch.OnDashed -= DashSwitch_OnDashed;
-            On.Celeste.Player.OnSquish -= Player_OnSquish;
         }
-
-
 
 
         //comment to indicate end of lilybeevee's IL hook
@@ -315,6 +306,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             float left = base.Left;
             Player player = null;
             player = base.Scene.Tracker.GetEntity<Player>();
+            Logger.Log("StrawberryJam2021/HorizontalTempleGate", (player != null && CollideCheck(player, Position) &&
+                    (player.Top - this.Bottom) <= -6 && (player.Top - this.Bottom) > -12).ToString());
+            Logger.Log("StrawberryJam2021/HorizontalTempleGate", (player.Top - this.Bottom).ToString());
+
+            if (player != null && CollideCheck(player, Position) &&
+                    (player.Top - this.Bottom) <= -6 && (player.Top - this.Bottom) > -12) {
+                player.NaiveMove((this.Bottom-player.Top)*Vector2.UnitY);
+            }
 
             foreach (Actor entity in base.Scene.Tracker.GetEntities<Actor>()) {
                 if (entity.AllowPushing) {
@@ -332,7 +331,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         } else {
                             entity.MoveHExact(1, null, null);
                         }
-
                     }
                     entity.Collidable = collidable;
                 }
