@@ -1,4 +1,4 @@
-﻿- Name: StrawberryJam2021
+- Name: StrawberryJam2021
   Version: 1.0.0
   DLL: bin/Debug/net452/StrawberryJam2021.dll
   Dependencies:
@@ -11,8 +11,8 @@
     - Name: ExtendedVariantMode
       Version: 0.19.15
     - Name: FactoryHelper
-      Version: "1.2.4"
+      Version: 1.2.5
     - Name: Batteries
-      Version: "1.1.0"
+      Version: 1.1.0
     - Name: VortexHelper
-      Version: "1.1.0"
+      Version: 1.1.0
