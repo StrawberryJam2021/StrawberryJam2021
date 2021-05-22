@@ -10,3 +10,5 @@
       Version: 1.13.4
     - Name: ExtendedVariantMode
       Version: 0.19.15
+    - Name: CanyonHelper
+      Version: 1.1.3
