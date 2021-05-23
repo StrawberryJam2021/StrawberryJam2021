@@ -61,7 +61,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private Shaker shaker;
 
-        //The full section between this comment and the next was written by lilybeevee, intended to allow this entity to function with dash switches while in the same room as a regular temple gate. This doesn't yet work and is where I'm currently stumped.
+        //The full section between this comment and the next was written by lilybeevee
         public static void Load() {
             IL.Celeste.DashSwitch.OnDashed += DashSwitch_OnDashed;
         }
@@ -119,10 +119,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static void Unload() {
             IL.Celeste.DashSwitch.OnDashed -= DashSwitch_OnDashed;
         }
-
-
         //comment to indicate end of lilybeevee's IL hook
-        //the bulk of the rest of this code is primarily based on the vanilla templegate, modified for a horizontal direction and to function with Ahorn and Everest. Likely reading the vanilla templegate's code will provide better indication to what this code's counterparts' purposes are.
+
         public HorizontalTempleGate(EntityData data, Vector2 offset)
             : base(data.Position + offset, 48f, 8f, safe: true) {
 
@@ -193,8 +191,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        public void SwitchOpen()//applies a delay to utilization of Open in the case the door is opened by a dash switch. I don't know why this was implemented, but for consistency with the vanilla temple gate this is being used.
-        {
+        //applies a delay to utilization of Open in the case the door is opened by a dash switch. I don't know why this was implemented, but for consistency with the vanilla temple gate this is being used.
+        public void SwitchOpen(){
             foreach(Sprite s in sprites) {
                 s.Play("open");
             }
@@ -300,16 +298,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void MoveRiders(int width) {
+            // this function is based on Solid.MoveHExact
+
             // Move/Kill riders when we're centered
             GetRiders();
             float right = base.Right;
             float left = base.Left;
             Player player = null;
             player = base.Scene.Tracker.GetEntity<Player>();
-            Logger.Log("StrawberryJam2021/HorizontalTempleGate", (player != null && CollideCheck(player, Position) &&
-                    (player.Top - this.Bottom) <= -6 && (player.Top - this.Bottom) > -12).ToString());
-            Logger.Log("StrawberryJam2021/HorizontalTempleGate", (player.Top - this.Bottom).ToString());
 
+            // Drop the player down if they are at a particular height
+            // the player gets stuck in the door without this
             if (player != null && CollideCheck(player, Position) &&
                     (player.Top - this.Bottom) <= -6 && (player.Top - this.Bottom) > -12) {
                 player.NaiveMove((this.Bottom-player.Top)*Vector2.UnitY);
@@ -350,9 +349,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        public override void Render()
-        //this section has somewhat overcomplicated formulae to calculate width and position of door sprites, as potential for overlap between sprites using the center direction should a sprite be made larger than its default size is being accounted for. This is to allow for textures to expand beyond the halfway point for more intricate overlap between the left and right door with center open direction.
-        {
+        public override void Render() {
             if (this.OpenDirection != OpenDirections.Right) {
                 Vector2 shake = new Vector2(0f, Math.Sign(shaker.Value.X));
                 sprites[0].DrawSubrect(new Vector2(0, -2) + shake, 
