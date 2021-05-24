@@ -10,7 +10,7 @@ using MonoMod.Utils;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class ToggleBlockReskin {
         private const int STAY = 8, DONE = 9;
-        private static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done"};
+        private static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
         private static string pathPrefix = "objects/StrawberryJam2021/toggleIndicator/";
         private static MTexture[] allTextures = new MTexture[paths.Length];
         private static Type toggleSwapBlockType = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "CanyonHelper").GetType().Assembly.GetType("Celeste.Mod.CanyonHelper.ToggleSwapBlock");
@@ -130,7 +130,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 orig(self, pos, width, height, ninSlice, middle, color);
             } else {
                 orig(self, pos, width, height, ninSlice, null, color);
-                ((MTexture) texture).Draw(pos);
+                ((MTexture) texture).DrawCentered(pos + self.Center - self.Position);
             }
         }
     }
