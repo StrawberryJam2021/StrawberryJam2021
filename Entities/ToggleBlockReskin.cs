@@ -21,8 +21,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static Hook updateTextureHook;
         private static Hook drawTextureHook;
 
-        private class Marker : Component {
-            public Marker() : base(false, false) { }
+        private class TextureComponent : Component {
+            public MTexture texture;
+
+            public TextureComponent() : base(false, false) { }
         }
 
         public static void Load() {
@@ -47,7 +49,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             bool isReskin = entityData.Name == "SJ2021/ToggleSwapBlock";
             if (isReskin) {
                 Entity block = (Entity) Activator.CreateInstance(toggleSwapBlockType, new object[] { entityData, offset });
-                block.Add(new Marker());
+                block.Add(new TextureComponent());
                 level.Add(block);
             }
             return isReskin;
@@ -55,7 +57,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void UpdateTexture<ToggleSwapBlock>(Action<ToggleSwapBlock> orig, ToggleSwapBlock self) where ToggleSwapBlock : Entity {
             orig(self);
-            if (self.Get<Marker>() == null) {
+            TextureComponent texComp = self.Get<TextureComponent>();
+            if (texComp == null) {
                 return;
             }
             DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
@@ -77,17 +80,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                 }
             }
-            data["texture"] = textures[indicator];
+            texComp.texture = textures[indicator];
         }
 
         public static void DrawTexture<ToggleSwapBlock>(Action<ToggleSwapBlock, Vector2, float, float, MTexture[,], Sprite, Color> orig,
             ToggleSwapBlock self, Vector2 pos, float width, float height, MTexture[,] ninSlice, Sprite middle, Color color) where ToggleSwapBlock : Entity {
-            DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
-            if (!data.Data.TryGetValue("texture", out object texture)) {
+            TextureComponent texComp = self.Get<TextureComponent>();
+            if (texComp == null) {
                 orig(self, pos, width, height, ninSlice, middle, color);
             } else {
                 orig(self, pos, width, height, ninSlice, null, color);
-                ((MTexture) texture).DrawCentered(pos + self.Center - self.Position);
+                texComp.texture.DrawCentered(pos + self.Center - self.Position);
             }
         }
     }
