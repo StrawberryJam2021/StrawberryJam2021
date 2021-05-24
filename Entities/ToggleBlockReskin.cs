@@ -9,41 +9,54 @@ using MonoMod.Utils;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class ToggleBlockReskin {
-        const int STAY = 8, DONE = 9;
-        static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done"};
-        static Type toggleSwapBlockType = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "CanyonHelper").GetType().Assembly.GetType("Celeste.Mod.CanyonHelper.ToggleSwapBlock");
-        static FieldInfo nodesField = toggleSwapBlockType.GetField("nodes", BindingFlags.NonPublic | BindingFlags.Instance);
-        static FieldInfo oscillateField = toggleSwapBlockType.GetField("oscillate", BindingFlags.NonPublic | BindingFlags.Instance);
-        static FieldInfo stopAtEndField = toggleSwapBlockType.GetField("stopAtEnd", BindingFlags.NonPublic | BindingFlags.Instance);
-        static MethodInfo recalculateLaserColor = toggleSwapBlockType.GetMethod("RecalculateLaserColor", BindingFlags.NonPublic | BindingFlags.Instance);
-        static MethodInfo updateSprite = typeof(ToggleBlockReskin).GetMethod("UpdateSprite", BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType);
-        static Hook updateSpriteHook;
-        static Dictionary<int, SpriteList> cache = new Dictionary<int, SpriteList>();
+        private const int STAY = 8, DONE = 9;
+        private static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done"};
+        private static string pathPrefix = "objects/StrawberryJam2021/toggleIndicator/";
+        private static MTexture[] allTextures = new MTexture[paths.Length];
+        private static Type toggleSwapBlockType = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "CanyonHelper").GetType().Assembly.GetType("Celeste.Mod.CanyonHelper.ToggleSwapBlock");
+        private static FieldInfo nodesField = toggleSwapBlockType.GetField("nodes", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static FieldInfo oscillateField = toggleSwapBlockType.GetField("oscillate", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static FieldInfo stopAtEndField = toggleSwapBlockType.GetField("stopAtEnd", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static MethodInfo recalculateLaserColor = toggleSwapBlockType.GetMethod("RecalculateLaserColor", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static MethodInfo drawBlockStyle = toggleSwapBlockType.GetMethod("DrawBlockStyle", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static MethodInfo updateTexture = typeof(ToggleBlockReskin).GetMethod("UpdateTexture", BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType);
+        private static MethodInfo drawTexture = typeof(ToggleBlockReskin).GetMethod("DrawTexture", BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType);
+        private static Hook updateTextureHook;
+        private static Hook drawTextureHook;
+        private static Dictionary<int, TextureList> cache = new Dictionary<int, TextureList>();
 
-        private class SpriteList : Component {
-            public Sprite[] sprites;
+        private class TextureList : Component {
+            public MTexture[] textures;
 
-            public SpriteList(Sprite[] sprites) : base(false, false) {
-                this.sprites = sprites;
+            public TextureList(MTexture[] textures) : base(false, false) {
+                this.textures = textures;
             }
         }
 
         public static void Load() {
             Everest.Events.Level.OnLoadEntity += OnLoadEntity;
-            updateSpriteHook = new Hook(recalculateLaserColor, updateSprite);
+            updateTextureHook = new Hook(recalculateLaserColor, updateTexture);
+            drawTextureHook = new Hook(drawBlockStyle, drawTexture);
+        }
+
+        public static void InitializeTextures() {
+            for (int i = 0; i < paths.Length; i++) {
+                allTextures[i] = GFX.Game[pathPrefix + paths[i]];
+            }
         }
 
         public static void Unload() {
             Everest.Events.Level.OnLoadEntity -= OnLoadEntity;
-            updateSpriteHook.Dispose();
+            updateTextureHook.Dispose();
+            drawTextureHook.Dispose();
         }
 
         private static bool OnLoadEntity(Level level, LevelData levelData, Vector2 offset, EntityData entityData) {
             bool isReskin = entityData.Name == "SJ2021/ToggleSwapBlock";
             if (isReskin) {
                 Entity block = (Entity) Activator.CreateInstance(toggleSwapBlockType, new object[] { entityData, offset });
-                if (!cache.TryGetValue(entityData.ID, out SpriteList list)) {
-                    cache.Add(entityData.ID, list = new SpriteList(MakeSprites(block)));
+                if (!cache.TryGetValue(entityData.ID, out TextureList list)) {
+                    cache.Add(entityData.ID, list = new TextureList(GetTextures(block)));
                 }
                 block.Add(list);
                 level.Add(block);
@@ -51,25 +64,34 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return isReskin;
         }
 
-        private static Sprite[] MakeSprites(object block) {
+        private static MTexture[] GetTextures(object block) {
+            int[] indicators = CalculateIndicators(block);
+            MTexture[] textures = new MTexture[indicators.Length];
+            for (int i = 0; i < textures.Length; i++) {
+                textures[i] = allTextures[indicators[i]];
+            }
+            return textures;
+        }
+
+        private static int[] CalculateIndicators(object block) {
             Vector2[] nodes = (Vector2[]) nodesField.GetValue(block);
             bool oscillate = (bool) oscillateField.GetValue(block);
             bool stopAtEnd = (bool) stopAtEndField.GetValue(block);
-            Sprite[] sprites = new Sprite[nodes.Length * (oscillate ? 2 : 1)];
+            int[] indicators = new int[nodes.Length * (oscillate ? 2 : 1)];
             int end = nodes.Length - 1;
             for (int i = 0; i < end; i++) {
-                sprites[i] = MakeSprite(IndicatorFromNodes(nodes, i, i + 1));
+                indicators[i] = IndicatorFromNodes(nodes, i, i + 1);
             }
             if (!oscillate) {
-                sprites[end] = MakeSprite(stopAtEnd ? DONE : IndicatorFromNodes(nodes, end, 0));
+                indicators[end] = stopAtEnd ? DONE : IndicatorFromNodes(nodes, end, 0);
             } else {
                 for (int i = 1; i <= end; i++) {
-                    sprites[nodes.Length + i] = MakeSprite(IndicatorFromNodes(nodes, i, i - 1));
+                    indicators[nodes.Length + i] = IndicatorFromNodes(nodes, i, i - 1);
                 }
-                sprites[end] = sprites[nodes.Length + end];
-                sprites[nodes.Length] = sprites[0];
+                indicators[end] = indicators[nodes.Length + end];
+                indicators[nodes.Length] = indicators[0];
             }
-            return sprites;
+            return indicators;
         }
 
         private static int IndicatorFromNodes(Vector2[] nodes, int start, int end) {
@@ -86,30 +108,30 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return indicator;
         }
 
-        private static Sprite MakeSprite(int idx) {
-            string path = paths[idx];
-            Sprite sprite = new Sprite(GFX.Game, "objects/StrawberryJam2021/toggleIndicator/");
-            sprite.AddLoop("idle", path, 0f);
-            sprite.AddLoop("moving", path, 0f);
-            sprite.Justify = new Vector2(0.5f, 0.5f);
-            return sprite;
-        }
-
-        public static void UpdateSprite<ToggleSwapBlock>(Action<ToggleSwapBlock> orig, ToggleSwapBlock self) where ToggleSwapBlock : Entity {
+        public static void UpdateTexture<ToggleSwapBlock>(Action<ToggleSwapBlock> orig, ToggleSwapBlock self) where ToggleSwapBlock : Entity {
             orig(self);
-            SpriteList spriteList = self.Get<SpriteList>();
-            if (spriteList == null) {
+            TextureList list = self.Get<TextureList>();
+            if (list == null) {
                 return;
             }
             DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
-            Sprite[] sprites = spriteList.sprites;
+            MTexture[] textures = list.textures;
             int index = data.Get<int>("nodeIndex");
             if (data.Get<bool>("returning")) {
-                index += sprites.Length / 2;
+                index += textures.Length / 2;
             }
-            Sprite sprite = sprites[index];
-            data.Set("middleRed", sprite);
-            sprite.Play("idle");
+            data["texture"] = textures[index];
+        }
+
+        public static void DrawTexture<ToggleSwapBlock>(Action<ToggleSwapBlock, Vector2, float, float, MTexture[,], Sprite, Color> orig,
+            ToggleSwapBlock self, Vector2 pos, float width, float height, MTexture[,] ninSlice, Sprite middle, Color color) where ToggleSwapBlock : Entity {
+            DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
+            if (!data.Data.TryGetValue("texture", out object texture)) {
+                orig(self, pos, width, height, ninSlice, middle, color);
+            } else {
+                orig(self, pos, width, height, ninSlice, null, color);
+                ((MTexture) texture).Draw(pos);
+            }
         }
     }
 }
