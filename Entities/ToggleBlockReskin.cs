@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using MonoMod.RuntimeDetour;
@@ -12,25 +11,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private const int STAY = 8, DONE = 9;
         private static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
         private static string pathPrefix = "objects/StrawberryJam2021/toggleIndicator/";
-        private static MTexture[] allTextures = new MTexture[paths.Length];
+        private static MTexture[] textures = new MTexture[paths.Length];
         private static Type toggleSwapBlockType = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "CanyonHelper").GetType().Assembly.GetType("Celeste.Mod.CanyonHelper.ToggleSwapBlock");
-        private static FieldInfo nodesField = toggleSwapBlockType.GetField("nodes", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static FieldInfo oscillateField = toggleSwapBlockType.GetField("oscillate", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static FieldInfo stopAtEndField = toggleSwapBlockType.GetField("stopAtEnd", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static MethodInfo getNextNode = toggleSwapBlockType.GetMethod("GetNextNode", BindingFlags.NonPublic | BindingFlags.Instance);
         private static MethodInfo recalculateLaserColor = toggleSwapBlockType.GetMethod("RecalculateLaserColor", BindingFlags.NonPublic | BindingFlags.Instance);
         private static MethodInfo drawBlockStyle = toggleSwapBlockType.GetMethod("DrawBlockStyle", BindingFlags.NonPublic | BindingFlags.Instance);
         private static MethodInfo updateTexture = typeof(ToggleBlockReskin).GetMethod("UpdateTexture", BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType);
         private static MethodInfo drawTexture = typeof(ToggleBlockReskin).GetMethod("DrawTexture", BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType);
         private static Hook updateTextureHook;
         private static Hook drawTextureHook;
-        private static Dictionary<int, TextureList> cache = new Dictionary<int, TextureList>();
 
-        private class TextureList : Component {
-            public MTexture[] textures;
-
-            public TextureList(MTexture[] textures) : base(false, false) {
-                this.textures = textures;
-            }
+        private class Marker : Component {
+            public Marker() : base(false, false) { }
         }
 
         public static void Load() {
@@ -41,7 +33,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void InitializeTextures() {
             for (int i = 0; i < paths.Length; i++) {
-                allTextures[i] = GFX.Game[pathPrefix + paths[i]];
+                textures[i] = GFX.Game[pathPrefix + paths[i]];
             }
         }
 
@@ -55,72 +47,37 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             bool isReskin = entityData.Name == "SJ2021/ToggleSwapBlock";
             if (isReskin) {
                 Entity block = (Entity) Activator.CreateInstance(toggleSwapBlockType, new object[] { entityData, offset });
-                if (!cache.TryGetValue(entityData.ID, out TextureList list)) {
-                    cache.Add(entityData.ID, list = new TextureList(GetTextures(block)));
-                }
-                block.Add(list);
+                block.Add(new Marker());
                 level.Add(block);
             }
             return isReskin;
         }
 
-        private static MTexture[] GetTextures(object block) {
-            int[] indicators = CalculateIndicators(block);
-            MTexture[] textures = new MTexture[indicators.Length];
-            for (int i = 0; i < textures.Length; i++) {
-                textures[i] = allTextures[indicators[i]];
-            }
-            return textures;
-        }
-
-        private static int[] CalculateIndicators(object block) {
-            Vector2[] nodes = (Vector2[]) nodesField.GetValue(block);
-            bool oscillate = (bool) oscillateField.GetValue(block);
-            bool stopAtEnd = (bool) stopAtEndField.GetValue(block);
-            int[] indicators = new int[nodes.Length * (oscillate ? 2 : 1)];
-            int end = nodes.Length - 1;
-            for (int i = 0; i < end; i++) {
-                indicators[i] = IndicatorFromNodes(nodes, i, i + 1);
-            }
-            if (!oscillate) {
-                indicators[end] = stopAtEnd ? DONE : IndicatorFromNodes(nodes, end, 0);
-            } else {
-                for (int i = 1; i <= end; i++) {
-                    indicators[nodes.Length + i] = IndicatorFromNodes(nodes, i, i - 1);
-                }
-                indicators[end] = indicators[nodes.Length + end];
-                indicators[nodes.Length] = indicators[0];
-            }
-            return indicators;
-        }
-
-        private static int IndicatorFromNodes(Vector2[] nodes, int start, int end) {
-            int indicator;
-            Vector2 dir = nodes[end] - nodes[start];
-            if (dir.Equals(Vector2.Zero)) {
-                indicator = STAY;
-            } else {
-                indicator = (int) Math.Round(dir.Angle() * (4 / Math.PI));
-                if (indicator < 0) {
-                    indicator += 8;
-                }
-            }
-            return indicator;
-        }
-
         public static void UpdateTexture<ToggleSwapBlock>(Action<ToggleSwapBlock> orig, ToggleSwapBlock self) where ToggleSwapBlock : Entity {
             orig(self);
-            TextureList list = self.Get<TextureList>();
-            if (list == null) {
+            if (self.Get<Marker>() == null) {
                 return;
             }
             DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
-            MTexture[] textures = list.textures;
-            int index = data.Get<int>("nodeIndex");
-            if (data.Get<bool>("returning")) {
-                index += textures.Length / 2;
+            Vector2[] nodes = data.Get<Vector2[]>("nodes");
+            int currNode = data.Get<int>("nodeIndex");
+            int nextNode = (int) getNextNode.Invoke(self, new object[] { currNode });
+            bool stopAtEnd = data.Get<bool>("stopAtEnd");
+            int indicator;
+            if (stopAtEnd && nextNode == 0) {
+                indicator = DONE;
+            } else {
+                Vector2 dir = nodes[nextNode] - nodes[currNode];
+                if (dir.Equals(Vector2.Zero)) {
+                    indicator = STAY;
+                } else {
+                    indicator = (int) Math.Round(dir.Angle() * (4 / Math.PI));
+                    if (indicator < 0) {
+                        indicator += 8;
+                    }
+                }
             }
-            data["texture"] = textures[index];
+            data["texture"] = textures[indicator];
         }
 
         public static void DrawTexture<ToggleSwapBlock>(Action<ToggleSwapBlock, Vector2, float, float, MTexture[,], Sprite, Color> orig,
