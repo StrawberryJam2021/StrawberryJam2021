@@ -35,7 +35,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private int edgeThickness;
 
-        private const float sideBoostSpeed = 345f;
+        private const float sideBoostSpeed = 310f; // decided by mapper
 
         public LoopBlock(EntityData data, Vector2 offset) 
             : this(data.Position + offset, data.Width, data.Height, data.Int("edgeThickness", 1), data.HexColor("color")) { }
