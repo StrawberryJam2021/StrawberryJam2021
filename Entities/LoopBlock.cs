@@ -238,7 +238,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (waiting) {
                 Player playerRider = GetPlayerRider();
-                Console.WriteLine(playerRider == null);
                 if (playerRider != null) {
                     canRumble = true;
                     speed.Y = 180f;
