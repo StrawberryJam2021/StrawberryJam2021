@@ -243,7 +243,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     canRumble = true;
                     speed.Y = 180f;
                     waiting = false;
-                    Audio.Play("event:/game/04_cliffside/cloud_blue_boost", Center);
+                    Audio.Play(SFX.game_04_cloud_blue_boost, Center);
                 }
                 return;
             }
@@ -271,7 +271,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             if (speed.Y < 0f && Scene.OnInterval(0.02f)) {
-                level.ParticlesBG.Emit(particleType, 1, Position + new Vector2(Width / 2, Height), new Vector2(base.Collider.Width / 2f, 1f), (float) Math.PI / 2f);
+                level.ParticlesBG.Emit(particleType, 1, Position + new Vector2(Width / 2, Height), new Vector2(Width / 2f, 1f), (float) Math.PI / 2f);
             }
 
             if (Y >= start.Y) {
