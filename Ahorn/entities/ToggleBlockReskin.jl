@@ -2,7 +2,7 @@ module SJ2021ToggleSwapBlock
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/ToggleSwapBlock" ToggleBlock(x1::Integer, y1::Integer, x2::Integer=x1+16, y2::Integer=y1, width::Integer=16, height::Integer=16)
+@mapdef Entity "SJ2021/ToggleSwapBlock" ToggleBlock(width::Integer=16, height::Integer=16, travelSpeed::Number=5.0, oscillate::Bool=false, stopAtEnd::Bool=true, customTexturePath::String="")
 
 function getXYWidthHeight(entity::ToggleBlock)
     x, y = Ahorn.position(entity)
@@ -18,12 +18,7 @@ const placements = Ahorn.PlacementDict(
     "Toggle Swap Block (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         ToggleBlock,
         "rectangle",
-        Dict{String, Any}(
-            "travelSpeed" => 5.0,
-            "oscillate" => false,
-            "stopAtEnd" => true,
-            "customTexturePath" => ""
-        ),
+        Dict{String, Any}(),
         toggleBlockFinalizer
     )
 )
@@ -49,11 +44,11 @@ function Ahorn.selection(entity::ToggleBlock)
 end
 
 frame = "objects/canyon/toggleblock/block1"
-midResource = "objects/StrawberryJam2021/toggleIndicator/stay"
+pathPrefix = "objects/StrawberryJam2021/toggleIndicator/"
+paths = ["right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done"]
+STAY, DONE = 9, 10
 
 function renderSingleToggleBlock(ctx::Ahorn.Cairo.CairoContext, x::Number, y::Number, width::Number, height::Number)
-    midSprite = Ahorn.getSprite(midResource, "Gameplay")
-    
     tilesWidth = div(width, 8)
     tilesHeight = div(height, 8)
 
@@ -75,50 +70,100 @@ function renderSingleToggleBlock(ctx::Ahorn.Cairo.CairoContext, x::Number, y::Nu
     Ahorn.drawImage(ctx, frame, x + width - 8, y, 16, 0, 8, 8)
     Ahorn.drawImage(ctx, frame, x, y + height - 8, 0, 16, 8, 8)
     Ahorn.drawImage(ctx, frame, x + width - 8, y + height - 8, 16, 16, 8, 8)
-
-    Ahorn.drawImage(ctx, midSprite, x + div(width - midSprite.width, 2), y + div(height - midSprite.height, 2))
 end
 
-function renderToggleBlock(ctx::Ahorn.Cairo.CairoContext, width::Number, height::Number, entity::ToggleBlock)
-    
-    nodes = get(entity.data, "nodes", ())
-
-    for node in nodes
-        nx, ny = Int.(node)
-
-        renderSingleToggleBlock(ctx, nx, ny, width, height)
+function getIndex(sx::Number, sy::Number, tx::Number, ty::Number)
+    if (sx == tx && sy == ty)
+        return STAY
     end
-end
-
-function Ahorn.renderSelectedAbs(ctx::Ahorn.Cairo.CairoContext, entity::ToggleBlock, room::Maple.Room)
-    sprite = get(entity.data, "sprite", "block")
-
-    px, py, width, height = getXYWidthHeight(entity)
-
-    for node in get(entity.data, "nodes", ())
-        nx, ny = Int.(node)
-
-        theta = atan(py - ny, px - nx)
-        Ahorn.drawArrow(ctx, px + width / 2, py + height / 2, nx + width / 2 + cos(theta) * 8, ny + height / 2 + sin(theta) * 8, Ahorn.colors.selection_selected_fc, headLength=6)
-
-        px, py = nx, ny
+    theta = atan(ty - sy, tx - sx)
+    index = Int(round(theta * (4 / pi)))
+    if (index < 0)
+        index += 8
     end
-
-    renderToggleBlock(ctx, width, height, entity)
+    return index + 1
 end
 
 function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::ToggleBlock, room::Maple.Room)
     customTexture = get(entity.data, "customTexturePath", "")
-    if (length(customTexture) > 0 && !occursin('"', customTexture))
+    if (length(customTexture) > 0)
         global frame = customTexture
     else
         global frame = "objects/canyon/toggleblock/block1"
     end
 
-    Ahorn.renderSelectedAbs(ctx, entity, room)
-
+    nodes = get(entity.data, "nodes", ())
     x, y, width, height = getXYWidthHeight(entity)
+
+    half_width, half_height = width / 2, height / 2
+
+    function drawArrow(sx::Number, sy::Number, tx::Number, ty::Number)
+        if (sx == tx && sy == ty)
+            return
+        end
+        theta = atan(sy - ty, sx - tx)
+        Ahorn.drawArrow(ctx, sx + half_width * (1 - cos(theta)), sy + half_height * (1 - sin(theta)), tx + half_width * (1 + cos(theta)), ty + half_height * (1 + sin(theta)), Ahorn.colors.selection_selected_fc, headLength=6)
+    end
+
+    px, py = x, y
+    for node in nodes
+        nx, ny = Int.(node)
+        drawArrow(px, py, nx, ny)
+        px, py = nx, ny
+    end
+
+    stopAtEnd = get(entity.data, "stopAtEnd", true)
+    oscillate = get(entity.data, "oscillate", false)
+
+    if (!stopAtEnd)
+        if (!oscillate)
+            drawArrow(px, py, x, y)
+        else
+            px, py = x, y
+            for node in nodes
+                nx, ny = Int.(node)
+                drawArrow(nx, ny, px, py)
+                px, py = nx, ny
+            end
+        end
+    end
+
+    function drawSprite(x::Number, y::Number, index::Integer)
+        resource = string(pathPrefix, paths[index])
+        sprite = Ahorn.getSprite(resource, "Gameplay")
+        Ahorn.drawImage(ctx, sprite, x + div(width - sprite.width, 2), y + div(height - sprite.height, 2))
+    end
+
     renderSingleToggleBlock(ctx, x, y, width, height)
+
+    prevStay = false
+    px, py, nx, ny = x, y, x, y
+    for node in nodes
+        px, py = nx, ny
+        nx, ny = Int.(node)
+        renderSingleToggleBlock(ctx, nx, ny, width, height)
+        index = getIndex(px, py, nx, ny)
+        currStay = index == STAY
+        if (!currStay)
+            if (prevStay)
+                index = STAY
+            end
+            drawSprite(px, py, index)
+        end
+        prevStay = currStay
+    end
+
+    if (prevStay)
+        drawSprite(nx, ny, STAY)
+    else
+        index = DONE
+        if (oscillate)
+            index = getIndex(nx, ny, px, py)
+        elseif (!stopAtEnd)
+            index = getIndex(nx, ny, x, y)
+        end
+        drawSprite(nx, ny, index)
+    end
 end
 
 end
