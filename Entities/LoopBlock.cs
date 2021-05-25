@@ -24,6 +24,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private ParticleType particleType;
 
+        private Level level;
+
         private bool waiting = true;
         private bool canRumble;
         private bool returning, returningDash;
@@ -153,6 +155,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 player.Dashes = dashes;
                 player.Stamina = stamina;
 
+                level.DirectionalShake(Vector2.UnitX, 0.2f);
+                Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
+
                 if (speed.Y < 0) {
                     player.Speed.Y += Math.Max(speed.Y, -80);
                 }
@@ -189,6 +194,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             scaledSpikes = true;
         }
 
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
+            level = SceneAs<Level>();
+        }
+
         public override void Update() {
             base.Update();
 
@@ -202,7 +212,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 respawnTimer -= Engine.DeltaTime;
                 if (respawnTimer <= 0f) {
                     waiting = true;
-                    base.Y = start.Y;
+                    Y = start.Y;
                     speed.Y = 0f;
                     Collidable = true;
                 }
@@ -244,7 +254,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 // Essentially makes it possible to get the Y boost in a larger window of time.
                 MoveToY(Calc.Approach(ExactPosition.Y, start.Y, speed.Y * Engine.DeltaTime), speed.Y < 0f ? -220f : speed.Y);
 
-                if (base.ExactPosition.Y == start.Y) {
+                if (ExactPosition.Y == start.Y) {
                     returning = false;
                     waiting = true;
                     speed.Y = 0f;
@@ -259,11 +269,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
 
-            if (speed.Y < 0f && base.Scene.OnInterval(0.02f)) {
-                (base.Scene as Level).ParticlesBG.Emit(particleType, 1, Position + new Vector2(Width / 2, Height), new Vector2(base.Collider.Width / 2f, 1f), (float) Math.PI / 2f);
+            if (speed.Y < 0f && Scene.OnInterval(0.02f)) {
+                level.ParticlesBG.Emit(particleType, 1, Position + new Vector2(Width / 2, Height), new Vector2(base.Collider.Width / 2f, 1f), (float) Math.PI / 2f);
             }
 
-            if (base.Y >= start.Y) {
+            if (Y >= start.Y) {
                 speed.Y -= 1200f * Engine.DeltaTime;
             } else {
                 speed.Y += 1200f * Engine.DeltaTime;
