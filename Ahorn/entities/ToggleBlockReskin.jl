@@ -43,12 +43,12 @@ function Ahorn.selection(entity::ToggleBlock)
     return res
 end
 
-frame = "objects/canyon/toggleblock/block1"
+defaultFrame = "objects/canyon/toggleblock/block1"
 pathPrefix = "objects/StrawberryJam2021/toggleIndicator/"
 paths = ["right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done"]
 STAY, DONE = 9, 10
 
-function renderSingleToggleBlock(ctx::Ahorn.Cairo.CairoContext, x::Number, y::Number, width::Number, height::Number)
+function renderSingleToggleBlock(ctx::Ahorn.Cairo.CairoContext, frame::String, x::Number, y::Number, width::Number, height::Number)
     tilesWidth = div(width, 8)
     tilesHeight = div(height, 8)
 
@@ -85,11 +85,9 @@ function getIndex(sx::Number, sy::Number, tx::Number, ty::Number)
 end
 
 function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::ToggleBlock, room::Maple.Room)
-    customTexture = get(entity.data, "customTexturePath", "")
-    if (length(customTexture) > 0)
-        global frame = customTexture
-    else
-        global frame = "objects/canyon/toggleblock/block1"
+    frame = get(entity.data, "customTexturePath", "")
+    if (length(frame) == 0)
+        frame = defaultFrame
     end
 
     nodes = get(entity.data, "nodes", ())
@@ -129,19 +127,18 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::ToggleBlock, roo
     end
 
     function drawSprite(x::Number, y::Number, index::Integer)
-        resource = string(pathPrefix, paths[index])
-        sprite = Ahorn.getSprite(resource, "Gameplay")
+        sprite = Ahorn.getSprite(string(pathPrefix, paths[index]), "Gameplay")
         Ahorn.drawImage(ctx, sprite, x + div(width - sprite.width, 2), y + div(height - sprite.height, 2))
     end
 
-    renderSingleToggleBlock(ctx, x, y, width, height)
+    renderSingleToggleBlock(ctx, frame, x, y, width, height)
 
     prevStay = false
     px, py, nx, ny = x, y, x, y
     for node in nodes
         px, py = nx, ny
         nx, ny = Int.(node)
-        renderSingleToggleBlock(ctx, nx, ny, width, height)
+        renderSingleToggleBlock(ctx, frame, nx, ny, width, height)
         index = getIndex(px, py, nx, ny)
         currStay = index == STAY
         if (!currStay)
@@ -156,10 +153,11 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::ToggleBlock, roo
     if (prevStay)
         drawSprite(nx, ny, STAY)
     else
-        index = DONE
-        if (oscillate)
+        if (stopAtEnd)
+            index = DONE
+        elseif (oscillate)
             index = getIndex(nx, ny, px, py)
-        elseif (!stopAtEnd)
+        else
             index = getIndex(nx, ny, x, y)
         end
         drawSprite(nx, ny, index)

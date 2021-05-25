@@ -67,7 +67,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             int nextNode = (int) getNextNode.Invoke(self, new object[] { currNode });
             bool stopAtEnd = data.Get<bool>("stopAtEnd");
             int indicator;
-            if (stopAtEnd && nextNode == 0) {
+            if (stopAtEnd && currNode == nodes.Length - 1) {
                 indicator = DONE;
             } else {
                 Vector2 dir = nodes[nextNode] - nodes[currNode];
