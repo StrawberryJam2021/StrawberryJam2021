@@ -7,7 +7,7 @@ using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    public class ToggleBlockReskin {
+    public static class ToggleBlockReskin {
         private const int STAY = 8, DONE = 9;
         private static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
         private static string pathPrefix = "objects/StrawberryJam2021/toggleIndicator/";
