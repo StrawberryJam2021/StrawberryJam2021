@@ -16,8 +16,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static MethodInfo getNextNode = toggleSwapBlockType.GetMethod("GetNextNode", BindingFlags.NonPublic | BindingFlags.Instance);
         private static MethodInfo recalculateLaserColor = toggleSwapBlockType.GetMethod("RecalculateLaserColor", BindingFlags.NonPublic | BindingFlags.Instance);
         private static MethodInfo drawBlockStyle = toggleSwapBlockType.GetMethod("DrawBlockStyle", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static MethodInfo updateTexture = typeof(ToggleBlockReskin).GetMethod("UpdateTexture", BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType);
-        private static MethodInfo drawTexture = typeof(ToggleBlockReskin).GetMethod("DrawTexture", BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType);
+        private static MethodInfo updateTexture = typeof(ToggleBlockReskin).GetMethod("UpdateTexture", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType);
+        private static MethodInfo drawTexture = typeof(ToggleBlockReskin).GetMethod("DrawTexture", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType);
         private static Hook updateTextureHook;
         private static Hook drawTextureHook;
 
@@ -55,7 +55,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return isReskin;
         }
 
-        public static void UpdateTexture<ToggleSwapBlock>(Action<ToggleSwapBlock> orig, ToggleSwapBlock self) where ToggleSwapBlock : Entity {
+        private static void UpdateTexture<ToggleSwapBlock>(Action<ToggleSwapBlock> orig, ToggleSwapBlock self) where ToggleSwapBlock : Entity {
             orig(self);
             TextureComponent texComp = self.Get<TextureComponent>();
             if (texComp == null) {
@@ -83,7 +83,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             texComp.texture = textures[indicator];
         }
 
-        public static void DrawTexture<ToggleSwapBlock>(Action<ToggleSwapBlock, Vector2, float, float, MTexture[,], Sprite, Color> orig,
+        private static void DrawTexture<ToggleSwapBlock>(Action<ToggleSwapBlock, Vector2, float, float, MTexture[,], Sprite, Color> orig,
             ToggleSwapBlock self, Vector2 pos, float width, float height, MTexture[,] ninSlice, Sprite middle, Color color) where ToggleSwapBlock : Entity {
             TextureComponent texComp = self.Get<TextureComponent>();
             if (texComp == null) {
