@@ -73,62 +73,62 @@ function renderSingleToggleBlock(ctx::Ahorn.Cairo.CairoContext, frame::String, x
 end
 
 function getIndex(sx::Number, sy::Number, tx::Number, ty::Number)
-    if (sx == tx && sy == ty)
+    if sx == tx && sy == ty
         return STAY
     end
     theta = atan(ty - sy, tx - sx)
     index = Int(round(theta * (4 / pi)))
-    if (index < 0)
+    if index < 0
         index += 8
     end
     return index + 1
 end
 
+function drawArrow(ctx::Ahorn.Cairo.CairoContext, sx::Number, sy::Number, tx::Number, ty::Number, off_x::Number, off_y::Number)
+    if sx == tx && sy == ty
+        return
+    end
+    theta = atan(sy - ty, sx - tx)
+    Ahorn.drawArrow(ctx, sx + off_x * (1 - cos(theta)), sy + off_y * (1 - sin(theta)), tx + off_x * (1 + cos(theta)), ty + off_y * (1 + sin(theta)), Ahorn.colors.selection_selected_fc, headLength=6)
+end
+
+function drawSprite(ctx::Ahorn.Cairo.CairoContext, x::Number, y::Number, index::Integer, width::Number, height::Number)
+    sprite = Ahorn.getSprite(string(pathPrefix, paths[index]), "Gameplay")
+    Ahorn.drawImage(ctx, sprite, x + div(width - sprite.width, 2), y + div(height - sprite.height, 2))
+end
+
 function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::ToggleBlock, room::Maple.Room)
     frame = get(entity.data, "customTexturePath", "")
-    if (length(frame) == 0)
+    if length(frame) == 0
         frame = defaultFrame
     end
 
     nodes = get(entity.data, "nodes", ())
     x, y, width, height = getXYWidthHeight(entity)
 
-    half_width, half_height = width / 2, height / 2
-
-    function drawArrow(sx::Number, sy::Number, tx::Number, ty::Number)
-        if (sx == tx && sy == ty)
-            return
-        end
-        theta = atan(sy - ty, sx - tx)
-        Ahorn.drawArrow(ctx, sx + half_width * (1 - cos(theta)), sy + half_height * (1 - sin(theta)), tx + half_width * (1 + cos(theta)), ty + half_height * (1 + sin(theta)), Ahorn.colors.selection_selected_fc, headLength=6)
-    end
+    off_x, off_y = width / 2, height / 2
 
     px, py = x, y
     for node in nodes
         nx, ny = Int.(node)
-        drawArrow(px, py, nx, ny)
+        drawArrow(ctx, px, py, nx, ny, off_x, off_y)
         px, py = nx, ny
     end
 
     stopAtEnd = get(entity.data, "stopAtEnd", true)
     oscillate = get(entity.data, "oscillate", false)
 
-    if (!stopAtEnd)
-        if (!oscillate)
-            drawArrow(px, py, x, y)
+    if !stopAtEnd
+        if !oscillate
+            drawArrow(ctx, px, py, x, y, off_x, off_y)
         else
             px, py = x, y
             for node in nodes
                 nx, ny = Int.(node)
-                drawArrow(nx, ny, px, py)
+                drawArrow(ctx, nx, ny, px, py, off_x, off_y)
                 px, py = nx, ny
             end
         end
-    end
-
-    function drawSprite(x::Number, y::Number, index::Integer)
-        sprite = Ahorn.getSprite(string(pathPrefix, paths[index]), "Gameplay")
-        Ahorn.drawImage(ctx, sprite, x + div(width - sprite.width, 2), y + div(height - sprite.height, 2))
     end
 
     renderSingleToggleBlock(ctx, frame, x, y, width, height)
@@ -141,26 +141,26 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::ToggleBlock, roo
         renderSingleToggleBlock(ctx, frame, nx, ny, width, height)
         index = getIndex(px, py, nx, ny)
         currStay = index == STAY
-        if (!currStay)
-            if (prevStay)
+        if !currStay
+            if prevStay
                 index = STAY
             end
-            drawSprite(px, py, index)
+            drawSprite(ctx, px, py, index, width, height)
         end
         prevStay = currStay
     end
 
-    if (prevStay)
-        drawSprite(nx, ny, STAY)
+    if prevStay
+        drawSprite(ctx, nx, ny, STAY, width, height)
     else
-        if (stopAtEnd)
+        if stopAtEnd
             index = DONE
-        elseif (oscillate)
+        elseif oscillate
             index = getIndex(nx, ny, px, py)
         else
             index = getIndex(nx, ny, x, y)
         end
-        drawSprite(nx, ny, index)
+        drawSprite(ctx, nx, ny, index, width, height)
     end
 end
 
