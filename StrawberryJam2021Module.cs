@@ -9,6 +9,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public static StrawberryJam2021Module Instance;
 
+        public override Type SaveDataType => typeof(StrawberryJam2021SaveData);
+        public static StrawberryJam2021SaveData SaveData => (StrawberryJam2021SaveData) Instance._SaveData;
+
         public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
         private SpriteBank _CustomEntitySpriteBank;
 
@@ -33,7 +36,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             BarrierDashSwitch.Load();
             TripleBoostFlower.Load();
             ResettingRefill.Load();
-            SineDustSpinner.Load();
             ToggleBlockReskin.Load();
         }
 
@@ -63,7 +65,10 @@ namespace Celeste.Mod.StrawberryJam2021 {
             _CustomEntitySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/CustomEntitySprites.xml");
 
             WormholeBooster.LoadParticles();
+            SwitchCrate.LoadTypes();
+            SwitchCrateHolder.SetupParticles();
             LoopBlock.InitializeTextures();
+            DashBoostField.LoadParticles();
             ToggleBlockReskin.InitializeTextures();
         }
     }

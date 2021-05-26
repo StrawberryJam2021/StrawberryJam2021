@@ -44,6 +44,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// The base <see cref="Microsoft.Xna.Framework.Color"/> used to render the beam.
     /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
     /// </description></item>
+    /// <item><term>colorChannel</term><description>
+    /// The color hex code used to match lasers with LinkedZipMovers.
+    /// </description></item>
     /// <item><term>disableLasers</term><description>
     /// Whether or not colliding with this beam will disable all beams of the same color.
     /// Defaults to false.
