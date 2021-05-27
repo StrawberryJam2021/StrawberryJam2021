@@ -1,6 +1,7 @@
 # Dash Code Flag Sequence Controller
 placements.entities.SJ2021/DashSequenceController.tooltips.dashCode=The code the player needs to input. Should be in the form of "U,DR,L", with commas separating each direction. When writing diagonals, write them with vertical first, then horizontal, with no space. * is also a valid input, meaning you can dash any direction for it to work.
 placements.entities.SJ2021/DashSequenceController.tooltips.flagLabel=The starting label of the flags that will get activated. Every time a dash is successfully inputted, a flag with this label + "-#" will be set to true (e.g. "test" followed by a successful dash will set "test-1" to true).
+placements.entities.SJ2021/DashSequenceController.tooltips.flagOnFailure=Flag that will get set to true if the sequence has started, but fails partway through.
 
 # Sharded Refill
 placements.entities.SJ2021/RefillShard.tooltips.collectAmount=The amount of shards needed for collection. (0 for all)
@@ -8,3 +9,119 @@ placements.entities.SJ2021/RefillShard.tooltips.spawnRefill=Whether the shards g
 placements.entities.SJ2021/RefillShard.tooltips.oneUse=Whether the shards respawn after collection / Whether the spawned refill is single-use.
 placements.entities.SJ2021/RefillShard.tooltips.resetOnGround=Whether touching the ground causes the shards to reset (normal seed behavior).
 placements.entities.SJ2021/RefillShard.tooltips.twoDashes=Whether the refill gives you two dashes.
+
+# Sine Dust Spinner
+placements.entities.SJ2021/SineDustSpinner.tooltips.xPeriod=Period of the X-Sine in seconds. If X Linear is enabled, travel time in seconds before wrapping around (travel direction reversed if negative)
+placements.entities.SJ2021/SineDustSpinner.tooltips.yPeriod=Period of the Y-Sine in seconds. If Y Linear is enabled, travel time in seconds before wrapping around (travel direction reversed if negative)
+placements.entities.SJ2021/SineDustSpinner.tooltips.xPhase=X-Sine Phase in Rad*Pi. If X Linear is enabled, it functions as a lerp for the starting point
+placements.entities.SJ2021/SineDustSpinner.tooltips.yPhase=Y-Sine Phase in Rad*PI. If Y Linear is enabled, it functions as a lerp for the starting point
+placements.entities.SJ2021/SineDustSpinner.tooltips.xLinear=Whether the X-Sine should be replaced with a linear, wrapping motion
+placements.entities.SJ2021/SineDustSpinner.tooltips.yLinear=Whether the Y-Sine should be replaced with a linear, wrapping motion
+
+# Laser Emitter (Up)
+placements.entities.SJ2021/LaserEmitterUp.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.colorChannel=Color of linked zip movers that will be triggered if enabled.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.alpha=Base alpha if flickering is disabled.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.flicker=Whether or not the laser beam should flicker.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.collideWithSolids=Whether or not the laser beam will stop at solids.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same color channel.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same color channel.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser color.
+
+# Laser Emitter (Down)
+placements.entities.SJ2021/LaserEmitterDown.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.colorChannel=Color of linked zip movers that will be triggered if enabled.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.alpha=Base alpha if flickering is disabled.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.flicker=Whether or not the laser beam should flicker.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.collideWithSolids=Whether or not the laser beam will stop at solids.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same color channel.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same color channel.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser color.
+
+# Laser Emitter (Left)
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.colorChannel=Color of linked zip movers that will be triggered if enabled.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.alpha=Base alpha if flickering is disabled.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.flicker=Whether or not the laser beam should flicker.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.collideWithSolids=Whether or not the laser beam will stop at solids.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same color channel.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same color channel.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser color.
+
+# Laser Emitter (Right)
+placements.entities.SJ2021/LaserEmitterRight.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.colorChannel=Color of linked zip movers that will be triggered if enabled.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.alpha=Base alpha if flickering is disabled.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.flicker=Whether or not the laser beam should flicker.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.collideWithSolids=Whether or not the laser beam will stop at solids.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same color channel.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same color channel.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser color.
+
+# Bubble Emitter Fire Trigger
+placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of the emitters to fire. Will fire every emitter if empty
+
+# Dash With Holdable Trigger
+placements.triggers.SJ2021/HoldableDashTrigger.tooltips.mode="Toggle" will set or clear a session flag that allows dashing anywhere.\n"OnStay" will force the ability to be on/off while inside the trigger, regardless of what the session flag is set to.
+
+# Conditional Flag Trigger
+placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.flag=The flag to set when  the player enters and leaves.
+placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.flagValue=The value to set the flag to when the player is in the trigger.
+placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.controllerFlag=The flag that enables and disables the trigger.
+placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.revertOnLeave=Whether or not to reset the flag to it's origional state when the player leaves the trigger.
+
+# Variant Toggle Controller
+placements.entities.SJ2021/VariantToggleController.tooltips.flag=The flag that controls the variants (variants set on true).
+placements.entities.SJ2021/VariantToggleController.tooltips.variantList=A comma separated of list of variantName value pairs representing the variant changes. In the form "variantName:value,vairant2Name:value2,..."
+placements.entities.SJ2021/VariantToggleController.tooltips.defaultValue=The value to set the flag to when the room is loaded (true sets variants on entry).
+
+# Flag Breaker box
+placements.entities.SJ2021/FlagBreakerBox.tooltips.flag=The flag to control.
+placements.entities.SJ2021/FlagBreakerBox.tooltips.aliveState=The value to set the flag to when the box is alive (sets to the oposite when destroyed).
+placements.entities.SJ2021/FlagBreakerBox.tooltips.music=The music to play when the box is broken.
+placements.entities.SJ2021/FlagBreakerBox.tooltips.flipX=Whether or not to flip the sprite across the X axis.
+placements.entities.SJ2021/FlagBreakerBox.tooltips.music_progress=The progress to set the music to when the box is broken.
+placements.entities.SJ2021/FlagBreakerBox.tooltips.music_session=Whether or not to store the music changes in the session.
+
+# Dash Boost Field / Nyom Buble
+placements.entities.SJ2021/DashBoostField.tooltips.mode=The color of the object. Red will instantly refill the player if they dash inside of it, while Blue will not.
+placements.entities.SJ2021/DashBoostField.tooltips.dashSpeedMultiplier=How much the player's dash should be boosted.
+placements.entities.SJ2021/DashBoostField.tooltips.timeRateMultiplier=How much the game should down while the player is inside (1 is normal speed, 0.5 is half, etc.)
+placements.entities.SJ2021/DashBoostField.tooltips.radius=The radius of the effect, in tiles.
+
+# Triple Boost Flower
+placements.entities.SJ2021/TripleBoostFlower.tooltips.boostDelay=Cooldown between boosts, in seconds
+placements.entities.SJ2021/TripleBoostFlower.tooltips.boostSpeed=Y-Speed during the boost
+placements.entities.SJ2021/TripleBoostFlower.tooltips.boostDuration=Duration of the boost, in seconds
+placements.entities.SJ2021/TripleBoostFlower.tooltips.fastFallSpeed=Falling speed while holding down
+placements.entities.SJ2021/TripleBoostFlower.tooltips.slowFallSpeed=Falling speed while holding up
+placements.entities.SJ2021/TripleBoostFlower.tooltips.normalFallSpeed=Falling speed while not holding anything
+
+# Theo Respawn
+placements.entities.SJ2021/TheoRespawn.tooltips.flag=The flag that must be active for this Theo Respawn to activate.
+
+# Crystal Bomb Badeline Boss
+placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.music=The music event that should be triggered if "Can Change Music" is checked.
+# (these are copied from the original finalBoss)
+placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.patternIndex=Determines what pattern of attack Badeline uses.\n 0 - Badeline transforms into the boss after being hit once\n 1 - Shoots orbs\n 2 - Shoots laser followed by one orb\n 3 - Shoots five streams of two orbs\n 4 - Shoots five streams of two orbs followed by one laser\n 5 - Shoots laser followed by three streams of two orbs\n 6 - Shoots lasers\n 7 - Shoots orbs with less delay\n 8 - Shoots lasers with less delay\n 9 - Shoots streams of two orbs\n 10 - Does nothing\n 11 - Shoots orbs with more delay\n 12 - Does nothing\n 13 - Shoots orbs after getting hit once\n 14 - Shoots lasers with very short delay\n 15 - Shoots lasers with more delay
+placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.cameraLockY=Whether the camera should be locked vertically, functioning similarly as a killbox.
+placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.canChangeMusic=Whether the boss should be able to change the music to the boss track.
+placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.cameraPastY=Locks the camera from vertically rising, and changes the bottom screen killbox plane to be under Badeline's current position.
+placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.disableCameraLock=Disables all camera locking, both horizontal and vertical.\nOverrides the "Camera Past Y" and "Camera Lock Y" settings.
+
+# Strawberry Jam Jar
+placements.entities.SJ2021/StrawberryJamJar.tooltips.map=The jar will be filled up when the map that has this ID is completed.\nThis is the same ID as the one the Chapter Panel Trigger from Collab Utils uses.
+placements.entities.SJ2021/StrawberryJamJar.tooltips.sprite=The sprite this jar will use.
+
+# Toggle Swap Block
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.oscillate=Whether block reverses direction instead of returning to start after reaching its last node.  Ignored if "Stop At End" is checked.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.stopAtEnd=Whether block doesn't move again after reaching its last node.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.customTexturePath=Path to a 24 pixel x 24 pixel texture representing what a 3 tile x 3 tile block should look like.  Default texture is used if left blank.

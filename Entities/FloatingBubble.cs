@@ -1,7 +1,9 @@
-using Microsoft.Xna.Framework;
-using Monocle;
+using System;
 using System.Reflection;
-using System.Collections;
+using Celeste.Mod.MaxHelpingHand.Entities;
+using Monocle;
+using Microsoft.Xna.Framework;
+using MonoMod.RuntimeDetour;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class FloatingBubble : Actor {
@@ -12,13 +14,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool broken = false;
         private static MethodInfo SpringBounceAnimate = typeof(Spring).GetMethod("BounceAnimate", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static Hook FlagTouchSwitchCtorHook;
+        private static ConstructorInfo FlagTouchSwitchCtorInfo = typeof(FlagTouchSwitch).GetConstructor(new Type[] { typeof(EntityData), typeof(Vector2) });
+        private static MethodInfo OnFlagTouchSwitchCtorInfo = typeof(FloatingBubble).GetMethod("OnFlagTouchSwitchCtor", BindingFlags.Public | BindingFlags.Static);
 
 
         public FloatingBubble(Vector2 position) : base(position) {
             Speed = Vector2.Zero;
             Collider = new Hitbox(14, 14, -7, -7);
             Add(new PlayerCollider(OnPlayer));
-            Add(sprite = StrawberryJam2021Module.BubbleEmitterSpriteBank.Create("bubble"));
+            Add(sprite = StrawberryJam2021Module.SpriteBank.Create("bubble"));
             sprite.OnFinish = OnAnimationFinished;
             sprite.CenterOrigin();
         }
@@ -61,6 +66,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         }
                     } else if (collider.Entity is TouchSwitch) {
                         (collider.Entity as TouchSwitch).TurnOn();
+                    } else if (collider.Entity is FlagTouchSwitch) {
+                        (collider.Entity as FlagTouchSwitch).TurnOn();
                     }
                 }
             }
@@ -115,6 +122,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public void OnAnimationFinished(string id) {
             Remove(sprite);
             RemoveSelf();
+        }
+
+        public static void OnFlagTouchSwitchCtor(Action<FlagTouchSwitch, EntityData, Vector2> orig, FlagTouchSwitch self, EntityData data, Vector2 offset) {
+            orig(self, data, offset);
+            self.Add(new BubbleCollider());
+        }
+
+        public static void Load() {
+            FlagTouchSwitchCtorHook = new Hook(FlagTouchSwitchCtorInfo, OnFlagTouchSwitchCtorInfo);
+        }
+
+        public static void Unload() {
+            FlagTouchSwitchCtorHook.Dispose();
         }
     }
 }

@@ -1,40 +1,75 @@
-﻿using Monocle;
 using Celeste.Mod.StrawberryJam2021.Entities;
+using Celeste.Mod.StrawberryJam2021.Triggers;
+using Microsoft.Xna.Framework;
+using Monocle;
+using System;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
 
         public static StrawberryJam2021Module Instance;
 
-        // SpriteBanks
-        public static SpriteBank GrabTempleGateSpriteBank => Instance._GrabTempleGateSpriteBank;
-        public SpriteBank _GrabTempleGateSpriteBank;
+        public override Type SaveDataType => typeof(StrawberryJam2021SaveData);
+        public static StrawberryJam2021SaveData SaveData => (StrawberryJam2021SaveData) Instance._SaveData;
 
-        public static SpriteBank BubbleEmitterSpriteBank => Instance._BubbleEmitterSpriteBank;
-        public SpriteBank _BubbleEmitterSpriteBank;
-        
+        public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
+        private SpriteBank _CustomEntitySpriteBank;
+
         public StrawberryJam2021Module() {
             Instance = this;
         }
 
         public override void Load() {
             SelfUpdater.Load();
+            SkyLantern.Load();
             BubbleCollider.Load();
+            ExplodingStrawberry.Load();
+            CrystalBombBadelineBoss.Load();
+            MaskedDecal.Load();
+            FloatingBubble.Load();
+            HoldableDashTrigger.Load();
+            WormholeBooster.Load();
+            DashCountTrigger.Load();
+            DashBoostField.Load();
+            FlagDashSwitch.Load();
+            PocketUmbrellaController.Load();
+            BarrierDashSwitch.Load();
+            TripleBoostFlower.Load();
+            ResettingRefill.Load();
+            ToggleBlockReskin.Load();
         }
 
         public override void Unload() {
             SelfUpdater.Unload();
+            SkyLantern.Unload();
             BubbleCollider.Unload();
+            ExplodingStrawberry.Unload();
+            CrystalBombBadelineBoss.Unload();
+            MaskedDecal.Unload();
+            FloatingBubble.Unload();
+            HoldableDashTrigger.Unload();
+            WormholeBooster.Unload();
+            DashCountTrigger.Unload();
+            DashBoostField.Unload();
+            FlagDashSwitch.Unload();
+            PocketUmbrellaController.Unload();
+            BarrierDashSwitch.Unload();
+            TripleBoostFlower.Unload();
+            ResettingRefill.Unload();
+            ToggleBlockReskin.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
             base.LoadContent(firstLoad);
 
-            _GrabTempleGateSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/GrabTempleGateSprites.xml");
-            _BubbleEmitterSpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/BubbleEmitterSprites.xml");
+            _CustomEntitySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/CustomEntitySprites.xml");
 
+            WormholeBooster.LoadParticles();
+            SwitchCrate.LoadTypes();
+            SwitchCrateHolder.SetupParticles();
             LoopBlock.InitializeTextures();
+            DashBoostField.LoadParticles();
+            ToggleBlockReskin.InitializeTextures();
         }
-
     }
 }
