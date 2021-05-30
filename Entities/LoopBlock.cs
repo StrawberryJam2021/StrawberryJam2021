@@ -159,9 +159,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
                 Audio.Play(CustomSoundEffects.game_loop_block_sideboost, player.Center);
 
-                if (speed.Y < 0) {
-                    player.Speed.Y += Math.Max(speed.Y, -80);
-                }
+                // Removed vertical boost, as requested by mapper.
+                //if (speed.Y < 0) {
+                //    player.Speed.Y += Math.Max(speed.Y, -80);
+                //}
 
                 speed.X = dir.X * 180f;
                 targetSpeedX = -dir.X * 90f;
