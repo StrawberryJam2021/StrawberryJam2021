@@ -78,5 +78,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             OrientableEntity.Orientations.Right => (float) Math.PI / 2f,
             _ => 0f
         };
+
+        public static Vector2 Offset(this OrientableEntity.Orientations orientation) => orientation switch {
+            OrientableEntity.Orientations.Up => Vector2.UnitX,
+            OrientableEntity.Orientations.Down => Vector2.UnitX,
+            OrientableEntity.Orientations.Left => Vector2.UnitY,
+            OrientableEntity.Orientations.Right => Vector2.UnitY,
+            _ => Vector2.Zero
+        };
     }
 }
