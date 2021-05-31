@@ -53,7 +53,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float widthMoveSpeed;
         // either 0.5 or 1. 0.5 to compensate for two doors moving in Center case
         private readonly float moveSpeedMultiplier;
-       
 
         public bool ClaimedByASwitch;
         private bool open;
@@ -61,11 +60,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private Shaker shaker;
 
+
         //The full section between this comment and the next was written by lilybeevee
         public static void Load() {
             IL.Celeste.DashSwitch.OnDashed += DashSwitch_OnDashed;
         }
-
 
         private static void DashSwitch_OnDashed(ILContext il) {
             var cursor = new ILCursor(il);
@@ -126,20 +125,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             LevelID = data.Level.Name;
 
-            this.Type = data.Enum<Types>("type", Types.FlagActive);
-            this.OpenDirection = data.Enum<OpenDirections>("direction", OpenDirections.Left);
-            this.OpenWidth = data.Int("openWidth", 0);
-            this.Inverted = data.Bool("inverted", false);
-            this.Flag = data.Attr("flag", "");
+            Type = data.Enum<Types>("type", Types.FlagActive);
+            OpenDirection = data.Enum<OpenDirections>("direction", OpenDirections.Left);
+            OpenWidth = data.Int("openWidth", 0);
+            Inverted = data.Bool("inverted", false);
+            Flag = data.Attr("flag", "");
 
-            base.Depth = Depths.Solids;
+            Depth = Depths.Solids;
             Add(shaker = new Shaker(on: false));
-            base.Collider = new ColliderList();
+            Collider = new ColliderList();
 
-            this.moveSpeedMultiplier = 1f;
+            moveSpeedMultiplier = 1f;
             // foot of gate when closed
             float targetX = 48f;
-            switch (this.OpenDirection) {
+            switch (OpenDirection) {
                 case OpenDirections.Left:
                     targetX = 48f;
                     break;
@@ -148,22 +147,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     break;
                 case OpenDirections.Center:
                     targetX = 24f;
-                    this.moveSpeedMultiplier = 0.5f;
+                    moveSpeedMultiplier = 0.5f;
                     break;
             }
 
-            colliders = new Hitbox[]{
+            this.colliders = new Hitbox[]{
                 new Hitbox(targetX, 8f, 0, 0),
                 new Hitbox(48f - targetX, 8f, targetX, 0)
             };
-            if(this.OpenDirection != OpenDirections.Right) {
-                ((ColliderList) base.Collider).Add(colliders[0]);
+            if(OpenDirection != OpenDirections.Right) {
+                ((ColliderList) Collider).Add(colliders[0]);
             }
-            if (this.OpenDirection != OpenDirections.Left) {
-                ((ColliderList) base.Collider).Add(colliders[1]);
+            if (OpenDirection != OpenDirections.Left) {
+                ((ColliderList) Collider).Add(colliders[1]);
             }
 
-            sprites = new Sprite[2];
+            this.sprites = new Sprite[2];
             Add(sprites[0] = StrawberryJam2021Module.SpriteBank.Create("horizontalTempleGateLeft"));
             Add(sprites[1] = StrawberryJam2021Module.SpriteBank.Create("horizontalTempleGateRight"));
         }
@@ -173,8 +172,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (Inverted) {
                 // Init gate as open
-                this.drawWidth = Math.Max(this.OpenWidth, MinEdgeSpace);
-                SetWidth((int) this.OpenWidth);
+                this.drawWidth = Math.Max(OpenWidth, MinEdgeSpace);
+                SetWidth((int) OpenWidth);
                 this.open = true;
             } else {
                 // init gate as closed
@@ -183,10 +182,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 this.open = false;
             }
 
-            if (this.Type == Types.TouchSwitches) {
+            if (Type == Types.TouchSwitches) {
                 Add(new Coroutine(CheckTouchSwitches(), false));
             }
-            else if (this.Type == Types.FlagActive) {
+            else if (Type == Types.FlagActive) {
                 Add(new Coroutine(CheckFlag(this.Flag), false));
             }
         }
@@ -243,7 +242,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
 
-            if (this.Inverted) {
+            if (Inverted) {
                 Close();
             } else {
                 Open();
@@ -269,29 +268,29 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.targetWidth = width;
             float x = X;
             float oldWidth = 0f;
-            if (this.OpenDirection != OpenDirections.Right) {
+            if (OpenDirection != OpenDirections.Right) {
                 oldWidth = colliders[0].Width;
                 colliders[0].Width = width;
                 // if we're growing, try to push/kill the player
                 // there's a separate check if we're in center mode
-                if (oldWidth < width && this.OpenDirection != OpenDirections.Center) {
+                if (oldWidth < width && OpenDirection != OpenDirections.Center) {
                     X -= width - oldWidth;
                     MoveHExact((int) (width - oldWidth));
                 }
                 X = x;
             }
-            if (this.OpenDirection != OpenDirections.Left) {
+            if (OpenDirection != OpenDirections.Left) {
                 oldWidth = colliders[1].Width;
                 colliders[1].Width = width;
                 colliders[1].Position.X = 48 - width;
                 // attempt to push/kill player
-                if (oldWidth < width && this.OpenDirection != OpenDirections.Center) {
+                if (oldWidth < width && OpenDirection != OpenDirections.Center) {
                     X -= oldWidth - width;
                     MoveHExact((int) (oldWidth - width));
                 }
                 X = x;
             }
-            if(this.OpenDirection == OpenDirections.Center && oldWidth < width) {
+            if(OpenDirection == OpenDirections.Center && oldWidth < width) {
                 MoveRiders((int) (width - oldWidth));
             }
             Collidable = true;
@@ -302,10 +301,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // Move/Kill riders when we're centered
             GetRiders();
-            float right = base.Right;
-            float left = base.Left;
+            float right = Right;
+            float left = Left;
             Player player = null;
-            player = base.Scene.Tracker.GetEntity<Player>();
+            player = Scene.Tracker.GetEntity<Player>();
 
             // Drop the player down if they are at a particular height
             // the player gets stuck in the door without this
@@ -314,7 +313,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 player.NaiveMove((this.Bottom-player.Top)*Vector2.UnitY);
             }
 
-            foreach (Actor entity in base.Scene.Tracker.GetEntities<Actor>()) {
+            foreach (Actor entity in Scene.Tracker.GetEntities<Actor>()) {
                 if (entity.AllowPushing) {
                     bool collidable = entity.Collidable;
                     entity.Collidable = true;
@@ -350,13 +349,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
-            if (this.OpenDirection != OpenDirections.Right) {
+            if (OpenDirection != OpenDirections.Right) {
                 Vector2 shake = new Vector2(0f, Math.Sign(shaker.Value.X));
                 sprites[0].DrawSubrect(new Vector2(0, -2) + shake, 
                     new Rectangle((int) (sprites[0].Width - drawWidth), 0,
                         (int) drawWidth, (int) sprites[0].Height));
             }
-            if (this.OpenDirection != OpenDirections.Left) {
+            if (OpenDirection != OpenDirections.Left) {
                 Vector2 shake = new Vector2(0f, Math.Sign(shaker.Value.Y));
                 sprites[1].DrawSubrect(new Vector2(48f - drawWidth, -3) + shake, 
                     new Rectangle(0, 0, (int) drawWidth, (int) sprites[1].Height));
