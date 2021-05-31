@@ -1,6 +1,6 @@
 module SJ2021HorizontalTempleGate
 using ..Ahorn, Maple
-@mapdef Entity "SJ2021/HorizontalTempleGate" HorizontalTempleGate(x::Integer, y::Integer, width::Integer=48, height::Integer=8, flag::String="", texture::String="objects/StrawberryJam2021/horizontalTempleGate/default", inverted::Bool=false, direction::String="left", type::String="flagActive", openWidth::Integer=0)
+@mapdef Entity "SJ2021/HorizontalTempleGate" HorizontalTempleGate(x::Integer, y::Integer, flag::String="", texture::String="objects/StrawberryJam2021/horizontalTempleGate/default", inverted::Bool=false, direction::String="left", type::String="flagActive", openWidth::Integer=0)
 
 const placements = Ahorn.PlacementDict(
    "Horizontal Temple Gate (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
@@ -9,16 +9,16 @@ const placements = Ahorn.PlacementDict(
 )
 
 Ahorn.editingOptions(entity::HorizontalTempleGate) = Dict{String, Any}(
-  "direction" => Dict{String, String}(
-	"Left" => "left",
-	"Right" => "right",
-	"FromCenter" => "center"
-  ),
-  "type" => Dict{String, String}(
-	"NearestSwitch" => "nearestSwitch",
-	"TouchSwitches" => "touchSwitches",
-	"FlagActive" => "flagActive"
-  )
+  "direction" => [
+	"left",
+	"right",
+	"center"
+  ],
+  "type" => [
+	"nearestSwitch",
+	"touchSwitches",
+	"flagActive"
+  ]
 )
 
 function Ahorn.selection(entity::HorizontalTempleGate)
