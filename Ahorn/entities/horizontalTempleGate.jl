@@ -1,6 +1,6 @@
 module SJ2021HorizontalTempleGate
 using ..Ahorn, Maple
-@mapdef Entity "SJ2021/HorizontalTempleGate" HorizontalTempleGate(x::Integer, y::Integer, flag::String="", texture::String="objects/StrawberryJam2021/horizontalTempleGate/default", inverted::Bool=false, direction::String="left", type::String="flagActive", openWidth::Integer=0)
+@mapdef Entity "SJ2021/HorizontalTempleGate" HorizontalTempleGate(x::Integer, y::Integer, flag::String="", inverted::Bool=false, direction::String="left", type::String="flagActive", openWidth::Integer=0)
 
 const placements = Ahorn.PlacementDict(
    "Horizontal Temple Gate (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
@@ -32,7 +32,7 @@ end
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::HorizontalTempleGate, room::Maple.Room)
    direction = get(entity.data, "direction", "left")
-   texture = get(entity.data, "texture", "objects/StrawberryJam2021/horizontalTempleGate/default")
+   texture = "objects/StrawberryJam2021/horizontalTempleGate/default"
    if direction == "center"
       sprite = Ahorn.getTextureSprite(texture*"/left00", "Gameplay")
       Ahorn.drawImage(ctx, texture*"/left00", 0, -3, 24, 0, sprite.width-24, 15)
