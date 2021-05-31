@@ -38,6 +38,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ResettingRefill.Load();
             //SineDustSpinner.Load();
             HorizontalTempleGate.Load();
+            ToggleBlockReskin.Load();
         }
 
         public override void Unload() {
@@ -58,6 +59,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             TripleBoostFlower.Unload();
             ResettingRefill.Unload();
             HorizontalTempleGate.Unload();
+            ToggleBlockReskin.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -66,8 +68,11 @@ namespace Celeste.Mod.StrawberryJam2021 {
             _CustomEntitySpriteBank = new SpriteBank(GFX.Game, "Graphics/StrawberryJam2021/CustomEntitySprites.xml");
 
             WormholeBooster.LoadParticles();
+            SwitchCrate.LoadTypes();
+            SwitchCrateHolder.SetupParticles();
             LoopBlock.InitializeTextures();
             DashBoostField.LoadParticles();
+            ToggleBlockReskin.InitializeTextures();
         }
     }
 }
