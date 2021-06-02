@@ -23,23 +23,23 @@
         <Anim id="hit" path="TempleDoor" delay="0.08" frames="0-4" goto="idle"/>
     </grabTempleGate>
 
-	<!--Exploding Strawberry-->
-	<explodingStrawberry path="objects/StrawberryJam2021/explodingStrawberry/" start="idle">
-		<Center/>
-		<Anim id="idle" path="explodeberry" delay="0.1" frames="0"/>
-		<Anim id="explode" path="explodeberry" delay="0.1" frames="0-11"/>
-		<Anim id="ghostexplode" path="explodeghostberry" delay="0.1" frames="0-11"/>
-	</explodingStrawberry>
+    <!--Exploding Strawberry-->
+    <explodingStrawberry path="objects/StrawberryJam2021/explodingStrawberry/" start="idle">
+        <Center/>
+        <Anim id="idle" path="explodeberry" delay="0.1" frames="0"/>
+        <Anim id="explode" path="explodeberry" delay="0.1" frames="0-11"/>
+        <Anim id="ghostexplode" path="explodeghostberry" delay="0.1" frames="0-11"/>
+    </explodingStrawberry>
 
-	<!--Sky Lantern-->
-	<skyLantern path="objects/StrawberryJam2021/skyLantern/" start="idle">
-		<Justify x="0.5" y="0.9"/>
-		<Anim id="idle" path="idle" delay="0.1"/>
-		<Anim id="held" path="held" delay="0.1"/>
-		<Anim id="fall" path="fall" delay="0.06" goto="fallLoop"/>
-		<Loop id="fallLoop" path="fallLoop" delay="0.06"/>
-		<Anim id="death" path="death" delay="0.06"/>
-	</skyLantern>
+    <!--Sky Lantern-->
+    <skyLantern path="objects/StrawberryJam2021/skyLantern/" start="idle">
+        <Justify x="0.5" y="0.9"/>
+        <Anim id="idle" path="idle" delay="0.1"/>
+        <Anim id="held" path="held" delay="0.1"/>
+        <Anim id="fall" path="fall" delay="0.06" goto="fallLoop"/>
+        <Loop id="fallLoop" path="fallLoop" delay="0.06"/>
+        <Anim id="death" path="death" delay="0.06"/>
+    </skyLantern>
 
     <!--Wormhole Booster-->
     <wormholeBooster path="objects/StrawberryJam2021/boosterWormhole/" start="loop">
@@ -49,7 +49,15 @@
         <Loop id="spin" path="boosterWormhole" delay="0.06" frames="18-25"/>
         <Anim id="pop" path="boosterWormhole" delay="0.08" frames="9-17"/>
     </wormholeBooster>
-
+    
+    <wormholeMask path="objects/StrawberryJam2021/boosterDisplacementMask/" start="loop">
+        <Justify x="0.5" y="0.5"/>
+        <Loop id="loop" path="boosterWormhole" delay="0.1" frames="0-4"/>
+        <Loop id="inside" path="boosterWormhole" delay="0.1" frames="5-8"/>
+        <Loop id="spin" path="boosterWormhole" delay="0.06" frames="18-25"/>
+        <Anim id="pop" path="boosterWormhole" delay="0.08" frames="9-17"/>
+    </wormholeMask>
+    
     <!--Laser Emitter-->
     <laserEmitter path="objects/StrawberryJam2021/laserEmitter/" start="simple">
         <Justify x="0.5" y="1"/>
@@ -85,4 +93,13 @@
         <Anim id="idle_gust_1" path="1charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_1:9,idle_gust_1:1"/>
         <Anim id="death" path="death" delay="0.1" />
     </roseGlider>
+
+    <!--Strawberry Jam Jars-->
+    <jamJar_trailer path="objects/StrawberryJam2021/jamJar/trailer/" start="empty">
+        <Justify x="0.5" y="1"/>
+        <Loop id="empty" path="jarempty_idle" delay="0.1"/>
+        <Anim id="before_fill" path="jarempty_idle" delay="0.1" frames="8-15" goto="fill"/>
+        <Anim id="fill" path="jarfill_" delay="0.1" goto="full"/>
+        <Loop id="full" path="jarfull_idle" delay="0.1"/>
+    </jamJar_trailer>
 </Sprites>
