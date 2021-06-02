@@ -11,21 +11,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// </remarks>
     public abstract class OrientableEntity : Entity {
         #region Properties
-        
+
         /// <summary>
         /// The orientation of the entity. The opposite direction will be used for static mover checks.
         /// </summary>
         public Orientations Orientation { get; }
-        
+
         #endregion
-        
+
         protected OrientableEntity(EntityData data, Vector2 offset, Orientations orientation)
             : base(data.Position + offset) {
             Orientation = orientation;
 
             // same depth as springs
             Depth = Depths.Above - 1;
-            
+
             Add(new StaticMover {
                 OnAttach = p => Depth = p.Depth + 1,
                 SolidChecker = s => Collide.CheckPoint(s, Position - Orientation.Direction()),
@@ -34,7 +34,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 OnDisable = () => Collidable = false,
             });
         }
-        
+
         /// <summary>
         /// The available orientations of an <see cref="OrientableEntity"/>, where the direction indicates the "front" of the entity.
         /// The opposite direction is used for checking <see cref="StaticMover"/>s.
@@ -44,24 +44,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             /// Indicates that the entity points toward the top of the screen.
             /// </summary>
             Up,
-            
+
             /// <summary>
             /// Indicates that the entity points toward the bottom of the screen.
             /// </summary>
             Down,
-            
+
             /// <summary>
             /// Indicates that the entity points toward the left of the screen.
             /// </summary>
             Left,
-            
+
             /// <summary>
             /// Indicates that the entity points toward the right of the screen.
             /// </summary>
             Right,
         }
     }
-    
+
     public static class OrientationsExtensions {
         public static Vector2 Direction(this OrientableEntity.Orientations orientation) => orientation switch {
             OrientableEntity.Orientations.Up => -Vector2.UnitY,
@@ -86,5 +86,26 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             OrientableEntity.Orientations.Right => Vector2.UnitY,
             _ => Vector2.Zero
         };
+
+        public static Hitbox AlignedWithOrientation(this Hitbox hitbox, OrientableEntity.Orientations orientation)
+        {
+            switch (orientation)
+            {
+                case OrientableEntity.Orientations.Up:
+                    hitbox.BottomCenter = Vector2.Zero;
+                    break;
+                case OrientableEntity.Orientations.Down:
+                    hitbox.TopCenter = Vector2.Zero;
+                    break;
+                case OrientableEntity.Orientations.Left:
+                    hitbox.CenterRight = Vector2.Zero;
+                    break;
+                case OrientableEntity.Orientations.Right:
+                    hitbox.CenterLeft = Vector2.Zero;
+                    break;
+            }
+
+            return hitbox;
+        }
     }
 }
