@@ -132,7 +132,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 },
                 new SineWave(8f) {OnUpdate = v => laserFlicker = v},
                 new PlayerCollider(onPlayerCollide),
-                new LaserColliderComponent {CollideWithSolids = CollideWithSolids, Thickness = 12},
+                new LaserColliderComponent {CollideWithSolids = CollideWithSolids, Thickness = 12, Offset = Orientation.Offset() * 4},
                 emitterSprite
             );
 
@@ -154,10 +154,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
+            const int offFrame = 13;
+            const int whiteFrame = 18;
+
             if (State == LaserState.Charging || State == LaserState.Firing) {
-                var alpha = State == LaserState.Charging ? 0.2f + laserFlicker * 0.1f : 0.6f;
-                var color = renderColor * alpha;
-                Draw.Rect(X + laserHitbox.Left, Y + laserHitbox.Top, laserHitbox.Width, laserHitbox.Height, color);
+                float alpha = State == LaserState.Charging ? 0.2f + laserFlicker * 0.1f : 0.6f;
+                var color = State == LaserState.Charging && emitterSprite.CurrentAnimationFrame >= whiteFrame
+                    ? Microsoft.Xna.Framework.Color.White
+                    : renderColor * alpha;
+
+                if (emitterSprite.CurrentAnimationFrame < offFrame || emitterSprite.CurrentAnimationFrame >= whiteFrame)
+                    Draw.Rect(X + laserHitbox.Left, Y + laserHitbox.Top, laserHitbox.Width, laserHitbox.Height, color);
             }
 
             base.Render();
