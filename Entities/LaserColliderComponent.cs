@@ -12,8 +12,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public float Thickness { get; set; }
         public bool CollideWithSolids { get; set; }
         public Hitbox Collider { get; } = new Hitbox(0, 0);
+        public Vector2 Offset { get; set; }
 
-        public LaserColliderComponent() : base(true, false) {
+        public LaserColliderComponent() : this(Vector2.Zero) {
+        }
+        
+        public LaserColliderComponent(Vector2 offset) : base(true, false) {
+            Offset = offset;
         }
 
         public override void EntityAdded(Scene scene) {
@@ -33,25 +38,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 case OrientableEntity.Orientations.Up:
                     Collider.Width = Thickness;
                     Collider.Height = size;
-                    Collider.BottomCenter = Vector2.Zero;
+                    Collider.BottomCenter = Offset;
                     break;
                 
                 case OrientableEntity.Orientations.Down:
                     Collider.Width = Thickness;
                     Collider.Height = size;
-                    Collider.TopCenter = Vector2.Zero;
+                    Collider.TopCenter = Offset;
                     break;
                 
                 case OrientableEntity.Orientations.Left:
                     Collider.Width = size;
                     Collider.Height = Thickness;
-                    Collider.CenterRight = Vector2.Zero;
+                    Collider.CenterRight = Offset;
                     break;
                 
                 case OrientableEntity.Orientations.Right:
                     Collider.Width = size;
                     Collider.Height = Thickness;
-                    Collider.CenterLeft = Vector2.Zero;
+                    Collider.CenterLeft = Offset;
                     break;
             }
         }
@@ -61,10 +66,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             var level = SceneAs<Level>();
 
             float high = orientableEntity.Orientation switch {
-                OrientableEntity.Orientations.Up => orientableEntity.Position.Y - level.Bounds.Top,
-                OrientableEntity.Orientations.Down => level.Bounds.Bottom - orientableEntity.Position.Y,
-                OrientableEntity.Orientations.Left => orientableEntity.Position.X - level.Bounds.Left,
-                OrientableEntity.Orientations.Right => level.Bounds.Right - orientableEntity.Position.X,
+                OrientableEntity.Orientations.Up => orientableEntity.Position.Y + Offset.Y - level.Bounds.Top,
+                OrientableEntity.Orientations.Down => level.Bounds.Bottom - orientableEntity.Position.Y - Offset.Y,
+                OrientableEntity.Orientations.Left => orientableEntity.Position.X + Offset.X - level.Bounds.Left,
+                OrientableEntity.Orientations.Right => level.Bounds.Right - orientableEntity.Position.X - Offset.X,
                 _ => 0
             };
 
