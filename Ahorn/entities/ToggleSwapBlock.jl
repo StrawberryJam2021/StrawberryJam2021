@@ -2,7 +2,8 @@ module SJ2021ToggleSwapBlock
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/ToggleSwapBlock" ToggleBlock(width::Integer=16, height::Integer=16, travelSpeed::Number=5.0, oscillate::Bool=false, stopAtEnd::Bool=true, customTexturePath::String="")
+@mapdef Entity "SJ2021/ToggleSwapBlock" ToggleBlock(width::Integer=16, height::Integer=16, travelSpeed::Number=5.0,
+    oscillate::Bool=false, stopAtEnd::Bool=true, directionIndicator::Bool=false, constantSpeed::Bool=false, customTexturePath::String="")
 
 function getXYWidthHeight(entity::ToggleBlock)
     x, y = Ahorn.position(entity)
@@ -44,6 +45,7 @@ function Ahorn.selection(entity::ToggleBlock)
 end
 
 defaultFrame = "objects/canyon/toggleblock/block1"
+midResource = "objects/canyon/toggleblock/middleRed00"
 pathPrefix = "objects/StrawberryJam2021/toggleIndicator/"
 paths = ["right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done"]
 STAY, DONE = 9, 10
@@ -92,8 +94,13 @@ function drawArrow(ctx::Ahorn.Cairo.CairoContext, sx::Number, sy::Number, tx::Nu
     Ahorn.drawArrow(ctx, sx + off_x * (1 - cos(theta)), sy + off_y * (1 - sin(theta)), tx + off_x * (1 + cos(theta)), ty + off_y * (1 + sin(theta)), Ahorn.colors.selection_selected_fc, headLength=6)
 end
 
-function drawSprite(ctx::Ahorn.Cairo.CairoContext, x::Number, y::Number, index::Integer, width::Number, height::Number)
-    sprite = Ahorn.getSprite(string(pathPrefix, paths[index]), "Gameplay")
+function drawIndicator(ctx::Ahorn.Cairo.CairoContext, x::Number, y::Number, index::Integer, width::Number, height::Number)
+    resource = string(pathPrefix, paths[index])
+    drawSprite(ctx, x, y, resource, width, height)
+end
+
+function drawSprite(ctx::Ahorn.Cairo.CairoContext, x::Number, y::Number, resource::String, width::Number, height::Number)
+    sprite = Ahorn.getSprite(resource, "Gameplay")
     Ahorn.drawImage(ctx, sprite, x + div(width - sprite.width, 2), y + div(height - sprite.height, 2))
 end
 
@@ -133,34 +140,48 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::ToggleBlock, roo
 
     renderSingleToggleBlock(ctx, frame, x, y, width, height)
 
-    prevStay = false
-    px, py, nx, ny = x, y, x, y
     for node in nodes
-        px, py = nx, ny
         nx, ny = Int.(node)
         renderSingleToggleBlock(ctx, frame, nx, ny, width, height)
-        index = getIndex(px, py, nx, ny)
-        currStay = index == STAY
-        if !currStay
-            if prevStay
-                index = STAY
-            end
-            drawSprite(ctx, px, py, index, width, height)
-        end
-        prevStay = currStay
     end
 
-    if prevStay
-        drawSprite(ctx, nx, ny, STAY, width, height)
-    else
-        if stopAtEnd
-            index = DONE
-        elseif oscillate
-            index = getIndex(nx, ny, px, py)
-        else
-            index = getIndex(nx, ny, x, y)
+    showIndicators = get(entity.data, "directionIndicator", true)
+
+    if !showIndicators
+        drawSprite(ctx, x, y, midResource, width, height)
+        for node in nodes
+            nx, ny = Int.(node)
+            drawSprite(ctx, nx, ny, midResource, width, height)
         end
-        drawSprite(ctx, nx, ny, index, width, height)
+    else
+        prevStay = false
+        px, py, nx, ny = x, y, x, y
+        for node in nodes
+            px, py = nx, ny
+            nx, ny = Int.(node)
+            index = getIndex(px, py, nx, ny)
+            currStay = index == STAY
+            if !currStay
+                if prevStay
+                    index = STAY
+                end
+                drawIndicator(ctx, px, py, index, width, height)
+            end
+            prevStay = currStay
+        end
+
+        if prevStay
+            drawIndicator(ctx, nx, ny, STAY, width, height)
+        else
+            if stopAtEnd
+                index = DONE
+            elseif oscillate
+                index = getIndex(nx, ny, px, py)
+            else
+                index = getIndex(nx, ny, x, y)
+            end
+            drawIndicator(ctx, nx, ny, index, width, height)
+        end
     end
 end
 

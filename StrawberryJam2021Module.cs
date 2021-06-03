@@ -36,7 +36,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             BarrierDashSwitch.Load();
             TripleBoostFlower.Load();
             ResettingRefill.Load();
-            ToggleBlockReskin.Load();
+            ToggleSwapBlock.Load();
         }
 
         public override void Unload() {
@@ -56,7 +56,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             BarrierDashSwitch.Unload();
             TripleBoostFlower.Unload();
             ResettingRefill.Unload();
-            ToggleBlockReskin.Unload();
+            ToggleSwapBlock.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -69,7 +69,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SwitchCrateHolder.SetupParticles();
             LoopBlock.InitializeTextures();
             DashBoostField.LoadParticles();
-            ToggleBlockReskin.InitializeTextures();
+            ToggleSwapBlock.InitializeTextures();
         }
     }
 }
