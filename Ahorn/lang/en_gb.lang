@@ -125,3 +125,5 @@ placements.entities.SJ2021/StrawberryJamJar.tooltips.sprite=The sprite this jar 
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.oscillate=Whether block reverses direction instead of returning to start after reaching its last node.  Ignored if "Stop At End" is checked.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.stopAtEnd=Whether block doesn't move again after reaching its last node.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customTexturePath=Path to a 24 pixel x 24 pixel texture representing what a 3 tile x 3 tile block should look like.  Default texture is used if left blank.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.directionIndicator=If checked, the block displays an indicator showing the direction it will move next.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.constantSpeed=If checked, the velocity of the block will be the same each time it moves, and not scale with the distance between nodes.  Furthermore, "Travel Speed" will be interpretted as a multiplier, with 1.0 corresponding to vanilla swap block speed.
