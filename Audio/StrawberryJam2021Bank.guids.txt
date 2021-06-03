@@ -1,7 +1,8 @@
-{2994b6ba-7ee7-4317-9c26-64c75d897863} event:/strawberry_jam_2021/game/dash_zip_mover/zip_mover
+{aa085097-21e4-413d-9e38-15041cb80779} event:/strawberry_jam_2021/game/bee/fireball_idle
+{8abb5fd5-81bb-43a2-8503-a4a1962346e3} event:/strawberry_jam_2021/game/boost_block/boost
 {023896d1-8414-47c6-9166-ced4020541fe} event:/strawberry_jam_2021/game/bubble_emitter/bubble_pop
 {4fa5d2df-5174-49d1-9699-ef6ea97d1a69} event:/strawberry_jam_2021/game/bubble_emitter/emitter_generate
-{8abb5fd5-81bb-43a2-8503-a4a1962346e3} event:/strawberry_jam_2021/game/boost_block/boost
+{2994b6ba-7ee7-4317-9c26-64c75d897863} event:/strawberry_jam_2021/game/dash_zip_mover/zip_mover
 {190f0a5c-2230-4bb6-9f0d-9bb0c984b272} event:/strawberry_jam_2021/game/jars/open_demo
-{aa085097-21e4-413d-9e38-15041cb80779} event:/strawberry_jam_2021/game/bee/fireball_idle
+{6ecab556-6965-434c-9578-f5f41ae1d298} event:/strawberry_jam_2021/game/loop_block/sideboost
 {449c0225-4aa9-4151-b834-588cedee088a} bank:/StrawberryJam2021Bank
