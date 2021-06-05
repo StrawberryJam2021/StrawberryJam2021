@@ -44,6 +44,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly Sprite emitterSprite;
         private readonly Sprite beamSprite;
         private readonly Hitbox emitterHitbox;
+        private readonly Hitbox laserHitbox;
         private readonly ColliderList colliderList;
         private LaserState laserState;
         private float laserFlicker;
@@ -162,7 +163,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             );
 
             Collider = emitterHitbox = new Hitbox(12, 12).AlignedWithOrientation(Orientation);
-            colliderList = new ColliderList(Get<LaserColliderComponent>().Collider, emitterHitbox);
+            colliderList = new ColliderList(laserHitbox = Get<LaserColliderComponent>().Collider, emitterHitbox);
         }
 
         private void onPlayerCollide(Player player) {
@@ -175,6 +176,31 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 player.Die(direction);
             }
+        }
+
+        public override void Render() {
+            if (beamSprite.Visible) {
+                var frame = beamSprite.GetFrame(beamSprite.CurrentAnimationID, beamSprite.CurrentAnimationFrame);
+                var offset = Orientation.Offset() * frame.Width;
+                float length = Math.Abs(Orientation switch {
+                    Orientations.Up => beamSprite.Y - laserHitbox.Top,
+                    Orientations.Down => beamSprite.Y - laserHitbox.Bottom,
+                    Orientations.Left => beamSprite.X - laserHitbox.Left,
+                    Orientations.Right => beamSprite.X - laserHitbox.Right,
+                    _ => 0,
+                });
+
+                int count = (int) Math.Ceiling(length / frame.Width);
+                int remainder = (int) length % frame.Width;
+
+                for (int i = 0; i < count; i++) {
+                    var position = Position + beamSprite.Position + (i * offset);
+                    int width = i == count - 1 && remainder != 0 ? remainder : frame.Width;
+                    frame.Draw(position, beamSprite.Origin, beamSprite.Color, beamSprite.Scale, beamSprite.Rotation , new Rectangle(0, 0, width, frame.Height));
+                }
+            }
+
+            emitterSprite.Render();
         }
 
         public enum LaserState {
