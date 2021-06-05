@@ -43,7 +43,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private readonly Sprite emitterSprite;
         private readonly Sprite beamSprite;
-        private readonly Hitbox emitterHitbox;
+        private readonly Collider emitterHitbox;
         private readonly Hitbox laserHitbox;
         private readonly ColliderList colliderList;
         private LaserState laserState;
@@ -162,7 +162,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 emitterSprite
             );
 
-            Collider = emitterHitbox = new Hitbox(12, 12).AlignedWithOrientation(Orientation);
+            Collider = emitterHitbox = new Circle(6);
+            emitterHitbox.Position += Orientation.Offset() * 2f;
             colliderList = new ColliderList(laserHitbox = Get<LaserColliderComponent>().Collider, emitterHitbox);
         }
 
