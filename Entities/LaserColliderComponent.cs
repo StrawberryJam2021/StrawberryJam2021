@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Monocle;
+using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <summary>
@@ -16,7 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public LaserColliderComponent() : this(Vector2.Zero) {
         }
-        
+
         public LaserColliderComponent(Vector2 offset) : base(true, false) {
             Offset = offset;
         }
@@ -30,29 +31,29 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Update();
             updateBeam();
         }
-        
+
         private void resizeHitbox(float size) {
             if (!(Entity is OrientableEntity orientableEntity)) return;
-            
+
             switch (orientableEntity.Orientation) {
                 case OrientableEntity.Orientations.Up:
                     Collider.Width = Thickness;
                     Collider.Height = size;
                     Collider.BottomCenter = Offset;
                     break;
-                
+
                 case OrientableEntity.Orientations.Down:
                     Collider.Width = Thickness;
                     Collider.Height = size;
                     Collider.TopCenter = Offset;
                     break;
-                
+
                 case OrientableEntity.Orientations.Left:
                     Collider.Width = size;
                     Collider.Height = Thickness;
                     Collider.CenterRight = Offset;
                     break;
-                
+
                 case OrientableEntity.Orientations.Right:
                     Collider.Width = size;
                     Collider.Height = Thickness;
@@ -60,7 +61,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     break;
             }
         }
-        
+
         private void updateBeam() {
             if (!(Entity is OrientableEntity orientableEntity)) return;
             var level = SceneAs<Level>();
@@ -77,20 +78,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // first check if the laser hits the edge of the screen
             resizeHitbox(high);
-            if (!CollideWithSolids || !orientableEntity.CollideCheck<Solid>()) return;
-            
+            if (!CollideWithSolids || !solidCollideCheck()) return;
+
             // perform a binary search to hit the nearest solid
             while (safety-- > 0) {
                 int pivot = (int) (low + (high - low) / 2f);
                 resizeHitbox(pivot);
                 if (pivot == low)
                     break;
-                if (orientableEntity.CollideCheck<Solid>()) {
+                if (solidCollideCheck()) {
                     high = pivot;
                 } else {
                     low = pivot;
                 }
             }
+        }
+
+        private bool solidCollideCheck() {
+            var oldCollider = Entity.Collider;
+            Entity.Collider = Collider;
+            bool didCollide = Entity.CollideCheck<Solid>();
+            Entity.Collider = oldCollider;
+            return didCollide;
         }
     }
 }
