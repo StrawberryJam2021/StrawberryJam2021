@@ -34,9 +34,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// </summary>
         public Action<CassetteState> OnSixteenth;
 
+        public Action<CassetteState> OnBeat;
+
         protected virtual void InvokeOnTick(CassetteState state) => OnTick?.Invoke(state);
         protected virtual void InvokeOnSwap(CassetteState state) => OnSwap?.Invoke(state);
         protected virtual void InvokeOnSixteenth(CassetteState state) => OnSixteenth?.Invoke(state);
+
+        protected virtual void InvokeOnBeat(CassetteState state) => OnBeat?.Invoke(state);
 
         #endregion
 
@@ -136,6 +140,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (CurrentState.CurrentTick.Index != lastState.CurrentTick.Index) {
                 InvokeOnSwap(CurrentState);
+            }
+
+            if (CurrentState.Beat != lastState.Beat) {
+                InvokeOnBeat(CurrentState);
             }
 
             if (CurrentState.CurrentTick.Index != lastState.CurrentTick.Index || CurrentState.CurrentTick.Offset != lastState.CurrentTick.Offset) {

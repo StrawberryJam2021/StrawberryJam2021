@@ -36,7 +36,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         #endregion
 
-        private string animationPrefix => CassetteIndex == 0 ? "pink" : "blue";
+        private string animationPrefix => CassetteIndex == 0 ? "blue" : "pink";
         private string chargingAnimation => $"{animationPrefix}_charging";
         private string burstAnimation => $"{animationPrefix}_burst";
         private string firingAnimation => $"{animationPrefix}_firing";
@@ -52,9 +52,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float laserFlicker;
         private int ticksRemaining;
 
-        private void setChargingAnimationDelay(float tickLength) {
+        private void setChargingAnimationSpeed(float totalRunTime) {
             var animation = emitterSprite.Animations[chargingAnimation];
-            animation.Delay = tickLength / animation.Frames.Length;
+            animation.Delay = totalRunTime / animation.Frames.Length;
         }
 
         public LaserState State {
@@ -66,6 +66,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 laserState = value;
                 switch (value) {
                     case LaserState.Idle:
+                    case LaserState.Precharge:
                         emitterSprite.Play(idleAnimation);
                         beamSprite.Visible = false;
                         Collider = emitterHitbox;
@@ -77,11 +78,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         Collider = emitterHitbox;
                         break;
 
-                    case LaserState.Firing:
+                    case LaserState.Burst:
                         emitterSprite.Play(burstAnimation);
                         beamSprite.Visible = true;
                         beamSprite.Play(burstAnimation);
                         Collider = emitterHitbox;
+                        break;
+
+                    case LaserState.Firing:
+                        beamSprite.Visible = true;
+                        Collider = colliderList;
                         break;
 
                     // case LaserState.Firing:
@@ -115,15 +121,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             CassetteIndex = data.Int("cassetteIndex", 0);
             LengthInTicks = data.Int("lengthInTicks", 2);
 
+            var beamOffset = Orientation.Offset() * 4;
+
             emitterSprite = StrawberryJam2021Module.SpriteBank.Create("brushLaserEmitter");
             emitterSprite.Scale = Orientation == Orientations.Left || Orientation == Orientations.Up ? new Vector2(-1, 1) : Vector2.One;
             emitterSprite.Rotation = Orientation == Orientations.Up || Orientation == Orientations.Down ? (float)Math.PI / 2f : 0f;
             emitterSprite.Position = Vector2.Zero;
+            emitterSprite.Play(idleAnimation);
 
             beamSprite = StrawberryJam2021Module.SpriteBank.Create("brushLaserBeam");
             beamSprite.Scale = Orientation == Orientations.Left || Orientation == Orientations.Up ? new Vector2(-1, 1) : Vector2.One;
             beamSprite.Rotation = Orientation == Orientations.Up || Orientation == Orientations.Down ? (float)Math.PI / 2f : 0f;
-            beamSprite.Position = Vector2.Zero;
+            beamSprite.Position = beamOffset;
+            beamSprite.Visible = false;
 
             Add(new CassetteListener {
                     OnTick = state => {
@@ -137,22 +147,39 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             return;
                         }
 
-                        if (state.NextTick.Index == CassetteIndex) {
-                            setChargingAnimationDelay(state.TickLength);
-                            State = LaserState.Charging;
-                            renderColor = CassetteListener.ColorFromCassetteIndex(state.NextTick.Index);
-                        }
-                        else if (state.CurrentTick.Index == CassetteIndex) {
-                            State = LaserState.Firing;
+                        if (State == LaserState.Idle && state.CurrentTick.Index != CassetteIndex &&
+                            state.NextTick.Index == CassetteIndex) {
+                            // setChargingAnimationDelay(state.TickLength);
+                            // State = LaserState.Charging;
+                            // renderColor = CassetteListener.ColorFromCassetteIndex(state.NextTick.Index);
+                            State = LaserState.Precharge;
+                        } else if (State == LaserState.Charging && state.CurrentTick.Index == CassetteIndex) {
+                            State = LaserState.Burst;
                             ticksRemaining = LengthInTicks;
-                            renderColor = CassetteListener.ColorFromCassetteIndex(state.CurrentTick.Index);
+                            // renderColor = CassetteListener.ColorFromCassetteIndex(state.CurrentTick.Index);
                         } else
                             State = LaserState.Idle;
                     },
+                    OnBeat = state => {
+                        if (State == LaserState.Precharge) {
+                            const float chargeDelay = 0.35f;
+                            float beat = state.Beat % state.BeatsPerTick;
+                            if (beat / state.BeatsPerTick >= chargeDelay) {
+                                setChargingAnimationSpeed(state.TickLength * (1 - chargeDelay));
+                                State = LaserState.Charging;
+                            }
+                        } else if (State == LaserState.Burst) {
+                            const float enableDelay = 0.1f;
+                            float beat = state.Beat % state.BeatsPerTick;
+                            if (beat / state.BeatsPerTick >= enableDelay) {
+                                State = LaserState.Firing;
+                            }
+                        }
+                    }
                 },
                 new SineWave(8f) {OnUpdate = v => laserFlicker = v},
                 new PlayerCollider(onPlayerCollide),
-                new LaserColliderComponent {CollideWithSolids = CollideWithSolids, Thickness = 12, Offset = Orientation.Offset() * 4},
+                new LaserColliderComponent {CollideWithSolids = CollideWithSolids, Thickness = 12, Offset = beamOffset},
                 beamSprite,
                 emitterSprite
             );
@@ -177,13 +204,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Render() {
             const float turnOffFraction = 0.8f;
 
-            if (State != LaserState.Idle) {
-                float alpha = State == LaserState.Charging ? 0.2f + laserFlicker * 0.1f : 0.6f;
-                var color = renderColor;//State == LaserState.Burst ? Color.White : renderColor * alpha;
-
-                if (State != LaserState.Charging || (float)emitterSprite.CurrentAnimationFrame / emitterSprite.CurrentAnimationTotalFrames < turnOffFraction)
-                    Draw.Rect(X + laserHitbox.Left, Y + laserHitbox.Top, laserHitbox.Width, laserHitbox.Height, color);
-            }
+            // if (State != LaserState.Idle) {
+            //     float alpha = State == LaserState.Charging ? 0.2f + laserFlicker * 0.1f : 0.6f;
+            //     var color = renderColor;//State == LaserState.Burst ? Color.White : renderColor * alpha;
+            //
+            //     if (State != LaserState.Charging || (float)emitterSprite.CurrentAnimationFrame / emitterSprite.CurrentAnimationTotalFrames < turnOffFraction)
+            //         Draw.Rect(X + laserHitbox.Left, Y + laserHitbox.Top, laserHitbox.Width, laserHitbox.Height, color);
+            // }
 
             base.Render();
         }
@@ -191,8 +218,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
 
-            if (State == LaserState.Firing && emitterSprite.CurrentAnimationID == firingAnimation)
-                Collider = colliderList;
+            // if (State == LaserState.Firing && emitterSprite.CurrentAnimationID == firingAnimation)
+            //     Collider = colliderList;
             // if (State == LaserState.Burst && !emitterSprite.Animating)
             //     State = LaserState.Firing;
         }
@@ -203,6 +230,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             /// Collision = off.
             /// </summary>
             Idle,
+
+            Precharge,
 
             /// <summary>
             /// The laser is playing the charge animation.
@@ -217,7 +246,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             /// Starts on the tick the laser fires.
             /// Collision = off.
             /// </summary>
-            // Burst,
+            Burst,
 
             /// <summary>
             /// The laser is looping the firing animation.
