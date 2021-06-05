@@ -31,7 +31,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public bool CollideWithSolids { get; }
         public bool KillPlayer { get; }
         public int CassetteIndex { get; }
-        public int LengthInTicks { get; }
+        public bool HalfLength { get; }
 
         #endregion
 
@@ -99,7 +99,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             CollideWithSolids = data.Bool("collideWithSolids", true);
             KillPlayer = data.Bool("killPlayer", true);
             CassetteIndex = data.Int("cassetteIndex", 0);
-            LengthInTicks = data.Int("lengthInTicks", 2);
+            HalfLength = data.Bool("halfLength");
 
             var beamOffset = Orientation.Offset() * 4;
 
@@ -147,7 +147,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                                 break;
 
                             case LaserState.Firing:
-                                if (beat == 0 && state.CurrentTick.Index != CassetteIndex) {
+                                if (beat == 0 && (state.CurrentTick.Index != CassetteIndex || HalfLength)) {
                                     State = LaserState.Idle;
                                 }
                                 break;
