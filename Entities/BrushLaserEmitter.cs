@@ -39,7 +39,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private string chargingAnimation => $"{animationPrefix}_charging";
         private string burstAnimation => $"{animationPrefix}_burst";
         private string idleAnimation => $"{animationPrefix}_idle";
-        private Color renderColor => CassetteListener.ColorFromCassetteIndex(CassetteIndex);
         private Vector2 beamOffset => Orientation.Offset() * beamOffsetMultiplier;
 
         private readonly Sprite emitterSprite;
@@ -48,21 +47,55 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly Hitbox laserHitbox;
         private readonly ColliderList colliderList;
         private LaserState laserState;
-        private float laserFlicker;
 
         private const float chargeDelayFraction = 0.25f;
         private const float collisionDelaySeconds = 0.1f;
         private const int beamOffsetMultiplier = 4;
 
-        private static readonly ParticleType beamParticle = new ParticleType(ParticleTypes.Dust) {
-            SpeedMin = 15f,
-            SpeedMax = 30f,
-            LifeMin = 0.2f,
-            LifeMax = 0.4f,
+        private static readonly ParticleType blueCooldownParticle = new ParticleType(Booster.P_Burst) {
+            Source = GFX.Game["particles/blob"],
+            Color = Calc.HexToColor("42bfe8"),
+            Color2 = Calc.HexToColor("7550e8"),
+            ColorMode = ParticleType.ColorModes.Fade,
+            LifeMin = 0.5f,
+            LifeMax = 0.8f,
+            Size = 0.7f,
+            SizeRange = 0.25f,
+            ScaleOut = true,
+            Direction = 5.712389f,
+            DirectionRange = 1.17453292f,
+            SpeedMin = 40f,
+            SpeedMax = 100f,
+            SpeedMultiplier = 0.005f,
+            Acceleration = Vector2.Zero,
         };
 
-        private static ParticleType collideParticle = ZipMover.P_Sparks;
-        private static ParticleType chargeParticle = ZipMover.P_Sparks;
+        private static readonly ParticleType pinkCooldownParticle = new ParticleType(blueCooldownParticle) {
+            Color = Calc.HexToColor("e84292"),
+            Color2 = Calc.HexToColor("9c2a70"),
+        };
+
+        private static readonly ParticleType blueImpactParticle = new ParticleType(Booster.P_Burst) {
+            Source = GFX.Game["particles/fire"],
+            Color = Calc.HexToColor("ffffff"),
+            Color2 = Calc.HexToColor("73efe8"),
+            ColorMode = ParticleType.ColorModes.Fade,
+            LifeMin = 0.3f,
+            LifeMax = 0.5f,
+            Size = 0.7f,
+            SizeRange = 0.25f,
+            ScaleOut = true,
+            Direction = 4.712389f,
+            DirectionRange = 3.14159f,
+            SpeedMin = 10f,
+            SpeedMax = 80f,
+            SpeedMultiplier = 0.005f,
+            Acceleration = Vector2.Zero,
+        };
+
+        private static readonly ParticleType pinkImpactParticle = new ParticleType(blueImpactParticle) {
+            Color2 = Calc.HexToColor("ef73bf"),
+        };
 
         private void setAnimationSpeed(string key, float totalRunTime) {
             if (emitterSprite.Animations.TryGetValue(key, out var emitterAnimation))
@@ -77,10 +110,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (laserState == value)
                     return;
 
+                var oldState = laserState;
                 laserState = value;
+
                 switch (value) {
                     case LaserState.Idle:
                     case LaserState.Precharge:
+                        if (value == LaserState.Idle && oldState == LaserState.Firing) {
+                            emitCooldownParticles();
+                        }
+
                         emitterSprite.Play(idleAnimation);
                         beamSprite.Visible = false;
                         Collider = emitterHitbox;
@@ -90,7 +129,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         emitterSprite.Play(chargingAnimation);
                         beamSprite.Visible = false;
                         Collider = emitterHitbox;
-                        Add(new Coroutine(effectSequence()));
+                        Add(new Coroutine(impactParticlesSequence()));
                         break;
 
                     case LaserState.Burst:
@@ -166,7 +205,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         }
                     }
                 },
-                new SineWave(8f) {OnUpdate = v => laserFlicker = v},
                 new PlayerCollider(onPlayerCollide),
                 new LaserColliderComponent {CollideWithSolids = CollideWithSolids, Thickness = 12, Offset = beamOffset},
                 beamSprite,
@@ -215,39 +253,44 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             emitterSprite.Render();
         }
 
-        private IEnumerator effectSequence() {
+        private void emitCooldownParticles() {
+            var level = SceneAs<Level>();
+            int length = (int)Orientation.LengthOfHitbox(laserHitbox) - beamOffsetMultiplier;
+            var offset = Orientation.Offset();
+            float angle = Orientation.Angle() - (float)Math.PI / 2f;
+            var startPos = Position + beamOffset * 2;
+            var particle = CassetteIndex == 0 ? blueCooldownParticle : pinkCooldownParticle;
+
+            for (int i = 0; i < length; i += 8) {
+                level.ParticlesBG.Emit(particle, 6, startPos + offset * i, Vector2.Zero, angle);
+            }
+        }
+
+        private IEnumerator impactParticlesSequence() {
+            var level = SceneAs<Level>();
+            var particle = CassetteIndex == 0 ? blueImpactParticle : pinkImpactParticle;
+            var offset = Orientation == Orientations.Up || Orientation == Orientations.Down ? Vector2.UnitX : Vector2.UnitY;
+            float angle = Orientation.Angle() + (float)Math.PI / 2f;
+
             while (true) {
-                var level = SceneAs<Level>();
-                var color = CassetteListener.ColorFromCassetteIndex(CassetteIndex);
+                if (State == LaserState.Idle || State == LaserState.Precharge)
+                    yield break;
 
-                switch (State) {
-                    default:
-                    case LaserState.Idle:
-                    case LaserState.Precharge:
-                        yield break;
-
-                    case LaserState.Charging:
-                        break;
-
-                    case LaserState.Burst:
-                        break;
-
-                    case LaserState.Firing:
-                        int length = (int)Orientation.LengthOfHitbox(laserHitbox) - beamOffsetMultiplier;
-                        var offset = Orientation.Offset();
-                        float angle = Orientation.Angle();
-                        var startPos = Position + beamOffset * 2;
-
-                        for (int i = 0; i < length; i += 3) {
-                            level.ParticlesBG.Emit(beamParticle, startPos + offset * i, color, angle);
-                            level.ParticlesBG.Emit(beamParticle, startPos + offset * i, color, angle + (float)Math.PI);
-                        }
-
-                        yield return 0.1f;
-                        break;
+                if (State == LaserState.Charging) {
+                    yield return null;
+                    continue;
                 }
 
-                yield return null;
+                int thickness = (int) Orientation.ThicknessOfHitbox(laserHitbox);
+                var startPos = new Vector2(Orientation == Orientations.Right ? laserHitbox.Right + X : laserHitbox.Left + X,
+                    Orientation == Orientations.Down ? laserHitbox.Bottom + Y: laserHitbox.Top + Y);
+
+                const int particleCount = 3;
+                level.ParticlesFG.Emit(particle, particleCount, startPos, Vector2.Zero, angle);
+                level.ParticlesFG.Emit(particle, particleCount, startPos + offset * thickness / 2, Vector2.Zero, angle);
+                level.ParticlesFG.Emit(particle, particleCount, startPos + offset * thickness, Vector2.Zero, angle);
+
+                yield return 0.1f;
             }
         }
 

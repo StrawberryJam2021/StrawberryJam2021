@@ -95,5 +95,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 OrientableEntity.Orientations.Right => hitbox.Width,
                 _ => 0f
             };
+
+        public static float ThicknessOfHitbox(this OrientableEntity.Orientations orientation, Hitbox hitbox) =>
+            orientation switch {
+                OrientableEntity.Orientations.Up => hitbox.Width,
+                OrientableEntity.Orientations.Down => hitbox.Width,
+                OrientableEntity.Orientations.Left => hitbox.Height,
+                OrientableEntity.Orientations.Right => hitbox.Height,
+                _ => 0f
+            };
     }
 }
