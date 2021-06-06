@@ -86,5 +86,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             OrientableEntity.Orientations.Right => Vector2.UnitX,
             _ => Vector2.Zero
         };
+
+        public static float LengthOfHitbox(this OrientableEntity.Orientations orientation, Hitbox hitbox) =>
+            orientation switch {
+                OrientableEntity.Orientations.Up => hitbox.Height,
+                OrientableEntity.Orientations.Down => hitbox.Height,
+                OrientableEntity.Orientations.Left => hitbox.Width,
+                OrientableEntity.Orientations.Right => hitbox.Width,
+                _ => 0f
+            };
     }
 }

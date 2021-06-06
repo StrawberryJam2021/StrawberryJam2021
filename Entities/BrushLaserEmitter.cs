@@ -2,7 +2,7 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
-using System.Linq;
+using System.Collections;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/BrushLaserEmitterUp = LoadUp",
@@ -40,6 +40,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private string burstAnimation => $"{animationPrefix}_burst";
         private string idleAnimation => $"{animationPrefix}_idle";
         private Color renderColor => CassetteListener.ColorFromCassetteIndex(CassetteIndex);
+        private Vector2 beamOffset => Orientation.Offset() * beamOffsetMultiplier;
 
         private readonly Sprite emitterSprite;
         private readonly Sprite beamSprite;
@@ -51,6 +52,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private const float chargeDelayFraction = 0.25f;
         private const float collisionDelaySeconds = 0.1f;
+        private const int beamOffsetMultiplier = 4;
+
+        private static readonly ParticleType beamParticle = new ParticleType(ParticleTypes.Dust) {
+            SpeedMin = 15f,
+            SpeedMax = 30f,
+            LifeMin = 0.2f,
+            LifeMax = 0.4f,
+        };
+
+        private static ParticleType collideParticle = ZipMover.P_Sparks;
+        private static ParticleType chargeParticle = ZipMover.P_Sparks;
 
         private void setAnimationSpeed(string key, float totalRunTime) {
             if (emitterSprite.Animations.TryGetValue(key, out var emitterAnimation))
@@ -78,6 +90,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         emitterSprite.Play(chargingAnimation);
                         beamSprite.Visible = false;
                         Collider = emitterHitbox;
+                        Add(new Coroutine(effectSequence()));
                         break;
 
                     case LaserState.Burst:
@@ -101,8 +114,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             KillPlayer = data.Bool("killPlayer", true);
             CassetteIndex = data.Int("cassetteIndex", 0);
             HalfLength = data.Bool("halfLength");
-
-            var beamOffset = Orientation.Offset() * 4;
 
             emitterSprite = StrawberryJam2021Module.SpriteBank.Create("brushLaserEmitter");
             emitterSprite.Scale = Orientation == Orientations.Left || Orientation == Orientations.Up ? new Vector2(-1, 1) : Vector2.One;
@@ -202,6 +213,42 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             emitterSprite.Render();
+        }
+
+        private IEnumerator effectSequence() {
+            while (true) {
+                var level = SceneAs<Level>();
+                var color = CassetteListener.ColorFromCassetteIndex(CassetteIndex);
+
+                switch (State) {
+                    default:
+                    case LaserState.Idle:
+                    case LaserState.Precharge:
+                        yield break;
+
+                    case LaserState.Charging:
+                        break;
+
+                    case LaserState.Burst:
+                        break;
+
+                    case LaserState.Firing:
+                        int length = (int)Orientation.LengthOfHitbox(laserHitbox) - beamOffsetMultiplier;
+                        var offset = Orientation.Offset();
+                        float angle = Orientation.Angle();
+                        var startPos = Position + beamOffset * 2;
+
+                        for (int i = 0; i < length; i += 3) {
+                            level.ParticlesBG.Emit(beamParticle, startPos + offset * i, color, angle);
+                            level.ParticlesBG.Emit(beamParticle, startPos + offset * i, color, angle + (float)Math.PI);
+                        }
+
+                        yield return 0.1f;
+                        break;
+                }
+
+                yield return null;
+            }
         }
 
         public enum LaserState {
