@@ -12,8 +12,11 @@ namespace Celeste.Mod.StrawberryJam2021 {
         public override Type SaveDataType => typeof(StrawberryJam2021SaveData);
         public static StrawberryJam2021SaveData SaveData => (StrawberryJam2021SaveData) Instance._SaveData;
 
+        public override Type SessionType => typeof(StrawberryJam2021Session);
+        public static StrawberryJam2021Session Session => (StrawberryJam2021Session) Instance._Session;
         public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
         private SpriteBank _CustomEntitySpriteBank;
+
 
         public StrawberryJam2021Module() {
             Instance = this;
@@ -36,6 +39,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             BarrierDashSwitch.Load();
             TripleBoostFlower.Load();
             ResettingRefill.Load();
+            OshiroAttackTimeTrigger.Load();
         }
 
         public override void Unload() {
@@ -55,6 +59,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             BarrierDashSwitch.Unload();
             TripleBoostFlower.Unload();
             ResettingRefill.Unload();
+            OshiroAttackTimeTrigger.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
