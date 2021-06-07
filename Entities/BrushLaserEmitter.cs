@@ -264,8 +264,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             var startPos = Position + beamOffset * 2;
             var particle = CassetteIndex == 0 ? blueCooldownParticle : pinkCooldownParticle;
 
-            for (int i = 0; i < length; i += 8) {
-                level.ParticlesBG.Emit(particle, 6, startPos + offset * i, Vector2.Zero, angle);
+            for (int i = 0; i < length; i += Calc.Random.Next(8, 16)) {
+                level.ParticlesBG.Emit(particle, 3, startPos + offset * i, Vector2.Zero, angle);
             }
         }
 
