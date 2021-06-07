@@ -39,6 +39,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private string chargingAnimation => $"{animationPrefix}_charging";
         private string burstAnimation => $"{animationPrefix}_burst";
         private string idleAnimation => $"{animationPrefix}_idle";
+        private string cooldownAnimation => $"{animationPrefix}_cooldown";
         private Vector2 beamOffset => Orientation.Offset() * beamOffsetMultiplier;
 
         private readonly Sprite emitterSprite;
@@ -118,9 +119,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     case LaserState.Precharge:
                         if (value == LaserState.Idle && oldState == LaserState.Firing) {
                             emitCooldownParticles();
+                            emitterSprite.Play(cooldownAnimation);
+                        } else {
+                            emitterSprite.Play(idleAnimation);
                         }
 
-                        emitterSprite.Play(idleAnimation);
                         beamSprite.Visible = false;
                         Collider = emitterHitbox;
                         break;
