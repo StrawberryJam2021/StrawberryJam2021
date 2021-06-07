@@ -41,6 +41,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private string idleAnimation => $"{animationPrefix}_idle";
         private string cooldownAnimation => $"{animationPrefix}_cooldown";
         private Vector2 beamOffset => Orientation.Offset() * beamOffsetMultiplier;
+        private Color telegraphColor => CassetteListener.ColorFromCassetteIndex(CassetteIndex);
 
         private readonly Sprite emitterSprite;
         private readonly Sprite beamSprite;
@@ -52,6 +53,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private const float chargeDelayFraction = 0.25f;
         private const float collisionDelaySeconds = 0.1f;
         private const int beamOffsetMultiplier = 4;
+        private const int beamThickness = 12;
 
         private static readonly ParticleType blueCooldownParticle = new ParticleType(Booster.P_Burst) {
             Source = GFX.Game["particles/blob"],
@@ -209,7 +211,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                 },
                 new PlayerCollider(onPlayerCollide),
-                new LaserColliderComponent {CollideWithSolids = CollideWithSolids, Thickness = 12, Offset = beamOffset},
+                new LaserColliderComponent {CollideWithSolids = CollideWithSolids, Thickness = beamThickness, Offset = beamOffset},
                 beamSprite,
                 emitterSprite
             );
@@ -251,6 +253,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     int width = i == count - 1 && remainder != 0 ? remainder : frame.Width;
                     frame.Draw(position, beamSprite.Origin, beamSprite.Color, beamSprite.Scale, beamSprite.Rotation , new Rectangle(0, 0, width, frame.Height));
                 }
+            } else if (State == LaserState.Charging) {
+                float animationProgress = (float)emitterSprite.CurrentAnimationFrame / emitterSprite.CurrentAnimationTotalFrames;
+                int lerped = (int)Calc.LerpClamp(0, beamThickness, Ease.QuintOut(animationProgress));
+                int thickness = Math.Min(lerped + 2, beamThickness);
+                thickness -= thickness % 2;
+
+                var rect = Orientation == Orientations.Up || Orientation == Orientations.Down
+                    ? new Rectangle((int) (X + laserHitbox.CenterX) - thickness / 2, (int) (Y + laserHitbox.Top), thickness, (int) laserHitbox.Height)
+                    : new Rectangle((int) (X + laserHitbox.Left), (int) (Y + laserHitbox.CenterY) - thickness / 2, (int) laserHitbox.Width, thickness);
+
+                Draw.Rect(rect, telegraphColor * 0.3f);
             }
 
             emitterSprite.Render();
