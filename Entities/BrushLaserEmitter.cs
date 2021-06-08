@@ -54,6 +54,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private const float collisionDelaySeconds = 0.1f;
         private const int beamOffsetMultiplier = 4;
         private const int beamThickness = 12;
+        private const float mediumRumbleEffectRange = 8f * 12;
+        private const float strongRumbleEffectRange = 8f * 8;
 
         private static readonly ParticleType blueCooldownParticle = new ParticleType(Booster.P_Burst) {
             Source = GFX.Game["particles/blob"],
@@ -139,6 +141,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                     case LaserState.Burst:
                         emitterSprite.Play(burstAnimation);
+                        playNearbyEffects();
                         beamSprite.Visible = true;
                         beamSprite.Play(burstAnimation);
                         Collider = emitterHitbox;
@@ -148,6 +151,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         beamSprite.Visible = true;
                         Collider = colliderList;
                         break;
+                }
+            }
+        }
+
+        private void playNearbyEffects() {
+            if (Scene.Tracker.Entities.ContainsKey(typeof(Player)) && Scene.Tracker.GetEntity<Player>() is { } player) {
+                float distanceSquared = (player.Position - Position).LengthSquared();
+                if (distanceSquared <= strongRumbleEffectRange * strongRumbleEffectRange) {
+                    SceneAs<Level>().Shake(0.2f);
+                    Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
+                } else if (distanceSquared <= mediumRumbleEffectRange * mediumRumbleEffectRange) {
+                    SceneAs<Level>().Shake(0.1f);
+                    Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
+                } else {
+                    Input.Rumble(RumbleStrength.Light, RumbleLength.Short);
                 }
             }
         }
