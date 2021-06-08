@@ -65,9 +65,14 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::LoopBlock, room::Ma
             ty = 0
 
             if full
-                # missing
-                continue
+                # used to be confusing, we are mapping [0, 1, 2, 3] to [0, 1, 0, 1] for tx, and [0, 0, 1, 1] for ty.
+                # thanks vexatos
+                r = mod(get(tileRands, (j, i), 0), 4)
+                tx = mod(r, 2) + 1
+                ty = div(r, 2) + 7
+                tileChoice = 0
             elseif innerCorner
+                tileChoice = 0
                 if !downright
                     ty = 7
                 elseif !downleft

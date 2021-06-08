@@ -39,6 +39,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             //SineDustSpinner.Load();
             HorizontalTempleGate.Load();
             ToggleBlockReskin.Load();
+            ToggleSwapBlock.Load();
         }
 
         public override void Unload() {
@@ -60,6 +61,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ResettingRefill.Unload();
             HorizontalTempleGate.Unload();
             ToggleBlockReskin.Unload();
+            ToggleSwapBlock.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -72,7 +74,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SwitchCrateHolder.SetupParticles();
             LoopBlock.InitializeTextures();
             DashBoostField.LoadParticles();
-            ToggleBlockReskin.InitializeTextures();
+            ToggleSwapBlock.InitializeTextures();
         }
     }
 }
