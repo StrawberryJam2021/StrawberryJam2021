@@ -38,7 +38,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ResettingRefill.Load();
             //SineDustSpinner.Load();
             HorizontalTempleGate.Load();
-            ToggleBlockReskin.Load();
             ToggleSwapBlock.Load();
         }
 
@@ -60,7 +59,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             TripleBoostFlower.Unload();
             ResettingRefill.Unload();
             HorizontalTempleGate.Unload();
-            ToggleBlockReskin.Unload();
             ToggleSwapBlock.Unload();
         }
 
