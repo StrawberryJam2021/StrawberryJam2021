@@ -37,6 +37,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             TripleBoostFlower.Load();
             ResettingRefill.Load();
             ToggleSwapBlock.Load();
+            WonkyCassetteBlock.Load();
+            WonkyCassetteBlockManager.Load();
         }
 
         public override void Unload() {
@@ -57,6 +59,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             TripleBoostFlower.Unload();
             ResettingRefill.Unload();
             ToggleSwapBlock.Unload();
+            WonkyCassetteBlock.Unload();
+            WonkyCassetteBlockManager.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
