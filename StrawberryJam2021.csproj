@@ -49,6 +49,14 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Graphics\Atlases\Gameplay\objects\StrawberryJam2021\toggleIndicator\negative\" />
+    <None Remove="Graphics\Atlases\Gameplay\objects\StrawberryJam2021\toggleIndicator\value\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Graphics\Atlases\Gameplay\objects\StrawberryJam2021\toggleIndicator\negative\" />
+    <Folder Include="Graphics\Atlases\Gameplay\objects\StrawberryJam2021\toggleIndicator\value\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(CelesteType)' == 'FNA'">
       <ItemGroup>
