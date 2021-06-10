@@ -70,12 +70,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void UpdateTextureAndSpeed<ToggleSwapBlock>(Action<ToggleSwapBlock> orig, ToggleSwapBlock self) where ToggleSwapBlock : Entity {
             orig(self);
-            DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
 
             DataComponent dataComp = self.Get<DataComponent>();
             if (dataComp == null) {
                 return;
             }
+
+            DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
             Vector2[] nodes = data.Get<Vector2[]>("nodes");
             int currNode = data.Get<int>("nodeIndex");
             int nextNode = (int) getNextNode.Invoke(self, new object[] { currNode });
