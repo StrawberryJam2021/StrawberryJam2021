@@ -67,14 +67,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // We always want sixteenth notes here, regardless of time signature
             beatIncrement = (float) (60.0 / bpm / 4.0);
-            maxBeats = bars * barLength * 4;
+            maxBeats = bars * barLength * beatLength / 16;
 
             if (wonkyBlocks.Skip(1).Any(wonkyBlock =>
                 wonkyBlock.BPM != bpm || wonkyBlock.Bars != bars || wonkyBlock.BarLength != barLength || wonkyBlock.BeatLength != beatLength)) {
                 throw new ArgumentException("Inconsistent parameters between multiple WonkyCassetteBlocks in the same Level.");
             }
 
-            isLevelMusic = AreaData.Areas[SceneAs<Level>().Session.Area.ID].CassetteSong == null;
+            isLevelMusic = AreaData.Areas[SceneAs<Level>().Session.Area.ID].CassetteSong == "-";
 
             if (!isLevelMusic)
                 snapshot = Audio.CreateSnapshot("snapshot:/music_mains_mute");
@@ -110,6 +110,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (beatTimer < beatIncrement)
                 return;
+
             beatTimer -= beatIncrement;
             beatIndex = (beatIndex + 1) % maxBeats;
 
@@ -119,14 +120,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             foreach (var wonkyBlock in wonkyBlocks) {
                 int beatInBar = beatIndex / (16 / beatLength) % barLength;
-
+                Console.WriteLine(beatInBar);
                 wonkyBlock.Activated = wonkyBlock.OnAtBeats.Contains(beatInBar);
 
                 // if (wonkyBlock.MoveOn.Select(b => (b + barLength - 1) % barLength).Contains(beatInBar) || wonkyBlock.Activated)
                 //     wonkyBlock.WillToggle();
             }
 
-            sfx.setParameterValue("78_eighth_note", beatIndex / 2);
+            sfx.setParameterValue("78_eighth_note", beatIndex * beatLength / 16);
         }
 
         private void OnLevelStart() {
