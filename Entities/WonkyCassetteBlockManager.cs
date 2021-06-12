@@ -41,7 +41,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private EventInstance snapshot;
         private float beatTimer;
         private int maxBeats;
-        private int beatIndex;
+        private int beatIndex = -1;
 
         public WonkyCassetteBlockManager() {
             Tag = Tags.Global;
@@ -120,7 +120,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             foreach (var wonkyBlock in wonkyBlocks) {
                 int beatInBar = beatIndex / (16 / beatLength) % barLength;
-                Console.WriteLine(beatInBar);
+
                 wonkyBlock.Activated = wonkyBlock.OnAtBeats.Contains(beatInBar);
 
                 // if (wonkyBlock.MoveOn.Select(b => (b + barLength - 1) % barLength).Contains(beatInBar) || wonkyBlock.Activated)
