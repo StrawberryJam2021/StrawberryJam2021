@@ -47,21 +47,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public WonkyCassetteBlockManager() {
             Tag = Tags.Global;
-            // Add(new TransitionListener {
-            //     OnOutBegin = () => {
-            //         SceneAs<Level>().Entities.UpdateLists();
-            //         // TODO: this is broken
-            //         if (SceneAs<Level>().Tracker.GetEntities<WonkyCassetteBlock>().Count == 0) {
-            //             RemoveSelf();
-            //         }
-            //     }
-            // });
+            Add(new TransitionListener {
+                OnOutBegin = () => {
+                    // refresh sixteenth note parameter
+                    Awake(Scene);
+                }
+            });
         }
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
             var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>().ToList();
-
             bpm = wonkyBlocks[0].BPM;
             bars = wonkyBlocks[0].Bars;
             barLength = wonkyBlocks[0].BarLength;
@@ -101,6 +97,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
+
+            if (Scene.Tracker.CountEntities<WonkyCassetteBlock>() == 0)
+                RemoveSelf();
+
             if (isLevelMusic)
                 sfx = Audio.CurrentMusicEventInstance;
             if (!isLevelMusic && sfx == null) {
