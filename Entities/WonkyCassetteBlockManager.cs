@@ -65,7 +65,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             param = wonkyBlocks[0].Param;
 
             // We always want sixteenth notes here, regardless of time signature
-            beatIncrement = (float) (60.0 / bpm / 4.0);
+            beatIncrement = (float) (60.0 / bpm * beatLength / 16.0);
             maxBeats = 16 * bars * barLength / beatLength;
 
             if (wonkyBlocks.Skip(1).Any(wonkyBlock =>
@@ -122,17 +122,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // beatIndex is always in sixteenth notes
             var wonkyBlocks = Scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>().ToList();
+            int nextBeatIndex = (beatIndex + 1) % maxBeats;
+            int beatInBar = beatIndex / (16 / beatLength) % barLength; // current beat
+
+            int nextBeatInBar = nextBeatIndex / (16 / beatLength) % barLength; // next beat
+            bool beatIncrementsNext = (nextBeatIndex / (float) (16 / beatLength)) % 1 == 0; // will the next beatIndex be the start of a new beat
+
             foreach (var wonkyBlock in wonkyBlocks) {
-                int nextBeatIndex = (beatIndex + 1) % maxBeats;
-                int beatInBar = beatIndex / (16 / beatLength) % barLength; // current beat
-
-                int nextBeatInBar = nextBeatIndex / (16 / beatLength) % barLength; // next beat
-                bool beatIncrementsNext = (nextBeatIndex / (float) (16 / beatLength)) % 1 == 0; // will the next beatIndex be the start of a new beat
-
                 wonkyBlock.Activated = wonkyBlock.OnAtBeats.Contains(beatInBar);
 
-                if (wonkyBlock.OnAtBeats.Contains(nextBeatInBar) != wonkyBlock.Activated && beatIncrementsNext)
+                if (wonkyBlock.OnAtBeats.Contains(nextBeatInBar) != wonkyBlock.Activated && beatIncrementsNext) {
                     wonkyBlock.WillToggle();
+                }
 
             }
 
