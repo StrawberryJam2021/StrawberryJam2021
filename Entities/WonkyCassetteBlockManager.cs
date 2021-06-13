@@ -123,12 +123,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // beatIndex is always in sixteenth notes
             var wonkyBlocks = Scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>().ToList();
             foreach (var wonkyBlock in wonkyBlocks) {
-                int beatInBar = beatIndex / (16 / beatLength) % barLength;
+                int nextBeatIndex = (beatIndex + 1) % maxBeats;
+                int beatInBar = beatIndex / (16 / beatLength) % barLength; // current beat
+
+                int nextBeatInBar = nextBeatIndex / (16 / beatLength) % barLength; // next beat
+                bool beatIncrementsNext = (nextBeatIndex / (float) (16 / beatLength)) % 1 == 0; // will the next beatIndex be the start of a new beat
 
                 wonkyBlock.Activated = wonkyBlock.OnAtBeats.Contains(beatInBar);
 
-                // if (wonkyBlock.MoveOn.Select(b => (b + barLength - 1) % barLength).Contains(beatInBar) || wonkyBlock.Activated)
-                //     wonkyBlock.WillToggle();
+                if (wonkyBlock.OnAtBeats.Contains(nextBeatInBar) != wonkyBlock.Activated && beatIncrementsNext)
+                    wonkyBlock.WillToggle();
+
             }
 
             sfx.setParameterValue(param, (beatIndex * beatLength / 16) + 1);
