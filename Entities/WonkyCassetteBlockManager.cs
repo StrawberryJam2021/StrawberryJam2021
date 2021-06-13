@@ -82,14 +82,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Removed(Scene scene) {
             base.Removed(scene);
-            Audio.Stop(snapshot);
-            Audio.Stop(sfx);
+            if (!isLevelMusic) {
+                Audio.Stop(snapshot);
+                Audio.Stop(sfx);
+            }
         }
 
         public override void SceneEnd(Scene scene) {
             base.SceneEnd(scene);
-            Audio.Stop(snapshot);
-            Audio.Stop(sfx);
+            if (!isLevelMusic) {
+                Audio.Stop(snapshot);
+                Audio.Stop(sfx);
+            }
         }
 
         public override void Update() {
