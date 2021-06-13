@@ -12,6 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/SpeedPreservePuffer")]
     public class SpeedPreservePuffer : Puffer {
         public bool Static;
+        public static float storedSpeed;
 
         public SpeedPreservePuffer(EntityData data, Vector2 offset) : base(data, offset) {
             Static = data.Bool("static", true);
@@ -19,7 +20,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Get<SineWave>()?.RemoveSelf();
                 Position.X += 0.0001f;
             }
-            Depth = -1;
+            Depth = Depths.Player - 1;
         }
 
         public static void Load() {
@@ -42,7 +43,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.Emit(OpCodes.Ldfld, typeof(Puffer).GetField("idleSine", BindingFlags.NonPublic | BindingFlags.Instance));
                 cursor.EmitDelegate<Action<Puffer, SineWave>>((self, idleSine) => {
-                    if (self is SpeedPreservePuffer && (self as SpeedPreservePuffer).Static) {
+                    if (self is SpeedPreservePuffer puffer && puffer.Static) {
                         // unrandomize the initial pufferfish position.
                         idleSine.Reset();
                     }
@@ -54,27 +55,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             ILCursor cursor = new ILCursor(il);
 
             if (cursor.TryGotoNext(MoveType.After,
-            instr => instr.MatchCallvirt<Entity>("get_Center"),
-            instr => instr.MatchCallvirt<Scene>("CollideCheck"),
-            instr => instr.MatchBrtrue(out _))) {
+                instr => instr.MatchCallvirt<Entity>("get_Center"),
+                instr => instr.MatchCallvirt<Scene>("CollideCheck"),
+                instr => instr.MatchBrtrue(out _))) {
                 Logger.Log("SJ2021/SpeedPreservePuffer", $"Injecting call to store player speed before puffer explosion at {cursor.Index} in IL for Puffer.Explode");
 
                 cursor.EmitDelegate<Action>(() => {
                     Player player = Engine.Scene.Tracker.GetEntity<Player>();
-                    DynData<Player> playerData = new DynData<Player>(player);
-                    playerData.Set("SpeedPreservePufferStoredSpeed", player.Speed.X);
+                    storedSpeed = player.Speed.X;
                 });
             }
             if (cursor.TryGotoNext(MoveType.After,
-                //instr => instr.MatchCallvirt<Player>("ExplodeLaunch"),
-                instr => instr.MatchPop())) {
+                instr => instr.MatchCallvirt<Player>("ExplodeLaunch")
+                //instr => instr.MatchPop()
+                )) {
                 Logger.Log("SJ2021/SpeedPreservePuffer", $"Injecting call to add player speed to puffer explosion at {cursor.Index} in IL for Puffer.Explode");
 
-                cursor.EmitDelegate<Action>(() => {
-                    Player player = Engine.Scene.Tracker.GetEntity<Player>();
-                    DynData<Player> playerData = new DynData<Player>(player);
-                    float speedX = playerData.Get<float>("SpeedPreservePufferStoredSpeed");
-                    player.Speed.X += Math.Abs(speedX) * Math.Sign(player.Speed.X);
+                cursor.Emit(OpCodes.Ldarg_0);
+                cursor.EmitDelegate<Action<Puffer>>((self) => {
+                    if (self is SpeedPreservePuffer) {
+                        Player player = Engine.Scene.Tracker.GetEntity<Player>();
+                        player.Speed.X += Math.Abs(storedSpeed) * Math.Sign(player.Speed.X);
+                    }
                 });
             }
         }
