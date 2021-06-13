@@ -141,7 +141,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             foreach (var wonkyBlock in Scene.Tracker.GetEntities<WonkyCassetteBlock>()
                 .Cast<WonkyCassetteBlock>()
                 .Where(wonkyBlock => wonkyBlock.ID.Level == SceneAs<Level>().Session.Level)) {
-                //wonkyBlock.SetActivatedSilently(false);
+                wonkyBlock.SetActivatedSilently(false);
             }
         }
 

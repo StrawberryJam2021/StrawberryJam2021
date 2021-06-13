@@ -106,7 +106,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             var wonkyBlock = new WonkyCassetteBlock(entityData, offset, new EntityID(levelData.Name, entityData.ID));
             level.Add(wonkyBlock);
 
-            level.Entities.UpdateLists();
+            //level.Entities.UpdateLists();
             if (level.Tracker.GetEntities<WonkyCassetteBlockManager>().Count == 0)
                 level.Add(new WonkyCassetteBlockManager());
 
