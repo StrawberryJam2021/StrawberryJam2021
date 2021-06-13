@@ -1,6 +1,8 @@
 using Celeste.Mod.Entities;
 using FMOD.Studio;
 using Monocle;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using System;
 using System.Linq;
 
@@ -57,6 +59,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
+
             var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>().ToList();
             bpm = wonkyBlocks[0].BPM;
             bars = wonkyBlocks[0].Bars;
@@ -77,6 +80,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (!isLevelMusic)
                 snapshot = Audio.CreateSnapshot("snapshot:/music_mains_mute");
+
+            foreach (var wonkyBlock in Scene.Tracker.GetEntities<WonkyCassetteBlock>()
+                .Cast<WonkyCassetteBlock>()
+                .Where(wonkyBlock => wonkyBlock.ID.Level == SceneAs<Level>().Session.Level)) {
+                wonkyBlock.SetActivatedSilently(wonkyBlock.OnAtBeats.Contains(beatIndex / (16 / beatLength) % barLength));
+            }
         }
 
         public override void Removed(Scene scene) {
@@ -143,25 +152,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             beatIndex = (beatIndex + 1) % maxBeats;
         }
 
-        private void OnLevelStart() {
-            foreach (var wonkyBlock in Scene.Tracker.GetEntities<WonkyCassetteBlock>()
-                .Cast<WonkyCassetteBlock>()
-                .Where(wonkyBlock => wonkyBlock.ID.Level == SceneAs<Level>().Session.Level)) {
-                wonkyBlock.SetActivatedSilently(false);
-            }
-        }
-
-        private static void OnLoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
-            orig(self, playerIntro, isFromLoader);
-            self.Tracker.GetEntity<WonkyCassetteBlockManager>()?.OnLevelStart();
-        }
-
         public static void Load() {
-            On.Celeste.Level.LoadLevel += OnLoadLevel;
+            On.Celeste.Level.LoadLevel += Level_LoadLevel;
         }
 
         public static void Unload() {
-            On.Celeste.Level.LoadLevel -= OnLoadLevel;
+            On.Celeste.Level.LoadLevel -= Level_LoadLevel;
+        }
+
+        private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
+            orig(self, playerIntro, isFromLoader);
+            if (self.Tracker.CountEntities<WonkyCassetteBlock>() != 0 && 
+                self.Tracker.GetEntity<WonkyCassetteBlockManager>() == null) {
+                self.Add(new WonkyCassetteBlockManager());
+            }
         }
     }
 }
