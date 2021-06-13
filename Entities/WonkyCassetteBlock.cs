@@ -24,10 +24,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public readonly int[] OnAtBeats;
 
-        public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, int bpm, int bars, string timeSignature, string moveSpec)
+        public readonly string Param;
+
+        public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, int bpm, int bars, string timeSignature, string moveSpec, string param)
             : base(position, id, width, height, index, 1.0f) {
             BPM = bpm;
             Bars = bars;
+            Param = param;
             var timeSignatureParsed = new Regex(@"^(\d+)/(\d+)$").Match(timeSignature).Groups;
 
             if (timeSignatureParsed.Count == 0)
@@ -41,7 +44,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public WonkyCassetteBlock(EntityData data, Vector2 offset, EntityID id)
             : this(data.Position + offset, id, data.Width, data.Height, data.Int("index"), data.Int("bpm"), data.Int("bars"),
-                data.Attr("timeSignature"), data.Attr("onAtBeats")) {
+                data.Attr("timeSignature"), data.Attr("onAtBeats"), data.Attr("sixteenthNoteParam", "sixteenth_note")) {
         }
 
         // We need to reimplement some of our parent's methods because they refer directly to CassetteBlock when fetching entities

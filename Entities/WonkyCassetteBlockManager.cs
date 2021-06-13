@@ -43,6 +43,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int maxBeats;
         private int beatIndex;
 
+        private string param;
+
         public WonkyCassetteBlockManager() {
             Tag = Tags.Global;
             // Add(new TransitionListener {
@@ -64,13 +66,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             bars = wonkyBlocks[0].Bars;
             barLength = wonkyBlocks[0].BarLength;
             beatLength = wonkyBlocks[0].BeatLength;
+            param = wonkyBlocks[0].Param;
 
             // We always want sixteenth notes here, regardless of time signature
             beatIncrement = (float) (60.0 / bpm / 4.0);
             maxBeats = 16 * bars * barLength / beatLength;
 
             if (wonkyBlocks.Skip(1).Any(wonkyBlock =>
-                wonkyBlock.BPM != bpm || wonkyBlock.Bars != bars || wonkyBlock.BarLength != barLength || wonkyBlock.BeatLength != beatLength)) {
+                wonkyBlock.BPM != bpm || wonkyBlock.Bars != bars || wonkyBlock.BarLength != barLength || wonkyBlock.BeatLength != beatLength || wonkyBlock.Param != param)) {
                 throw new ArgumentException("Inconsistent parameters between multiple WonkyCassetteBlocks in the same Level.");
             }
 
@@ -128,7 +131,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 //     wonkyBlock.WillToggle();
             }
 
-            sfx.setParameterValue("78_eighth_note", (beatIndex * beatLength / 16) + 1);
+            sfx.setParameterValue(param, (beatIndex * beatLength / 16) + 1);
 
             // Doing this here because it would go to the next beat with a sixteenth note offset at start
             beatIndex = (beatIndex + 1) % maxBeats;
