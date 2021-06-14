@@ -42,7 +42,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
                 }
             }
 
-            Console.WriteLine($"{WonkyParam}[{(WonkyBeatIndex * WonkyBeatLength / 16) + 1}]");
             sfx.setParameterValue(WonkyParam, (WonkyBeatIndex * WonkyBeatLength / 16) + 1);
 
             // Doing this here because it would go to the next beat with a sixteenth note offset at start
