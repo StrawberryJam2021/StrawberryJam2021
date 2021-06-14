@@ -121,6 +121,13 @@ placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.disableCameraLock=Di
 placements.entities.SJ2021/StrawberryJamJar.tooltips.map=The jar will be filled up when the map that has this ID is completed.\nThis is the same ID as the one the Chapter Panel Trigger from Collab Utils uses.
 placements.entities.SJ2021/StrawberryJamJar.tooltips.sprite=The sprite this jar will use.
 
+# Horizontal Template Gate
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.flag=Session flag used by this gate. If the type is flagActive, the door will open/close when the flag is set.
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.openWidth=How much of the gate will remain unopened when the gate is open.
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.direction=Where the door will come from. If this is "center" the door will come from both sides.
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.type=How the door is activated.
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.inverted=If this is set, the door will start open and be closed.
+
 # Toggle Swap Block
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.oscillate=Whether block reverses direction instead of returning to start after reaching its last node.  Ignored if "Stop At End" is checked.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.stopAtEnd=Whether block doesn't move again after reaching its last node.
