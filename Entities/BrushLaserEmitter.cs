@@ -305,12 +305,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             var particle = CassetteIndex == 0 ? blueImpactParticle : pinkImpactParticle;
             var offset = Orientation == Orientations.Up || Orientation == Orientations.Down ? Vector2.UnitX : Vector2.UnitY;
             float angle = Orientation.Angle() + (float)Math.PI / 2f;
+            var laserCollider = Get<LaserColliderComponent>();
 
             while (true) {
                 if (State == LaserState.Idle || State == LaserState.Precharge)
                     yield break;
 
-                if (State == LaserState.Charging) {
+                if (State == LaserState.Charging || laserCollider.CollidedWithScreenBounds) {
                     yield return null;
                     continue;
                 }

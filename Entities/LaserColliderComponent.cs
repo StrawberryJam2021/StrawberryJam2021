@@ -14,6 +14,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public bool CollideWithSolids { get; set; }
         public Hitbox Collider { get; } = new Hitbox(0, 0);
         public Vector2 Offset { get; set; }
+        public bool CollidedWithScreenBounds { get; private set; }
 
         public LaserColliderComponent() : this(Vector2.Zero) {
         }
@@ -78,7 +79,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // first check if the laser hits the edge of the screen
             resizeHitbox(high);
-            if (!CollideWithSolids || !solidCollideCheck()) return;
+            CollidedWithScreenBounds = !CollideWithSolids || !solidCollideCheck();
+            if (CollidedWithScreenBounds) return;
 
             // perform a binary search to hit the nearest solid
             while (safety-- > 0) {
