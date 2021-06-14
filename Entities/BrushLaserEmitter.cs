@@ -230,6 +230,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 },
                 new PlayerCollider(onPlayerCollide),
                 new LaserColliderComponent {CollideWithSolids = CollideWithSolids, Thickness = beamThickness, Offset = beamOffset},
+                new LedgeBlocker(_ => KillPlayer),
                 beamSprite,
                 emitterSprite
             );
