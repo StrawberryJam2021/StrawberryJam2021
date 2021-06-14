@@ -6,11 +6,7 @@ using ..Ahorn, Maple
 @mapdef Entity "SJ2021/WonkyCassetteBlock" WonkyCassetteBlock(
     x::Integer,
     y::Integer,
-    bpm::Integer=90,
-    bars::Integer=16,
-    timeSignature::String="4/4",
     onAtBeats::String="1, 3",
-    sixteenthNoteParam="sixteenth_note",
 )
 
 const colorNames = Dict{String, Int}(
@@ -21,7 +17,7 @@ const colorNames = Dict{String, Int}(
 )
 
 const placements = Ahorn.PlacementDict(
-    "Wonky Cassette Block ($color)" => Ahorn.EntityPlacement(
+    "Wonky Cassette Block ($color) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         WonkyCassetteBlock,
         "rectangle",
         Dict{String, Any}(

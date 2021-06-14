@@ -1,6 +1,5 @@
 using Celeste.Mod.StrawberryJam2021.Entities;
 using Celeste.Mod.StrawberryJam2021.Triggers;
-using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 
@@ -11,6 +10,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public override Type SaveDataType => typeof(StrawberryJam2021SaveData);
         public static StrawberryJam2021SaveData SaveData => (StrawberryJam2021SaveData) Instance._SaveData;
+
+        public override Type SessionType => typeof(StrawberryJam2021Session);
+        public static StrawberryJam2021Session Session => (StrawberryJam2021Session) Instance._Session;
 
         public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
         private SpriteBank _CustomEntitySpriteBank;
@@ -38,7 +40,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ResettingRefill.Load();
             ToggleSwapBlock.Load();
             WonkyCassetteBlock.Load();
-            WonkyCassetteBlockManager.Load();
+            WonkyCassetteBlockController.Load();
         }
 
         public override void Unload() {
@@ -60,7 +62,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ResettingRefill.Unload();
             ToggleSwapBlock.Unload();
             WonkyCassetteBlock.Unload();
-            WonkyCassetteBlockManager.Unload();
+            WonkyCassetteBlockController.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
