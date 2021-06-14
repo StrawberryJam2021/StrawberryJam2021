@@ -48,6 +48,7 @@ const placements = Ahorn.PlacementDict(
 )
 
 const sprite = "objects/StrawberryJam2021/wonkyCassetteBlockController/icon"
+const color = (1.0, 1.0, 1.0, 1.0)
 
 function Ahorn.selection(entity::WonkyCassetteBlockController)
     x, y = Ahorn.position(entity)
@@ -60,15 +61,12 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::WonkyCassetteBlockC
     timeSignature = String(get(entity.data, "timeSignature", "4/4"))
     values = split(replace(timeSignature, r"\s" => ""), "/")
 
-    timeSignatureNumerator = "4"
-    timeSignatureDenominator = "4"
-    if length(values) == 2
-        timeSignatureNumerator = (length(values[1]) <= 2 && length(values[1]) > 0) ? values[1] : "4"
-        timeSignatureDenominator = (length(values[2]) <= 2 && length(values[2])) > 0 ? values[2] : "4"
+    if length(values) == 2 && 0 < length(values[1]) <= 2 && 0 < length(values[2]) <= 2
+        Ahorn.drawCenteredText(ctx, String(values[1]), -8, -5, 8, 5, tint=color)
+        Ahorn.drawCenteredText(ctx, String(values[2]), -8, 1, 8, 5, tint=color)
+    else 
+        Ahorn.drawCenteredText(ctx, "e", -8, -5, 8, 5, tint=color) # "e" for error/invalid
     end
-    color = (1.0, 1.0, 1.0, 1.0)
-    Ahorn.drawCenteredText(ctx, String(timeSignatureNumerator), -8, -5, 8, 5, tint=color)
-    Ahorn.drawCenteredText(ctx, String(timeSignatureDenominator), -8, 1, 8, 5, tint=color)
 end
 
 end
