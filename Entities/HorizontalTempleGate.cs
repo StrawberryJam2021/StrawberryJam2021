@@ -310,7 +310,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // the player gets stuck in the door without this
             if (player != null && CollideCheck(player, Position) &&
                     (player.Top - this.Bottom) <= -6 && (player.Top - this.Bottom) > -12) {
-                player.NaiveMove((this.Bottom-player.Top)*Vector2.UnitY);
+                player.NaiveMove((this.Bottom-player.Top) * Vector2.UnitY);
             }
 
             foreach (Actor entity in Scene.Tracker.GetEntities<Actor>()) {
@@ -320,7 +320,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     int move = (entity.CenterX > (left + right) / 2) ? -width : width;
                     if (!entity.TreatNaive && CollideCheck(entity, Position)) {
                         // yeah i kinda gave up here and just decided to hard center the entity
-                        entity.CenterX = this.CenterX-1f;
+                        entity.CenterX = this.CenterX - 1f;
                         entity.MoveHExact(1, entity.SquishCallback, this);
                     } else if (riders.Contains(entity)) {
                         entity.CenterX = this.CenterX - 1f;
