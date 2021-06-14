@@ -36,11 +36,11 @@ namespace Celeste.Mod.StrawberryJam2021 {
             BarrierDashSwitch.Load();
             TripleBoostFlower.Load();
             ResettingRefill.Load();
-            //SineDustSpinner.Load();
             HorizontalTempleGate.Load();
             ToggleSwapBlock.Load();
             WonkyCassetteBlock.Load();
             WonkyCassetteBlockManager.Load();
+            SpeedPreservePuffer.Load();
         }
 
         public override void Unload() {
@@ -64,6 +64,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ToggleSwapBlock.Unload();
             WonkyCassetteBlock.Unload();
             WonkyCassetteBlockManager.Unload();
+            SpeedPreservePuffer.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
