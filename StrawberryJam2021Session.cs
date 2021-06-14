@@ -1,6 +1,7 @@
 ﻿using Celeste.Mod.StrawberryJam2021.Entities;
 using FMOD.Studio;
 using Monocle;
+using System;
 using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021 {
@@ -13,8 +14,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
         // Music stuff
         public int WonkyBpm;
         public int WonkyBars;
-        public int WonkyBarLength; // The top number in the time signature
-        public int WonkyBeatLength; // The bottom number in the time signature
+        public int WonkyBarLength = 4; // The top number in the time signature
+        public int WonkyBeatLength = 4; // The bottom number in the time signature
         public string WonkyParam;
 
         public void AdvanceMusic(float time, Scene scene, EventInstance sfx) {
@@ -39,9 +40,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
                 if (wonkyBlock.OnAtBeats.Contains(nextBeatInBar) != wonkyBlock.Activated && beatIncrementsNext) {
                     wonkyBlock.WillToggle();
                 }
-
             }
 
+            Console.WriteLine($"{WonkyParam}[{(WonkyBeatIndex * WonkyBeatLength / 16) + 1}]");
             sfx.setParameterValue(WonkyParam, (WonkyBeatIndex * WonkyBeatLength / 16) + 1);
 
             // Doing this here because it would go to the next beat with a sixteenth note offset at start

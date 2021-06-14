@@ -129,8 +129,9 @@ placements.entities.SJ2021/ToggleSwapBlock.tooltips.directionIndicator=If checke
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.constantSpeed=If checked, the velocity of the block will be the same each time it moves, and not scale with the distance between nodes.  Furthermore, "Travel Speed" will be interpretted as a multiplier, with 1.0 corresponding to vanilla swap block speed.
 
 # Wonky Cassette Block
-placements.entities.SJ2021/WonkyCassetteBlock.tooltips.index=This option will probably be changed lol
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.onAtBeats=A list of integers (separated by a comma) corresponding to the beats on which this block should activate, being deactivated on all other beats not included in this list.\nExample: 1, 2, 4
+placements.entities.SJ2021/WonkyCassetteBlock.tooltips.color=The hexadecimal color code of this block (without the hash # symbol).
+placements.entities.SJ2021/WonkyCassetteBlock.tooltips.textureDirectory=The path to the folder containing two textures for this block, starting from Graphics/Atlases/Gameplay/. In order for this to work, the specified folder must containing two image files named "solid.png" and "pressed.png", each corresponding to the texture of the block when activated and deactivated respectively. Preferably without the "/" symbol at the end. 
 
 # Wonky Cassette Block Controller
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.bpm=The tempo of the cassette loop event in this room.
