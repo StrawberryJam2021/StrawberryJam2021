@@ -73,8 +73,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void CassetteBlock_SetImage(On.Celeste.CassetteBlock.orig_SetImage orig, CassetteBlock self, float x, float y, int tx, int ty) {
             if (self is WonkyCassetteBlock block) {
+                GFX.Game.PushFallback(GFX.Game["objects/cassetteblock/pressed00"]);
                 block.cassetteBlockData.Get<List<Image>>("pressed").Add((Image) m_CassetteBlock_CreateImage.Invoke(block, new object[] { x, y, tx, ty, GFX.Game[block.textureDir + "/pressed"] }));
+                GFX.Game.PopFallback();
+
+                GFX.Game.PushFallback(GFX.Game["objects/cassetteblock/solid"]);
                 block.cassetteBlockData.Get<List<Image>>("solid").Add((Image) m_CassetteBlock_CreateImage.Invoke(block, new object[] { x, y, tx, ty, GFX.Game[block.textureDir + "/solid"] }));
+                GFX.Game.PopFallback();
             } else
                 orig(self, x, y, tx, ty);
         }
