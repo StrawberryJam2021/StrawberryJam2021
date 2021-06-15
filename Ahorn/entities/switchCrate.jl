@@ -13,7 +13,7 @@ const placements = Ahorn.PlacementDict(
 function Ahorn.selection(entity::SwitchCrate)
     x, y = Ahorn.position(entity)
 
-    return Ahorn.Rectangle(x - 11, y - 11, 22, 22)
+    return Ahorn.getSpriteRectangle(sprite, x, y)
 end
 
 
