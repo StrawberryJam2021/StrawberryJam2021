@@ -77,7 +77,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SwitchCrateHolder.SetupParticles();
             LoopBlock.InitializeTextures();
             DashBoostField.LoadParticles();
-            ToggleSwapBlock.InitializeTextures();
         }
     }
 }
