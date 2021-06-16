@@ -158,8 +158,8 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::ToggleBlock, roo
         if indicatorPath == ""
             indicatorPath = defaultIndicatorPath
         end
-        if last(indicatorPath) != '/'
-            indicatorPath = string(indicatorPath, '/')
+        if indicatorPath[end] != '/'
+            indicatorPath *= '/'
         end
 
         prevStay = !stopAtEnd && !oscillate && last(nodes) == (x, y)
