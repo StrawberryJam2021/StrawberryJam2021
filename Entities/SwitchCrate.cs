@@ -81,7 +81,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             sprite = new Sprite(GFX.Game, "objects/StrawberryJam2021/SwitchCrate/");
             float t = 1f / 6f;
             sprite.Add("idle", "idle", t);
-            Console.WriteLine(TimeToExplode);
             sprite.Rate = 1/ TimeToExplode;
             Add(sprite);
             sprite.Play("idle", true);
