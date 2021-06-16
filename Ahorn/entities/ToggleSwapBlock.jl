@@ -95,7 +95,7 @@ function drawArrow(ctx::Ahorn.Cairo.CairoContext, sx::Number, sy::Number, tx::Nu
 end
 
 function drawIndicator(ctx::Ahorn.Cairo.CairoContext, x::Number, y::Number, index::Integer, width::Number, height::Number, indicatorPath::String)
-    resource = string(indicatorPath, paths[index])
+    resource = indicatorPath * paths[index]
     drawSprite(ctx, x, y, resource, width, height)
 end
 
