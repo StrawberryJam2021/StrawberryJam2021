@@ -87,25 +87,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             _ => Vector2.Zero
         };
 
-        public static Hitbox AlignedWithOrientation(this Hitbox hitbox, OrientableEntity.Orientations orientation)
-        {
-            switch (orientation)
-            {
-                case OrientableEntity.Orientations.Up:
-                    hitbox.BottomCenter = Vector2.Zero;
-                    break;
-                case OrientableEntity.Orientations.Down:
-                    hitbox.TopCenter = Vector2.Zero;
-                    break;
-                case OrientableEntity.Orientations.Left:
-                    hitbox.CenterRight = Vector2.Zero;
-                    break;
-                case OrientableEntity.Orientations.Right:
-                    hitbox.CenterLeft = Vector2.Zero;
-                    break;
-            }
+        public static float LengthOfHitbox(this OrientableEntity.Orientations orientation, Hitbox hitbox) =>
+            orientation switch {
+                OrientableEntity.Orientations.Up => hitbox.Height,
+                OrientableEntity.Orientations.Down => hitbox.Height,
+                OrientableEntity.Orientations.Left => hitbox.Width,
+                OrientableEntity.Orientations.Right => hitbox.Width,
+                _ => 0f
+            };
 
-            return hitbox;
-        }
+        public static float ThicknessOfHitbox(this OrientableEntity.Orientations orientation, Hitbox hitbox) =>
+            orientation switch {
+                OrientableEntity.Orientations.Up => hitbox.Width,
+                OrientableEntity.Orientations.Down => hitbox.Width,
+                OrientableEntity.Orientations.Left => hitbox.Height,
+                OrientableEntity.Orientations.Right => hitbox.Height,
+                _ => 0f
+            };
     }
 }

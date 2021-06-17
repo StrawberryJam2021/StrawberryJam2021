@@ -192,7 +192,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Add(new PlayerCollider(onPlayerCollide),
                 new LaserColliderComponent {CollideWithSolids = CollideWithSolids, Thickness = Thickness,},
-                new SineWave(flickerFrequency) {OnUpdate = v => sineValue = v}
+                new SineWave(flickerFrequency) {OnUpdate = v => sineValue = v},
+                new LedgeBlocker(_ => KillPlayer)
             );
             
             Collider = Get<LaserColliderComponent>().Collider;

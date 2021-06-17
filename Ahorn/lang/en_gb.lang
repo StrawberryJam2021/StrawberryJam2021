@@ -117,9 +117,20 @@ placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.canChangeMusic=Wheth
 placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.cameraPastY=Locks the camera from vertically rising, and changes the bottom screen killbox plane to be under Badeline's current position.
 placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.disableCameraLock=Disables all camera locking, both horizontal and vertical.\nOverrides the "Camera Past Y" and "Camera Lock Y" settings.
 
+# Speed Preserve Puffer
+placements.entities.SJ2021/SpeedPreservePuffer.tooltips.right=Determines the facing direction of the puffer.
+placements.entities.SJ2021/SpeedPreservePuffer.tooltips.static=Whether the puffer idly floats around or stays in a fixed position.
+
 # Strawberry Jam Jar
 placements.entities.SJ2021/StrawberryJamJar.tooltips.map=The jar will be filled up when the map that has this ID is completed.\nThis is the same ID as the one the Chapter Panel Trigger from Collab Utils uses.
 placements.entities.SJ2021/StrawberryJamJar.tooltips.sprite=The sprite this jar will use.
+
+# Horizontal Template Gate
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.flag=Session flag used by this gate. If the type is flagActive, the door will open/close when the flag is set.
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.openWidth=How much of the gate will remain unopened when the gate is open.
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.direction=Where the door will come from. If this is "center" the door will come from both sides.
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.type=How the door is activated.
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.inverted=If this is set, the door will start open and be closed.
 
 # Toggle Swap Block
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.oscillate=Whether block reverses direction instead of returning to start after reaching its last node.  Ignored if "Stop At End" is checked.
@@ -127,6 +138,7 @@ placements.entities.SJ2021/ToggleSwapBlock.tooltips.stopAtEnd=Whether block does
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customTexturePath=Path to a 24 pixel x 24 pixel texture representing what a 3 tile x 3 tile block should look like.  Default texture is used if left blank.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.directionIndicator=If checked, the block displays an indicator showing the direction it will move next.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.constantSpeed=If checked, the velocity of the block will be the same each time it moves, and not scale with the distance between nodes.  Furthermore, "Travel Speed" will be interpretted as a multiplier, with 1.0 corresponding to vanilla swap block speed.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.customIndicatorPath=Path to a folder containing textures named "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", and "done", which are displayed depending on the direction the block moves next, in place of the default indicators.  Built-in examples include "objects/StrawberryJam2021/toggleIndicator/plain/" (default), "objects/StrawberryJam2021/toggleIndicator/negative/", "objects/StrawberryJam2021/toggleIndicator/value/", "objects/StrawberryJam2021/toggleIndicator/sticker/".
 
 # Wonky Cassette Block
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.onAtBeats=A list of integers (separated by a comma) corresponding to the beats on which this block should activate, being deactivated on all other beats not included in this list.\nExample: 1, 2, 4

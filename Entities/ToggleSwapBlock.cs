@@ -10,8 +10,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public static class ToggleSwapBlock {
         private const int STAY = 8, DONE = 9;
         private static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
-        private static string pathPrefix = "objects/StrawberryJam2021/toggleIndicator/";
-        private static MTexture[] textures = new MTexture[paths.Length];
+        private static string defaultIndicatorPath = "objects/StrawberryJam2021/toggleIndicator/plain/";
         private static Type toggleSwapBlockType = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "CanyonHelper").GetType().Assembly.GetType("Celeste.Mod.CanyonHelper.ToggleSwapBlock");
         private static MethodInfo getNextNode = toggleSwapBlockType.GetMethod("GetNextNode", BindingFlags.NonPublic | BindingFlags.Instance);
         private static MethodInfo recalculateLaserColor = toggleSwapBlockType.GetMethod("RecalculateLaserColor", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -25,12 +24,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             public readonly bool isReskin;
             public readonly bool isConstant;
             public readonly float speed;
+            public readonly string indicatorPath;
             public MTexture texture;
 
-            public DataComponent(bool isReskin, bool isConstant, float speed) : base(false, false) {
+            public DataComponent(bool isReskin, bool isConstant, float speed, string indicatorPath) : base(false, false) {
                 this.isReskin = isReskin;
                 this.isConstant = isConstant;
                 this.speed = speed;
+                this.indicatorPath = indicatorPath;
             }
         }
 
@@ -38,12 +39,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Everest.Events.Level.OnLoadEntity += OnLoadEntity;
             updateTextureAndSpeedHook = new Hook(recalculateLaserColor, updateTextureAndSpeed);
             drawTextureHook = new Hook(drawBlockStyle, drawTexture);
-        }
-
-        public static void InitializeTextures() {
-            for (int i = 0; i < paths.Length; i++) {
-                textures[i] = GFX.Game[pathPrefix + paths[i]];
-            }
         }
 
         public static void Unload() {
@@ -58,7 +53,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 bool isReskin = entityData.Bool("directionIndicator", true);
                 bool isConstant = entityData.Bool("constantSpeed", false);
                 float speed = 360f * entityData.Float("travelSpeed", 1f);
-                Component dataComponent = new DataComponent(isReskin, isConstant, speed);
+                string indicatorPath = entityData.Attr("customIndicatorPath", "");
+                if (indicatorPath == "") {
+                    indicatorPath = defaultIndicatorPath;
+                }
+                if (indicatorPath.Last() != '/') {
+                    indicatorPath += '/';
+                }
+                Component dataComponent = new DataComponent(isReskin, isConstant, speed, indicatorPath);
                 Entity block = (Entity) Activator.CreateInstance(toggleSwapBlockType, new object[] { entityData, offset });
                 block.Add(dataComponent);
                 level.Add(block);
@@ -68,12 +70,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void UpdateTextureAndSpeed<ToggleSwapBlock>(Action<ToggleSwapBlock> orig, ToggleSwapBlock self) where ToggleSwapBlock : Entity {
             orig(self);
-            DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
 
             DataComponent dataComp = self.Get<DataComponent>();
             if (dataComp == null) {
                 return;
             }
+
+            DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
             Vector2[] nodes = data.Get<Vector2[]>("nodes");
             int currNode = data.Get<int>("nodeIndex");
             int nextNode = (int) getNextNode.Invoke(self, new object[] { currNode });
@@ -94,7 +97,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         }
                     }
                 }
-                dataComp.texture = textures[indicator];
+                dataComp.texture = GFX.Game[dataComp.indicatorPath + paths[indicator]];
             }
 
             if (dataComp.isConstant) {

@@ -58,15 +58,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         bool DepleteOnJumpThru = false;
 
-        public SwitchCrate(Vector2 position, EntityID id)
-            : base(position) {
+        bool IsFirstFrame = true;
+
+        bool HasStarted = false;
+
+        public SwitchCrate(EntityData data, Vector2 offset, EntityID id)
+            : base(data.Position + offset) {
+
             Component ConveyorMoverInstance = (Component) Activator.CreateInstance(ConveyorType);
             Add(ConveyorMoverInstance);
             ConveyorType.GetField("OnMove").SetValue(ConveyorMoverInstance, new Action<float>(MoveOnConveyor));
 
-            FlagName = "battery_" + id.Key;
+            TimeToExplode = data.Float("TimeToExplode", 1);
+            DepleteOnJumpThru = data.Bool("DepleteOnJumpThru");
+
+            FlagName = "battery_" + data.ID;
             this.id = id;
-            previousPosition = position;
+            previousPosition = data.Position + offset;
             Depth = Depths.Pickups;
             Collider = new Hitbox(8f, 11f, -4f, -2f);
 
@@ -75,8 +83,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             sprite.Add("idle", "idle", t);
             sprite.Rate = 1/ TimeToExplode;
             Add(sprite);
-            sprite.Play("idle");
-
+            sprite.Play("idle", true);
 
             sprite.CenterOrigin();
             Add(Hold = new Holdable(0.1f));
@@ -105,11 +112,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             };
         }
 
-        public SwitchCrate(EntityData data, Vector2 offset, EntityID id) : this(data.Position + offset, id) {
-            TimeToExplode = data.Float("TimeToExplode", 1);
-            DepleteOnJumpThru = data.Bool("DepleteOnJumpThru");
-        }
-
         public override void Added(Scene scene) {
             base.Added(scene);
             Level = SceneAs<Level>();
@@ -134,7 +136,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     prevLiftSpeed = Vector2.Zero;
                 } else {
                     if (OnGround()) {
-                        if (!OnSolidTile()) {
+                        if (!OnSolidTile() || !HasStarted) {
                             Restartanim();
                         }
                         float target = ((!OnGround(Position + Vector2.UnitX * 3f)) ? 20f : (OnGround(Position - Vector2.UnitX * 3f) ? 0f : (-20f)));
@@ -157,6 +159,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             }
                         }
                     } else { 
+                        if(IsFirstFrame && !HasStarted) {
+                            HasStarted = true;
+                        }
                         Restartanim();
                         if (Hold.ShouldHaveGravity) {
                             float num = 800f;
@@ -216,12 +221,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if(IsHeld) {
                 Restartanim();
             }
+            IsFirstFrame = false;
         }
 
         private void OnPickup() {
             Speed = Vector2.Zero;
             AddTag(Tags.Persistent);
             IsHeld = true;
+            if (!HasStarted) {
+                HasStarted = true;
+                sprite.Play("idle");
+            }
         }
 
         private void OnRelease(Vector2 force) {
