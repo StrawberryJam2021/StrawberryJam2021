@@ -129,7 +129,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             StrawberryJam2021Session session = StrawberryJam2021Module.Session;
             foreach (WonkyCassetteBlock wonkyBlock in self.Tracker.GetEntities<WonkyCassetteBlock>()) {
                 WonkyCassetteBlockController controller = self.Tracker.GetEntity<WonkyCassetteBlockController>();
-                    wonkyBlock.SetActivatedSilently(controller != null && wonkyBlock.OnAtBeats.Contains(session.WonkyBeatIndex / (16 / controller.beatLength) % controller.barLength));
+                wonkyBlock.SetActivatedSilently(controller != null && wonkyBlock.OnAtBeats.Contains(session.WonkyBeatIndex / (16 / controller.beatLength) % controller.barLength));
             }
         }
     }
