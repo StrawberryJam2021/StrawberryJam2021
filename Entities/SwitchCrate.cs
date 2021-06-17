@@ -74,7 +74,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             FlagName = "battery_" + data.ID;
             this.id = id;
-            previousPosition = offset;
+            previousPosition = data.Position + offset;
             Depth = Depths.Pickups;
             Collider = new Hitbox(8f, 11f, -4f, -2f);
 
