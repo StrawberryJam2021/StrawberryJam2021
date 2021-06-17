@@ -62,8 +62,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         bool HasStarted = false;
 
-        public SwitchCrate(EntityData data, Vector2 position, EntityID id)
-            : base(data.Position + position) {
+        public SwitchCrate(EntityData data, Vector2 offset, EntityID id)
+            : base(data.Position + offset) {
 
             Component ConveyorMoverInstance = (Component) Activator.CreateInstance(ConveyorType);
             Add(ConveyorMoverInstance);
@@ -74,7 +74,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             FlagName = "battery_" + data.ID;
             this.id = id;
-            previousPosition = position;
+            previousPosition = offset;
             Depth = Depths.Pickups;
             Collider = new Hitbox(8f, 11f, -4f, -2f);
 
