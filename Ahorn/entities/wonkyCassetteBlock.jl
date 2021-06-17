@@ -6,58 +6,30 @@ using ..Ahorn, Maple
 @mapdef Entity "SJ2021/WonkyCassetteBlock" WonkyCassetteBlock(
     x::Integer,
     y::Integer,
-    bpm::Integer=90,
-    bars::Integer=16,
-    timeSignature::String="4/4",
-    onAtBeats::String="1, 3",
-    sixteenthNoteParam="sixteenth_note",
-)
-
-const colorNames = Dict{String, Int}(
-    "Blue" => 0,
-    "Rose" => 1,
-    "Bright Sun" => 2,
-    "Malachite" => 3
+    onAtBeats="1, 3",
+    color::String="FFFFFF",
+    textureDirectory::String="objects/cassetteblock",
 )
 
 const placements = Ahorn.PlacementDict(
-    "Wonky Cassette Block ($color)" => Ahorn.EntityPlacement(
+    "Wonky Cassette Block (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         WonkyCassetteBlock,
         "rectangle",
-        Dict{String, Any}(
-            "index" => index,
-        )
-    ) for (color, index) in colorNames
+    )
 )
-
-Ahorn.editingOptions(entity::WonkyCassetteBlock) = Dict{String, Any}(
-    "index" => colorNames
-)
-
 
 Ahorn.minimumSize(entity::WonkyCassetteBlock) = 16, 16
 Ahorn.resizable(entity::WonkyCassetteBlock) = true, true
 
 Ahorn.selection(entity::WonkyCassetteBlock) = Ahorn.getEntityRectangle(entity)
 
-const colors = Dict{Int, Ahorn.colorTupleType}(
-    1 => (240, 73, 190, 255) ./ 255,
-    2 => (252, 220, 58, 255) ./ 255,
-    3 => (56, 224, 78, 255) ./ 255,
-)
-
-const defaultColor = (73, 170, 240, 255) ./ 255
-const borderMultiplier = (0.9, 0.9, 0.9, 1)
-
-const frame = "objects/cassetteblock/solid"
-
 function getCassetteBlockRectangles(room::Maple.Room)
-    entities = filter(e -> e.name == "wonkyCassetteBlock", room.entities)
-    rects = Dict{Int, Array{Ahorn.Rectangle, 1}}()
+    entities = filter(e -> e.name == "SJ2021/WonkyCassetteBlock", room.entities)
+    rects = Dict{String, Array{Ahorn.Rectangle, 1}}()
 
     for e in entities
-        index = get(e.data, "index", 0)
-        rectList = get!(rects, index) do
+        colorHex = String(get(e.data, "color", "FFFFFF"))
+        rectList = get!(rects, colorHex) do
             Ahorn.Rectangle[]
         end
 
@@ -97,11 +69,13 @@ function drawCassetteBlock(ctx::Ahorn.Cairo.CairoContext, entity::WonkyCassetteB
     tileWidth = ceil(Int, width / 8)
     tileHeight = ceil(Int, height / 8)
 
-    index = Int(get(entity.data, "index", 0))
-    color = get(colors, index, defaultColor)
+    colorHex = String(get(entity.data, "color", "FFFFFF"))
+    color = tuple(Ahorn.argb32ToRGBATuple(parse(Int, String(get(entity.data, "color", "FFFFFF")), base=16))[1:3] ./ 255..., 1.0)
+
+    frame = String(get(entity.data, "textureDirectory", "objects/cassetteblock")) * "/solid"
 
     rect = Ahorn.Rectangle(x, y, width, height)
-    rects = get(cassetteBlockRectangles, index, Ahorn.Rectangle[])
+    rects = get(cassetteBlockRectangles, colorHex, Ahorn.Rectangle[])
 
     if !(rect in rects)
         push!(rects, rect)
