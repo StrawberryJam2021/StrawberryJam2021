@@ -19,6 +19,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly int beatLength; // The bottom number in the time signature
         private readonly string param;
 
+        private float beatIncrement;
+        private float beatTimer;
+        private int maxBeats;
+
         private bool isLevelMusic;
         private EventInstance sfx;
         private EventInstance snapshot;
@@ -54,14 +58,39 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             StrawberryJam2021Session session = StrawberryJam2021Module.Session;
 
             // We always want sixteenth notes here, regardless of time signature
-            session.WonkyBeatIncrement = (float) (60.0 / bpm * beatLength / 16.0);
-            session.WonkyMaxBeats = 16 * bars * barLength / beatLength;
-            session.WonkyBeatIndex = session.WonkyBeatIndex % session.WonkyMaxBeats;
-            session.WonkyBpm = bpm;
-            session.WonkyBars = bars;
-            session.WonkyBarLength = barLength;
-            session.WonkyBeatLength = beatLength;
-            session.WonkyParam = param;
+            beatIncrement = (float) (60.0 / bpm * beatLength / 16.0);
+            maxBeats = 16 * bars * barLength / beatLength;
+            session.WonkyBeatIndex = session.WonkyBeatIndex % maxBeats;
+        }
+
+        private void AdvanceMusic(float time, Scene scene, EventInstance sfx, StrawberryJam2021Session session) {
+            beatTimer += time;
+
+            if (beatTimer < beatIncrement)
+                return;
+
+            beatTimer -= beatIncrement;
+
+            // beatIndex is always in sixteenth notes
+            var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>().ToList();
+            int nextBeatIndex = (session.WonkyBeatIndex + 1) % maxBeats;
+            int beatInBar = session.WonkyBeatIndex / (16 / beatLength) % barLength; // current beat
+
+            int nextBeatInBar = nextBeatIndex / (16 / beatLength) % barLength; // next beat
+            bool beatIncrementsNext = (nextBeatIndex / (float) (16 / beatLength)) % 1 == 0; // will the next beatIndex be the start of a new beat
+
+            foreach (WonkyCassetteBlock wonkyBlock in wonkyBlocks) {
+                wonkyBlock.Activated = wonkyBlock.OnAtBeats.Contains(beatInBar);
+
+                if (wonkyBlock.OnAtBeats.Contains(nextBeatInBar) != wonkyBlock.Activated && beatIncrementsNext) {
+                    wonkyBlock.WillToggle();
+                }
+            }
+
+            sfx.setParameterValue(param, (session.WonkyBeatIndex * beatLength / 16) + 1);
+
+            // Doing this here because it would go to the next beat with a sixteenth note offset at start
+            session.WonkyBeatIndex = (session.WonkyBeatIndex + 1) % maxBeats;
         }
 
         public override void Removed(Scene scene) {
@@ -82,7 +111,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Audio.Play("event:/game/general/cassette_block_switch_2");
                 sfx.start();
             } else {
-                StrawberryJam2021Module.Session.AdvanceMusic(Engine.DeltaTime, Scene, sfx);
+                AdvanceMusic(Engine.DeltaTime, Scene, sfx, StrawberryJam2021Module.Session);
             }
         }
 
@@ -99,7 +128,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             StrawberryJam2021Session session = StrawberryJam2021Module.Session;
             foreach (WonkyCassetteBlock wonkyBlock in self.Tracker.GetEntities<WonkyCassetteBlock>()) {
-                wonkyBlock.SetActivatedSilently(wonkyBlock.OnAtBeats.Contains(session.WonkyBeatIndex / (16 / session.WonkyBeatLength) % session.WonkyBarLength));
+                WonkyCassetteBlockController controller = self.Tracker.GetEntity<WonkyCassetteBlockController>();
+                    wonkyBlock.SetActivatedSilently(controller != null && wonkyBlock.OnAtBeats.Contains(session.WonkyBeatIndex / (16 / controller.beatLength) % controller.barLength));
             }
         }
     }
