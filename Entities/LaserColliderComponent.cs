@@ -28,6 +28,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             updateBeam();
         }
 
+        public override void EntityAwake() {
+            base.EntityAwake();
+            updateBeam();
+        }
+
         public override void Update() {
             base.Update();
             updateBeam();
