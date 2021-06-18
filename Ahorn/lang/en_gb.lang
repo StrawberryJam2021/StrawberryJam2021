@@ -66,6 +66,30 @@ placements.entities.SJ2021/LaserEmitterRight.tooltips.disableLasers=Whether or n
 placements.entities.SJ2021/LaserEmitterRight.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same color channel.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser color.
 
+# Brush Laser Emitter (Up)
+placements.entities.SJ2021/BrushLaserEmitterUp.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/BrushLaserEmitterUp.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/BrushLaserEmitterUp.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/BrushLaserEmitterUp.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+
+# Brush Laser Emitter (Down)
+placements.entities.SJ2021/BrushLaserEmitterDown.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/BrushLaserEmitterDown.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/BrushLaserEmitterDown.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/BrushLaserEmitterDown.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+
+# Brush Laser Emitter (Left)
+placements.entities.SJ2021/BrushLaserEmitterLeft.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/BrushLaserEmitterLeft.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/BrushLaserEmitterLeft.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/BrushLaserEmitterLeft.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+
+# Brush Laser Emitter (Right)
+placements.entities.SJ2021/BrushLaserEmitterRight.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/BrushLaserEmitterRight.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/BrushLaserEmitterRight.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/BrushLaserEmitterRight.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+
 # Bubble Emitter Fire Trigger
 placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of the emitters to fire. Will fire every emitter if empty
 
@@ -143,7 +167,7 @@ placements.entities.SJ2021/ToggleSwapBlock.tooltips.customIndicatorPath=Path to 
 # Wonky Cassette Block
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.onAtBeats=A list of integers (separated by a comma) corresponding to the beats on which this block should activate, being deactivated on all other beats not included in this list.\nExample: 1, 2, 4
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.color=The hexadecimal color code of this block (without the hash # symbol).
-placements.entities.SJ2021/WonkyCassetteBlock.tooltips.textureDirectory=The path to the folder containing two textures for this block, starting from Graphics/Atlases/Gameplay/. In order for this to work, the specified folder must containing two image files named "solid.png" and "pressed.png", each corresponding to the texture of the block when activated and deactivated respectively. Preferably without the "/" symbol at the end. 
+placements.entities.SJ2021/WonkyCassetteBlock.tooltips.textureDirectory=The path to the folder containing two textures for this block, starting from Graphics/Atlases/Gameplay/. In order for this to work, the specified folder must containing two image files named "solid.png" and "pressed.png", each corresponding to the texture of the block when activated and deactivated respectively. Preferably without the "/" symbol at the end.
 
 # Wonky Cassette Block Controller
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.bpm=The tempo of the cassette loop event in this room.
