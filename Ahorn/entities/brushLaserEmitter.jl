@@ -2,7 +2,8 @@ module SJ2021BrushLaserEmitter
 
 using ..Ahorn, Maple
 
-const thickness = 8
+const beam_thickness = 12
+const brush_length = 16
 
 @mapdef Entity "SJ2021/BrushLaserEmitterUp" BrushLaserEmitterUp(
     x::Integer, y::Integer,
@@ -48,28 +49,28 @@ const placements = Ahorn.PlacementDict(
 )
 function Ahorn.selection(entity::BrushLaserEmitterUp)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x - 7, y - 8, 14, 8)
+    return Ahorn.Rectangle(x - beam_thickness / 2, y - brush_length, beam_thickness, brush_length)
 end
 
 function Ahorn.selection(entity::BrushLaserEmitterDown)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x - 7, y, 14, 8)
+    return Ahorn.Rectangle(x - beam_thickness / 2, y, beam_thickness, brush_length)
 end
 
 function Ahorn.selection(entity::BrushLaserEmitterLeft)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x - 8, y - 7, 8, 14)
+    return Ahorn.Rectangle(x - brush_length, y - beam_thickness / 2, brush_length, beam_thickness)
 end
 
 function Ahorn.selection(entity::BrushLaserEmitterRight)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x, y - 7, 8, 14)
+    return Ahorn.Rectangle(x, y - beam_thickness / 2, brush_length, beam_thickness)
 end
 
 sprite_path = "objects/StrawberryJam2021/brushLaserEmitter"
 
 function spriteForTexture(entity::brushLaserUnion)
-    index = get(entity.data, "cassetteIndex", 0)
+    index = Integer(get(entity.data, "cassetteIndex", 0))
     prefix = index == 0 ? "blue" : "pink"
     return "$(sprite_path)/$(prefix)/brush-a/brush-a-idle00"
 end
