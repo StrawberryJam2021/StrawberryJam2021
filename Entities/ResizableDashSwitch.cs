@@ -54,7 +54,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public ResizableDashSwitch(EntityData data, Vector2 offset, EntityID id)
-            : this(data.Position + offset, SwitchSide(data.Enum("orientation", Sides.Left)),
+            : this(data.Position + offset, SwitchSide(data.Enum("orientation", Sides.Up)),
                   data.Bool("persistent"), id, GetWidth(data), data.Bool("actLikeTouchSwitch", true)) { }
 
         // again copied from FlagDashSwitch :)
