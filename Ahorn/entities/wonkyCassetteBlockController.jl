@@ -24,7 +24,7 @@ const placements = Ahorn.PlacementDict(
             "bars" => 16,
             "timeSignature" => "7/8",
             "sixteenthNoteParam" => "78_eighth_note",
-            "boostFrames" => 1,
+            "boostFrames" => 2,
         )
     ),
     "Wonky Cassette Block Controller\n(116 BPM, 6 bars of 10/8, \"108_eighth_note\") (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
@@ -35,7 +35,7 @@ const placements = Ahorn.PlacementDict(
             "bars" => 6,
             "timeSignature" => "10/8",
             "sixteenthNoteParam" => "108_eighth_note",
-            "boostFrames" => 1,
+            "boostFrames" => 2,
         )
     ),
     "Wonky Cassette Block Controller\n(174 BPM, 8 bars of 13/8, \"138_eighth_note\") (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
@@ -46,7 +46,7 @@ const placements = Ahorn.PlacementDict(
             "bars" => 8,
             "timeSignature" => "13/8",
             "sixteenthNoteParam" => "138_eighth_note",
-            "boostFrames" => 1,
+            "boostFrames" => 2,
         )
     ),
 )
