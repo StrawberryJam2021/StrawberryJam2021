@@ -51,7 +51,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private LaserState laserState;
 
         private const float chargeDelayFraction = 0.25f;
-        private const float collisionDelaySeconds = 0.1f;
+        private const float collisionDelaySeconds = 2f / 60f;
         private const int beamOffsetMultiplier = 4;
         private const int beamThickness = 12;
         private const float mediumRumbleEffectRange = 8f * 12;
