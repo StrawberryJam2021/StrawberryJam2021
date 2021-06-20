@@ -85,8 +85,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Sprite emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
             emitterSprite.Rotation = Orientation.Angle();
-            
-            Add(emitterSprite);
+
+            Add(emitterSprite, new LedgeBlocker());
         }
 
         public override void Awake(Scene scene) {

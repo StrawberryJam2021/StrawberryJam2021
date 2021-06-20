@@ -83,9 +83,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Frequency = 0;
 
             Add(new CassetteListener {
-                OnTick = (index, tick) => {
-                    if ((CassetteIndices.FirstOrDefault() == -1 || CassetteIndices.Contains(index)) && (Ticks.FirstOrDefault() == -1 || Ticks.Contains(tick)))
-                        Fire(shot => shot.Color = CassetteListener.ColorFromCassetteIndex(index));
+                OnTick = state => {
+                    if ((CassetteIndices.FirstOrDefault() == -1 || CassetteIndices.Contains(state.CurrentTick.Index)) && (Ticks.FirstOrDefault() == -1 || Ticks.Contains(state.CurrentTick.Offset)))
+                        Fire(shot => shot.Color = CassetteListener.ColorFromCassetteIndex(state.CurrentTick.Index));
                 }
             });
         }
