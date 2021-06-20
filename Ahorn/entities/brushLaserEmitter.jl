@@ -70,7 +70,7 @@ end
 sprite_path = "objects/StrawberryJam2021/brushLaserEmitter"
 
 function spriteForTexture(entity::brushLaserUnion)
-    index = Integer(get(entity.data, "cassetteIndex", 0))
+    index = get(entity.data, "cassetteIndex", 0)
     prefix = index == 0 ? "blue" : "pink"
     return "$(sprite_path)/$(prefix)/brush-a/brush-a-idle00"
 end
