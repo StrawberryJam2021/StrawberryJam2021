@@ -9,6 +9,7 @@ using ..Ahorn, Maple
     bars::Integer=16,
     timeSignature::String="4/4",
     sixteenthNoteParam="sixteenth_note",
+    cassetteOffset::Float64=0.0,
     boostFrames::Integer=1,
 )
 
@@ -24,6 +25,7 @@ const placements = Ahorn.PlacementDict(
             "bars" => 16,
             "timeSignature" => "7/8",
             "sixteenthNoteParam" => "78_eighth_note",
+            "cassetteOffset" => 0.0,
             "boostFrames" => 2,
         )
     ),
@@ -35,6 +37,7 @@ const placements = Ahorn.PlacementDict(
             "bars" => 6,
             "timeSignature" => "10/8",
             "sixteenthNoteParam" => "108_eighth_note",
+            "cassetteOffset" => 0.0,
             "boostFrames" => 2,
         )
     ),
@@ -46,6 +49,7 @@ const placements = Ahorn.PlacementDict(
             "bars" => 8,
             "timeSignature" => "13/8",
             "sixteenthNoteParam" => "138_eighth_note",
+            "cassetteOffset" => 0.0,
             "boostFrames" => 2,
         )
     ),

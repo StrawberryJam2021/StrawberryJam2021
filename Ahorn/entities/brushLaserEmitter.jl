@@ -2,7 +2,8 @@ module SJ2021BrushLaserEmitter
 
 using ..Ahorn, Maple
 
-const thickness = 8
+const BEAM_THICKNESS = 12
+const BRUSH_LENGTH = 16
 
 @mapdef Entity "SJ2021/BrushLaserEmitterUp" BrushLaserEmitterUp(
     x::Integer, y::Integer,
@@ -48,22 +49,22 @@ const placements = Ahorn.PlacementDict(
 )
 function Ahorn.selection(entity::BrushLaserEmitterUp)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x - 7, y - 8, 14, 8)
+    return Ahorn.Rectangle(x - BEAM_THICKNESS / 2, y - BRUSH_LENGTH, BEAM_THICKNESS, BRUSH_LENGTH)
 end
 
 function Ahorn.selection(entity::BrushLaserEmitterDown)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x - 7, y, 14, 8)
+    return Ahorn.Rectangle(x - BEAM_THICKNESS / 2, y, BEAM_THICKNESS, BRUSH_LENGTH)
 end
 
 function Ahorn.selection(entity::BrushLaserEmitterLeft)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x - 8, y - 7, 8, 14)
+    return Ahorn.Rectangle(x - BRUSH_LENGTH, y - BEAM_THICKNESS / 2, BRUSH_LENGTH, BEAM_THICKNESS)
 end
 
 function Ahorn.selection(entity::BrushLaserEmitterRight)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x, y - 7, 8, 14)
+    return Ahorn.Rectangle(x, y - BEAM_THICKNESS / 2, BRUSH_LENGTH, BEAM_THICKNESS)
 end
 
 sprite_path = "objects/StrawberryJam2021/brushLaserEmitter"

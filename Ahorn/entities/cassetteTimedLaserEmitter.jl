@@ -2,37 +2,37 @@ module SJ2021CassetteTimedLaserEmitter
 
 using ..Ahorn, Maple
 
-const default_cassette_indices = "0"
-const default_ticks = "0"
-const default_length = 2
-const default_alpha = 0.4
-const default_thickness = 6.0
+const DEFAULT_CASSETTE_INDICES = "0"
+const DEFAULT_TICKS = "0"
+const DEFAULT_LENGTH = 2
+const DEFAULT_ALPHA = 0.4
+const DEFAULT_THICKNESS = 6.0
 
 @mapdef Entity "SJ2021/CassetteTimedLaserEmitterUp" CassetteTimedLaserEmitterUp(
     x::Integer, y::Integer,
-    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, lengthInTicks::Integer=default_length,
-    alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
+    cassetteIndices::String=DEFAULT_CASSETTE_INDICES, ticks::String=DEFAULT_TICKS, lengthInTicks::Integer=DEFAULT_LENGTH,
+    alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedLaserEmitterDown" CassetteTimedLaserEmitterDown(
     x::Integer, y::Integer,
-    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, lengthInTicks::Integer=default_length,
-    alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
+    cassetteIndices::String=DEFAULT_CASSETTE_INDICES, ticks::String=DEFAULT_TICKS, lengthInTicks::Integer=DEFAULT_LENGTH,
+    alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedLaserEmitterLeft" CassetteTimedLaserEmitterLeft(
     x::Integer, y::Integer,
-    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, lengthInTicks::Integer=default_length,
-    alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
+    cassetteIndices::String=DEFAULT_CASSETTE_INDICES, ticks::String=DEFAULT_TICKS, lengthInTicks::Integer=DEFAULT_LENGTH,
+    alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedLaserEmitterRight" CassetteTimedLaserEmitterRight(
     x::Integer, y::Integer,
-    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, lengthInTicks::Integer=default_length,
-    alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
+    cassetteIndices::String=DEFAULT_CASSETTE_INDICES, ticks::String=DEFAULT_TICKS, lengthInTicks::Integer=DEFAULT_LENGTH,
+    alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
     killPlayer::Bool=true, disableLasers::Bool=false, triggerZipMovers::Bool=false, collideWithSolids::Bool=true
 )
 
