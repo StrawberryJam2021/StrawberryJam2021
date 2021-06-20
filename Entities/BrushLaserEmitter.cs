@@ -51,11 +51,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private LaserState laserState;
 
         private const float chargeDelayFraction = 0.25f;
-        private const float collisionDelaySeconds = 2f / 60f;
+        private const float collisionDelaySeconds = 5f / 60f;
         private const int beamOffsetMultiplier = 4;
         private const int beamThickness = 12;
         private const float mediumRumbleEffectRange = 8f * 12;
         private const float strongRumbleEffectRange = 8f * 8;
+
+        private float collisionDelayRemaining;
 
         private static readonly ParticleType blueCooldownParticle = new ParticleType(Booster.P_Burst) {
             Source = GFX.Game["particles/blob"],
@@ -145,6 +147,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         beamSprite.Visible = true;
                         beamSprite.Play(burstAnimation);
                         Collider = emitterHitbox;
+                        collisionDelayRemaining = collisionDelaySeconds;
                         break;
 
                     case LaserState.Firing:
@@ -214,14 +217,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                                 }
                                 break;
 
-                            case LaserState.Burst:
-                                if (beatFraction * state.TickLength >= collisionDelaySeconds) {
-                                    State = LaserState.Firing;
-                                }
-                                break;
-
                             case LaserState.Firing:
-                                if (beat == 0 && (state.CurrentTick.Index != CassetteIndex || HalfLength)) {
+                                if (State == LaserState.Firing && beat == 0 && (state.CurrentTick.Index != CassetteIndex || HalfLength)) {
                                     State = LaserState.Idle;
                                 }
                                 break;
@@ -255,6 +252,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     direction = player.Center.X <= Position.X ? -Vector2.UnitX : Vector2.UnitX;
 
                 player.Die(direction);
+            }
+        }
+
+        public override void Update() {
+            base.Update();
+
+            if (State == LaserState.Burst && collisionDelayRemaining > 0) {
+                collisionDelayRemaining -= Engine.DeltaTime;
+                if (collisionDelayRemaining <= 0)
+                    State = LaserState.Firing;
             }
         }
 
