@@ -26,6 +26,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             get => baseData.Get<Sprite>("sprite");
             set => baseData.Set("sprite", value);
         }
+        private bool persistent {
+            get => baseData.Get<bool>("persistent");
+            set => baseData.Set("persistent", value);
+        }
+        private string FlagName => baseData.Get<string>("FlagName");
 
         public ResizableDashSwitch(Vector2 position, Sides side, bool persistent, EntityID id, int width, bool actLikeTouchSwitch)
             : base(position, side, persistent, false, id, "default") {
@@ -46,6 +51,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             });
             if (actLikeTouchSwitch) {
                 Add(Switch = new Switch(groundReset: false));
+                Switch.OnStartFinished = () => {
+                    // if these are set, in Awake() it'll start out already pressed
+                    this.persistent = true;
+                    SceneAs<Level>().Session.SetFlag(FlagName);
+                };
             }
 
             sprite.Scale = new Vector2(1f, width / 16f);
