@@ -43,6 +43,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             WonkyCassetteBlock.Load();
             WonkyCassetteBlockController.Load();
             SpeedPreservePuffer.Load();
+            SkateboardTrigger.Load();
         }
 
         public override void Unload() {
@@ -67,6 +68,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             WonkyCassetteBlock.Unload();
             WonkyCassetteBlockController.Unload();
             SpeedPreservePuffer.Unload();
+            SkateboardTrigger.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
