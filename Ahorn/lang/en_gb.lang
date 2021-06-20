@@ -175,3 +175,4 @@ placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.bars=The number
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.timeSignature=The time signature of this cassette loop event, written in this form: x/y.\nATTENTION: this should always be a multiple of 1/16, since Cassette Blocks always work in 16th notes.\nExample: 5/4
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.sixteenthNoteParam=The FMOD parameter that should be affected in this room.
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.cassetteOffset=The constant offset in seconds that the cassette blocks will lag behind the music progress.\nPositive numbers will make the cassette blocks trigger later.
+placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.boostFrames=The number of frames after activation that a cassette boost is possible for. Must be at least 1.

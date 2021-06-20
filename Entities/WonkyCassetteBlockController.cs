@@ -20,6 +20,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly float cassetteOffset;
         private readonly string param;
 
+        public readonly int ExtraBoostFrames;
+
         private float beatIncrement;
         private int maxBeats;
 
@@ -28,9 +30,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private EventInstance snapshot;
 
         public WonkyCassetteBlockController(EntityData data, Vector2 offset)
-            : this(data.Position + offset, data.Int("bpm"), data.Int("bars"), data.Attr("timeSignature"), data.Attr("sixteenthNoteParam", "sixteenth_note"), data.Float("cassetteOffset")) { }
+            : this(data.Position + offset, data.Int("bpm"), data.Int("bars"), data.Attr("timeSignature"), data.Attr("sixteenthNoteParam", "sixteenth_note"), data.Float("cassetteOffset"), data.Int("boostFrames", 1)) { }
 
-        public WonkyCassetteBlockController(Vector2 position, int bpm, int bars, string timeSignature, string param, float cassetteOffset)
+        public WonkyCassetteBlockController(Vector2 position, int bpm, int bars, string timeSignature, string param, float cassetteOffset, int boostFrames)
             : base(position) {
             this.bpm = bpm;
             this.bars = bars;
@@ -43,6 +45,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             barLength = int.Parse(timeSignatureParsed[1].Value);
             beatLength = int.Parse(timeSignatureParsed[2].Value);
+
+            if (boostFrames < 1)
+                throw new ArgumentException($"Boost Frames must be 1 or greater, but is set to {boostFrames}.");
+
+            ExtraBoostFrames = boostFrames - 1;
         }
 
         public override void Awake(Scene scene) {
