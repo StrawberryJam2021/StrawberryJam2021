@@ -30,12 +30,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public ResizableDashSwitch(Vector2 position, Sides side, bool persistent, EntityID id, int width, bool actLikeTouchSwitch)
             : base(position, side, persistent, false, id, "default") {
             baseData = new DynamicData(typeof(DashSwitch), this);
+
             Side = side;
             if (side == Sides.Up || side == Sides.Down) {
                 Collider.Width = width;
             } else {
                 Collider.Height = width;
             }
+
             Add(new StaticMover {
                 SolidChecker = IsRiding,
                 OnMove = OnMove,
@@ -45,6 +47,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (actLikeTouchSwitch) {
                 Add(Switch = new Switch(groundReset: false));
             }
+
             sprite.Scale = new Vector2(1f, width / 16f);
             if (side == Sides.Up || side == Sides.Down) {
                 spriteOffset = new Vector2((width - 16f) / 2, 0f);
@@ -131,9 +134,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Vector2 pressDirection = dashSwitch.baseData.Get<Vector2>("pressDirection");
                 if (!pressed && direction == pressDirection)
                     player.RefillDash();
-                if (dashSwitch.Switch?.Activate() == true) {
+                if (dashSwitch.Switch?.Activate() == true)
                     SoundEmitter.Play(SFX.game_gen_touchswitch_last_oneshot);
-                };
             }
             return orig(self, player, direction);
         }
