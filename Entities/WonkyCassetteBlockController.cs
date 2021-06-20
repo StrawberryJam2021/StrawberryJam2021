@@ -61,8 +61,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // We always want sixteenth notes here, regardless of time signature
             beatIncrement = (float) (60.0 / bpm * beatLength / 16.0);
             maxBeats = 16 * bars * barLength / beatLength;
+
             session.MusicWonkyBeatIndex = session.MusicWonkyBeatIndex % maxBeats;
-            session.CassetteWonkyBeatIndex = session.CassetteWonkyBeatIndex % maxBeats;
+
+            // Synchronize the beat indices.
+            // This may leave cassette blocks activated or deactivated for up to
+            // the duration of an offset longer than normal at the start, but
+            // that will fix itself within one beatIncrement duration
+            session.CassetteWonkyBeatIndex = session.MusicWonkyBeatIndex;
 
             // Re-synchronize the beat timers
             // Positive offsets will make the cassette blocks lag behind the music progress
