@@ -208,7 +208,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 new LedgeBlocker(_ => KillPlayer)
             );
 
-            Collider = Get<LaserColliderComponent>().Collider;
+            var laserCollider = Get<LaserColliderComponent>();
+            Collider = laserCollider.Collider;
 
             if (Style == EmitterStyle.Simple) {
                 emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
@@ -227,6 +228,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 tintSprite.Rotation = Orientation.Angle();
                 Add(tintSprite);
             }
+
+            Get<StaticMover>().OnMove = v => {
+                Position += v;
+                laserCollider.UpdateBeam();
+            };
         }
 
         public override void Update() {

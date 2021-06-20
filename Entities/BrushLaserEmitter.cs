@@ -235,9 +235,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 emitterSprite
             );
 
+            var laserCollider = Get<LaserColliderComponent>();
             Collider = emitterHitbox = new Circle(6);
             emitterHitbox.Position += Orientation.Offset() * 2f;
-            colliderList = new ColliderList(laserHitbox = Get<LaserColliderComponent>().Collider, emitterHitbox);
+            colliderList = new ColliderList(laserHitbox = laserCollider.Collider, emitterHitbox);
+
+            Get<StaticMover>().OnMove = v => {
+                Position += v;
+                laserCollider.UpdateBeam();
+            };
         }
 
         private void onPlayerCollide(Player player) {
