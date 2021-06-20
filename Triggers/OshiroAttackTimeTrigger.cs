@@ -26,8 +26,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static void ModAttackTime(ILContext il) {
             ILCursor cursor = new ILCursor(il);
             while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdfld<AreaKey>("Mode"))) {
-                Logger.Log("SJ2021", $"Modifying B-Side requirement for Oshiro timing @{cursor.Index}.");
-                cursor.EmitDelegate<Func<int, int>>(val => (StrawberryJam2021Module.Session.OshiroBSideMode)?1:(int)(Monocle.Engine.Scene as Level).Session.Area.Mode);
+                Logger.Log("SJ2021/OshiroAttackTimeTrigger", $"Modifying B-Side requirement for Oshiro timing @{cursor.Index}.");
+                cursor.EmitDelegate<Func<int, int>>(orig => StrawberryJam2021Module.Session.OshiroBSideMode ? 1 : orig);
                 break;
             }
         }
