@@ -2,7 +2,9 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using On.Celeste;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
+using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
@@ -15,6 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static bool SkateboardEnabled = false;
         private static Vector2 PlayerSpriteOffset = new Vector2(0, -3);
         private static MTexture SkateboardSprite;
+        private static ILHook OrigUpdateSpriteHook;
 
         public static void InitializeTextures() {
             SkateboardSprite = GFX.Game["objects/StrawberryJam2021/skateboard/skateboard"];
@@ -24,20 +27,40 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             On.Celeste.Level.Begin += Level_Begin;
             On.Celeste.Player.Render += Player_Render;
             On.Celeste.PlayerHair.Render += PlayerHair_Render;
+            OrigUpdateSpriteHook = new ILHook(
+                typeof(Player).GetMethod("orig_UpdateSprite", BindingFlags.NonPublic | BindingFlags.Instance),
+                Player_origUpdateSprite);
         }
 
         public static void Unload() {
             On.Celeste.Level.Begin -= Level_Begin;
             On.Celeste.Player.Render -= Player_Render;
             On.Celeste.PlayerHair.Render -= PlayerHair_Render;
+            OrigUpdateSpriteHook.Dispose();
         }
         private static void Level_Begin(On.Celeste.Level.orig_Begin orig, Level self) {
             orig(self);
             SkateboardEnabled = false;
         }
 
+        private static void Player_origUpdateSprite(ILContext il) {
+            ILCursor cursor = new ILCursor(il);
+            while(cursor.TryGotoNext(MoveType.After, instr => (instr.MatchLdstr("runSlow") ||
+                    instr.MatchLdstr("runFast") || instr.MatchLdstr("runSlow_carry")) &&
+                    instr.Next.Next.Next.MatchCallvirt<Monocle.Sprite>("Play"))) {
+                cursor.EmitDelegate<Func<String, String>>((orig) => {
+                    return SkateboardEnabled ? "idle" : orig;
+                });
+            }
+        }
+
+
         private static void Player_Render(On.Celeste.Player.orig_Render orig, Player self) {
             if (SkateboardEnabled) {
+                Console.WriteLine(self.Sprite.CurrentAnimationID);
+                if (self.Sprite.CurrentAnimationID.Equals("runFast")) {
+                    self.Sprite.Play("idle");
+                }
                 self.Sprite.RenderPosition += PlayerSpriteOffset;
             }
             orig(self);
