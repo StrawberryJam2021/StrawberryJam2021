@@ -14,14 +14,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class WonkyCassetteBlock : CassetteBlock {
 
         public readonly int[] OnAtBeats;
+        public readonly int ExtraBoostFrames = 0;
+
+        public int boostFrames = 0;
 
         private DynData<CassetteBlock> cassetteBlockData;
 
         private string textureDir;
 
-        public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, string moveSpec, Color color, string textureDir)
+        public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, string moveSpec, Color color, string textureDir, int boostFrames)
             : base(position, id, width, height, index, 1.0f) {
             OnAtBeats = Regex.Split(moveSpec, @",\s*").Select(int.Parse).Select(i => i - 1).ToArray();
+
+            if (boostFrames < 1)
+                throw new ArgumentException($"Boost Frames must be 1 or greater, but is set to {boostFrames}.");
+
+            ExtraBoostFrames = boostFrames - 1;
 
             cassetteBlockData = new DynData<CassetteBlock>(this);
             cassetteBlockData["color"] = color;
@@ -30,7 +38,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public WonkyCassetteBlock(EntityData data, Vector2 offset, EntityID id)
-            : this(data.Position + offset, id, data.Width, data.Height, data.Int("index"), data.Attr("onAtBeats"), data.HexColor("color"), data.Attr("textureDirectory", "objects/cassetteblock").TrimEnd('/')) { }
+            : this(data.Position + offset, id, data.Width, data.Height, data.Int("index"), data.Attr("onAtBeats"), data.HexColor("color"), data.Attr("textureDirectory", "objects/cassetteblock").TrimEnd('/'), data.Int("boostFrames", 1)) { }
 
         // We need to reimplement some of our parent's methods because they refer directly to CassetteBlock when fetching entities
 
@@ -57,6 +65,26 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     group.Add(entity);
                     NewFindInGroup(orig, self, entity);
                     _groupField.SetValue(entity, group);
+                }
+            }
+        }
+
+        public override void Update() {
+            bool activating = Activated && !Collidable;
+
+            base.Update();
+
+            if (Activated && Collidable) {
+                if (activating) {
+                    // Block has activated, Cassette boost is possible this frame
+                    boostFrames = ExtraBoostFrames;
+                } else if (boostFrames > 0) {
+                    // Provide an extra boost for the duration of the extra boost frames
+                    this.LiftSpeed.Y = -1 / Engine.DeltaTime;
+                    // Update lift of riders
+                    MoveVExact(0);
+
+                    boostFrames -= 1;
                 }
             }
         }

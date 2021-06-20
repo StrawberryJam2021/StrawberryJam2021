@@ -144,6 +144,7 @@ placements.entities.SJ2021/ToggleSwapBlock.tooltips.customIndicatorPath=Path to 
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.onAtBeats=A list of integers (separated by a comma) corresponding to the beats on which this block should activate, being deactivated on all other beats not included in this list.\nExample: 1, 2, 4
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.color=The hexadecimal color code of this block (without the hash # symbol).
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.textureDirectory=The path to the folder containing two textures for this block, starting from Graphics/Atlases/Gameplay/. In order for this to work, the specified folder must containing two image files named "solid.png" and "pressed.png", each corresponding to the texture of the block when activated and deactivated respectively. Preferably without the "/" symbol at the end. 
+placements.entities.SJ2021/WonkyCassetteBlock.tooltips.boostFrames=The number of frames after activation that a cassette boost is possible for. Must be at least 1.
 
 # Wonky Cassette Block Controller
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.bpm=The tempo of the cassette loop event in this room.
