@@ -46,10 +46,17 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static void Player_origUpdateSprite(ILContext il) {
             ILCursor cursor = new ILCursor(il);
             while(cursor.TryGotoNext(MoveType.After, instr => (instr.MatchLdstr("runSlow") ||
-                    instr.MatchLdstr("runFast") || instr.MatchLdstr("runSlow_carry")) &&
+                    instr.MatchLdstr("runFast")) &&
                     instr.Next.Next.Next.MatchCallvirt<Monocle.Sprite>("Play"))) {
                 cursor.EmitDelegate<Func<String, String>>((orig) => {
                     return SkateboardEnabled ? "idle" : orig;
+                });
+            }
+            cursor.Index = 0;
+            while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdstr("runSlow_carry") &&
+                     instr.Next.Next.Next.MatchCallvirt<Monocle.Sprite>("Play"))) {
+                cursor.EmitDelegate<Func<String, String>>((orig) => {
+                    return SkateboardEnabled ? "idle_carry" : orig;
                 });
             }
         }
