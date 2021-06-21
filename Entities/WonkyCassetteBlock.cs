@@ -15,6 +15,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public readonly int[] OnAtBeats;
 
+        public int boostFrames = 0;
+
         private DynData<CassetteBlock> cassetteBlockData;
 
         private string textureDir;
@@ -57,6 +59,31 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     group.Add(entity);
                     NewFindInGroup(orig, self, entity);
                     _groupField.SetValue(entity, group);
+                }
+            }
+        }
+
+        public override void Update() {
+            bool activating = Activated && !Collidable;
+
+            base.Update();
+
+            if (Activated && Collidable) {
+                if (activating) {
+                    // Block has activated, Cassette boost is possible this frame
+                    WonkyCassetteBlockController controller = this.Scene.Tracker.GetEntity<WonkyCassetteBlockController>();
+                    if (controller != null) {
+                        boostFrames = controller.ExtraBoostFrames;
+                    }
+
+                } else if (boostFrames > 0) {
+                    // Provide an extra boost for the duration of the extra boost frames
+                    this.LiftSpeed.Y = -1 / Engine.DeltaTime;
+
+                    // Update lift of riders
+                    MoveVExact(0);
+
+                    boostFrames -= 1;
                 }
             }
         }

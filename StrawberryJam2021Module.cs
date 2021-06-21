@@ -17,6 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
         public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
         private SpriteBank _CustomEntitySpriteBank;
 
+
         public StrawberryJam2021Module() {
             Instance = this;
         }
@@ -43,6 +44,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             WonkyCassetteBlock.Load();
             WonkyCassetteBlockController.Load();
             SpeedPreservePuffer.Load();
+            LaserEmitter.Load();
+            OshiroAttackTimeTrigger.Load();
         }
 
         public override void Unload() {
@@ -67,6 +70,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             WonkyCassetteBlock.Unload();
             WonkyCassetteBlockController.Unload();
             SpeedPreservePuffer.Unload();
+            LaserEmitter.Unload();
+            OshiroAttackTimeTrigger.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
