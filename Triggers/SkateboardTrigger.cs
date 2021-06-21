@@ -48,6 +48,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             while(cursor.TryGotoNext(MoveType.After, instr => (instr.MatchLdstr("runSlow") ||
                     instr.MatchLdstr("runFast")) &&
                     instr.Next.Next.Next.MatchCallvirt<Monocle.Sprite>("Play"))) {
+                Logger.Log("SJ2021/SkateboardTrigger", $"Adding IL hook at {cursor.Index} in Player.origUpdateSprite to override running animation");
                 cursor.EmitDelegate<Func<String, String>>((orig) => {
                     return SkateboardEnabled ? "idle" : orig;
                 });
@@ -55,6 +56,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             cursor.Index = 0;
             while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdstr("runSlow_carry") &&
                      instr.Next.Next.Next.MatchCallvirt<Monocle.Sprite>("Play"))) {
+                Logger.Log("SJ2021/SkateboardTrigger", $"Adding IL hook at {cursor.Index} in Player.origUpdateSprite to override running animation");
                 cursor.EmitDelegate<Func<String, String>>((orig) => {
                     return SkateboardEnabled ? "idle_carry" : orig;
                 });
@@ -64,10 +66,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         private static void Player_Render(On.Celeste.Player.orig_Render orig, Player self) {
             if (SkateboardEnabled) {
-                Console.WriteLine(self.Sprite.CurrentAnimationID);
-                if (self.Sprite.CurrentAnimationID.Equals("runFast")) {
-                    self.Sprite.Play("idle");
-                }
                 self.Sprite.RenderPosition += PlayerSpriteOffset;
             }
             orig(self);
