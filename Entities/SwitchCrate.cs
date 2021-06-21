@@ -75,7 +75,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             FlagName = "battery_" + data.ID;
             this.id = id;
             previousPosition = data.Position + offset;
-            Depth = Depths.Pickups;
+            Depth = Depths.TheoCrystal;
             Collider = new Hitbox(8f, 11f, -4f, -2f);
 
             sprite = new Sprite(GFX.Game, "objects/StrawberryJam2021/SwitchCrate/");
@@ -131,7 +131,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (swatTimer > 0f) {
                     swatTimer -= Engine.DeltaTime;
                 }
-                Depth = 100;
                 if (Hold.IsHeld) {
                     prevLiftSpeed = Vector2.Zero;
                 } else {
