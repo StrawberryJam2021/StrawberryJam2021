@@ -150,3 +150,7 @@ placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.bpm=The tempo o
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.bars=The number of bars that should play before looping over in the cassette loop event.
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.timeSignature=The time signature of this cassette loop event, written in this form: x/y.\nATTENTION: this should always be a multiple of 1/16, since Cassette Blocks always work in 16th notes.\nExample: 5/4
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.sixteenthNoteParam=The FMOD parameter that should be affected in this room.
+
+# Skateboard Trigger
+
+placements.triggers.SJ2021/SkateboardTrigger.tooltips.mode=Whether entering the trigger will enable, disable, or toggle the skateboard.
