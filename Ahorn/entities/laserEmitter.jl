@@ -2,50 +2,50 @@ module SJ2021LaserEmitter
 
 using ..Ahorn, Maple
 
-const default_alpha = 0.4
-const default_thickness = 6.0
-const default_style = "Rounded"
+const DEFAULT_ALPHA = 0.4
+const DEFAULT_THICKNESS = 6.0
+const DEFAULT_STYLE = "Rounded"
 
 # color is used to render the beam and tint the emitter
-# FF2626 (HSV 0,85,100) is the default red as requested by hennyburgr/SchaapMakker 
-const default_color = "FF2626"
+# FF2626 (HSV 0,85,100) is the default red as requested by hennyburgr/SchaapMakker
+const DEFAULT_COLOR = "FF2626"
 
 # color channel is used for linking lasers with each other and with linkedzipmovers
 # defaults to fullbright red as a matter of convenience
-const default_color_channel = "FF0000"
+const DEFAULT_COLOR_CHANNEL = "FF0000"
 
 const styles = ["Simple", "Rounded"]
 
 @mapdef Entity "SJ2021/LaserEmitterUp" LaserEmitterUp(
     x::Integer, y::Integer,
-    color::String=default_color, alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
+    color::String=DEFAULT_COLOR, alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
     killPlayer::Bool=true, collideWithSolids::Bool=true,
-    disableLasers::Bool=false, triggerZipMovers::Bool=false, colorChannel::String=default_color_channel,
-    style::String=default_style
+    disableLasers::Bool=false, triggerZipMovers::Bool=false, colorChannel::String=DEFAULT_COLOR_CHANNEL,
+    style::String=DEFAULT_STYLE
 )
 
 @mapdef Entity "SJ2021/LaserEmitterDown" LaserEmitterDown(
     x::Integer, y::Integer,
-    color::String=default_color, alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
+    color::String=DEFAULT_COLOR, alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
     killPlayer::Bool=true, collideWithSolids::Bool=true,
-    disableLasers::Bool=false, triggerZipMovers::Bool=false, colorChannel::String=default_color_channel,
-    style::String=default_style
+    disableLasers::Bool=false, triggerZipMovers::Bool=false, colorChannel::String=DEFAULT_COLOR_CHANNEL,
+    style::String=DEFAULT_STYLE
 )
 
 @mapdef Entity "SJ2021/LaserEmitterLeft" LaserEmitterLeft(
     x::Integer, y::Integer,
-    color::String=default_color, alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
+    color::String=DEFAULT_COLOR, alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
     killPlayer::Bool=true, collideWithSolids::Bool=true,
-    disableLasers::Bool=false, triggerZipMovers::Bool=false, colorChannel::String=default_color_channel,
-    style::String=default_style
+    disableLasers::Bool=false, triggerZipMovers::Bool=false, colorChannel::String=DEFAULT_COLOR_CHANNEL,
+    style::String=DEFAULT_STYLE
 )
 
 @mapdef Entity "SJ2021/LaserEmitterRight" LaserEmitterRight(
     x::Integer, y::Integer,
-    color::String=default_color, alpha::Real=default_alpha, thickness::Real=default_thickness, flicker::Bool=true,
+    color::String=DEFAULT_COLOR, alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
     killPlayer::Bool=true, collideWithSolids::Bool=true,
-    disableLasers::Bool=false, triggerZipMovers::Bool=false, colorChannel::String=default_color_channel,
-    style::String=default_style
+    disableLasers::Bool=false, triggerZipMovers::Bool=false, colorChannel::String=DEFAULT_COLOR_CHANNEL,
+    style::String=DEFAULT_STYLE
 )
 
 const laserEmitterUnion = Union{LaserEmitterUp, LaserEmitterDown, LaserEmitterLeft, LaserEmitterRight}

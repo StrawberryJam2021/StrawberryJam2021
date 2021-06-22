@@ -2,35 +2,35 @@ module SJ2021CassetteTimedPelletEmitter
 
 using ..Ahorn, Maple
 
-const default_pellet_speed = 100.0
-const default_cassette_indices = "0"
-const default_ticks = "0"
+const DEFAULT_PELLET_SPEED = 100.0
+const DEFAULT_CASSETTE_INDICES = "0"
+const DEFAULT_TICKS = "0"
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterUp" CassetteTimedPelletEmitterUp(
     x::Integer, y::Integer,
-    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, count::Integer=1,
-    pelletSpeed::Real=default_pellet_speed,
+    cassetteIndices::String=DEFAULT_CASSETTE_INDICES, ticks::String=DEFAULT_TICKS, count::Integer=1,
+    pelletSpeed::Real=DEFAULT_PELLET_SPEED,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterDown" CassetteTimedPelletEmitterDown(
     x::Integer, y::Integer,
-    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, count::Integer=1,
-    pelletSpeed::Real=default_pellet_speed,
+    cassetteIndices::String=DEFAULT_CASSETTE_INDICES, ticks::String=DEFAULT_TICKS, count::Integer=1,
+    pelletSpeed::Real=DEFAULT_PELLET_SPEED,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterLeft" CassetteTimedPelletEmitterLeft(
     x::Integer, y::Integer,
-    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, count::Integer=1,
-    pelletSpeed::Real=default_pellet_speed,
+    cassetteIndices::String=DEFAULT_CASSETTE_INDICES, ticks::String=DEFAULT_TICKS, count::Integer=1,
+    pelletSpeed::Real=DEFAULT_PELLET_SPEED,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/CassetteTimedPelletEmitterRight" CassetteTimedPelletEmitterRight(
     x::Integer, y::Integer,
-    cassetteIndices::String=default_cassette_indices, ticks::String=default_ticks, count::Integer=1,
-    pelletSpeed::Real=default_pellet_speed,
+    cassetteIndices::String=DEFAULT_CASSETTE_INDICES, ticks::String=DEFAULT_TICKS, count::Integer=1,
+    pelletSpeed::Real=DEFAULT_PELLET_SPEED,
     collideWithSolids::Bool=true
 )
 
