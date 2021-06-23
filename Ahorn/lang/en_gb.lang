@@ -70,3 +70,6 @@ placements.entities.SJ2021/FlagBreakerBox.tooltips.music=The music to play when 
 placements.entities.SJ2021/FlagBreakerBox.tooltips.flipX=Whether or not to flip the sprite across the X axis.
 placements.entities.SJ2021/FlagBreakerBox.tooltips.music_progress=The progress to set the music to when the box is broken.
 placements.entities.SJ2021/FlagBreakerBox.tooltips.music_session=Whether or not to store the music changes in the session.
+
+# Bullet Time Controller
+placements.entities.SJ2021/BTController.tooltips.speed=The speed the game will run at when the player has dashes remaining, relative to regular game speed.
