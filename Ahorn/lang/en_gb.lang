@@ -118,6 +118,9 @@ placements.entities.SJ2021/FlagBreakerBox.tooltips.flipX=Whether or not to flip 
 placements.entities.SJ2021/FlagBreakerBox.tooltips.music_progress=The progress to set the music to when the box is broken.
 placements.entities.SJ2021/FlagBreakerBox.tooltips.music_session=Whether or not to store the music changes in the session.
 
+# Bullet Time Controller
+placements.entities.SJ2021/BTController.tooltips.speed=The speed the game will run at when the player has dashes remaining, relative to regular game speed.
+
 # Dash Boost Field / Nyom Buble
 placements.entities.SJ2021/DashBoostField.tooltips.mode=The colour of the object. Red will instantly refill the player if they dash inside of it, while Blue will not.
 placements.entities.SJ2021/DashBoostField.tooltips.dashSpeedMultiplier=How much the player's dash should be boosted.
