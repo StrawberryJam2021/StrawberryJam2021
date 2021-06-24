@@ -10,5 +10,14 @@
 
         // Boost Block
         public const string game_boost_block_boost = "event:/strawberry_jam_2021/game/boost_block/boost";
+
+        // Jam Jars (Demo)
+        public const string game_jars_open_demo = "event:/strawberry_jam_2021/game/jars/open_demo";
+
+        // Bees
+        public const string game_jars_bee_fireball_idle = "event:/strawberry_jam_2021/game/bee/fireball_idle";
+
+        // Loop Block
+        public const string game_loop_block_sideboost = "event:/strawberry_jam_2021/game/loop_block/sideboost";
     }
 }

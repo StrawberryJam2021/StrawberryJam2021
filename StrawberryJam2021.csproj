@@ -27,6 +27,10 @@
     <Reference Include="$(CelestePrefix)\MMHOOK_Celeste.dll">
       <Private>false</Private>
     </Reference>
+    <Reference Include="Batteries">
+      <HintPath>..\Batteries\Batteries.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="CavernHelper">
       <HintPath>lib-stripped\CavernHelper.dll</HintPath>
       <Private>false</Private>
@@ -37,6 +41,10 @@
     </Reference>
     <Reference Include="MaxHelpingHand">
       <HintPath>lib-stripped\MaxHelpingHand.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="ExtendedVariantMode">
+      <HintPath>lib-stripped\ExtendedVariantMode.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

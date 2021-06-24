@@ -18,105 +18,88 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// </remarks>
     public class CassetteListener : Component {
         #region Events
-        
+
         /// <summary>
         /// Invoked when a "click" sound is heard.
         /// </summary>
-        /// <remarks>
-        /// Arguments: (index, tick) where index is the current cassette block, and tick is a 0-based offset from the most recent swap.
-        /// </remarks>
-        public Action<int, int> OnTick;
-        
+        public Action<CassetteState> OnTick;
+
         /// <summary>
         /// Invoked when cassette blocks swap.
         /// </summary>
-        /// <remarks>
-        /// Arguments: (index) where index is the current cassette block.
-        /// </remarks>
-        public Action<int> OnSwap;
-        
+        public Action<CassetteState> OnSwap;
+
         /// <summary>
         /// Invoked the first frame of a sixteenth beat.
         /// </summary>
-        /// <remarks>
-        /// Arguments: (index, sixteenth) where index is the current cassette block,
-        /// and sixteenth is one less than <see cref="CassetteBlockManager.GetSixteenthNote"/> (0-based).
-        /// </remarks>
-        public Action<int, int> OnSixteenth;
-        
-        protected virtual void InvokeOnTick(int index, int tick) => OnTick?.Invoke(index, tick);
-        protected virtual void InvokeOnSwap(int index) => OnSwap?.Invoke(index);
-        protected virtual void InvokeOnSixteenth(int index, int sixteenth) => OnSixteenth?.Invoke(index, sixteenth);
-        
+        public Action<CassetteState> OnSixteenth;
+
+        public Action<CassetteState> OnBeat;
+
+        protected virtual void InvokeOnTick(CassetteState state) => OnTick?.Invoke(state);
+        protected virtual void InvokeOnSwap(CassetteState state) => OnSwap?.Invoke(state);
+        protected virtual void InvokeOnSixteenth(CassetteState state) => OnSixteenth?.Invoke(state);
+
+        protected virtual void InvokeOnBeat(CassetteState state) => OnBeat?.Invoke(state);
+
         #endregion
 
         #region Properties
 
-        /// <summary>
-        /// The active cassette index, ranges from 0 to 3.
-        /// </summary>
-        public int CurrentIndex => cassetteBlockManager == null ? 0 : (int) currentIndexFieldInfo.GetValue(cassetteBlockManager);
-        
-        /// <summary>
-        /// One less than the result of <see cref="CassetteBlockManager.GetSixteenthNote"/> (0-based).
-        /// </summary>
-        public int CurrentSixteenth => cassetteBlockManager?.GetSixteenthNote() - 1 ?? 0;
-        
-        /// <summary>
-        /// The number of ticks that have passed since the most recent swap.
-        /// </summary>
-        public int CurrentTick => (CurrentBeat / BeatsPerTick) % TicksPerSwap;
-        
-        /// <summary>
-        /// The number of beats that have passed since the most recent cassette room cycle.
-        /// </summary>
-        public int CurrentBeat => cassetteBlockManager == null ? 0 : (int) beatIndexFieldInfo.GetValue(cassetteBlockManager);
-        
-        /// <summary>
-        /// The number of beats that make up a single audible tick.
-        /// </summary>
-        public int BeatsPerTick => beatsPerTick ?? 4;
-        
-        /// <summary>
-        /// The number of audible ticks that make up a single cassette swap.
-        /// </summary>
-        public int TicksPerSwap => ticksPerSwap ?? 2;
+        public CassetteState CurrentState { get; private set; }
+
+        private int beatsPerTick => cassetteBlockManager == null ? 4 : (int) beatsPerTickFieldInfo.GetValue(cassetteBlockManager);
+        private int ticksPerSwap => cassetteBlockManager == null ? 2 : (int) ticksPerSwapFieldInfo.GetValue(cassetteBlockManager);
+        private int maxBeat => cassetteBlockManager == null ? 16 : (int) maxBeatFieldInfo.GetValue(cassetteBlockManager);
+        private int beatIndex => cassetteBlockManager == null ? 0 : (int) beatIndexFieldInfo.GetValue(cassetteBlockManager);
+        private int beatIndexMax => cassetteBlockManager == null ? 0 : (int) beatIndexMaxFieldInfo.GetValue(cassetteBlockManager);
+        private int currentIndex => cassetteBlockManager == null ? 0 : (int) currentIndexFieldInfo.GetValue(cassetteBlockManager);
+        private float tempoMult => cassetteBlockManager == null ? 1f : (float) tempoMultFieldInfo.GetValue(cassetteBlockManager);
 
         #endregion
-        
+
         #region Private Fields
 
         private CassetteBlockManager cassetteBlockManager;
-        
-        private int lastSixteenth = -1;
-        private int lastBlockIndex = -1;
-        private int lastBeatIndex = -1;
-        
-        private int? beatsPerTick;
-        private int? ticksPerSwap;
 
         private static readonly FieldInfo currentIndexFieldInfo = typeof(CassetteBlockManager).GetField("currentIndex", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo beatIndexFieldInfo = typeof(CassetteBlockManager).GetField("beatIndex", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo beatIndexMaxFieldInfo = typeof(CassetteBlockManager).GetField("beatIndexMax", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo beatsPerTickFieldInfo = typeof(CassetteBlockManager).GetField("beatsPerTick", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo ticksPerSwapFieldInfo = typeof(CassetteBlockManager).GetField("ticksPerSwap", BindingFlags.Instance | BindingFlags.NonPublic);
-        
+        private static readonly FieldInfo maxBeatFieldInfo = typeof(CassetteBlockManager).GetField("maxBeat", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo tempoMultFieldInfo = typeof(CassetteBlockManager).GetField("tempoMult", BindingFlags.Instance | BindingFlags.NonPublic);
+
         #endregion
-        
+
+        private CassetteTick nextTick(CassetteTick tick) {
+            if (++tick.Offset >= ticksPerSwap) {
+                tick.Offset = 0;
+                if (++tick.Index >= maxBeat)
+                    tick.Index = 0;
+            }
+            return tick;
+        }
+
+        private CassetteTick previousTick(CassetteTick tick) {
+            if (--tick.Offset < 0) {
+                tick.Offset = ticksPerSwap - 1;
+                if (--tick.Index < 0)
+                    tick.Index = maxBeat - 1;
+            }
+            return tick;
+        }
+
         public CassetteListener() : base(true, false)
         {
         }
 
-        public override void EntityAwake() {
-            base.EntityAwake();
-            beatsPerTick = ticksPerSwap = null;
-        }
-
         public override void EntityAdded(Scene scene) {
             base.EntityAdded(scene);
-            
+
             if (!(scene is Level level)) return;
             level.HasCassetteBlocks = true;
-            
+
             cassetteBlockManager = scene.Tracker.GetEntity<CassetteBlockManager>() ?? scene.Entities.ToAdd.OfType<CassetteBlockManager>().FirstOrDefault();
             if (cassetteBlockManager == null)
                 scene.Add(cassetteBlockManager = new CassetteBlockManager());
@@ -130,32 +113,44 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
             if (cassetteBlockManager == null) return;
-            
-            beatsPerTick ??= (int) beatsPerTickFieldInfo.GetValue(cassetteBlockManager);
-            ticksPerSwap ??= (int) ticksPerSwapFieldInfo.GetValue(cassetteBlockManager);
-            
-            int sixteenth = CurrentSixteenth;
-            int currentBlockIndex = CurrentIndex;
-            int currentBeatIndex = CurrentBeat;
-            int currentTick = CurrentTick;
-            
-            if (sixteenth != lastSixteenth) {
-                lastSixteenth = sixteenth;
-                InvokeOnSixteenth(currentBlockIndex, sixteenth);
+
+            var currentTick = new CassetteTick {
+                Index = currentIndex,
+                Offset = (beatIndex / beatsPerTick) % ticksPerSwap
+            };
+
+            var lastState = CurrentState;
+
+            CurrentState = new CassetteState {
+                BeatsPerTick = beatsPerTick,
+                TicksPerSwap = ticksPerSwap,
+                BeatCount = beatIndexMax,
+                BlockCount = maxBeat / (beatsPerTick * ticksPerSwap),
+                Sixteenth = cassetteBlockManager.GetSixteenthNote(),
+                Beat = beatIndex,
+                CurrentTick = currentTick,
+                NextTick = nextTick(currentTick),
+                PreviousTick = previousTick(currentTick),
+                TickLength = tempoMult * beatsPerTick * (10f / 60f), // apparently one beat is 10 frames
+            };
+
+            if (CurrentState.Sixteenth != lastState.Sixteenth) {
+                InvokeOnSixteenth(CurrentState);
             }
 
-            if (currentBlockIndex != lastBlockIndex) {
-                lastBlockIndex = currentBlockIndex;
-                InvokeOnSwap(currentBlockIndex);
+            if (CurrentState.CurrentTick.Index != lastState.CurrentTick.Index) {
+                InvokeOnSwap(CurrentState);
             }
-            
-            if (currentBeatIndex != lastBeatIndex) {
-                lastBeatIndex = currentBeatIndex;
-                if (currentBeatIndex % BeatsPerTick == 0)
-                    InvokeOnTick(currentBlockIndex, currentTick);
+
+            if (CurrentState.Beat != lastState.Beat) {
+                InvokeOnBeat(CurrentState);
+            }
+
+            if (CurrentState.CurrentTick.Index != lastState.CurrentTick.Index || CurrentState.CurrentTick.Offset != lastState.CurrentTick.Offset) {
+                InvokeOnTick(CurrentState);
             }
         }
-        
+
         public static Color ColorFromCassetteIndex(int index) => index switch {
             0 => Calc.HexToColor("49aaf0"),
             1 => Calc.HexToColor("f049be"),
@@ -163,5 +158,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             3 => Calc.HexToColor("38e04e"),
             _ => Color.White
         };
+
+        public struct CassetteTick {
+            public int Index;
+            public int Offset;
+        }
+
+        public struct CassetteState {
+            public int BeatsPerTick;
+            public int TicksPerSwap;
+            public int BeatCount;
+            public int BlockCount;
+            public float TickLength;
+
+            public int Sixteenth;
+            public int Beat;
+
+            public CassetteTick CurrentTick;
+            public CassetteTick NextTick;
+            public CassetteTick PreviousTick;
+        }
     }
 }

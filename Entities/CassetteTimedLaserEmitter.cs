@@ -44,6 +44,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// The base <see cref="Microsoft.Xna.Framework.Color"/> used to render the beam.
     /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
     /// </description></item>
+    /// <item><term>colorChannel</term><description>
+    /// The color hex code used to match lasers with LinkedZipMovers.
+    /// </description></item>
     /// <item><term>disableLasers</term><description>
     /// Whether or not colliding with this beam will disable all beams of the same color.
     /// Defaults to false.
@@ -104,13 +107,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             LengthInTicks = data.Int("lengthInTicks", 2);
 
             Add(new CassetteListener {
-                OnTick = (index, tick) => {
+                OnTick = state => {
                     if (--ticksRemaining == 0)
                         Collidable = false;
 
-                    if ((CassetteIndices.FirstOrDefault() == -1 || CassetteIndices.Contains(index)) && (Ticks.FirstOrDefault() == -1 || Ticks.Contains(tick))) {
+                    if ((CassetteIndices.FirstOrDefault() == -1 || CassetteIndices.Contains(state.CurrentTick.Index)) && (Ticks.FirstOrDefault() == -1 || Ticks.Contains(state.CurrentTick.Offset))) {
                         ticksRemaining = LengthInTicks;
-                        Color = CassetteListener.ColorFromCassetteIndex(index);
+                        Color = CassetteListener.ColorFromCassetteIndex(state.CurrentTick.Index);
                         Collidable = true;
                     }
                 }

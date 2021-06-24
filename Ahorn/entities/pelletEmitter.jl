@@ -2,35 +2,35 @@ module SJ2021PelletEmitter
 
 using ..Ahorn, Maple
 
-const default_pellet_speed = 100.0
-const default_pellet_color = "FF0000"
-const default_frequency = 2.0
+const DEFAULT_PELLET_SPEED = 100.0
+const DEFAULT_PELLET_COLOR = "FF0000"
+const DEFAULT_FREQUENCY = 2.0
 
 @mapdef Entity "SJ2021/PelletEmitterUp" PelletEmitterUp(
     x::Integer, y::Integer,
-    frequency::Real=default_frequency, offset::Real=0, count::Integer=1,
-    pelletSpeed::Real=default_pellet_speed, pelletColor::String=default_pellet_color,
+    frequency::Real=DEFAULT_FREQUENCY, offset::Real=0, count::Integer=1,
+    pelletSpeed::Real=DEFAULT_PELLET_SPEED, pelletColor::String=DEFAULT_PELLET_COLOR,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/PelletEmitterDown" PelletEmitterDown(
     x::Integer, y::Integer,
-    frequency::Real=default_frequency, offset::Real=0, count::Integer=1,
-    pelletSpeed::Real=default_pellet_speed, pelletColor::String=default_pellet_color,
+    frequency::Real=DEFAULT_FREQUENCY, offset::Real=0, count::Integer=1,
+    pelletSpeed::Real=DEFAULT_PELLET_SPEED, pelletColor::String=DEFAULT_PELLET_COLOR,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/PelletEmitterLeft" PelletEmitterLeft(
     x::Integer, y::Integer,
-    frequency::Real=default_frequency, offset::Real=0, count::Integer=1,
-    pelletSpeed::Real=default_pellet_speed, pelletColor::String=default_pellet_color,
+    frequency::Real=DEFAULT_FREQUENCY, offset::Real=0, count::Integer=1,
+    pelletSpeed::Real=DEFAULT_PELLET_SPEED, pelletColor::String=DEFAULT_PELLET_COLOR,
     collideWithSolids::Bool=true
 )
 
 @mapdef Entity "SJ2021/PelletEmitterRight" PelletEmitterRight(
     x::Integer, y::Integer,
-    frequency::Real=default_frequency, offset::Real=0, count::Integer=1,
-    pelletSpeed::Real=default_pellet_speed, pelletColor::String=default_pellet_color,
+    frequency::Real=DEFAULT_FREQUENCY, offset::Real=0, count::Integer=1,
+    pelletSpeed::Real=DEFAULT_PELLET_SPEED, pelletColor::String=DEFAULT_PELLET_COLOR,
     collideWithSolids::Bool=true
 )
 
