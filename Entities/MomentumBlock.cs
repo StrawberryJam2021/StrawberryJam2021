@@ -100,15 +100,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Player player = GetPlayerRider();
             if (ridingPlayer != null && player == null && ridingPlayer.Speed.Y < 0) {
                 Audio.Play(CustomSoundEffects.game_boost_block_boost);
-                Flash();
+                if(!Settings.Instance.DisableFlashes) //disable the flash if photosensetive mode is on
+                    Flash();
             }
 
             if (doFlash) {
                 flashTimer = Calc.Approach(flashTimer, 1f, Engine.DeltaTime * 20f);
                 if (flashTimer >= 1f)
                     doFlash = false;
-            }
-            else if(flashTimer > 0f)
+            } else if (flashTimer > 0f)
                 flashTimer = Calc.Approach(flashTimer, 0f, Engine.DeltaTime * 6f);
             ridingPlayer = player;
         }
