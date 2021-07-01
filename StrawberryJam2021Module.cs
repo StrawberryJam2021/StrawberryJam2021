@@ -44,6 +44,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             WonkyCassetteBlock.Load();
             WonkyCassetteBlockController.Load();
             SpeedPreservePuffer.Load();
+            SkateboardTrigger.Load();
             LaserEmitter.Load();
             OshiroAttackTimeTrigger.Load();
         }
@@ -70,6 +71,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             WonkyCassetteBlock.Unload();
             WonkyCassetteBlockController.Unload();
             SpeedPreservePuffer.Unload();
+            SkateboardTrigger.Unload();
             LaserEmitter.Unload();
             OshiroAttackTimeTrigger.Unload();
         }
@@ -84,6 +86,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SwitchCrateHolder.SetupParticles();
             LoopBlock.InitializeTextures();
             DashBoostField.LoadParticles();
+            SkateboardTrigger.InitializeTextures();
         }
     }
 }
