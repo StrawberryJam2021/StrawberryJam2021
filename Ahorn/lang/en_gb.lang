@@ -166,6 +166,7 @@ placements.entities.SJ2021/ToggleSwapBlock.tooltips.customTexturePath=Path to a 
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.directionIndicator=If checked, the block displays an indicator showing the direction it will move next.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.constantSpeed=If checked, the velocity of the block will be the same each time it moves, and not scale with the distance between nodes.  Furthermore, "Travel Speed" will be interpretted as a multiplier, with 1.0 corresponding to vanilla swap block speed.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customIndicatorPath=Path to a folder containing textures named "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", and "done", which are displayed depending on the direction the block moves next, in place of the default indicators.  Built-in examples include "objects/StrawberryJam2021/toggleIndicator/plain/" (default), "objects/StrawberryJam2021/toggleIndicator/negative/", "objects/StrawberryJam2021/toggleIndicator/value/", "objects/StrawberryJam2021/toggleIndicator/sticker/".
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.disableTracks=Disables the tracks that appear along the path of the block.
 
 # Wonky Cassette Block
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.onAtBeats=A list of integers (separated by a comma) corresponding to the beats on which this block should activate, being deactivated on all other beats not included in this list.\nExample: 1, 2, 4
