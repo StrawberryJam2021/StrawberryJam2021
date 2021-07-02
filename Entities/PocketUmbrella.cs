@@ -16,7 +16,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public bool destroyed = false, spawning = true;
         public Holdable Hold;
         private Level level;
-        private Vector2 Speed; // TODO figure out if this can be removed without issue
         private SoundSource fallingSfx;
 
         public PocketUmbrella(Vector2 position, float cost) : base(position) {
@@ -31,7 +30,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Hold.SlowRun = false;
             Hold.PickupCollider = new Hitbox(20, 22, -10, -16);
             Hold.OnPickup = new Action(onPickup);
-            Hold.SpeedGetter = () => Speed;
 
             Add(fallingSfx = new SoundSource());
         }
@@ -42,7 +40,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void onPickup() {
-            Speed = Vector2.Zero;
             AddTag(Tags.Persistent);
             Depth = Depths.Player + 1;
             player = Hold.Holder;
@@ -95,9 +92,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         destroyed = true;
                         Collidable = false;
                         if (Hold.IsHeld) {
-                            Vector2 speed2 = Hold.Holder.Speed;
                             Hold.Holder.Drop();
-                            Speed = speed2 * 0.333f;
                             Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
                         }
                         Add(new Coroutine(DestroyAnimationRoutine(), true));
