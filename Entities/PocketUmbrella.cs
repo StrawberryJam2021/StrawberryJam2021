@@ -1,10 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Security.Policy;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     class PocketUmbrella : Actor {

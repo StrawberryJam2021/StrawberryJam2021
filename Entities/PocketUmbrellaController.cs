@@ -4,7 +4,6 @@ using System.Reflection;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using MonoMod.Cil;
-using MonoMod.Utils;
 using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
