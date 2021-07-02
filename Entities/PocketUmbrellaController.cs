@@ -64,7 +64,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             } else {
                 Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
                 self.Holding.Release(Vector2.UnitX * (float) self.Facing);
-                //self.Speed.X = this.Speed.X + 80f * (float) (-(float) this.Facing);
                 self.Play("event:/char/madeline/crystaltheo_throw", null, 0f);
                 self.Sprite.Play("throw", false, false);
             }

@@ -12,7 +12,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Sprite sprite;
         private Player player;
 
-        // vars needed to reimplement glider
         public bool destroyed = false, spawning = true;
         public Holdable Hold;
         private Level level;
@@ -21,10 +20,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public PocketUmbrella(Vector2 position, float cost) : base(position) {
             staminaCost = cost;
             Add(sprite = StrawberryJam2021Module.SpriteBank.Create("pocketUmbrella"));
-            //sprite.Visible = false;
             Collider = new Hitbox(8, 10, -4, -10);
 
-            // reimplementation vars
             Add(Hold = new Holdable(0.3f));
             Hold.SlowFall = true;
             Hold.SlowRun = false;
@@ -43,7 +40,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             AddTag(Tags.Persistent);
             Depth = Depths.Player + 1;
             player = Hold.Holder;
-            //sprite.Visible = true;
             sprite.Play("spawn", true);
             sprite.OnChange = (_, _) => { spawning = false; };
         }
@@ -112,7 +108,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 } else if (!spawning) {
                     sprite.Play("held", false, false);
                 }
-                //return to default scale
+
                 sprite.Scale.Y = Calc.Approach(sprite.Scale.Y, Vector2.One.Y, Engine.DeltaTime * 2f);
                 sprite.Scale.X = Calc.Approach(sprite.Scale.X, Math.Sign(sprite.Scale.X) * Vector2.One.X, Engine.DeltaTime * 2f);
 
