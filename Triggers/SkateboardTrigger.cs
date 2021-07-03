@@ -11,9 +11,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/SkateboardTrigger")]
     [Tracked]
     class SkateboardTrigger : Trigger {
-        /**
-         * Static functions and hooks
-         */       
+        #region static
         private static bool SkateboardEnabled = false;
         private static Vector2 PlayerSpriteOffset = new Vector2(0, -3);
         private static MTexture SkateboardSprite;
@@ -45,9 +43,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         private static void Player_origUpdateSprite(ILContext il) {
             ILCursor cursor = new ILCursor(il);
-            while(cursor.TryGotoNext(MoveType.After, instr => (instr.MatchLdstr("runSlow") ||
-                    instr.MatchLdstr("runFast")) &&
-                    instr.Next.Next.Next.MatchCallvirt<Monocle.Sprite>("Play"))) {
+            while (cursor.TryGotoNext(MoveType.After, instr => (instr.MatchLdstr("runSlow") ||
+                     instr.MatchLdstr("runFast")) &&
+                     instr.Next.Next.Next.MatchCallvirt<Monocle.Sprite>("Play"))) {
                 Logger.Log("SJ2021/SkateboardTrigger", $"Adding IL hook at {cursor.Index} in Player.origUpdateSprite to override running animation");
                 cursor.EmitDelegate<Func<String, String>>((orig) => {
                     return SkateboardEnabled ? "idle" : orig;
@@ -91,10 +89,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 }
             }
         }
+        #endregion
 
-        /**
-         * Trigger instance implementation       
-         */
+        #region instance
         enum TriggerMode {
             Enable,
             Disable,
@@ -109,18 +106,15 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         public override void OnEnter(Player player) {
             base.OnEnter(player);
-            switch (triggerMode) {
-                case TriggerMode.Enable:
-                    SkateboardEnabled = true;
-                    break;
-                case TriggerMode.Disable:
-                    SkateboardEnabled = false;
-                    break;
-                case TriggerMode.Toggle:
-                    SkateboardEnabled = !SkateboardEnabled;
-                    break;
-                default: break;
-            }
+            SkateboardEnabled = triggerMode switch {
+                TriggerMode.Enable => true,
+                TriggerMode.Disable => false,
+                TriggerMode.Toggle => !SkateboardEnabled,
+
+                _ => SkateboardEnabled
+
+            };
         }
     }
+    #endregion
 }
