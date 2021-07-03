@@ -141,7 +141,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         emitterSprite.Play(chargingAnimation);
                         beamSprite.Visible = false;
                         Collider = emitterHitbox;
-                        Add(new Coroutine(impactParticlesSequence()));
+
                         break;
 
                     case LaserState.Burst:
@@ -246,6 +246,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             };
         }
 
+        public override void Added(Scene scene) {
+            base.Added(scene);
+            Add(new Coroutine(impactParticlesSequence()));
+        }
+
         public override void Awake(Scene scene) {
             base.Awake(scene);
             needsStateUpdate = true;
@@ -347,11 +352,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             float angle = Orientation.Angle() + (float)Math.PI / 2f;
             var laserCollider = Get<LaserColliderComponent>();
 
-            while (true) {
-                if (State == LaserState.Idle || State == LaserState.Precharge)
-                    yield break;
-
-                if (State == LaserState.Charging || laserCollider.CollidedWithScreenBounds) {
+            while (Scene != null) {
+                if (State != LaserState.Firing || laserCollider.CollidedWithScreenBounds) {
                     yield return null;
                     continue;
                 }
