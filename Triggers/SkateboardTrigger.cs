@@ -5,6 +5,7 @@ using Monocle;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using System.Reflection;
+using On.Celeste;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
@@ -12,7 +13,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [Tracked]
     class SkateboardTrigger : Trigger {
         #region static
-        private static bool SkateboardEnabled = false;
         private static Vector2 PlayerSpriteOffset = new Vector2(0, -3);
         private static MTexture SkateboardSprite;
         private static ILHook OrigUpdateSpriteHook;
@@ -22,7 +22,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         public static void Load() {
-            On.Celeste.Level.Begin += Level_Begin;
             On.Celeste.Player.Render += Player_Render;
             On.Celeste.PlayerHair.Render += PlayerHair_Render;
             OrigUpdateSpriteHook = new ILHook(
@@ -31,15 +30,11 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         public static void Unload() {
-            On.Celeste.Level.Begin -= Level_Begin;
             On.Celeste.Player.Render -= Player_Render;
             On.Celeste.PlayerHair.Render -= PlayerHair_Render;
             OrigUpdateSpriteHook.Dispose();
         }
-        private static void Level_Begin(On.Celeste.Level.orig_Begin orig, Level self) {
-            orig(self);
-            SkateboardEnabled = false;
-        }
+
 
         private static void Player_origUpdateSprite(ILContext il) {
             ILCursor cursor = new ILCursor(il);
@@ -48,7 +43,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                      instr.Next.Next.Next.MatchCallvirt<Monocle.Sprite>("Play"))) {
                 Logger.Log("SJ2021/SkateboardTrigger", $"Adding IL hook at {cursor.Index} in Player.origUpdateSprite to override running animation");
                 cursor.EmitDelegate<Func<String, String>>((orig) => {
-                    return SkateboardEnabled ? "idle" : orig;
+                    return StrawberryJam2021Module.Session.SkateboardEnabled ? "idle" : orig;
                 });
             }
             cursor.Index = 0;
@@ -56,18 +51,18 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                      instr.Next.Next.Next.MatchCallvirt<Monocle.Sprite>("Play"))) {
                 Logger.Log("SJ2021/SkateboardTrigger", $"Adding IL hook at {cursor.Index} in Player.origUpdateSprite to override running animation");
                 cursor.EmitDelegate<Func<String, String>>((orig) => {
-                    return SkateboardEnabled ? "idle_carry" : orig;
+                    return StrawberryJam2021Module.Session.SkateboardEnabled ? "idle_carry" : orig;
                 });
             }
         }
 
 
         private static void Player_Render(On.Celeste.Player.orig_Render orig, Player self) {
-            if (SkateboardEnabled) {
+            if (StrawberryJam2021Module.Session.SkateboardEnabled) {
                 self.Sprite.RenderPosition += PlayerSpriteOffset;
             }
             orig(self);
-            if (SkateboardEnabled) {
+            if (StrawberryJam2021Module.Session.SkateboardEnabled) {
                 self.Sprite.RenderPosition -= PlayerSpriteOffset;
                 SkateboardSprite.Draw(
                     self.Sprite.RenderPosition + new Vector2(self.Facing == Facings.Left ? 8 : -8, -4),
@@ -77,13 +72,13 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         static void PlayerHair_Render(On.Celeste.PlayerHair.orig_Render orig, PlayerHair self) {
-            if (SkateboardEnabled) {
+            if (StrawberryJam2021Module.Session.SkateboardEnabled) {
                 for (int i = 0; i < self.Nodes.Count; i++) {
                     self.Nodes[i] += PlayerSpriteOffset;
                 }
             }
             orig(self);
-            if (SkateboardEnabled) {
+            if (StrawberryJam2021Module.Session.SkateboardEnabled) {
                 for (int i = 0; i < self.Nodes.Count; i++) {
                     self.Nodes[i] -= PlayerSpriteOffset;
                 }
@@ -106,12 +101,12 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         public override void OnEnter(Player player) {
             base.OnEnter(player);
-            SkateboardEnabled = triggerMode switch {
+            StrawberryJam2021Module.Session.SkateboardEnabled = triggerMode switch {
                 TriggerMode.Enable => true,
                 TriggerMode.Disable => false,
-                TriggerMode.Toggle => !SkateboardEnabled,
+                TriggerMode.Toggle => !StrawberryJam2021Module.Session.SkateboardEnabled,
 
-                _ => SkateboardEnabled
+                _ => StrawberryJam2021Module.Session.SkateboardEnabled
 
             };
         }
