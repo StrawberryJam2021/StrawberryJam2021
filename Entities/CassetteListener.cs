@@ -110,16 +110,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             cassetteBlockManager = null;
         }
 
-        public override void Update() {
-            base.Update();
-            if (cassetteBlockManager == null) return;
+        public bool UpdateState() {
+            if (beatsPerTick == 0 || ticksPerSwap == 0)
+                return false;
 
             var currentTick = new CassetteTick {
                 Index = currentIndex,
                 Offset = (beatIndex / beatsPerTick) % ticksPerSwap
             };
-
-            var lastState = CurrentState;
 
             CurrentState = new CassetteState {
                 BeatsPerTick = beatsPerTick,
@@ -133,6 +131,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 PreviousTick = previousTick(currentTick),
                 TickLength = tempoMult * beatsPerTick * (10f / 60f), // apparently one beat is 10 frames
             };
+
+            return true;
+        }
+
+        public override void Update() {
+            base.Update();
+            if (cassetteBlockManager == null) return;
+
+            var lastState = CurrentState;
+            UpdateState();
 
             if (CurrentState.Sixteenth != lastState.Sixteenth) {
                 InvokeOnSixteenth(CurrentState);

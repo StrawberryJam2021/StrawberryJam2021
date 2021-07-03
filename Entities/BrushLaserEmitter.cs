@@ -51,7 +51,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly ColliderList colliderList;
         private readonly CassetteListener cassetteListener;
         private LaserState laserState;
-        private bool needsStateUpdate;
+        private bool needsForcedUpdate;
 
         private const float chargeDelayFraction = 0.25f;
         private const float collisionDelaySeconds = 5f / 60f;
@@ -253,7 +253,26 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
-            needsStateUpdate = true;
+            needsForcedUpdate = true;
+        }
+
+        private void forceUpdate() {
+            if (!cassetteListener.UpdateState())
+                return;
+
+            needsForcedUpdate = false;
+
+            var cassetteState = cassetteListener.CurrentState;
+
+            if (cassetteState.CurrentTick.Index == CassetteIndex && (cassetteState.NextTick.Index == CassetteIndex || !HalfLength)) {
+                State = LaserState.Firing;
+            } else if (cassetteState.CurrentTick.Index != CassetteIndex && cassetteState.NextTick.Index == CassetteIndex) {
+                setAnimationSpeed(chargingAnimation, cassetteState.TickLength * (1 - chargeDelayFraction));
+                State = LaserState.Charging;
+            } else {
+                laserState = LaserState.Precharge;
+                State = LaserState.Idle;
+            }
         }
 
         private void onPlayerCollide(Player player) {
@@ -271,23 +290,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
 
-            if (needsStateUpdate) {
-                needsStateUpdate = false;
-                var cassetteState = cassetteListener.CurrentState;
-                int beat = cassetteState.Beat % cassetteState.BeatsPerTick;
-                float beatFraction = (float)beat / cassetteState.BeatsPerTick;
-
-                if (cassetteState.CurrentTick.Index == CassetteIndex) {
-                    State = cassetteState.NextTick.Index == CassetteIndex || !HalfLength ? LaserState.Firing : LaserState.Idle;
-                } else if (cassetteState.NextTick.Index == CassetteIndex) {
-                    State = beatFraction < chargeDelayFraction ? LaserState.Precharge : LaserState.Charging;
-                } else {
-                    State = LaserState.Idle;
-                }
-
-                if (State == LaserState.Firing)
-                    emitterSprite.Play(firingAnimation);
-            }
+            if (needsForcedUpdate)
+                forceUpdate();
 
             if (State == LaserState.Burst && collisionDelayRemaining > 0) {
                 collisionDelayRemaining -= Engine.DeltaTime;
