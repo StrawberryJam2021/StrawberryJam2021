@@ -155,7 +155,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                     case LaserState.Firing:
                         beamSprite.Visible = true;
+                        collisionDelayRemaining = 0;
                         Collider = colliderList;
+
+                        if (oldState != LaserState.Burst) {
+                            emitterSprite.Play(firingAnimation);
+                            beamSprite.Play(firingAnimation);
+                        }
+
                         break;
                 }
             }
