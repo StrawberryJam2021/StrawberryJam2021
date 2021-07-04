@@ -32,7 +32,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
         private string FlagName => baseData.Get<string>("FlagName");
 
-        public ResizableDashSwitch(Vector2 position, Sides side, bool persistent, EntityID id, int width, bool actLikeTouchSwitch)
+        public ResizableDashSwitch(Vector2 position, Sides side, bool persistent, EntityID id, int width, bool actLikeTouchSwitch, bool attachToSolid)
             : base(position, side, persistent, false, id, "default") {
             baseData = new DynamicData(typeof(DashSwitch), this);
 
@@ -43,12 +43,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Collider.Height = width;
             }
 
-            Add(new StaticMover {
-                SolidChecker = IsRiding,
-                OnMove = OnMove,
-                OnAttach = OnAttach,
-                OnShake = OnShake,
-            });
+            if (attachToSolid) {
+                Add(new StaticMover {
+                    SolidChecker = IsRiding,
+                    OnMove = OnMove,
+                    OnAttach = OnAttach,
+                    OnShake = OnShake,
+                });
+            }
             if (actLikeTouchSwitch) {
                 Add(Switch = new Switch(groundReset: false));
                 Switch.OnStartFinished = () => {
@@ -68,7 +70,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public ResizableDashSwitch(EntityData data, Vector2 offset, EntityID id)
             : this(data.Position + offset, SwitchSide(data.Enum("orientation", Sides.Up)),
-                  data.Bool("persistent"), id, GetWidth(data), data.Bool("actLikeTouchSwitch", true)) { }
+                  data.Bool("persistent"), id, GetWidth(data), data.Bool("actLikeTouchSwitch", true),
+                  data.Bool("attachToSolid", true)) { }
 
         // again copied from FlagDashSwitch :)
         private static Sides SwitchSide(Sides side) => side switch {

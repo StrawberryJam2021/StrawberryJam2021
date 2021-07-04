@@ -2,7 +2,8 @@ module SJ2021ResizableDashSwitch
 using ..Ahorn, Maple
 
 @mapdef Entity "SJ2021/ResizableDashSwitch" ResizableDashSwitch(x::Integer, y::Integer,
-    width::Integer=16, orientation::String="Up", persistent::Bool=false, actLikeTouchSwitch::Bool=true)
+    width::Integer=16, orientation::String="Up", persistent::Bool=false, actLikeTouchSwitch::Bool=true,
+    attachToSolid::Bool=true)
 
 const placements = Ahorn.PlacementDict()
 const directions = String["Up", "Down", "Left", "Right"]
