@@ -120,7 +120,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Sides.Right => CenterRight + Vector2.UnitX,
                 _ => Vector2.Zero
             };
-            return CollideCheck(solid, point);
+            return solid.CollidePoint(point);
         }
 
         private void OnMove(Vector2 amount) {
