@@ -113,14 +113,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private bool IsRiding(Solid solid) {
-            Vector2 point = Side switch {
-                Sides.Up => TopCenter - Vector2.UnitY,
-                Sides.Down => BottomCenter + Vector2.UnitY,
-                Sides.Left => CenterLeft - Vector2.UnitX,
-                Sides.Right => CenterRight + Vector2.UnitX,
+            Vector2 offset = Side switch {
+                Sides.Up => -Vector2.UnitY,
+                Sides.Down => Vector2.UnitY,
+                Sides.Left => -Vector2.UnitX,
+                Sides.Right => Vector2.UnitX,
                 _ => Vector2.Zero
             };
-            return solid.CollidePoint(point);
+            return CollideCheck(solid, Position + offset);
         }
 
         private void OnMove(Vector2 amount) {
