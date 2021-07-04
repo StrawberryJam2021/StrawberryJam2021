@@ -240,7 +240,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (waiting) {
                 Player playerRider = GetPlayerRider();
-                if (playerRider != null) {
+                if (playerRider != null && playerRider.StateMachine.State != Player.StCassetteFly) {
                     canRumble = true;
                     speed.Y = 180f;
                     waiting = false;
