@@ -75,7 +75,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             FlagName = "battery_" + data.ID;
             this.id = id;
             previousPosition = data.Position + offset;
-            Depth = Depths.Pickups;
+            Depth = Depths.TheoCrystal;
             Collider = new Hitbox(8f, 11f, -4f, -2f);
 
             sprite = new Sprite(GFX.Game, "objects/StrawberryJam2021/SwitchCrate/");
@@ -131,7 +131,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (swatTimer > 0f) {
                     swatTimer -= Engine.DeltaTime;
                 }
-                Depth = 100;
                 if (Hold.IsHeld) {
                     prevLiftSpeed = Vector2.Zero;
                 } else {
@@ -176,7 +175,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             if (noGravityTimer > 0f) {
                                 noGravityTimer -= Engine.DeltaTime;
                             } else {
-                                Speed.Y = Calc.Approach(Speed.Y, 200f, num * Engine.DeltaTime);
+                                Speed.Y = Calc.Approach(Speed.Y, 300f, num * Engine.DeltaTime);
                             }
                         }
                     }
@@ -271,8 +270,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (Speed.Y > 160f) {
                 ImpactParticles(data.Direction);
             }
-            if (Speed.Y > 140f && !(data.Hit is SwapBlock) && !(data.Hit is DashSwitch)) {
-                Speed.Y *= -0.6f;
+            if (Speed.Y > 40f && !(data.Hit is SwapBlock) && !(data.Hit is DashSwitch)) {
+                Speed.Y *= -0.25f;
             } else {
                 Speed.Y = 0f;
             }
