@@ -30,6 +30,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             get => baseData.Get<bool>("persistent");
             set => baseData.Set("persistent", value);
         }
+        private bool pressed {
+            get => baseData.Get<bool>("pressed");
+            set => baseData.Set("pressed", value);
+        }
         private string FlagName => baseData.Get<string>("FlagName");
 
         public ResizableDashSwitch(Vector2 position, Sides side, bool persistent, EntityID id, int width, bool actLikeTouchSwitch, bool attachToSolid)
@@ -91,6 +95,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Sides.Right => data.Height,
                 _ => throw new Exception("Unknown ResizableDashSwitch direction!")
             };
+        }
+
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
+            if (pressed) {
+                Switch?.Activate();
+            }
         }
 
         public override void Render() {
