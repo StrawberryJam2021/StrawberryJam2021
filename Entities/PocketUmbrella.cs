@@ -14,6 +14,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Level level;
         private SoundSource fallingSfx;
 
+        static ParticleType P_Glow, P_Glide, P_GlideUp, P_Expand;
+
+        static PocketUmbrella() {
+            P_Glow = new ParticleType(Glider.P_Glow);
+            P_Glow.Color = Calc.HexToColor("d34949");
+            P_Glow.Color2 = Calc.HexToColor("615a5a");
+
+            P_Glide = new ParticleType(Glider.P_Glide);
+            P_Glide.Color = Calc.HexToColor("7a2222");
+            P_Glide.Color2 = Calc.HexToColor("c75353");
+
+            P_GlideUp = new ParticleType(Glider.P_GlideUp);
+
+            P_Expand = new ParticleType(Glider.P_Expand);
+        }
+
         public PocketUmbrella(Vector2 position, float cost) : base(position) {
             staminaCost = cost;
             Add(sprite = StrawberryJam2021Module.SpriteBank.Create("pocketUmbrella"));
@@ -48,7 +64,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             if (Scene.OnInterval(0.05f)) {
-                level.Particles.Emit(Glider.P_Glow, 1, Center + Vector2.UnitY * -9f, new Vector2(10f, 4f));
+                level.Particles.Emit(P_Glow, 1, Center + Vector2.UnitY * -9f, new Vector2(10f, 4f));
             }
 
             float target;
@@ -95,9 +111,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (Hold.IsHeld && Hold.Holder.Speed.Y > 20f || level.Wind.Y < 0f) {
                     if (level.OnInterval(0.04f)) {
                         if (level.Wind.Y < 0f) {
-                            level.ParticlesBG.Emit(Glider.P_GlideUp, 1, Position - Vector2.UnitY * 20f, new Vector2(6f, 4f));
+                            level.ParticlesBG.Emit(P_GlideUp, 1, Position - Vector2.UnitY * 20f, new Vector2(6f, 4f));
                         } else {
-                            level.ParticlesBG.Emit(Glider.P_Glide, 1, Position - Vector2.UnitY * 10f, new Vector2(6f, 4f));
+                            level.ParticlesBG.Emit(P_Glide, 1, Position - Vector2.UnitY * 10f, new Vector2(6f, 4f));
                         }
                     }
                     PlayOpen();
@@ -131,7 +147,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (sprite.CurrentAnimationID != "fall" && sprite.CurrentAnimationID != "fallLoop" && !spawning) {
                 sprite.Play("fall", false, false);
                 sprite.Scale = new Vector2(1.5f, 0.6f);
-                level.Particles.Emit(Glider.P_Expand, 16, Center + (Vector2.UnitY * -12f).Rotate(sprite.Rotation), new Vector2(8f, 3f), -1.5707964f + sprite.Rotation);
+                level.Particles.Emit(P_Expand, 16, Center + (Vector2.UnitY * -12f).Rotate(sprite.Rotation), new Vector2(8f, 3f), -1.5707964f + sprite.Rotation);
                 if (Hold.IsHeld) {
                     Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
                 }
