@@ -146,12 +146,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void Load() {
             On.Celeste.Level.LoadLevel += Level_LoadLevel;
-            On.Celeste.Celeste.Freeze += Celeste_Freeze;
+            On.Monocle.Engine.Update += Engine_Update;
         }
 
         public static void Unload() {
             On.Celeste.Level.LoadLevel -= Level_LoadLevel;
-            On.Celeste.Celeste.Freeze -= Celeste_Freeze;
+            On.Monocle.Engine.Update -= Engine_Update;
         }
 
         private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
@@ -164,13 +164,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        private static void Celeste_Freeze(On.Celeste.Celeste.orig_Freeze orig, float time) {
-            float oldFreezeTime = Engine.FreezeTimer;
+        private static void Engine_Update(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gametime) {
+            float oldFreezeTimer = Engine.FreezeTimer;
 
-            orig(time);
+            orig(self, gametime);
 
-            if (oldFreezeTime < time) {
-                Engine.Scene.Tracker.GetEntity<WonkyCassetteBlockController>()?.AdvanceMusic(time - oldFreezeTime, Engine.Scene, StrawberryJam2021Module.Session);
+            if (!Engine.DashAssistFreeze && oldFreezeTimer > 0f) {
+                Engine.Scene.Tracker.GetEntity<WonkyCassetteBlockController>()?.AdvanceMusic(Engine.DeltaTime, Engine.Scene, StrawberryJam2021Module.Session);
+                Engine.Scene.Tracker.GetEntities<WonkyCassetteBlock>().ForEach(block => block.Update());
             }
         }
     }
