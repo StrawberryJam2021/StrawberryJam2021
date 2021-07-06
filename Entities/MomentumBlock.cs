@@ -100,8 +100,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Player player = GetPlayerRider();
             if (ridingPlayer != null && player == null && ridingPlayer.Speed.Y < 0) {
                 Audio.Play(CustomSoundEffects.game_boost_block_boost);
-                if(!Settings.Instance.DisableFlashes) //disable the flash if photosensetive mode is on
-                    Flash();
+                Flash();
             }
 
             if (doFlash) {
@@ -114,8 +113,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void Flash() {
-            doFlash = true;
-            flashTimer = 0f;
+            if (!Settings.Instance.DisableFlashes) { //disable the flash if photosensetive mode is on
+                doFlash = true;
+                flashTimer = 0f;
+            }
         }
 
         public override void MoveHExact(int move) {
