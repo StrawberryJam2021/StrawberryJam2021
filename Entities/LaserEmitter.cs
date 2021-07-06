@@ -179,10 +179,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         #endregion
 
         private static void setLaserSyncFlag(string colorChannel, bool value) =>
-            ((Level) Engine.Scene).Session.SetFlag($"ZipMoverSyncLaser:{colorChannel.ToLower()}", value);
+            (Engine.Scene as Level)?.Session.SetFlag($"ZipMoverSyncLaser:{colorChannel.ToLower()}", value);
 
         private static bool getLaserSyncFlag(string colorChannel) =>
-            ((Level) Engine.Scene).Session.GetFlag($"ZipMoverSyncLaser:{colorChannel.ToLower()}");
+            (Engine.Scene as Level)?.Session.GetFlag($"ZipMoverSyncLaser:{colorChannel.ToLower()}") ?? false;
 
         public LaserEmitter(EntityData data, Vector2 offset, Orientations orientation)
             : base(data, offset, orientation) {
