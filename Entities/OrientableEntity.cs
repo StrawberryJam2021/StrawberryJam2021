@@ -79,7 +79,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             _ => 0f
         };
 
-        public static Vector2 Offset(this OrientableEntity.Orientations orientation) => orientation switch {
+        public static Vector2 Normal(this OrientableEntity.Orientations orientation) => orientation switch {
             OrientableEntity.Orientations.Up => -Vector2.UnitY,
             OrientableEntity.Orientations.Down => Vector2.UnitY,
             OrientableEntity.Orientations.Left => -Vector2.UnitX,
@@ -104,5 +104,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 OrientableEntity.Orientations.Right => hitbox.Height,
                 _ => 0f
             };
+
+        public static bool Horizontal(this OrientableEntity.Orientations orientation) =>
+            orientation is OrientableEntity.Orientations.Left or OrientableEntity.Orientations.Right;
+
+        public static bool Vertical(this OrientableEntity.Orientations orientation) =>
+            orientation is OrientableEntity.Orientations.Up or OrientableEntity.Orientations.Down;
     }
 }

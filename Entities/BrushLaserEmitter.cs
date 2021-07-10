@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/BrushLaserEmitterUp = LoadUp",
@@ -41,14 +43,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private string burstAnimation => $"{animationPrefix}_burst";
         private string idleAnimation => $"{animationPrefix}_idle";
         private string cooldownAnimation => $"{animationPrefix}_cooldown";
-        private Vector2 beamOffset => Orientation.Offset() * beamOffsetMultiplier;
+        private Vector2 beamOffset => Orientation.Normal() * beamOffsetMultiplier;
         private Color telegraphColor => CassetteListener.ColorFromCassetteIndex(CassetteIndex);
 
         private readonly Sprite emitterSprite;
         private readonly Sprite beamSprite;
         private readonly Collider emitterHitbox;
-        private readonly Hitbox laserHitbox;
         private readonly ColliderList colliderList;
+        private readonly Hitbox[] laserHitboxes;
         private readonly CassetteListener cassetteListener;
         private LaserState laserState;
         private bool needsForcedUpdate;
@@ -236,22 +238,31 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                 },
                 new PlayerCollider(onPlayerCollide),
-                new LaserColliderComponent {CollideWithSolids = CollideWithSolids, Thickness = beamThickness, Offset = beamOffset},
                 new LedgeBlocker(_ => KillPlayer),
                 beamSprite,
                 emitterSprite
             );
 
-            var laserCollider = Get<LaserColliderComponent>();
             Collider = emitterHitbox = new Circle(6);
-            emitterHitbox.Position += Orientation.Offset() * 2f;
-            colliderList = new ColliderList(laserHitbox = laserCollider.Collider, emitterHitbox);
+            emitterHitbox.Position += Orientation.Normal() * 2f;
+
+            var components = CreateLaserColliders().ToArray();
+            laserHitboxes = components.Select(c => c.Collider).ToArray();
+            Add(components.Cast<Component>().ToArray());
+            colliderList = new ColliderList(laserHitboxes.Concat(new[] {emitterHitbox}).ToArray());
 
             Get<StaticMover>().OnMove = v => {
                 Position += v;
-                laserCollider.UpdateBeam();
+                foreach (var collider in components)
+                    collider.UpdateBeam();
             };
         }
+
+        protected virtual IEnumerable<LaserColliderComponent> CreateLaserColliders() => new[] {
+            new LaserColliderComponent {
+                CollideWithSolids = CollideWithSolids, Thickness = beamThickness, Offset = beamOffset,
+            }
+        };
 
         public override void Added(Scene scene) {
             base.Added(scene);
@@ -309,76 +320,106 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Render() {
             if (beamSprite.Visible) {
-                var frame = beamSprite.GetFrame(beamSprite.CurrentAnimationID, beamSprite.CurrentAnimationFrame);
-                var offset = Orientation.Offset() * frame.Width;
-                float length = Math.Abs(Orientation switch {
-                    Orientations.Up => beamSprite.Y - laserHitbox.Top,
-                    Orientations.Down => beamSprite.Y - laserHitbox.Bottom,
-                    Orientations.Left => beamSprite.X - laserHitbox.Left,
-                    Orientations.Right => beamSprite.X - laserHitbox.Right,
-                    _ => 0,
-                });
-
-                int count = (int) Math.Ceiling(length / frame.Width);
-                int remainder = (int) length % frame.Width;
-
-                for (int i = 0; i < count; i++) {
-                    var position = Position + beamSprite.Position + (i * offset);
-                    int width = i == count - 1 && remainder != 0 ? remainder : frame.Width;
-                    frame.Draw(position, beamSprite.Origin, beamSprite.Color, beamSprite.Scale, beamSprite.Rotation , new Rectangle(0, 0, width, frame.Height));
-                }
+                foreach (var hitbox in laserHitboxes)
+                    renderBeam(hitbox);
             } else if (State == LaserState.Charging) {
-                float animationProgress = (float)emitterSprite.CurrentAnimationFrame / emitterSprite.CurrentAnimationTotalFrames;
-                int lerped = (int)Calc.LerpClamp(0, beamThickness, Ease.QuintOut(animationProgress));
-                int thickness = Math.Min(lerped + 2, beamThickness);
-                thickness -= thickness % 2;
-
-                var rect = Orientation == Orientations.Up || Orientation == Orientations.Down
-                    ? new Rectangle((int) (X + laserHitbox.CenterX) - thickness / 2, (int) (Y + laserHitbox.Top), thickness, (int) laserHitbox.Height)
-                    : new Rectangle((int) (X + laserHitbox.Left), (int) (Y + laserHitbox.CenterY) - thickness / 2, (int) laserHitbox.Width, thickness);
-
-                Draw.Rect(rect, telegraphColor * 0.3f);
+                foreach (var hitbox in laserHitboxes)
+                    renderTelegraph(hitbox);
             }
 
             emitterSprite.Render();
         }
 
-        private void emitCooldownParticles() {
-            var level = SceneAs<Level>();
-            int length = (int)Orientation.LengthOfHitbox(laserHitbox) - beamOffsetMultiplier;
-            var offset = Orientation.Offset();
-            float angle = Orientation.Angle() - (float)Math.PI / 2f;
-            var startPos = Position + beamOffset * 2;
-            var particle = CassetteIndex == 0 ? blueCooldownParticle : pinkCooldownParticle;
+        private void renderBeam(Hitbox laserHitbox) {
+            var frame = beamSprite.GetFrame(beamSprite.CurrentAnimationID, beamSprite.CurrentAnimationFrame);
+            float length = Math.Abs(Orientation switch {
+                Orientations.Up => beamSprite.Y - laserHitbox.Top,
+                Orientations.Down => beamSprite.Y - laserHitbox.Bottom,
+                Orientations.Left => beamSprite.X - laserHitbox.Left,
+                Orientations.Right => beamSprite.X - laserHitbox.Right,
+                _ => 0,
+            });
 
-            for (int i = 0; i < length; i += Calc.Random.Next(8, 16)) {
-                level.ParticlesBG.Emit(particle, 3, startPos + offset * i, Vector2.Zero, angle);
+            var startPosition = Position + beamSprite.Position +
+                                (Orientation.Vertical()
+                                    ? new Vector2(laserHitbox.CenterX, 0)
+                                    : new Vector2(0, laserHitbox.CenterY));
+
+            var frameOffset = Orientation.Normal() * frame.Width;
+            float thickness = Orientation.ThicknessOfHitbox(laserHitbox);
+
+            int count = (int) Math.Ceiling(length / frame.Width);
+            int remainder = (int) length % frame.Width;
+
+            for (int i = 0; i < count; i++) {
+                var position = startPosition + i * frameOffset;
+                int width = i == count - 1 && remainder != 0 ? remainder : frame.Width;
+                frame.Draw(position, beamSprite.Origin, beamSprite.Color, beamSprite.Scale, beamSprite.Rotation , new Rectangle(0, 0, width, frame.Height));
             }
         }
 
-        private IEnumerator impactParticlesSequence() {
+        private void renderTelegraph(Hitbox laserHitbox) {
+            float animationProgress = (float)emitterSprite.CurrentAnimationFrame / emitterSprite.CurrentAnimationTotalFrames;
+            int lerped = (int)Calc.LerpClamp(0, beamThickness, Ease.QuintOut(animationProgress));
+            int thickness = Math.Min(lerped + 2, beamThickness);
+            thickness -= thickness % 2;
+
+            var rect = Orientation == Orientations.Up || Orientation == Orientations.Down
+                ? new Rectangle((int) (X + laserHitbox.CenterX) - thickness / 2, (int) (Y + laserHitbox.Top), thickness, (int) laserHitbox.Height)
+                : new Rectangle((int) (X + laserHitbox.Left), (int) (Y + laserHitbox.CenterY) - thickness / 2, (int) laserHitbox.Width, thickness);
+
+            Draw.Rect(rect, telegraphColor * 0.3f);
+        }
+
+        private void emitCooldownParticles() {
+            foreach (var laserHitbox in laserHitboxes) {
+                var level = SceneAs<Level>();
+                int length = (int) Orientation.LengthOfHitbox(laserHitbox) - beamOffsetMultiplier;
+                var offset = Orientation.Normal();
+                float angle = Orientation.Angle() - (float) Math.PI / 2f;
+                var startPos = Position + beamOffset * 2;
+                var particle = CassetteIndex == 0 ? blueCooldownParticle : pinkCooldownParticle;
+
+                for (int i = 0; i < length; i += Calc.Random.Next(8, 16)) {
+                    level.ParticlesBG.Emit(particle, 3, startPos + offset * i, Vector2.Zero, angle);
+                }
+            }
+        }
+
+        private void emitImpactParticles(Hitbox laserHitbox) {
             var level = SceneAs<Level>();
             var particle = CassetteIndex == 0 ? blueImpactParticle : pinkImpactParticle;
             var offset = Orientation == Orientations.Up || Orientation == Orientations.Down ? Vector2.UnitX : Vector2.UnitY;
             float angle = Orientation.Angle() + (float)Math.PI / 2f;
-            var laserCollider = Get<LaserColliderComponent>();
+
+            int thickness = (int) Orientation.ThicknessOfHitbox(laserHitbox);
+            var startPos = new Vector2(Orientation == Orientations.Right ? laserHitbox.Right + X : laserHitbox.Left + X,
+                Orientation == Orientations.Down ? laserHitbox.Bottom + Y: laserHitbox.Top + Y);
+
+            const int particleCount = 3;
+            level.ParticlesFG.Emit(particle, particleCount, startPos, Vector2.Zero, angle);
+            level.ParticlesFG.Emit(particle, particleCount, startPos + offset * thickness / 2, Vector2.Zero, angle);
+            level.ParticlesFG.Emit(particle, particleCount, startPos + offset * thickness, Vector2.Zero, angle);
+        }
+
+        private IEnumerator impactParticlesSequence() {
+            var laserColliders = Components.GetAll<LaserColliderComponent>().ToArray();
 
             while (Scene != null) {
-                if (State != LaserState.Firing || laserCollider.CollidedWithScreenBounds) {
+                if (State != LaserState.Firing) {
                     yield return null;
                     continue;
                 }
 
-                int thickness = (int) Orientation.ThicknessOfHitbox(laserHitbox);
-                var startPos = new Vector2(Orientation == Orientations.Right ? laserHitbox.Right + X : laserHitbox.Left + X,
-                    Orientation == Orientations.Down ? laserHitbox.Bottom + Y: laserHitbox.Top + Y);
+                object yieldValue = null;
+                foreach (var laser in laserColliders) {
+                    if (!laser.CollidedWithScreenBounds) {
+                        yieldValue = 0.1f;
+                        emitImpactParticles(laser.Collider);
+                    }
+                }
 
-                const int particleCount = 3;
-                level.ParticlesFG.Emit(particle, particleCount, startPos, Vector2.Zero, angle);
-                level.ParticlesFG.Emit(particle, particleCount, startPos + offset * thickness / 2, Vector2.Zero, angle);
-                level.ParticlesFG.Emit(particle, particleCount, startPos + offset * thickness, Vector2.Zero, angle);
-
-                yield return 0.1f;
+                yield return yieldValue;
             }
         }
 
