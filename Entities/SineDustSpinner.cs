@@ -6,38 +6,49 @@ using Monocle;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/SineDustSpinner")]
     class SineDustSpinner : DustStaticSpinner {
-        private SineWave xSine, ySine;
-        private Tween xTween, yTween;
-        private Vector2 origPos, lastPos;
+        private readonly Vector2 origPos;
+        private Vector2 lastPos;
         private float xAmplitude, yAmplitude;
+        private float xPeriod, xPhase, yPeriod, yPhase;
+        private float AwakeOffset;
         private bool xLinear, yLinear;
+
+        private float TimeSinceAwake { get { return Scene.TimeActive - AwakeOffset; } }
 
         public SineDustSpinner(EntityData data, Vector2 offset) : base(data, offset) {
             Collider = new Circle(6, 0, 0);
 
-            float xPeriod = data.Float("xPeriod", 1f), xPhase = data.Float("xPhase", 0f) * (float) Math.PI,
-                yPeriod = data.Float("yPeriod", 1f), yPhase = data.Float("yPhase", 0f) * (float) Math.PI;
+            // change the sprite to be the same as for moving dusties
+            Remove(Sprite);
+            Remove(Get<DustEdge>());
+            Remove(Get<TransitionListener>());
+
+            Add(Sprite = new DustGraphic(true, false, false));
+
+            xPeriod = data.Float("xPeriod", 1f);
+            xPhase = data.Float("xPhase", 0f);
+            yPeriod = data.Float("yPeriod", 1f);
+            yPhase = data.Float("yPhase", 0f);
 
             xLinear = data.Bool("xLinear", false);
             yLinear = data.Bool("yLinear", false);
             xAmplitude = data.Width / 2;
             yAmplitude = data.Height / 2;
 
-            if (xLinear) {
-                Add(xTween = Tween.Create(Tween.TweenMode.Looping, duration: Math.Abs(xPeriod)));
-                xTween.Start(xPeriod < 0);
-            } else if (data.Float("xPeriod", 1f) != 0) {
-                Add(xSine = new SineWave(1 / xPeriod, xPhase));
-            }
-            if (yLinear) {
-                Add(yTween = Tween.Create(Tween.TweenMode.Looping, duration: Math.Abs(yPeriod)));
-                yTween.Start(yPeriod < 0);
-            } else if (data.Float("yPeriod", 1f) != 0) {
-                Add(ySine = new SineWave(1 / yPeriod, yPhase));
-            }
+            origPos = Position + Vector2.UnitX * data.Width / 2 + Vector2.UnitY * data.Height / 2;
+            Vector2 p = origPos
+                + Vector2.UnitY * getOffset(yPeriod, yPhase, yAmplitude, yLinear, -0.1f)
+                + Vector2.UnitX * getOffset(xPeriod, xPhase, xAmplitude, xLinear, -0.1f);
+            Position = origPos
+                + Vector2.UnitY * getOffset(yPeriod, yPhase, yAmplitude, yLinear, 0f)
+                + Vector2.UnitX * getOffset(xPeriod, xPhase, xAmplitude, xLinear, 0f);
+            Sprite.EyeDirection = Vector2.Normalize(Position - p);
+        }
 
-            Position = Position + Vector2.UnitX * data.Width / 2 + Vector2.UnitY * data.Height / 2;
-            origPos = Position;
+        public override void Awake(Scene scene) {
+            // add 2/3rds of a second to the awake offset to account for the time the transition takes
+            // except when the player is in the respawn state while this entity is added, then we need to wait 0.6f for the respawn to complete
+            AwakeOffset = scene.TimeActive + (scene.Tracker.GetEntity<Player>().StateMachine.State != Player.StIntroRespawn ? (2f / 3) : 0.6f);
         }
 
         public override void Update() {
@@ -48,17 +59,27 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private Vector2 getYAdjust() {
-            if (yLinear) {
-                return Vector2.UnitY * (-yAmplitude + 2 * yAmplitude * yTween.Percent);
-            }
-            return (ySine == null) ? Vector2.Zero : (Vector2.UnitY * ySine.Value * yAmplitude);
+            return Vector2.UnitY * getOffset(yPeriod, yPhase, yAmplitude, yLinear);
         }
 
         private Vector2 getXAdjust() {
-            if (xLinear) {
-                return Vector2.UnitX * (-xAmplitude + 2 * xAmplitude * xTween.Percent);
+            return Vector2.UnitX * getOffset(xPeriod, xPhase, xAmplitude, xLinear);
+        }
+
+
+        private float getOffset(float period, float phase, float amplitude, bool linear, float? timeOverride = null) {
+            if (period == 0)
+                return 0;
+
+            float time = (timeOverride is not null) ? timeOverride.Value : TimeSinceAwake;
+            int adjust = linear ? 1 : 2;
+
+            phase %= adjust;
+            float completion = ((time + (phase / adjust) * period) % Math.Abs(period)) / period;
+            if (completion > 1 || completion < 0) {
+                completion -= Math.Sign(completion) * (int) (Math.Abs(completion) + 1);
             }
-            return (xSine == null) ? Vector2.Zero : (Vector2.UnitX * xSine.Value * xAmplitude);
+            return linear ? (float) (-amplitude + 2 * amplitude * completion) : (float) Math.Sin(completion * Math.PI * 2) * amplitude;
         }
     }
 }

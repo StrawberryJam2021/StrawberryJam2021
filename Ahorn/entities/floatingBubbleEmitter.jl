@@ -2,7 +2,7 @@ module SJ2021FloatingBubbleEmitter
 
 using ..Ahorn,Maple
 
-@mapdef Entity "SJ2021/FloatingBubbleEmitter" FloatingBubbleEmitter(x::Integer, y::Integer, spawnTimer::Number=2.0)
+@mapdef Entity "SJ2021/FloatingBubbleEmitter" FloatingBubbleEmitter(x::Integer, y::Integer, flag::String="")
 
 const placements = Ahorn.PlacementDict(
     "Floating Bubble Emitter\n(Strawberry Jam 2021)" => Ahorn.EntityPlacement(

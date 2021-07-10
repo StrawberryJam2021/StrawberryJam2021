@@ -9,14 +9,14 @@ Developing directly on the main branch is highly discouraged.
 
 ### GUI
 - Clone the StrawberryJam2021 repo into your Mods folder.
-  - If necessary, the URL is: `git@github.com:StrawberryJam2021/StrawberryJam2021.git`
+  - If necessary, the URL is: `https://github.com/StrawberryJam2021/StrawberryJam2021.git`
 - You should now have a StrawberryJam2021 folder in your Mods folder.
 - Open the `.sln` in VS.
   - Alternatively, use another IDE. If necessary, use the following command: `dotnet build`
 
 ### CLI
 - `cd` to your `Mods` folder.
-- `git clone git@github.com:StrawberryJam2021/StrawberryJam2021.git`
+- `git clone https://github.com/StrawberryJam2021/StrawberryJam2021.git`
 - Open the `.sln` in VS.
   - Alternatively, use another IDE. If necessary, use the following command: `dotnet build`
 
