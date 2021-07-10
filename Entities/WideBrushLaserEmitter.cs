@@ -38,5 +38,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 CollideWithSolids = CollideWithSolids, Offset = start + offset * i, Thickness = tileSize,
             });
         }
+
+        protected override IEnumerable<Sprite> CreateEmitterSprites() {
+            const int tileSize = 8;
+            int count = Size / (tileSize * 2);
+            var offset = Orientation.Vertical() ? new Vector2(tileSize * 2, 0) : new Vector2(0, tileSize * 2);
+            var start = offset / 2;
+            return Enumerable.Range(0, count).Select(i => ConfigureEmitterSprite(StrawberryJam2021Module.SpriteBank.Create("brushLaserEmitter"), start + offset * i));
+        }
     }
 }
