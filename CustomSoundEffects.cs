@@ -16,5 +16,9 @@
 
         // Bees
         public const string game_jars_bee_fireball_idle = "event:/strawberry_jam_2021/game/bee/fireball_idle";
+
+        // Drum Swap Blocks
+        public const string game_drum_swapblock_move = "event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move";
+        public const string game_drum_swapblock_move_end = "event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move_end";
     }
 }
