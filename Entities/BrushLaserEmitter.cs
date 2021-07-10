@@ -35,6 +35,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public int CassetteIndex { get; }
         public bool HalfLength { get; }
 
+        protected int DataWidth { get; }
+        protected int DataHeight { get; }
+
         #endregion
 
         private string animationPrefix => CassetteIndex == 0 ? "blue" : "pink";
@@ -191,6 +194,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             KillPlayer = data.Bool("killPlayer", true);
             CassetteIndex = data.Int("cassetteIndex", 0);
             HalfLength = data.Bool("halfLength");
+            DataWidth = data.Width;
+            DataHeight = data.Height;
 
             emitterSprite = StrawberryJam2021Module.SpriteBank.Create("brushLaserEmitter");
             emitterSprite.Scale = Orientation == Orientations.Left || Orientation == Orientations.Up ? new Vector2(-1, 1) : Vector2.One;
@@ -320,8 +325,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Render() {
             if (beamSprite.Visible) {
-                foreach (var hitbox in laserHitboxes)
-                    renderBeam(hitbox);
+                for (int i = 0; i < laserHitboxes.Length; i++)
+                    renderBeam(laserHitboxes[i], i);
             } else if (State == LaserState.Charging) {
                 foreach (var hitbox in laserHitboxes)
                     renderTelegraph(hitbox);
@@ -330,7 +335,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             emitterSprite.Render();
         }
 
-        private void renderBeam(Hitbox laserHitbox) {
+        private void renderBeam(Hitbox laserHitbox, int index) {
             var frame = beamSprite.GetFrame(beamSprite.CurrentAnimationID, beamSprite.CurrentAnimationFrame);
             float length = Math.Abs(Orientation switch {
                 Orientations.Up => beamSprite.Y - laserHitbox.Top,
@@ -340,13 +345,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 _ => 0,
             });
 
-            var startPosition = Position + beamSprite.Position +
-                                (Orientation.Vertical()
-                                    ? new Vector2(laserHitbox.CenterX, 0)
-                                    : new Vector2(0, laserHitbox.CenterY));
+            var startPosition = Position + beamSprite.Position + (Orientation.Vertical()
+                ? new Vector2(laserHitbox.CenterX, 0)
+                : new Vector2(0, laserHitbox.CenterY));
 
             var frameOffset = Orientation.Normal() * frame.Width;
-            float thickness = Orientation.ThicknessOfHitbox(laserHitbox);
+            var origin = beamSprite.Origin;
+
+            if (laserHitboxes.Length > 1) {
+                const int tileSize = 8;
+                // int thickness = (int) Orientation.ThicknessOfHitbox(laserHitbox);
+                if (index == 0 && Orientation.Horizontal() || index == laserHitboxes.Length - 1 && Orientation.Vertical())
+                    frame = frame.GetSubtexture(new Rectangle(0, 0, frame.Width, tileSize));
+                else if (index == 0 && Orientation.Vertical() || index == laserHitboxes.Length - 1 && Orientation.Horizontal())
+                    frame = frame.GetSubtexture(new Rectangle(0, frame.Height - tileSize, frame.Width, tileSize));
+                else
+                    frame = frame.GetSubtexture(new Rectangle(0, tileSize / 2, frame.Width, tileSize));
+                origin = new Vector2(0, tileSize / 2f);
+            }
 
             int count = (int) Math.Ceiling(length / frame.Width);
             int remainder = (int) length % frame.Width;
@@ -354,14 +370,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             for (int i = 0; i < count; i++) {
                 var position = startPosition + i * frameOffset;
                 int width = i == count - 1 && remainder != 0 ? remainder : frame.Width;
-                frame.Draw(position, beamSprite.Origin, beamSprite.Color, beamSprite.Scale, beamSprite.Rotation , new Rectangle(0, 0, width, frame.Height));
+                frame.Draw(position, origin, beamSprite.Color, beamSprite.Scale, beamSprite.Rotation , new Rectangle(0, 0, width, frame.Height));
             }
         }
 
         private void renderTelegraph(Hitbox laserHitbox) {
             float animationProgress = (float)emitterSprite.CurrentAnimationFrame / emitterSprite.CurrentAnimationTotalFrames;
-            int lerped = (int)Calc.LerpClamp(0, beamThickness, Ease.QuintOut(animationProgress));
-            int thickness = Math.Min(lerped + 2, beamThickness);
+            int hitboxThickness = (int) Orientation.ThicknessOfHitbox(laserHitbox);
+            int lerped = (int)Calc.LerpClamp(0, hitboxThickness, Ease.QuintOut(animationProgress));
+            int thickness = Math.Min(lerped + 2, hitboxThickness);
             thickness -= thickness % 2;
 
             var rect = Orientation == Orientations.Up || Orientation == Orientations.Down
