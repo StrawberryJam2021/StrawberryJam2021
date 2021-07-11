@@ -105,7 +105,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public static void frozen_update() {
-            if (!(Engine.FreezeTimer > 0)) {
+            if (Engine.FreezeTimer <= 0) {
                 return;
             }
             Player player = Engine.Scene.Tracker.GetEntity<Player>();
