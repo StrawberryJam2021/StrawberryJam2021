@@ -70,14 +70,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             float target;
             if (Hold.IsHeld) {
                 if (Hold.Holder.OnGround(1)) {
-                    target = Calc.ClampedMap(Hold.Holder.Speed.X, -300f, 300f, 0.6981317f, -0.6981317f);
+                    target = Calc.ClampedMap(Hold.Holder.Speed.X, -300f, 300f, (float) Math.PI / 4.5f, -(float) Math.PI / 4.5f);
                 } else {
-                    target = Calc.ClampedMap(Hold.Holder.Speed.X, -300f, 300f, 1.0471976f, -1.0471976f);
+                    target = Calc.ClampedMap(Hold.Holder.Speed.X, -300f, 300f, (float) Math.PI / 3f, -(float) Math.PI / 3f);
                 }
             } else {
                 target = 0f;
             }
-            sprite.Rotation = Calc.Approach(sprite.Rotation, target, 3.1415927f * Engine.DeltaTime);
+            sprite.Rotation = Calc.Approach(sprite.Rotation, target, (float) Math.PI * Engine.DeltaTime);
 
             if (Hold.IsHeld && !Hold.Holder.OnGround(1) && (sprite.CurrentAnimationID == "fall" || sprite.CurrentAnimationID == "fallLoop")) {
                 if (!fallingSfx.Playing) {
