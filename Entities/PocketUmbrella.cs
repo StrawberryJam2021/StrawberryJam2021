@@ -16,7 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         static ParticleType P_Glow, P_Glide, P_GlideUp, P_Expand;
 
-        static PocketUmbrella() {
+        public static void LoadParticles() {
             P_Glow = new ParticleType(Glider.P_Glow);
             P_Glow.Color = Calc.HexToColor("d34949");
             P_Glow.Color2 = Calc.HexToColor("615a5a");

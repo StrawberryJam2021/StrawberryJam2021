@@ -70,6 +70,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             LoopBlock.InitializeTextures();
             DashBoostField.LoadParticles();
             ToggleSwapBlock.InitializeTextures();
+            PocketUmbrella.LoadParticles();
         }
     }
 }
