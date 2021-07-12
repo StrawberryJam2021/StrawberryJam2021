@@ -3,25 +3,28 @@ using Monocle;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
-
+ 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public static class ToggleSwapBlock {
         private const int STAY = 8, DONE = 9;
+        private const float vanillaSpeed = 360f;
         private static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
         private static string defaultIndicatorPath = "objects/StrawberryJam2021/toggleIndicator/plain/";
         private static Type toggleSwapBlockType = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "CanyonHelper").GetType().Assembly.GetType("Celeste.Mod.CanyonHelper.ToggleSwapBlock");
         private static MethodInfo getNextNode = toggleSwapBlockType.GetMethod("GetNextNode", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static MethodInfo added = toggleSwapBlockType.GetMethod("Added", BindingFlags.Public | BindingFlags.Instance);
-        private static MethodInfo recalculateLaserColor = toggleSwapBlockType.GetMethod("RecalculateLaserColor", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static MethodInfo drawBlockStyle = toggleSwapBlockType.GetMethod("DrawBlockStyle", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static MethodInfo modAdded = typeof(ToggleSwapBlock).GetMethod("ModAdded", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType);
-        private static MethodInfo modRecalculateLaserColor = typeof(ToggleSwapBlock).GetMethod("ModRecalculateLaserColor", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType);
-        private static MethodInfo modDrawBlockStyle = typeof(ToggleSwapBlock).GetMethod("ModDrawBlockStyle", BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType);
-        private static Hook addedHook;
-        private static Hook recalculateLaserColorHook;
-        private static Hook drawBlockStlyeHook;
+        private static string[] privateHookMethods = new string[] {
+            "RecalculateLaserColor",
+            "DrawBlockStyle",
+            "OnPlayerDashed"
+        };
+        private static string[] publicHookMethods = new string[] {
+            "Added",
+            "Update"
+        };
+        private static List<Hook> hooks = new List<Hook>();
 
         private class DataComponent : Component {
             public readonly bool useIndicators;
@@ -29,29 +32,38 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             public readonly bool isConstant;
             public readonly float speed;
             public readonly bool disableTracks;
+            public readonly bool allowDashSliding;
             public MTexture indicatorTexture;
 
-            public DataComponent(bool useIndicators, string indicatorPath, bool isConstant, float speed, bool disableTracks) : base(false, false) {
+            public DataComponent(bool useIndicators, string indicatorPath, bool isConstant, float speed, bool disableTracks, bool allowDashSliding) : base(false, false) {
                 this.useIndicators = useIndicators;
                 this.indicatorPath = indicatorPath;
                 this.isConstant = isConstant;
                 this.speed = speed;
                 this.disableTracks = disableTracks;
+                this.allowDashSliding = allowDashSliding;
             }
         }
 
         public static void Load() {
             Everest.Events.Level.OnLoadEntity += OnLoadEntity;
-            recalculateLaserColorHook = new Hook(recalculateLaserColor, modRecalculateLaserColor);
-            drawBlockStlyeHook = new Hook(drawBlockStyle, modDrawBlockStyle);
-            addedHook = new Hook(added, modAdded);
+            createHooks(privateHookMethods, BindingFlags.NonPublic);
+            createHooks(publicHookMethods, BindingFlags.Public);
         }
 
         public static void Unload() {
             Everest.Events.Level.OnLoadEntity -= OnLoadEntity;
-            recalculateLaserColorHook.Dispose();
-            drawBlockStlyeHook.Dispose();
-            addedHook.Dispose();
+            foreach (Hook hook in hooks) {
+                hook.Dispose();
+            }
+            hooks.Clear();
+        }
+
+        private static void createHooks(string[] methodNames, BindingFlags publicFlag) {
+            foreach (string name in methodNames) {
+                hooks.Add(new Hook(toggleSwapBlockType.GetMethod(name, publicFlag | BindingFlags.Instance),
+                    typeof(ToggleSwapBlock).GetMethod("Mod" + name, BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType)));
+            }
         }
 
         private static bool OnLoadEntity(Level level, LevelData levelData, Vector2 offset, EntityData entityData) {
@@ -60,7 +72,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Entity block = (Entity) Activator.CreateInstance(toggleSwapBlockType, new object[] { entityData, offset });
                 bool useIndicators = entityData.Bool("directionIndicator", true);
                 bool isConstant = entityData.Bool("constantSpeed", false);
-                float speed = 360f * entityData.Float("travelSpeed", 1f);
+                float speed = vanillaSpeed * entityData.Float("travelSpeed", 1f);
                 string indicatorPath = entityData.Attr("customIndicatorPath", "");
                 if (indicatorPath == "") {
                     indicatorPath = defaultIndicatorPath;
@@ -69,11 +81,33 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     indicatorPath += '/';
                 }
                 bool disableTracks = entityData.Bool("disableTracks", false);
-                Component dataComponent = new DataComponent(useIndicators, indicatorPath, isConstant, speed, disableTracks);
+                bool allowDashSliding = entityData.Bool("allowDashSliding", false);
+                Component dataComponent = new DataComponent(useIndicators, indicatorPath, isConstant, speed, disableTracks, allowDashSliding);
                 block.Add(dataComponent);
                 level.Add(block);
             }
             return isSJToggleBlock;
+        }
+
+        private static void ModOnPlayerDashed<ToggleSwapBlock>(Action<ToggleSwapBlock, Vector2> orig, ToggleSwapBlock self, Vector2 direction) where ToggleSwapBlock : Entity {
+            orig(self, direction);
+        }
+
+        private static void ModUpdate<ToggleSwapBlock>(Action<ToggleSwapBlock> orig, ToggleSwapBlock self) where ToggleSwapBlock : Solid {
+            DataComponent dataComp = self.Get<DataComponent>();
+            if (dataComp != null && dataComp.allowDashSliding) {
+                Player player = self.Scene.Tracker.GetEntity<Player>();
+                if (player != null) {
+                    StateMachine stateMachine = player.StateMachine;
+                    Vector2 speed = player.Speed;
+                    player.StateMachine = new StateMachine(26);
+                    orig(self);
+                    player.Speed = speed;
+                    player.StateMachine = stateMachine;
+                    return;
+                }
+            }
+            orig(self);
         }
 
         private static void ModAdded<ToggleSwapBlock>(Action<ToggleSwapBlock, Scene> orig, ToggleSwapBlock self, Scene scene) where ToggleSwapBlock : Entity {
