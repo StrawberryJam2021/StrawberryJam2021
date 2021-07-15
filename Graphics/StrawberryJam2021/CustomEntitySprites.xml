@@ -133,4 +133,14 @@
         <Anim id="fill" path="jarfill_" delay="0.1" goto="full"/>
         <Loop id="full" path="jarfull_idle" delay="0.1"/>
     </jamJar_trailer>
+
+    <!--Pocket Umbrella-->
+    <pocketUmbrella path="objects/StrawberryJam2021/pocketUmbrella/" start="held">
+		<Justify x="0.5" y="0.58"/>
+        <Anim id="spawn" path="spawn" delay="0.06" goto="held"/>
+        <Loop id="held" path="held" delay="0.1"/>
+        <Anim id="fall" path="fall" delay="0.06" goto="fallLoop"/>
+        <Loop id="fallLoop" path="fallLoop" delay="0.06"/>
+        <Anim id="death" path="spawn" delay="0.06" frames="3-0"/>
+    </pocketUmbrella>
 </Sprites>
