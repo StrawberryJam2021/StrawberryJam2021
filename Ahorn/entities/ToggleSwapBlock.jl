@@ -2,8 +2,8 @@ module SJ2021ToggleSwapBlock
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/ToggleSwapBlock" ToggleBlock(width::Integer=16, height::Integer=16, travelSpeed::Number=5.0,
-    oscillate::Bool=false, stopAtEnd::Bool=true, directionIndicator::Bool=false, constantSpeed::Bool=false, customTexturePath::String="")
+@mapdef Entity "SJ2021/ToggleSwapBlock" ToggleBlock(width::Integer=16, height::Integer=16, travelSpeed::Number=5.0, oscillate::Bool=false, stopAtEnd::Bool=false,
+    directionIndicator::Bool=false, constantSpeed::Bool=false, customTexturePath::String="", customIndicatorPath::String="", disableTracks::Bool=false)
 
 function getXYWidthHeight(entity::ToggleBlock)
     x, y = Ahorn.position(entity)
@@ -46,7 +46,7 @@ end
 
 defaultFrame = "objects/canyon/toggleblock/block1"
 midResource = "objects/canyon/toggleblock/middleRed00"
-pathPrefix = "objects/StrawberryJam2021/toggleIndicator/"
+defaultIndicatorPath = "objects/StrawberryJam2021/toggleIndicator/plain/"
 paths = ["right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done"]
 STAY, DONE = 9, 10
 
@@ -94,8 +94,8 @@ function drawArrow(ctx::Ahorn.Cairo.CairoContext, sx::Number, sy::Number, tx::Nu
     Ahorn.drawArrow(ctx, sx + off_x * (1 - cos(theta)), sy + off_y * (1 - sin(theta)), tx + off_x * (1 + cos(theta)), ty + off_y * (1 + sin(theta)), Ahorn.colors.selection_selected_fc, headLength=6)
 end
 
-function drawIndicator(ctx::Ahorn.Cairo.CairoContext, x::Number, y::Number, index::Integer, width::Number, height::Number)
-    resource = string(pathPrefix, paths[index])
+function drawIndicator(ctx::Ahorn.Cairo.CairoContext, x::Number, y::Number, index::Integer, width::Number, height::Number, indicatorPath::String)
+    resource = indicatorPath * paths[index]
     drawSprite(ctx, x, y, resource, width, height)
 end
 
@@ -154,7 +154,15 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::ToggleBlock, roo
             drawSprite(ctx, nx, ny, midResource, width, height)
         end
     else
-        prevStay = false
+        indicatorPath = get(entity.data, "customIndicatorPath", "")
+        if indicatorPath == ""
+            indicatorPath = defaultIndicatorPath
+        end
+        if indicatorPath[end] != '/'
+            indicatorPath *= '/'
+        end
+
+        prevStay = !stopAtEnd && !oscillate && last(nodes) == (x, y)
         px, py, nx, ny = x, y, x, y
         for node in nodes
             px, py = nx, ny
@@ -165,13 +173,13 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::ToggleBlock, roo
                 if prevStay
                     index = STAY
                 end
-                drawIndicator(ctx, px, py, index, width, height)
+                drawIndicator(ctx, px, py, index, width, height, indicatorPath)
             end
             prevStay = currStay
         end
 
         if prevStay
-            drawIndicator(ctx, nx, ny, STAY, width, height)
+            drawIndicator(ctx, nx, ny, STAY, width, height, indicatorPath)
         else
             if stopAtEnd
                 index = DONE
@@ -180,7 +188,7 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::ToggleBlock, roo
             else
                 index = getIndex(nx, ny, x, y)
             end
-            drawIndicator(ctx, nx, ny, index, width, height)
+            drawIndicator(ctx, nx, ny, index, width, height, indicatorPath)
         end
     end
 end
