@@ -22,6 +22,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public readonly int ExtraBoostFrames;
 
+        private readonly string DisableFlag;
+
         private float beatIncrement;
         private int maxBeats;
 
@@ -30,9 +32,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private EventInstance snapshot;
 
         public WonkyCassetteBlockController(EntityData data, Vector2 offset)
-            : this(data.Position + offset, data.Int("bpm"), data.Int("bars"), data.Attr("timeSignature"), data.Attr("sixteenthNoteParam", "sixteenth_note"), data.Float("cassetteOffset"), data.Int("boostFrames", 1)) { }
+            : this(data.Position + offset, data.Int("bpm"), data.Int("bars"), data.Attr("timeSignature"), data.Attr("sixteenthNoteParam", "sixteenth_note"), data.Float("cassetteOffset"), data.Int("boostFrames", 1), data.Attr("disableFlag")) { }
 
-        public WonkyCassetteBlockController(Vector2 position, int bpm, int bars, string timeSignature, string param, float cassetteOffset, int boostFrames)
+        public WonkyCassetteBlockController(Vector2 position, int bpm, int bars, string timeSignature, string param, float cassetteOffset, int boostFrames, string disableFlag)
             : base(position) {
             this.bpm = bpm;
             this.bars = bars;
@@ -50,6 +52,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 throw new ArgumentException($"Boost Frames must be 1 or greater, but is set to {boostFrames}.");
 
             ExtraBoostFrames = boostFrames - 1;
+
+            this.DisableFlag = disableFlag;
         }
 
         public override void Awake(Scene scene) {
@@ -82,7 +86,42 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             session.CassetteBeatTimer = session.MusicBeatTimer - cassetteOffset;
         }
 
+        public void CheckDisableAndReset() {
+            if (DisableFlag.Length == 0)
+                return;
+
+            Level level = SceneAs<Level>();
+            bool shouldDisable = level.Session.GetFlag(DisableFlag);
+
+            StrawberryJam2021Session session = StrawberryJam2021Module.Session;
+
+            if (!session.CassetteBlocksDisabled && shouldDisable) {
+
+                session.MusicBeatTimer = 0;
+                session.MusicWonkyBeatIndex = 0;
+
+                session.CassetteWonkyBeatIndex = 0;
+                session.CassetteBeatTimer = session.MusicBeatTimer - cassetteOffset;
+
+                var wonkyBlocks = level.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>().ToList();
+
+                foreach (WonkyCassetteBlock wonkyBlock in wonkyBlocks) {
+                    wonkyBlock.Activated = false;
+                }
+
+                session.CassetteBlocksDisabled = true;
+
+            } else if (session.CassetteBlocksDisabled && !shouldDisable) {
+                session.CassetteBlocksDisabled = false;
+            }
+        }
+
         private void AdvanceMusic(float time, Scene scene, StrawberryJam2021Session session) {
+            CheckDisableAndReset();
+
+            if (session.CassetteBlocksDisabled)
+                return;
+
             session.CassetteBeatTimer += time;
 
             if (session.CassetteBeatTimer >= beatIncrement) {
@@ -108,7 +147,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 // Doing this here because it would go to the next beat with a sixteenth note offset at start
                 session.CassetteWonkyBeatIndex = (session.CassetteWonkyBeatIndex + 1) % maxBeats;
             }
-            
+
             session.MusicBeatTimer += time;
 
             if (session.MusicBeatTimer >= beatIncrement) {
@@ -160,7 +199,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             StrawberryJam2021Session session = StrawberryJam2021Module.Session;
             foreach (WonkyCassetteBlock wonkyBlock in self.Tracker.GetEntities<WonkyCassetteBlock>()) {
                 WonkyCassetteBlockController controller = self.Tracker.GetEntity<WonkyCassetteBlockController>();
-                wonkyBlock.SetActivatedSilently(controller != null && wonkyBlock.OnAtBeats.Contains(session.CassetteWonkyBeatIndex / (16 / controller.beatLength) % controller.barLength));
+                wonkyBlock.SetActivatedSilently(controller != null && !session.CassetteBlocksDisabled && wonkyBlock.OnAtBeats.Contains(session.CassetteWonkyBeatIndex / (16 / controller.beatLength) % controller.barLength));
             }
         }
 
