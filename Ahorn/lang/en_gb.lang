@@ -188,4 +188,4 @@ placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.boostFrames=The
 placements.triggers.SJ2021/SkateboardTrigger.tooltips.mode=Whether entering the trigger will enable, disable, or toggle the skateboard.
 
 # Noded Cloud
-placements.entities.SJ2021/NodedCloud.tooltips.moveTime=how much time the cloud takes to move to the next position, in seconds.
+placements.entities.SJ2021/NodedCloud.tooltips.moveTime=How much time the cloud takes to move to the next position, in seconds.
