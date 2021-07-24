@@ -105,6 +105,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 _ => 0f
             };
 
+        public static Vector2 OriginOfHitbox(this OrientableEntity.Orientations orientation, Hitbox hitbox) =>
+            orientation switch {
+                OrientableEntity.Orientations.Up => hitbox.BottomCenter,
+                OrientableEntity.Orientations.Down => hitbox.TopCenter,
+                OrientableEntity.Orientations.Left => hitbox.CenterRight,
+                OrientableEntity.Orientations.Right => hitbox.CenterLeft,
+                _ => Vector2.Zero
+            };
+
         public static bool Horizontal(this OrientableEntity.Orientations orientation) =>
             orientation is OrientableEntity.Orientations.Left or OrientableEntity.Orientations.Right;
 

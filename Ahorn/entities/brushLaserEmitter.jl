@@ -2,26 +2,29 @@ module SJ2021BrushLaserEmitter
 
 using ..Ahorn, Maple
 
+const default_size = 16
+const thickness = 8
+
 const BEAM_THICKNESS = 12
 const BRUSH_LENGTH = 16
 
 @mapdef Entity "SJ2021/BrushLaserEmitterUp" BrushLaserEmitterUp(
-    x::Integer, y::Integer,
+    x::Integer, y::Integer, width::Integer=default_size,
     cassetteIndex::Integer=0, killPlayer::Bool=true, collideWithSolids::Bool=true, halfLength::Bool=false
 )
 
 @mapdef Entity "SJ2021/BrushLaserEmitterDown" BrushLaserEmitterDown(
-    x::Integer, y::Integer,
+    x::Integer, y::Integer, width::Integer=default_size,
     cassetteIndex::Integer=0, killPlayer::Bool=true, collideWithSolids::Bool=true, halfLength::Bool=false
 )
 
 @mapdef Entity "SJ2021/BrushLaserEmitterLeft" BrushLaserEmitterLeft(
-    x::Integer, y::Integer,
+    x::Integer, y::Integer, height::Integer=default_size,
     cassetteIndex::Integer=0, killPlayer::Bool=true, collideWithSolids::Bool=true, halfLength::Bool=false
 )
 
 @mapdef Entity "SJ2021/BrushLaserEmitterRight" BrushLaserEmitterRight(
-    x::Integer, y::Integer,
+    x::Integer, y::Integer, height::Integer=default_size,
     cassetteIndex::Integer=0, killPlayer::Bool=true, collideWithSolids::Bool=true, halfLength::Bool=false
 )
 
@@ -36,36 +39,54 @@ const brushLaserUnion = Union{BrushLaserEmitterUp, BrushLaserEmitterDown, BrushL
 const placements = Ahorn.PlacementDict(
     "Brush Laser Emitter (Up) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         BrushLaserEmitterUp,
+        "rectangle",
     ),
     "Brush Laser Emitter (Down) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         BrushLaserEmitterDown,
+        "rectangle",
     ),
     "Brush Laser Emitter (Left) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         BrushLaserEmitterLeft,
+        "rectangle",
     ),
     "Brush Laser Emitter (Right) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         BrushLaserEmitterRight,
+        "rectangle",
     )
 )
+
 function Ahorn.selection(entity::BrushLaserEmitterUp)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x - BEAM_THICKNESS / 2, y - BRUSH_LENGTH, BEAM_THICKNESS, BRUSH_LENGTH)
+    width = get(entity.data, "width", default_size)
+    return Ahorn.Rectangle(x, y - thickness, width, thickness)
 end
 
 function Ahorn.selection(entity::BrushLaserEmitterDown)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x - BEAM_THICKNESS / 2, y, BEAM_THICKNESS, BRUSH_LENGTH)
+    width = get(entity.data, "width", default_size)
+    return Ahorn.Rectangle(x, y, width, thickness)
 end
 
 function Ahorn.selection(entity::BrushLaserEmitterLeft)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x - BRUSH_LENGTH, y - BEAM_THICKNESS / 2, BRUSH_LENGTH, BEAM_THICKNESS)
+    height = get(entity.data, "height", default_size)
+    return Ahorn.Rectangle(x - thickness, y, thickness, height)
 end
 
 function Ahorn.selection(entity::BrushLaserEmitterRight)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x, y - BEAM_THICKNESS / 2, BRUSH_LENGTH, BEAM_THICKNESS)
+    height = get(entity.data, "height", default_size)
+    return Ahorn.Rectangle(x, y, thickness, height)
 end
+
+Ahorn.resizable(entity::BrushLaserEmitterUp) = true, false
+Ahorn.resizable(entity::BrushLaserEmitterDown) = true, false
+Ahorn.resizable(entity::BrushLaserEmitterLeft) = false, true
+Ahorn.resizable(entity::BrushLaserEmitterRight) = false, true
+Ahorn.minimumSize(entity::BrushLaserEmitterUp) = default_size, thickness
+Ahorn.minimumSize(entity::BrushLaserEmitterDown) = default_size, thickness
+Ahorn.minimumSize(entity::BrushLaserEmitterLeft) = thickness, default_size
+Ahorn.minimumSize(entity::BrushLaserEmitterRight) = thickness, default_size
 
 sprite_path = "objects/StrawberryJam2021/brushLaserEmitter"
 

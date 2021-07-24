@@ -38,6 +38,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         protected int DataWidth { get; }
         protected int DataHeight { get; }
 
+        protected int Size => Orientation.Vertical() ? DataWidth : DataHeight;
+        protected int Tiles => Size / tileSize;
+
         #endregion
 
         private string animationPrefix => CassetteIndex == 0 ? "blue" : "pink";
@@ -46,14 +49,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private string burstAnimation => $"{animationPrefix}_burst";
         private string idleAnimation => $"{animationPrefix}_idle";
         private string cooldownAnimation => $"{animationPrefix}_cooldown";
+        private string backAnimation => $"{animationPrefix}_a";
         private Vector2 beamOffset => Orientation.Normal() * beamOffsetMultiplier;
         private Color telegraphColor => CassetteListener.ColorFromCassetteIndex(CassetteIndex);
+        private Color beamFillColor => CassetteIndex == 0 ? Calc.HexToColor("73efe8") : Calc.HexToColor("ff8eae");
 
-        private readonly Sprite[] emitterSprites;
+        private readonly Sprite largeEmitterSprite;
+        private readonly Sprite smallEmitterSprite;
         private readonly Sprite beamSprite;
-        private readonly Collider emitterHitbox;
-        private readonly ColliderList colliderList;
+
+        private readonly Collider[] emitterHitboxes;
         private readonly Hitbox[] laserHitboxes;
+        private readonly ColliderList inactiveColliderList;
+        private readonly ColliderList activeColliderList;
         private readonly CassetteListener cassetteListener;
         private LaserState laserState;
         private bool needsForcedUpdate;
@@ -64,6 +72,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private const int beamThickness = 12;
         private const float mediumRumbleEffectRange = 8f * 12;
         private const float strongRumbleEffectRange = 8f * 8;
+        private const int tileSize = 8;
 
         private float collisionDelayRemaining;
 
@@ -113,12 +122,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         };
 
         private void setAnimationSpeed(string key, float totalRunTime) {
-            foreach (var sprite in emitterSprites)
-            {
-                if (sprite.Animations.TryGetValue(key, out var emitterAnimation))
-                    emitterAnimation.Delay = totalRunTime / emitterAnimation.Frames.Length;
-            }
-
+            if (largeEmitterSprite.Animations.TryGetValue(key, out var emitterAnimation))
+                emitterAnimation.Delay = totalRunTime / emitterAnimation.Frames.Length;
             if (beamSprite.Animations.TryGetValue(key, out var beamAnimation))
                 beamAnimation.Delay = totalRunTime / beamAnimation.Frames.Length;
         }
@@ -137,43 +142,38 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     case LaserState.Precharge:
                         if (value == LaserState.Idle && oldState == LaserState.Firing) {
                             emitCooldownParticles();
-                            foreach (var sprite in emitterSprites)
-                                sprite.Play(cooldownAnimation);
+                            largeEmitterSprite.Play(cooldownAnimation);
                         } else {
-                            foreach (var sprite in emitterSprites)
-                                sprite.Play(idleAnimation);
+                            largeEmitterSprite.Play(idleAnimation);
                         }
 
                         beamSprite.Visible = false;
-                        Collider = emitterHitbox;
+                        Collider = inactiveColliderList;
                         break;
 
                     case LaserState.Charging:
-                        foreach (var sprite in emitterSprites)
-                            sprite.Play(chargingAnimation);
+                        largeEmitterSprite.Play(chargingAnimation);
                         beamSprite.Visible = false;
-                        Collider = emitterHitbox;
+                        Collider = inactiveColliderList;
 
                         break;
 
                     case LaserState.Burst:
-                        foreach (var sprite in emitterSprites)
-                            sprite.Play(burstAnimation);
+                        largeEmitterSprite.Play(burstAnimation);
                         playNearbyEffects();
                         beamSprite.Visible = true;
                         beamSprite.Play(burstAnimation);
-                        Collider = emitterHitbox;
+                        Collider = inactiveColliderList;
                         collisionDelayRemaining = collisionDelaySeconds;
                         break;
 
                     case LaserState.Firing:
                         beamSprite.Visible = true;
                         collisionDelayRemaining = 0;
-                        Collider = colliderList;
+                        Collider = activeColliderList;
 
                         if (oldState != LaserState.Burst) {
-                            foreach (var sprite in emitterSprites)
-                                sprite.Play(firingAnimation);
+                            largeEmitterSprite.Play(firingAnimation);
                             beamSprite.Play(firingAnimation);
                         }
 
@@ -206,7 +206,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             DataWidth = data.Width;
             DataHeight = data.Height;
 
-            emitterSprites = CreateEmitterSprites().ToArray();
+            largeEmitterSprite = configureSprite(StrawberryJam2021Module.SpriteBank.Create("brushLaserEmitter"));
+            smallEmitterSprite = configureSprite(StrawberryJam2021Module.SpriteBank.Create("brushLaserEmitterSmall"));
+
+            largeEmitterSprite.Play(idleAnimation);
+            smallEmitterSprite.Play("pink_a");
+
+            // emitterSprites = CreateEmitterSprites().ToArray();
+            // backSprites = CreateBackSprites().ToArray();
+            //
+            // foreach (var emitterSprite in emitterSprites)
+            //     emitterSprite.Play(idleAnimation);
+            //
+            // foreach (var backSprite in backSprites)
+            //     backSprite.Play(backAnimation);
 
             beamSprite = StrawberryJam2021Module.SpriteBank.Create("brushLaserBeam");
             beamSprite.Scale = Orientation == Orientations.Left || Orientation == Orientations.Up ? new Vector2(-1, 1) : Vector2.One;
@@ -249,18 +262,26 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 },
                 new PlayerCollider(onPlayerCollide),
                 new LedgeBlocker(_ => KillPlayer),
-                beamSprite
+                beamSprite,
+                smallEmitterSprite,
+                largeEmitterSprite
             );
 
-            Add(emitterSprites.Cast<Component>().ToArray());
+            var emitterHitboxList = new List<Collider>();
+            var colliderOffset = Orientation.Vertical() ? new Vector2(tileSize, 0) : new Vector2(0, tileSize);
+            for (int i = 1; i < Tiles; i += 2) {
+                var coll = (Collider) new Circle(6);
+                coll.Position = Orientation.Normal() * 2f + colliderOffset * i;
+                emitterHitboxList.Add(coll);
+            }
 
-            Collider = emitterHitbox = new Circle(6);
-            emitterHitbox.Position += Orientation.Normal() * 2f;
+            emitterHitboxes = emitterHitboxList.ToArray();
+            inactiveColliderList = new ColliderList(emitterHitboxes);
 
             var components = CreateLaserColliders().ToArray();
             laserHitboxes = components.Select(c => c.Collider).ToArray();
             Add(components.Cast<Component>().ToArray());
-            colliderList = new ColliderList(laserHitboxes.Concat(new[] {emitterHitbox}).ToArray());
+            activeColliderList = new ColliderList(emitterHitboxes.Concat(laserHitboxes).ToArray());
 
             Get<StaticMover>().OnMove = v => {
                 Position += v;
@@ -269,27 +290,31 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             };
         }
 
-        protected virtual IEnumerable<LaserColliderComponent> CreateLaserColliders() => new[] {
-            new LaserColliderComponent {
-                CollideWithSolids = CollideWithSolids, Thickness = beamThickness, Offset = beamOffset,
-            }
-        };
-
-        protected virtual IEnumerable<Sprite> CreateEmitterSprites() => new[] {
-            ConfigureEmitterSprite(StrawberryJam2021Module.SpriteBank.Create("brushLaserEmitter"), Vector2.Zero),
-        };
-
-        protected Sprite ConfigureEmitterSprite(Sprite emitterSprite, Vector2 position) {
-            emitterSprite.Scale = Orientation == Orientations.Left || Orientation == Orientations.Up
+        private Sprite configureSprite(Sprite sprite) {
+            sprite.Scale = Orientation == Orientations.Left || Orientation == Orientations.Up
                 ? new Vector2(-1, 1)
                 : Vector2.One;
-            emitterSprite.Rotation = Orientation == Orientations.Up || Orientation == Orientations.Down
+            sprite.Rotation = Orientation == Orientations.Up || Orientation == Orientations.Down
                 ? (float) Math.PI / 2f
                 : 0f;
-            emitterSprite.Position = position;
-            emitterSprite.Play(idleAnimation);
+            return sprite;
+        }
 
-            return emitterSprite;
+        protected virtual IEnumerable<LaserColliderComponent> CreateLaserColliders() {
+            var offset = Orientation.Vertical() ? new Vector2(tileSize, 0) : new Vector2(0, tileSize);
+
+            if (Tiles == 2) {
+                return new[] {
+                    new LaserColliderComponent {
+                        CollideWithSolids = CollideWithSolids, Thickness = beamThickness, Offset = offset + beamOffset,
+                    }
+                };
+            }
+
+            var start = offset / 2;
+            return Enumerable.Range(0, Tiles).Select(i => new LaserColliderComponent {
+                CollideWithSolids = CollideWithSolids, Offset = start + offset * i, Thickness = tileSize,
+            });
         }
 
         public override void Added(Scene scene) {
@@ -347,7 +372,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
-            if (beamSprite.Visible) {
+            if (State == LaserState.Burst || State == LaserState.Firing) {
                 for (int i = 0; i < laserHitboxes.Length; i++)
                     renderBeam(laserHitboxes[i], i);
             } else if (State == LaserState.Charging) {
@@ -355,8 +380,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     renderTelegraph(hitbox);
             }
 
-            foreach (var emitterSprite in emitterSprites)
-                emitterSprite.Render();
+            var offset = Orientation.Vertical() ? new Vector2(tileSize, 0) : new Vector2(0, tileSize);
+
+            for (int i = 2; i < Tiles; i += 2) {
+                smallEmitterSprite.Position = offset * i;
+                smallEmitterSprite.Render();
+            }
+
+            for (int i = 1; i < Tiles; i += 2) {
+                largeEmitterSprite.Position = offset * i;
+                largeEmitterSprite.Render();
+            }
         }
 
         private void renderBeam(Hitbox laserHitbox, int index) {
@@ -377,17 +411,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             var origin = beamSprite.Origin;
 
             if (laserHitboxes.Length > 1) {
-                const int tileSize = 8;
-                // int thickness = (int) Orientation.ThicknessOfHitbox(laserHitbox);
                 if (index == 0 && Orientation.Horizontal() || index == laserHitboxes.Length - 1 && Orientation.Vertical())
                     frame = frame.GetSubtexture(new Rectangle(0, 0, frame.Width, tileSize));
                 else if (index == 0 && Orientation.Vertical() || index == laserHitboxes.Length - 1 && Orientation.Horizontal())
                     frame = frame.GetSubtexture(new Rectangle(0, frame.Height - tileSize, frame.Width, tileSize));
-                else
-                    frame = frame.GetSubtexture(new Rectangle(0, tileSize / 2, frame.Width, tileSize));
+                else {
+                    // TODO: draw rectangle instead
+                    // var rectPos = Position + Orientation.Normal() * tileSize * index;
+                    var rectTopLeft = Position + laserHitbox.TopLeft;
+                    Draw.Rect(rectTopLeft.X, rectTopLeft.Y, laserHitbox.Width, laserHitbox.Height, beamFillColor);
+                    return;
+                }
                 origin = new Vector2(0, tileSize / 2f);
             }
 
+            return;
             int count = (int) Math.Ceiling(length / frame.Width);
             int remainder = (int) length % frame.Width;
 
@@ -399,33 +437,35 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void renderTelegraph(Hitbox laserHitbox) {
-            if (emitterSprites.FirstOrDefault() is not { } emitterSprite)
-                return;
-
-            float animationProgress = (float)emitterSprite.CurrentAnimationFrame / emitterSprite.CurrentAnimationTotalFrames;
-            int hitboxThickness = (int) Orientation.ThicknessOfHitbox(laserHitbox);
-            int lerped = (int)Calc.LerpClamp(0, hitboxThickness, Ease.QuintOut(animationProgress));
-            int thickness = Math.Min(lerped + 2, hitboxThickness);
-            thickness -= thickness % 2;
-
-            var rect = Orientation == Orientations.Up || Orientation == Orientations.Down
-                ? new Rectangle((int) (X + laserHitbox.CenterX) - thickness / 2, (int) (Y + laserHitbox.Top), thickness, (int) laserHitbox.Height)
-                : new Rectangle((int) (X + laserHitbox.Left), (int) (Y + laserHitbox.CenterY) - thickness / 2, (int) laserHitbox.Width, thickness);
-
-            Draw.Rect(rect, telegraphColor * 0.3f);
+            // if (emitterSprites.FirstOrDefault() is not { } emitterSprite)
+            //     return;
+            //
+            // float animationProgress = (float)emitterSprite.CurrentAnimationFrame / emitterSprite.CurrentAnimationTotalFrames;
+            // int hitboxThickness = (int) Orientation.ThicknessOfHitbox(laserHitbox);
+            // int lerped = (int)Calc.LerpClamp(0, hitboxThickness, Ease.QuintOut(animationProgress));
+            // int thickness = Math.Min(lerped + 2, hitboxThickness);
+            // thickness -= thickness % 2;
+            //
+            // var rect = Orientation == Orientations.Up || Orientation == Orientations.Down
+            //     ? new Rectangle((int) (X + laserHitbox.CenterX) - thickness / 2, (int) (Y + laserHitbox.Top), thickness, (int) laserHitbox.Height)
+            //     : new Rectangle((int) (X + laserHitbox.Left), (int) (Y + laserHitbox.CenterY) - thickness / 2, (int) laserHitbox.Width, thickness);
+            //
+            // Draw.Rect(rect, telegraphColor * 0.3f);
         }
 
         private void emitCooldownParticles() {
+            int amount = laserHitboxes.Length == 1 ? 3 : 1;
+
             foreach (var laserHitbox in laserHitboxes) {
                 var level = SceneAs<Level>();
                 int length = (int) Orientation.LengthOfHitbox(laserHitbox) - beamOffsetMultiplier;
                 var offset = Orientation.Normal();
                 float angle = Orientation.Angle() - (float) Math.PI / 2f;
-                var startPos = Position + beamOffset * 2;
+                var startPos =  Position + Orientation.OriginOfHitbox(laserHitbox) + beamOffset * 2;
                 var particle = CassetteIndex == 0 ? blueCooldownParticle : pinkCooldownParticle;
 
                 for (int i = 0; i < length; i += Calc.Random.Next(8, 16)) {
-                    level.ParticlesBG.Emit(particle, 3, startPos + offset * i, Vector2.Zero, angle);
+                    level.ParticlesBG.Emit(particle, amount, startPos + offset * i, Vector2.Zero, angle);
                 }
             }
         }
