@@ -81,51 +81,64 @@
         <Anim id="rounded_tint" path="rounded_tint" delay="0.1" frames="0"/>
     </laserEmitter>
 
-    <!--Brush Laser Emitter-->
-    <brushLaserEmitter path="objects/StrawberryJam2021/brushLaserEmitter/" start="pink_idle">
+    <!--Paintbrush Large Brush: The 2-tile wide brush sprite-->
+    <paintbrushLargeBrush path="objects/StrawberryJam2021/paintbrush/" start="pink_idle">
         <Justify x="0" y="0.5"/>
-        <Anim id="pink_idle" path="pink/brush-a/brush-a-idle" delay="0.1" frames="0"/>
-        <Anim id="pink_charging" path="pink/brush-a/brush-a-charging" delay="0.1" frames="0-7"/>
-        <Anim id="pink_burst" path="pink/brush-a/brush-a-burst" delay="0.1" frames="0,1" goto="pink_firing"/>
-        <Loop id="pink_firing" path="pink/brush-a/brush-a-firing" delay="0.1" frames="0-3"/>
-        <Anim id="pink_cooldown" path="pink/brush-a/brush-a-cooldown" delay="0.1" frames="0-3" goto="pink_idle"/>
-        <Anim id="blue_idle" path="blue/brush-a/brush-a-idle" delay="0.1" frames="0"/>
-        <Anim id="blue_charging" path="blue/brush-a/brush-a-charging" delay="0.1" frames="0-7"/>
-        <Anim id="blue_burst" path="blue/brush-a/brush-a-burst" delay="0.1" frames="0,1" goto="blue_firing"/>
-        <Loop id="blue_firing" path="blue/brush-a/brush-a-firing" delay="0.1" frames="0-3"/>
-        <Anim id="blue_cooldown" path="blue/brush-a/brush-a-cooldown" delay="0.1" frames="0-3" goto="blue_idle"/>
-    </brushLaserEmitter>
+        <Anim id="pink_idle" path="pink/brush" delay="0.1" frames="1"/>
+        <Anim id="pink_charging" path="pink/brush" delay="0.1" frames="2-9"/>
+        <Anim id="pink_burst" path="pink/brush" delay="0.1" frames="10-11" goto="pink_firing"/>
+        <Loop id="pink_firing" path="pink/brush" delay="0.1" frames="12-15"/>
+        <Anim id="pink_cooldown" path="pink/brush" delay="0.1" frames="16-19" goto="pink_idle"/>
+        <Anim id="blue_idle" path="blue/brush" delay="0.1" frames="1"/>
+        <Anim id="blue_charging" path="blue/brush" delay="0.1" frames="2-9"/>
+        <Anim id="blue_burst" path="blue/brush" delay="0.1" frames="10-11" goto="pink_firing"/>
+        <Loop id="blue_firing" path="blue/brush" delay="0.1" frames="12-15"/>
+        <Anim id="blue_cooldown" path="blue/brush" delay="0.1" frames="16-19" goto="pink_idle"/>
+    </paintbrushLargeBrush>
 
-    <!-- Brush Laser Paint: Appears behind the brush while it is firing -->
-    <brushLaserPaintBack path="objects/StrawberryJam2021/brushLaserEmitter/" start="pink_cooldown">
+    <!--Paintbrush Paint Back: Appears behind the brush while it is firing-->
+    <paintbrushPaintBack path="objects/StrawberryJam2021/paintbrush/" start="pink_cooldown">
         <Justify x="0" y="0.5"/>
-        <Loop id="pink_firing" path="pink/wide/brush-a-glow" delay="0.1" frames="11-14"/>
-        <Anim id="pink_cooldown" path="pink/wide/brush-a-glow" delay="0.1" frames="15-17"/>
-        <Loop id="blue_firing" path="blue/wide/brush-a-glow" delay="0.1" frames="11-14"/>
-        <Anim id="blue_cooldown" path="blue/wide/brush-a-glow" delay="0.1" frames="15-17"/>
-    </brushLaserPaintBack>
+        <Loop id="pink_firing" path="pink/paintback" delay="0.1" frames="12-15"/>
+        <Anim id="pink_cooldown" path="pink/paintback" delay="0.1" frames="16-18"/>
+        <Loop id="blue_firing" path="blue/paintback" delay="0.1" frames="12-15"/>
+        <Anim id="blue_cooldown" path="blue/paintback" delay="0.1" frames="16-18"/>
+    </paintbrushPaintBack>
 
-    <!--Brush Laser Small Brushes: Appears between large brushes in wide emitters -->
-    <brushLaserEmitterSmall path="objects/StrawberryJam2021/brushLaserEmitter/" start="pink_a">
+    <!--Paintbrush Paint: Appears on the brush while it is firing-->
+    <paintbrushPaintParticles path="objects/StrawberryJam2021/paintbrush/" start="pink_cooldown">
         <Justify x="0" y="0.5"/>
-        <Anim id="pink_a" path="pink/wide/backbrushA" delay="0.1" frames="0"/>
-        <Anim id="pink_b" path="pink/wide/backbrushB" delay="0.1" frames="0"/>
-        <Anim id="pink_c" path="pink/wide/backbrushC" delay="0.1" frames="0"/>
-        <Anim id="pink_d" path="pink/wide/backbrushD" delay="0.1" frames="0"/>
-        <Anim id="blue_a" path="blue/wide/backbrushA" delay="0.1" frames="0"/>
-        <Anim id="blue_b" path="blue/wide/backbrushB" delay="0.1" frames="0"/>
-        <Anim id="blue_c" path="blue/wide/backbrushC" delay="0.1" frames="0"/>
-        <Anim id="blue_d" path="blue/wide/backbrushD" delay="0.1" frames="0"/>
-    </brushLaserEmitterSmall>
+        <Anim id="pink_charging" path="pink/paintparticles" delay="0.1" frames="2-9"/>
+        <Anim id="pink_burst" path="pink/paintparticles" delay="0.1" frames="10-11" goto="pink_firing"/>
+        <Loop id="pink_firing" path="pink/paintparticles" delay="0.1" frames="12-15"/>
+        <Anim id="pink_cooldown" path="pink/paintparticles" delay="0.1" frames="16-19" goto="pink_idle"/>
+        <Anim id="blue_charging" path="blue/paintparticles" delay="0.1" frames="2-9"/>
+        <Anim id="blue_burst" path="blue/paintparticles" delay="0.1" frames="10-11" goto="pink_firing"/>
+        <Loop id="blue_firing" path="blue/paintparticles" delay="0.1" frames="12-15"/>
+        <Anim id="blue_cooldown" path="blue/paintparticles" delay="0.1" frames="16-19" goto="pink_idle"/>
+    </paintbrushPaintParticles>
 
-    <!--Brush Laser Beam-->
-    <brushLaserBeam path="objects/StrawberryJam2021/brushLaserEmitter/" start="pink_burst">
+    <!--Paintbrush Small Brush: Appears between large brushes in wide emitters -->
+    <paintbrushSmallBrush path="objects/StrawberryJam2021/paintbrush/" start="pink_a">
         <Justify x="0" y="0.5"/>
-        <Anim id="pink_burst" path="pink/beam-burst" delay="0.1" frames="0,1" goto="pink_firing"/>
-        <Loop id="pink_firing" path="pink/beam-firing" delay="0.1" frames="0-3"/>
-        <Anim id="blue_burst" path="blue/beam-burst" delay="0.1" frames="0,1" goto="blue_firing"/>
-        <Loop id="blue_firing" path="blue/beam-firing" delay="0.1" frames="0-3"/>
-    </brushLaserBeam>
+        <Anim id="pink_a" path="pink/backbrushA" delay="0.1" frames="0"/>
+        <Anim id="pink_b" path="pink/backbrushB" delay="0.1" frames="0"/>
+        <Anim id="pink_c" path="pink/backbrushC" delay="0.1" frames="0"/>
+        <Anim id="pink_d" path="pink/backbrushD" delay="0.1" frames="0"/>
+        <Anim id="blue_a" path="blue/backbrushA" delay="0.1" frames="0"/>
+        <Anim id="blue_b" path="blue/backbrushB" delay="0.1" frames="0"/>
+        <Anim id="blue_c" path="blue/backbrushC" delay="0.1" frames="0"/>
+        <Anim id="blue_d" path="blue/backbrushD" delay="0.1" frames="0"/>
+    </paintbrushSmallBrush>
+
+    <!--Paintbrush Beam-->
+    <paintbrushBeam path="objects/StrawberryJam2021/paintbrush/" start="pink_burst">
+        <Justify x="0" y="0.5"/>
+        <Anim id="pink_burst" path="pink/beam" delay="0.1" frames="10-11" goto="pink_firing"/>
+        <Loop id="pink_firing" path="pink/beam" delay="0.1" frames="12-15"/>
+        <Anim id="blue_burst" path="blue/beam" delay="0.1" frames="10-11" goto="pink_firing"/>
+        <Loop id="blue_firing" path="blue/beam" delay="0.1" frames="12-15"/>
+    </paintbrushBeam>
 
     <!--Wide Brush Laser Beam-->
 <!--    <wideBrushLaserBeam path="objects/StrawberryJam2021/brushLaserEmitter/" start="pink_burst">-->
