@@ -111,11 +111,11 @@
         <Anim id="pink_charging" path="pink/paintparticles" delay="0.1" frames="2-9"/>
         <Anim id="pink_burst" path="pink/paintparticles" delay="0.1" frames="10-11" goto="pink_firing"/>
         <Loop id="pink_firing" path="pink/paintparticles" delay="0.1" frames="12-15"/>
-        <Anim id="pink_cooldown" path="pink/paintparticles" delay="0.1" frames="16-19" goto="pink_idle"/>
+        <Anim id="pink_cooldown" path="pink/paintparticles" delay="0.1" frames="16-19"/>
         <Anim id="blue_charging" path="blue/paintparticles" delay="0.1" frames="2-9"/>
-        <Anim id="blue_burst" path="blue/paintparticles" delay="0.1" frames="10-11" goto="pink_firing"/>
+        <Anim id="blue_burst" path="blue/paintparticles" delay="0.1" frames="10-11" goto="blue_firing"/>
         <Loop id="blue_firing" path="blue/paintparticles" delay="0.1" frames="12-15"/>
-        <Anim id="blue_cooldown" path="blue/paintparticles" delay="0.1" frames="16-19" goto="pink_idle"/>
+        <Anim id="blue_cooldown" path="blue/paintparticles" delay="0.1" frames="16-19"/>
     </paintbrushPaintParticles>
 
     <!--Paintbrush Small Brush: Appears between large brushes in wide emitters -->
@@ -136,18 +136,9 @@
         <Justify x="0" y="0.5"/>
         <Anim id="pink_burst" path="pink/beam" delay="0.1" frames="10-11" goto="pink_firing"/>
         <Loop id="pink_firing" path="pink/beam" delay="0.1" frames="12-15"/>
-        <Anim id="blue_burst" path="blue/beam" delay="0.1" frames="10-11" goto="pink_firing"/>
+        <Anim id="blue_burst" path="blue/beam" delay="0.1" frames="10-11" goto="blue_firing"/>
         <Loop id="blue_firing" path="blue/beam" delay="0.1" frames="12-15"/>
     </paintbrushBeam>
-
-    <!--Wide Brush Laser Beam-->
-<!--    <wideBrushLaserBeam path="objects/StrawberryJam2021/brushLaserEmitter/" start="pink_burst">-->
-<!--        <Justify x="0" y="0.5"/>-->
-<!--        <Anim id="pink_burst" path="pink/wide/beam-burst" delay="0.1" frames="0,1" goto="pink_firing"/>-->
-<!--        <Loop id="pink_firing" path="pink/wide/beam-firing" delay="0.1" frames="0-3"/>-->
-<!--        <Anim id="blue_burst" path="blue/wide/beam-burst" delay="0.1" frames="0,1" goto="blue_firing"/>-->
-<!--        <Loop id="blue_firing" path="blue/wide/beam-firing" delay="0.1" frames="0-3"/>-->
-<!--    </wideBrushLaserBeam>-->
 
     <!--Flag Breaker Box-->
     <flagBreakerBox path="objects/StrawberryJam2021/flagBreakerBox/" start="idle">
