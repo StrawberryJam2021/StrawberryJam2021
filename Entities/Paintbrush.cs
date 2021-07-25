@@ -50,7 +50,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private string burstAnimation => $"{animationPrefix}_burst";
         private string idleAnimation => $"{animationPrefix}_idle";
         private string cooldownAnimation => $"{animationPrefix}_cooldown";
-        private string backAnimation => $"{animationPrefix}_a";
         private Vector2 beamOffset => Orientation.Normal() * beamOffsetMultiplier;
         private Color telegraphColor => CassetteListener.ColorFromCassetteIndex(CassetteIndex);
         private Color beamFillColor => CassetteIndex == 0 ? Calc.HexToColor("73efe8") : Calc.HexToColor("ff8eae");
@@ -60,6 +59,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly Sprite beamSprite;
         private readonly Sprite paintParticlesSprite;
         private readonly Sprite paintBackSprite;
+        private readonly int[] smallBrushFrames;
 
         private readonly Collider[] brushHitboxes;
         private readonly Hitbox[] beamHitboxes;
@@ -213,9 +213,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             beamSprite = configureSprite(StrawberryJam2021Module.SpriteBank.Create("paintbrushBeam"));
 
             largeBrushSprite.Play(idleAnimation);
-            smallBrushSprite.Play("pink_a");
+            smallBrushSprite.Play(idleAnimation);
 
             beamSprite.Position = beamOffset;
+
+            if (smallBrushSprite.Animations.TryGetValue(idleAnimation, out var smallBrushAnimation)) {
+                var rnd = new Random((int) Position.LengthSquared());
+                smallBrushFrames = Enumerable.Range(0, smallBrushAnimation.Frames.Length).ToArray();
+                for (int i = 0; i < smallBrushFrames.Length - 1; i++) {
+                    int swapIndex = rnd.Next(i, smallBrushFrames.Length);
+                    if (swapIndex == i) continue;
+                    int oldValue = smallBrushFrames[i];
+                    smallBrushFrames[i] = smallBrushFrames[swapIndex];
+                    smallBrushFrames[swapIndex] = oldValue;
+                }
+            }
 
             Add(cassetteListener = new CassetteListener {
                     OnBeat = state => {
@@ -379,9 +391,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             var offset = Orientation.Vertical() ? new Vector2(tileSize, 0) : new Vector2(0, tileSize);
 
-            for (int i = 2; i < Tiles; i += 2) {
-                smallBrushSprite.Position = offset * i;
-                smallBrushSprite.Render();
+            if (smallBrushSprite.Animations.TryGetValue(idleAnimation, out var smallBrushAnimation)) {
+                int smallBrushFrameIndex = 0;
+                for (int i = 2; i < Tiles; i += 2, smallBrushFrameIndex++) {
+                    smallBrushFrameIndex %= smallBrushFrames.Length;
+                    var smallBrushFrame = smallBrushAnimation.Frames[smallBrushFrames[smallBrushFrameIndex]];
+                    smallBrushFrame.Draw(Position + offset * i, smallBrushSprite.Origin, smallBrushSprite.Color, smallBrushSprite.Scale, smallBrushSprite.Rotation);
+                }
             }
 
             if (paintBackSprite.CurrentAnimationID != string.Empty && State is LaserState.Firing or LaserState.Cooldown) {

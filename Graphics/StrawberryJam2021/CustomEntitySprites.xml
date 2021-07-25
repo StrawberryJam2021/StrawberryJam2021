@@ -97,7 +97,7 @@
     </paintbrushLargeBrush>
 
     <!--Paintbrush Paint Back: Appears behind the brush while it is firing-->
-    <paintbrushPaintBack path="objects/StrawberryJam2021/paintbrush/" start="pink_cooldown">
+    <paintbrushPaintBack path="objects/StrawberryJam2021/paintbrush/">
         <Justify x="0" y="0.5"/>
         <Loop id="pink_firing" path="pink/paintback" delay="0.1" frames="12-15"/>
         <Anim id="pink_cooldown" path="pink/paintback" delay="0.1" frames="16-18"/>
@@ -106,7 +106,7 @@
     </paintbrushPaintBack>
 
     <!--Paintbrush Paint: Appears on the brush while it is firing-->
-    <paintbrushPaintParticles path="objects/StrawberryJam2021/paintbrush/" start="pink_cooldown">
+    <paintbrushPaintParticles path="objects/StrawberryJam2021/paintbrush/">
         <Justify x="0" y="0.5"/>
         <Anim id="pink_charging" path="pink/paintparticles" delay="0.1" frames="2-9"/>
         <Anim id="pink_burst" path="pink/paintparticles" delay="0.1" frames="10-11" goto="pink_firing"/>
@@ -119,20 +119,14 @@
     </paintbrushPaintParticles>
 
     <!--Paintbrush Small Brush: Appears between large brushes in wide emitters -->
-    <paintbrushSmallBrush path="objects/StrawberryJam2021/paintbrush/" start="pink_a">
+    <paintbrushSmallBrush path="objects/StrawberryJam2021/paintbrush/">
         <Justify x="0" y="0.5"/>
-        <Anim id="pink_a" path="pink/backbrushA" delay="0.1" frames="0"/>
-        <Anim id="pink_b" path="pink/backbrushB" delay="0.1" frames="0"/>
-        <Anim id="pink_c" path="pink/backbrushC" delay="0.1" frames="0"/>
-        <Anim id="pink_d" path="pink/backbrushD" delay="0.1" frames="0"/>
-        <Anim id="blue_a" path="blue/backbrushA" delay="0.1" frames="0"/>
-        <Anim id="blue_b" path="blue/backbrushB" delay="0.1" frames="0"/>
-        <Anim id="blue_c" path="blue/backbrushC" delay="0.1" frames="0"/>
-        <Anim id="blue_d" path="blue/backbrushD" delay="0.1" frames="0"/>
+        <Anim id="pink_idle" path="pink/backbrush" delay="0.1" frames="1-4"/>
+        <Anim id="blue_idle" path="blue/backbrush" delay="0.1" frames="1-4"/>
     </paintbrushSmallBrush>
 
     <!--Paintbrush Beam-->
-    <paintbrushBeam path="objects/StrawberryJam2021/paintbrush/" start="pink_burst">
+    <paintbrushBeam path="objects/StrawberryJam2021/paintbrush/">
         <Justify x="0" y="0.5"/>
         <Anim id="pink_burst" path="pink/beam" delay="0.1" frames="10-11" goto="pink_firing"/>
         <Loop id="pink_firing" path="pink/beam" delay="0.1" frames="12-15"/>
