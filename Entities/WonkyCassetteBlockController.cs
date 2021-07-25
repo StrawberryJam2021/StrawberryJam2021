@@ -82,7 +82,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             session.CassetteBeatTimer = session.MusicBeatTimer - cassetteOffset;
         }
 
-        private void AdvanceMusic(float time, Scene scene, EventInstance sfx, StrawberryJam2021Session session) {
+        private void AdvanceMusic(float time, Scene scene, StrawberryJam2021Session session) {
             session.CassetteBeatTimer += time;
 
             if (session.CassetteBeatTimer >= beatIncrement) {
@@ -140,16 +140,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Audio.Play("event:/game/general/cassette_block_switch_2");
                 sfx.start();
             } else {
-                AdvanceMusic(Engine.DeltaTime, Scene, sfx, StrawberryJam2021Module.Session);
+                AdvanceMusic(Engine.DeltaTime, Scene, StrawberryJam2021Module.Session);
             }
         }
 
         public static void Load() {
             On.Celeste.Level.LoadLevel += Level_LoadLevel;
+            On.Monocle.Engine.Update += Engine_Update;
         }
 
         public static void Unload() {
             On.Celeste.Level.LoadLevel -= Level_LoadLevel;
+            On.Monocle.Engine.Update -= Engine_Update;
         }
 
         private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
@@ -159,6 +161,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             foreach (WonkyCassetteBlock wonkyBlock in self.Tracker.GetEntities<WonkyCassetteBlock>()) {
                 WonkyCassetteBlockController controller = self.Tracker.GetEntity<WonkyCassetteBlockController>();
                 wonkyBlock.SetActivatedSilently(controller != null && wonkyBlock.OnAtBeats.Contains(session.CassetteWonkyBeatIndex / (16 / controller.beatLength) % controller.barLength));
+            }
+        }
+
+        private static void Engine_Update(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gametime) {
+            float oldFreezeTimer = Engine.FreezeTimer;
+
+            orig(self, gametime);
+
+            if (!Engine.DashAssistFreeze && oldFreezeTimer > 0f) {
+                Engine.Scene.Tracker.GetEntity<WonkyCassetteBlockController>()?.AdvanceMusic(Engine.DeltaTime, Engine.Scene, StrawberryJam2021Module.Session);
+                Engine.Scene.Tracker.GetEntities<WonkyCassetteBlock>().ForEach(block => block.Update());
             }
         }
     }

@@ -19,5 +19,9 @@
 
         // Loop Block
         public const string game_loop_block_sideboost = "event:/strawberry_jam_2021/game/loop_block/sideboost";
+
+        // Drum Swap Blocks
+        public const string game_drum_swapblock_move = "event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move";
+        public const string game_drum_swapblock_move_end = "event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move_end";
     }
 }
