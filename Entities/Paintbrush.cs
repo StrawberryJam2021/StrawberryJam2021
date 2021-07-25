@@ -450,7 +450,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     frame = frame.GetSubtexture(new Rectangle(0, frame.Height / 2, frame.Width, frame.Height / 2));
                 else {
                     var rectTopLeft = Position + beamHitbox.TopLeft;
-                    Draw.Rect(rectTopLeft.X, rectTopLeft.Y, beamHitbox.Width, beamHitbox.Height, beamFillColor);
+                    var color = State == LaserState.Burst && beamSprite.CurrentAnimationFrame == 0 ? Color.White : beamFillColor;
+                    Draw.Rect(rectTopLeft.X, rectTopLeft.Y, beamHitbox.Width, beamHitbox.Height, color);
                     return;
                 }
                 origin = new Vector2(0, tileSize / 2f);
