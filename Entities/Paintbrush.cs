@@ -467,20 +467,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void renderTelegraph(Hitbox beamHitbox) {
-            // if (emitterSprites.FirstOrDefault() is not { } emitterSprite)
-            //     return;
-            //
-            // float animationProgress = (float)emitterSprite.CurrentAnimationFrame / emitterSprite.CurrentAnimationTotalFrames;
-            // int hitboxThickness = (int) Orientation.ThicknessOfHitbox(laserHitbox);
-            // int lerped = (int)Calc.LerpClamp(0, hitboxThickness, Ease.QuintOut(animationProgress));
-            // int thickness = Math.Min(lerped + 2, hitboxThickness);
-            // thickness -= thickness % 2;
-            //
-            // var rect = Orientation == Orientations.Up || Orientation == Orientations.Down
-            //     ? new Rectangle((int) (X + laserHitbox.CenterX) - thickness / 2, (int) (Y + laserHitbox.Top), thickness, (int) laserHitbox.Height)
-            //     : new Rectangle((int) (X + laserHitbox.Left), (int) (Y + laserHitbox.CenterY) - thickness / 2, (int) laserHitbox.Width, thickness);
-            //
-            // Draw.Rect(rect, telegraphColor * 0.3f);
+            float animationProgress = (float)largeBrushSprite.CurrentAnimationFrame / largeBrushSprite.CurrentAnimationTotalFrames;
+            int hitboxThickness = (int) Orientation.ThicknessOfHitbox(beamHitbox);
+            int lerped = (int)Calc.LerpClamp(0, hitboxThickness, Ease.QuintOut(animationProgress));
+            int thickness = Math.Min(lerped + 2, hitboxThickness);
+            thickness -= thickness % 2;
+
+            var rect = Orientation == Orientations.Up || Orientation == Orientations.Down
+                ? new Rectangle((int) (X + beamHitbox.CenterX) - thickness / 2, (int) (Y + beamHitbox.Top), thickness, (int) beamHitbox.Height)
+                : new Rectangle((int) (X + beamHitbox.Left), (int) (Y + beamHitbox.CenterY) - thickness / 2, (int) beamHitbox.Width, thickness);
+
+            Draw.Rect(rect, telegraphColor * 0.3f);
         }
 
         private void emitCooldownParticles() {
