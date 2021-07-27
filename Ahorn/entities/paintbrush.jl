@@ -143,20 +143,14 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::paintbrushUnion, ro
     lox, loy = largeOffsets[direction]
 
     # draw small
-    for num in 2:(tiles - 1)
-        if num % 2 != 0
-            continue
-        end
+    for num in 2:2:(tiles - 1)
         drawX = vertical ? num * 8 : 0
         drawY = vertical ? 0 : num * 8
         Ahorn.drawSprite(ctx, smallSprite, drawX + sox, drawY + soy, jx=0.5, jy=1, sx=sx, sy=sy, rot=theta)
     end
 
     # draw large
-    for num in 1:(tiles - 1)
-        if num % 2 == 0
-            continue
-        end
+    for num in 1:2:(tiles - 1)
         drawX = vertical ? num * 8 : 0
         drawY = vertical ? 0 : num * 8
         Ahorn.drawSprite(ctx, largeSprite, drawX + lox, drawY + loy, jx=0.5, jy=1, sx=sx, sy=sy, rot=theta)
