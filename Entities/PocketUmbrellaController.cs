@@ -145,7 +145,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private bool checkSpawnCondition(Player player) {
-            return player.Stamina > 20 && !player.Ducking && !wallJumpCheck(1, player) && !wallJumpCheck(-1, player) && playerStateCheck(player) && !player.OnGround(1);
+            return player.Stamina > 20 && !player.Ducking && !wallJumpCheck(1, player) && !wallJumpCheck(-1, player) && playerStateCheck(player);
         }
 
         private bool playerStateCheck(Player player) {
