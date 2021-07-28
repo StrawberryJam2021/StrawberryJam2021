@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // so, reflection saves the day again :)
             manager = scene.Tracker.GetEntity<CassetteBlockManager>();
 
-            if (manager != null) return;
+            if (manager != null)
+                return;
 
             List<Entity> toAdd = scene.Entities
                 .GetType().GetField("toAdd", BindingFlags.NonPublic | BindingFlags.Instance)
@@ -63,7 +65,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // This can happen in some edge cases when we're switching rooms and the manager is unloaded before us
             if (manager == null)
                 return null;
-            
+
             int beat = manager.GetSixteenthNote();
 
             beat = beat + cassetteResetOffset - 1;
@@ -81,6 +83,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 lastBeat = beat;
 
             return res;
+        }
+
+        protected int? GetCurrentIndex() {
+            // This can happen in some edge cases when we're switching rooms and the manager is unloaded before us
+            if (manager == null)
+                return null;
+
+            return new DynData<CassetteBlockManager>(manager).Get<int>("currentIndex");
         }
 
         protected float BeatsToSeconds(int beats) {

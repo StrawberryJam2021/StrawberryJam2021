@@ -7,7 +7,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
        Thank you to Brokemia for letting me use his code in this project! */
 
     [CustomEntity("SJ2021/CassetteBadelineBlock")]
+    [Tracked]
     public class CassetteBadelineBlock : CassetteTimedBlock {
+        public static void Load() {
+            On.Celeste.CassetteBlockManager.OnLevelStart += onCassetteBlockManagerLevelStart;
+        }
+
+        public static void Unload() {
+            On.Celeste.CassetteBlockManager.OnLevelStart -= onCassetteBlockManagerLevelStart;
+        }
+
         private int nodeIndex;
         private readonly Vector2[] nodes;
 
@@ -17,6 +26,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly int transitionDuration;
         private readonly bool oneWay;
         private readonly bool teleportBack;
+        private int beatOffset = 0;
 
         public CassetteBadelineBlock(Vector2[] nodes, float width, float height, char tiletype, int moveForwardBeat, int moveBackBeat, int preDelay,
             int transitionDuration, bool oneWay, bool teleportBack) : base(nodes[0], width, height, false) {
@@ -40,15 +50,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 data.Int("transitionDuration", 4), data.Bool("oneWay", false), data.Bool("teleportBack", false)) {
         }
 
-        public override void Awake(Scene scene) {
-            base.Awake(scene);
+        // OnLevelStart is called after Awake and can change the beat, so hook to it to determine the initial state of the block.
+        private static void onCassetteBlockManagerLevelStart(On.Celeste.CassetteBlockManager.orig_OnLevelStart orig, CassetteBlockManager self) {
+            orig(self);
 
-            // If we spawn in and we're supposed to be at the end or moving from the end, place us there
-            var timerState = GetCassetteTimerState(false);
-            var blockState = GetMovingBlockState(timerState.Value.Beat);
+            foreach (CassetteBadelineBlock block in self.Scene.Tracker.GetEntities<CassetteBadelineBlock>()) {
+                // If we spawn in and we're supposed to be at the end or moving from the end, place us there
+                var timerState = block.GetCassetteTimerState(false);
 
-            if (blockState == MovingBlockState.MoveToStart || blockState == MovingBlockState.AtEnd)
-                Teleport();
+                // detect a "desync" between the current index and the sixteenth note counter, and fix it by offsetting the cycle by 8 if needed.
+                bool oddSwapForTimer = timerState.Value.Beat % 16 < 8;
+                bool firstBlockIsActive = block.GetCurrentIndex() == 1;
+                block.beatOffset = oddSwapForTimer != firstBlockIsActive ? 8 : 0;
+
+                var blockState = block.GetMovingBlockState(timerState.Value.Beat + block.beatOffset);
+
+                if (blockState == MovingBlockState.MoveToStart || blockState == MovingBlockState.AtEnd)
+                    block.Teleport();
+            }
         }
 
         // "AtStart" and "AtEnd" signify that we're either at the start/end or we're actively moving to them
@@ -89,7 +108,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!timerState.HasValue || !timerState.Value.ChangedSinceLastBeat)
                 return;
 
-            var blockState = GetMovingBlockState(timerState.Value.Beat);
+            var blockState = GetMovingBlockState(timerState.Value.Beat + beatOffset);
             if (blockState == MovingBlockState.MoveToStart || blockState == MovingBlockState.MoveToEnd) {
                 if (blockState == MovingBlockState.MoveToStart && teleportBack)
                     Teleport();
@@ -112,7 +131,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Vector2 to = nodes[nodeIndex];
 
             Tween tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeIn, actualTransitionDuration, true);
-            tween.OnUpdate = delegate(Tween t) {
+            tween.OnUpdate = delegate (Tween t) {
                 MoveTo(Vector2.Lerp(from, to, t.Eased));
             };
 
