@@ -153,7 +153,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Vector2 startPosition = self.Position;
             Vector2 dirVector = targetPosition - startPosition;
             Vector2 lerpVector = dirVector * travelSpeed;
-            self.Scene.Tracker.GetEntity<Player>();
 
             data.Set("returning", returning);
             data.Set("nodeIndex", nodeIndex);
