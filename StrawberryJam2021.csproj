@@ -49,9 +49,6 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="CanyonHelper" />
-  </ItemGroup>
   <Choose>
     <When Condition="'$(CelesteType)' == 'FNA'">
       <ItemGroup>
