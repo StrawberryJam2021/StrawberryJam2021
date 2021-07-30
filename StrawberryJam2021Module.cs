@@ -48,6 +48,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             LaserEmitter.Load();
             OshiroAttackTimeTrigger.Load();
             CassetteBadelineBlock.Load();
+            DirectionalBooster.Load();
         }
 
         public override void Unload() {
@@ -76,6 +77,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             LaserEmitter.Unload();
             OshiroAttackTimeTrigger.Unload();
             CassetteBadelineBlock.Unload();
+            DirectionalBooster.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
