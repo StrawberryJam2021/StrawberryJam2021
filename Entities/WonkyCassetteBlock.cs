@@ -15,6 +15,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public readonly int[] OnAtBeats;
 
+        public int boostFrames = 0;
+
         private DynData<CassetteBlock> cassetteBlockData;
 
         private string textureDir;
@@ -44,19 +46,43 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
 
+            WonkyCassetteBlock selfCast = (WonkyCassetteBlock) self;
+
             var group = (List<CassetteBlock>) _groupField.GetValue(self);
 
             foreach (WonkyCassetteBlock entity in self.Scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>()) {
                 if (entity != self && entity != block && entity.Index == self.Index &&
                     (entity.CollideRect(new Rectangle((int) block.X - 1, (int) block.Y, (int) block.Width + 2, (int) block.Height))
-                        ? 1
-                        : entity.CollideRect(new Rectangle((int) block.X, (int) block.Y - 1, (int) block.Width, (int) block.Height + 2))
-                            ? 1
-                            : 0) != 0 &&
-                    !group.Contains(entity)) {
+                        || entity.CollideRect(new Rectangle((int) block.X, (int) block.Y - 1, (int) block.Width, (int) block.Height + 2))) &&
+                    !group.Contains(entity) && entity.OnAtBeats.SequenceEqual(selfCast.OnAtBeats)) {
                     group.Add(entity);
                     NewFindInGroup(orig, self, entity);
                     _groupField.SetValue(entity, group);
+                }
+            }
+        }
+
+        public override void Update() {
+            bool activating = Activated && !Collidable;
+
+            base.Update();
+
+            if (Activated && Collidable) {
+                if (activating) {
+                    // Block has activated, Cassette boost is possible this frame
+                    WonkyCassetteBlockController controller = this.Scene.Tracker.GetEntity<WonkyCassetteBlockController>();
+                    if (controller != null) {
+                        boostFrames = controller.ExtraBoostFrames;
+                    }
+
+                } else if (boostFrames > 0) {
+                    // Provide an extra boost for the duration of the extra boost frames
+                    this.LiftSpeed.Y = -1 / Engine.DeltaTime;
+
+                    // Update lift of riders
+                    MoveVExact(0);
+
+                    boostFrames -= 1;
                 }
             }
         }
@@ -65,10 +91,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!(self is WonkyCassetteBlock))
                 return origCheckForSame(self, x, y);
 
+            WonkyCassetteBlock selfCast = (WonkyCassetteBlock) self;
+
             return self.Scene.Tracker.GetEntities<WonkyCassetteBlock>()
                 .Cast<WonkyCassetteBlock>()
                 .Any(entity => entity.Index == self.Index
-                               && entity.Collider.Collide(new Rectangle((int) x, (int) y, 8, 8)));
+                               && entity.Collider.Collide(new Rectangle((int) x, (int) y, 8, 8))
+                               && entity.OnAtBeats.SequenceEqual(selfCast.OnAtBeats));
         }
 
         private static void CassetteBlock_SetImage(On.Celeste.CassetteBlock.orig_SetImage orig, CassetteBlock self, float x, float y, int tx, int ty) {

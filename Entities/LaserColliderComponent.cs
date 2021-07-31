@@ -25,12 +25,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void EntityAdded(Scene scene) {
             base.EntityAdded(scene);
-            updateBeam();
+            UpdateBeam();
+        }
+
+        public override void EntityAwake() {
+            base.EntityAwake();
+            UpdateBeam();
         }
 
         public override void Update() {
             base.Update();
-            updateBeam();
+            UpdateBeam();
         }
 
         private void resizeHitbox(float size) {
@@ -63,7 +68,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        private void updateBeam() {
+        public void UpdateBeam() {
             if (!(Entity is OrientableEntity orientableEntity)) return;
             var level = SceneAs<Level>();
 
