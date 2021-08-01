@@ -88,6 +88,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DashBoostField.LoadParticles();
             SkateboardTrigger.InitializeTextures();
             PocketUmbrella.LoadParticles();
+            NodedCloud.LoadParticles();
         }
     }
 }

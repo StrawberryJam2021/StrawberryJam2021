@@ -8,65 +8,77 @@ using MonoMod.Utils;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/NodedCloud")]
     class NodedCloud : Cloud {
+        private static ParticleType P_Spawn, P_Ghost;
+
         private readonly Vector2[] nodes;
         private readonly DynData<Cloud> base_Entity;
         private readonly Vector2 RoomOffset;
-        private Image outline;
+        private Image ghost;
 
         private int nextNode = 0;
         private float moveTime;
+        private float fadeInProgress;
 
-        private bool fragile { set => base_Entity.Set("fragile", value); }
+        private float timer { get => base_Entity.Get<float>("timer"); }
         private float startY { set => base_Entity.Set("startY", value); }
-        private bool returning { get => base_Entity.Get<bool>("returning"); }
-        private Sprite sprite { get => base_Entity.Get<Sprite>("sprite"); }
+        private float respawnTimer { set => base_Entity.Set<float>("respawnTimer", value); get => base_Entity.Get<float>("respawnTimer"); }
 
         public NodedCloud(EntityData data, Vector2 offset) : base(data.Position + offset, true) {
             RoomOffset = offset;
             moveTime = data.Float("moveTime", 0.5f);
             nodes = data.Nodes;
+            fadeInProgress = 1;
 
             base_Entity = new DynData<Cloud>(this);
-            Add(outline = new Image(GFX.Game["objects/StrawberryJam2021/nodedCloud/outline"]));
-            outline.CenterOrigin();
+            Add(ghost = new Image(GFX.Game["objects/clouds/fragile00"]));
+            ghost.CenterOrigin();
+            ghost.Color = Color.Black;
+            ghost.Color.A = 0x62; // 40% opacity
             Add(new Coroutine(moveRoutine()));
         }
 
-        public override void Added(Scene scene) {
-            base.Added(scene);
-            fragile = false;
+        public static void LoadParticles() {
+            P_Spawn = new ParticleType(P_FragileCloud) {
+                Color = Calc.HexToColor("ff9ae0")
+            };
+            P_Ghost = new ParticleType(P_FragileCloud) {
+                Color = Calc.HexToColor("00000062")
+            };
         }
 
         public override void Render() {
             if (nextNode  < nodes.Length) {
-                outline.RenderPosition = nodes[nextNode] + RoomOffset + sprite.Position;
+                ghost.RenderPosition = nodes[nextNode] + RoomOffset;
+                ghost.Color.A = (byte) (fadeInProgress * 255 * 0.4f * (1 + 0.2f * (float) Math.Sin(timer * 4)));
             } else {
-                outline.Visible = false;
+                ghost.Visible = false;
             }
             base.Render();
         }
 
         private IEnumerator moveRoutine() {
             while (nextNode + 1 <= nodes.Length) {
-                while (!returning) {
+                while (Collidable) {
                     yield return null;
                 }
+                // let the fade animation play in the original position.
+                // this effectively puts a speed limit on how fast the cloud can move between positions
+                yield return 0.4f;
 
-                float progress = 0f;
-                Vector2 oldPos = Position;
                 startY = (nodes[nextNode] + RoomOffset).Y;
 
-                while (progress < moveTime) {
-                    MoveTo(Vector2.Lerp(oldPos, nodes[nextNode] + RoomOffset, Ease.CubeIn(progress * (1 / moveTime))));
-                    progress += Engine.DeltaTime;
-                    yield return null;
-                }
+                respawnTimer = Math.Max(moveTime - 0.4f, 0f);
                 Position = nodes[nextNode] + RoomOffset;
-                if (++nextNode == nodes.Length) {
-                    fragile = true;
-                }
+                fadeInProgress = 0;
+                Add(new Coroutine(ghostFadeInRoutine(), true));
 
-                while (returning) {
+                nextNode++;
+                while (!Collidable) {
+                    if (Engine.Scene.OnInterval(0.05f)) {
+                        if (nextNode <= nodes.Length) {
+                            SceneAs<Level>().ParticlesBG.Emit(P_Spawn, 5, nodes[nextNode - 1] + RoomOffset, new Vector2(Collider.Width / 2f, 5f), (float) Math.PI / 2);
+                        }
+                    }
                     yield return null;
                 }
             }
@@ -75,6 +87,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             yield return 1f;
             RemoveSelf();
+        }
+
+        private IEnumerator ghostFadeInRoutine() {
+            yield return moveTime / 2;
+            
+            while (fadeInProgress < 1) {
+                fadeInProgress += Engine.DeltaTime * 2f * moveTime;
+                if (nextNode + 1 <= nodes.Length) {
+                    if (Engine.Scene.OnInterval(0.05f)) {
+                        SceneAs<Level>().ParticlesBG.Emit(P_Ghost, 5, nodes[nextNode] + RoomOffset, new Vector2(Collider.Width / 2f, 5f), (float) Math.PI / 2);
+                    }
+                }
+                yield return null;
+            }
+            fadeInProgress = 1;
         }
     }
 }
