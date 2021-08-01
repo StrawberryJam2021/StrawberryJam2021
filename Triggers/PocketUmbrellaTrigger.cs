@@ -29,7 +29,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 controller.Enabled = true;
                 controller.StaminaCost = staminaCost;
                 controller.Cooldown = cooldown;
-                controller.player = player;
             } else {
                 Scene.Remove(controller);
             }

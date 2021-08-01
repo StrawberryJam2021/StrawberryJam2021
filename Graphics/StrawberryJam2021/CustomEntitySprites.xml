@@ -22,6 +22,21 @@
         <Anim id="open" path="TempleDoor" delay="0.1" frames="6-14" goto="idle"/>
         <Anim id="hit" path="TempleDoor" delay="0.08" frames="0-4" goto="idle"/>
     </grabTempleGate>
+    
+    <!--Horizontal Temple Gate-->
+    <horizontalTempleGateLeft path="objects/StrawberryJam2021/horizontalTempleGate/left/" start="idle">
+        <Justify x="0" y="0.25"/>
+        <Loop id="idle" path="TempleDoor" delay="0.1" frames="0"/>
+        <Anim id="open" path="TempleDoor" delay="0.1" frames="6-14" goto="idle"/>
+        <Anim id="hit" path="TempleDoor" delay="0.08" frames="0-4" goto="idle"/>
+    </horizontalTempleGateLeft>
+    
+    <horizontalTempleGateRight path="objects/StrawberryJam2021/horizontalTempleGate/right/" start="idle">
+        <Justify x="0" y="0.25"/>
+        <Loop id="idle" path="TempleDoor" delay="0.1" frames="0"/>
+        <Anim id="open" path="TempleDoor" delay="0.1" frames="6-14" goto="idle"/>
+        <Anim id="hit" path="TempleDoor" delay="0.08" frames="0-4" goto="idle"/>
+    </horizontalTempleGateRight>
 
     <!--Exploding Strawberry-->
     <explodingStrawberry path="objects/StrawberryJam2021/explodingStrawberry/" start="idle">
@@ -49,7 +64,7 @@
         <Loop id="spin" path="boosterWormhole" delay="0.06" frames="18-25"/>
         <Anim id="pop" path="boosterWormhole" delay="0.08" frames="9-17"/>
     </wormholeBooster>
-    
+
     <wormholeMask path="objects/StrawberryJam2021/boosterDisplacementMask/" start="loop">
         <Justify x="0.5" y="0.5"/>
         <Loop id="loop" path="boosterWormhole" delay="0.1" frames="0-4"/>
@@ -57,7 +72,7 @@
         <Loop id="spin" path="boosterWormhole" delay="0.06" frames="18-25"/>
         <Anim id="pop" path="boosterWormhole" delay="0.08" frames="9-17"/>
     </wormholeMask>
-    
+
     <!--Laser Emitter-->
     <laserEmitter path="objects/StrawberryJam2021/laserEmitter/" start="simple">
         <Justify x="0.5" y="1"/>
@@ -65,6 +80,30 @@
         <Anim id="rounded_base" path="rounded_base" delay="0.1" frames="0"/>
         <Anim id="rounded_tint" path="rounded_tint" delay="0.1" frames="0"/>
     </laserEmitter>
+
+    <!--Brush Laser Emitter-->
+    <brushLaserEmitter path="objects/StrawberryJam2021/brushLaserEmitter/" start="pink_idle">
+        <Justify x="0" y="0.5"/>
+        <Anim id="pink_idle" path="pink/brush-a/brush-a-idle" delay="0.1" frames="0"/>
+        <Anim id="pink_charging" path="pink/brush-a/brush-a-charging" delay="0.1" frames="0-7"/>
+        <Anim id="pink_burst" path="pink/brush-a/brush-a-burst" delay="0.1" frames="0,1" goto="pink_firing"/>
+        <Loop id="pink_firing" path="pink/brush-a/brush-a-firing" delay="0.1" frames="0-3"/>
+        <Anim id="pink_cooldown" path="pink/brush-a/brush-a-cooldown" delay="0.1" frames="0-3" goto="pink_idle"/>
+        <Anim id="blue_idle" path="blue/brush-a/brush-a-idle" delay="0.1" frames="0"/>
+        <Anim id="blue_charging" path="blue/brush-a/brush-a-charging" delay="0.1" frames="0-7"/>
+        <Anim id="blue_burst" path="blue/brush-a/brush-a-burst" delay="0.1" frames="0,1" goto="blue_firing"/>
+        <Loop id="blue_firing" path="blue/brush-a/brush-a-firing" delay="0.1" frames="0-3"/>
+        <Anim id="blue_cooldown" path="blue/brush-a/brush-a-cooldown" delay="0.1" frames="0-3" goto="blue_idle"/>
+    </brushLaserEmitter>
+
+    <!--Brush Laser Beam-->
+    <brushLaserBeam path="objects/StrawberryJam2021/brushLaserEmitter/" start="pink_burst">
+        <Justify x="0" y="0.5"/>
+        <Anim id="pink_burst" path="pink/beam-burst" delay="0.1" frames="0,1" goto="pink_firing"/>
+        <Loop id="pink_firing" path="pink/beam-firing" delay="0.1" frames="0-3"/>
+        <Anim id="blue_burst" path="blue/beam-burst" delay="0.1" frames="0,1" goto="blue_firing"/>
+        <Loop id="blue_firing" path="blue/beam-firing" delay="0.1" frames="0-3"/>
+    </brushLaserBeam>
 
     <!--Flag Breaker Box-->
     <flagBreakerBox path="objects/StrawberryJam2021/flagBreakerBox/" start="idle">
@@ -74,7 +113,7 @@
         <Loop id="opened" path="opened" delay="0.06"/>
         <Anim id="break" path="break" delay="0.06"/>
     </flagBreakerBox>
-	
+
     <!--Rose Glider-->
     <roseGlider path="objects/StrawberryJam2021/roseGlider/" start="idle_3">
         <Anim id="idle_3" path="3charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_3:9,idle_gust_3:1"/>
@@ -94,4 +133,14 @@
         <Anim id="fill" path="jarfill_" delay="0.1" goto="full"/>
         <Loop id="full" path="jarfull_idle" delay="0.1"/>
     </jamJar_trailer>
+
+    <!--Pocket Umbrella-->
+    <pocketUmbrella path="objects/StrawberryJam2021/pocketUmbrella/" start="held">
+		<Justify x="0.5" y="0.58"/>
+        <Anim id="spawn" path="spawn" delay="0.06" goto="held"/>
+        <Loop id="held" path="held" delay="0.1"/>
+        <Anim id="fall" path="fall" delay="0.06" goto="fallLoop"/>
+        <Loop id="fallLoop" path="fallLoop" delay="0.06"/>
+        <Anim id="death" path="spawn" delay="0.06" frames="3-0"/>
+    </pocketUmbrella>
 </Sprites>
