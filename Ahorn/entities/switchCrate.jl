@@ -2,7 +2,7 @@ module SJ2021SwitchCrate
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/SwitchCrate" SwitchCrate(x::Integer, y::Integer, TimeToExplode::Number = 2.0, DepleteOnJumpThru::Bool = false)
+@mapdef Entity "SJ2021/SwitchCrate" SwitchCrate(x::Integer, y::Integer, TimeToExplode::Number = 2.0, DepleteOnJumpThru::Bool = false, KillMaddyOnExplosion::Bool = true)
 
 const placements = Ahorn.PlacementDict(
     "Switch Crate (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
