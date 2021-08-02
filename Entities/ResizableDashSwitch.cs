@@ -299,15 +299,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void Load() {
             On.Celeste.DashSwitch.OnDashed += On_DashSwitch_OnDashed;
-            IL.Celeste.DashSwitch.OnDashed += IL_DashSwitch_OnDashed_DisableParticles;
-            IL.Celeste.DashSwitch.OnDashed += IL_DashSwitch_OnDashed_LowerVolume;
+            IL.Celeste.DashSwitch.OnDashed += IL_DashSwitch_OnDashed;
             IL.Celeste.DashSwitch.Update += IL_DashSwitch_Update;
         }
 
         public static void Unload() {
             On.Celeste.DashSwitch.OnDashed -= On_DashSwitch_OnDashed;
-            IL.Celeste.DashSwitch.OnDashed -= IL_DashSwitch_OnDashed_DisableParticles;
-            IL.Celeste.DashSwitch.OnDashed -= IL_DashSwitch_OnDashed_LowerVolume;
+            IL.Celeste.DashSwitch.OnDashed -= IL_DashSwitch_OnDashed;
             IL.Celeste.DashSwitch.Update -= IL_DashSwitch_Update;
         }
 
@@ -319,35 +317,33 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return orig(self, player, direction);
         }
 
-        private static void IL_DashSwitch_OnDashed_DisableParticles(ILContext il) {
+        private static void IL_DashSwitch_OnDashed(ILContext il) {
             ILCursor cursor = new ILCursor(il);
             // basic technique here copied from max's helping hand lol
             // move to the start of where we want to skip
-            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchStfld<Entity>("Position"))) {
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchStfld<Entity>(nameof(Entity.Position)))) {
                 // create another cursor and move to the end of where we want to skip
                 ILCursor cursorAfterParticles = cursor.Clone();
                 // go to the second call of this method
-                if (cursorAfterParticles.TryGotoNext(MoveType.After, instr => instr.MatchCallvirt<ParticleSystem>("Emit"))
-                    && cursorAfterParticles.TryGotoNext(MoveType.After, instr => instr.MatchCallvirt<ParticleSystem>("Emit"))) {
+                if (cursorAfterParticles.TryGotoNext(MoveType.After, instr => instr.MatchCallvirt<ParticleSystem>(nameof(ParticleSystem.Emit)))
+                    && cursorAfterParticles.TryGotoNext(MoveType.After, instr => instr.MatchCallvirt<ParticleSystem>(nameof(ParticleSystem.Emit)))) {
                     // skip particle calls if this is a ResizableDashSwitch
                     cursor.Emit(OpCodes.Ldarg_0);
                     cursor.EmitDelegate<Func<DashSwitch, bool>>(IsResizableDashSwitch);
                     cursor.Emit(OpCodes.Brtrue, cursorAfterParticles.Next);
                 }
             }
-        }
 
-        private static bool IsResizableDashSwitch(DashSwitch dashSwitch) => dashSwitch is ResizableDashSwitch;
-
-        private static void IL_DashSwitch_OnDashed_LowerVolume(ILContext il) {
-            ILCursor cursor = new ILCursor(il);
-            // find where the dash switch activate sound is played
-            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCall(typeof(Audio), "Play"))) {
+            // lower the volume of the pressed sound
+            cursor.Index = 0;
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCall(typeof(Audio), nameof(Audio.Play)))) {
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.Emit(OpCodes.Ldc_R4, 0.8f);
                 cursor.EmitDelegate<Func<EventInstance, DashSwitch, float, EventInstance>>(ModifyVolume);
             }
         }
+
+        private static bool IsResizableDashSwitch(DashSwitch dashSwitch) => dashSwitch is ResizableDashSwitch;
 
         private static EventInstance ModifyVolume(EventInstance instance, DashSwitch self, float volume) {
             if (self is ResizableDashSwitch) {
@@ -414,10 +410,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
     public static class ResizableDashSwitchExtensions {
         private static readonly Vector2[] outlineOffsets = new Vector2[] {
-            new Vector2(-1, 0),
-            new Vector2(1, 0),
-            new Vector2(0, -1),
-            new Vector2(0, 1)
+            -Vector2.UnitX,
+            Vector2.UnitX,
+            -Vector2.UnitY,
+            Vector2.UnitY
         };
 
         public static void DrawOnlyOutlineCentered(this MTexture mTexture, Vector2 position, float rotation) {
