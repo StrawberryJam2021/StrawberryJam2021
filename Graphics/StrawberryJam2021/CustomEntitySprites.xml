@@ -134,6 +134,12 @@
         <Loop id="full" path="jarfull_idle" delay="0.1"/>
     </jamJar_trailer>
 
+    <!--Resizable Dash Switch lightning effect-->
+    <bigSwitch_lightning path="objects/StrawberryJam2021/bigDashSwitch/" start="hit">
+        <Justify x="0.5" y="0.5"/>
+        <Anim id="hit" path="bigSwitchLightning" delay="0.08" frames="0-4"/>
+    </bigSwitch_lightning>
+
     <!--Pocket Umbrella-->
     <pocketUmbrella path="objects/StrawberryJam2021/pocketUmbrella/" start="held">
 		<Justify x="0.5" y="0.58"/>
