@@ -50,6 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             OshiroAttackTimeTrigger.Load();
             CassetteBadelineBlock.Load();
             ConstantDelayFallingBlockController.Load();
+            HintController.Load();
         }
 
         public override void Unload() {
@@ -80,6 +81,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             OshiroAttackTimeTrigger.Unload();
             CassetteBadelineBlock.Unload();
             ConstantDelayFallingBlockController.Unload();
+            HintController.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
