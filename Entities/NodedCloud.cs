@@ -9,11 +9,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/NodedCloud")]
     class NodedCloud : Cloud {
         private static ParticleType P_Spawn, P_Ghost;
+        private static byte BaseGhostOpacity = 0x62; // (0.385 * 255)
 
         private readonly Vector2[] nodes;
         private readonly DynData<Cloud> base_Entity;
         private readonly Vector2 RoomOffset;
         private Image ghost;
+        private float GhostAlphaOffset { get => 1 + 0.2f * (float) Math.Sin(timer * 4); }
 
         private int nextNode = 0;
         private float moveTime;
@@ -33,7 +35,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(ghost = new Image(GFX.Game["objects/clouds/fragile00"]));
             ghost.CenterOrigin();
             ghost.Color = Color.Black;
-            ghost.Color.A = 0x62; // 40% opacity
+            ghost.Color.A = BaseGhostOpacity;
             Add(new Coroutine(moveRoutine()));
         }
 
@@ -49,7 +51,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Render() {
             if (nextNode  < nodes.Length) {
                 ghost.RenderPosition = nodes[nextNode] + RoomOffset;
-                ghost.Color.A = (byte) (fadeInProgress * 255 * 0.4f * (1 + 0.2f * (float) Math.Sin(timer * 4)));
+                ghost.Color.A = (byte) (fadeInProgress * BaseGhostOpacity * GhostAlphaOffset);
             } else {
                 ghost.Visible = false;
             }
