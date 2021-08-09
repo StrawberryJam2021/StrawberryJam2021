@@ -3,7 +3,6 @@ using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -56,6 +55,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.DisableFlag = disableFlag;
         }
 
+        public void DisableAndReset(Scene scene, StrawberryJam2021Session session) {
+            session.MusicBeatTimer = 0;
+            session.MusicWonkyBeatIndex = 0;
+
+            session.CassetteBeatTimer = session.MusicBeatTimer - cassetteOffset;
+            session.CassetteWonkyBeatIndex = 0;
+            
+            var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>().ToList();
+
+            foreach (WonkyCassetteBlock wonkyBlock in wonkyBlocks) {
+                wonkyBlock.Activated = false;
+            }
+
+            session.CassetteBlocksDisabled = true;
+        }
+
         public override void Awake(Scene scene) {
             base.Awake(scene);
 
@@ -84,32 +99,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // Re-synchronize the beat timers
             // Positive offsets will make the cassette blocks lag behind the music progress
             session.CassetteBeatTimer = session.MusicBeatTimer - cassetteOffset;
+
+            // Reset timers on song change
+            if (session.CassetteBlocksLastParameter != param) {
+                DisableAndReset(scene, session);
+                session.CassetteBlocksLastParameter = param;
+            }
         }
 
         public void CheckDisableAndReset() {
-            if (DisableFlag.Length == 0)
+            StrawberryJam2021Session session = StrawberryJam2021Module.Session;
+
+            if (DisableFlag.Length == 0) {
+                if (session.CassetteBlocksDisabled)
+                    session.CassetteBlocksDisabled = false;
                 return;
+            }
 
             Level level = SceneAs<Level>();
             bool shouldDisable = level.Session.GetFlag(DisableFlag);
 
-            StrawberryJam2021Session session = StrawberryJam2021Module.Session;
-
             if (!session.CassetteBlocksDisabled && shouldDisable) {
-
-                session.MusicBeatTimer = 0;
-                session.MusicWonkyBeatIndex = 0;
-
-                session.CassetteWonkyBeatIndex = 0;
-                session.CassetteBeatTimer = session.MusicBeatTimer - cassetteOffset;
-
-                var wonkyBlocks = level.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>().ToList();
-
-                foreach (WonkyCassetteBlock wonkyBlock in wonkyBlocks) {
-                    wonkyBlock.Activated = false;
-                }
-
-                session.CassetteBlocksDisabled = true;
+                DisableAndReset(level, session);
 
             } else if (session.CassetteBlocksDisabled && !shouldDisable) {
                 session.CassetteBlocksDisabled = false;
@@ -125,9 +136,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             session.CassetteBeatTimer += time;
 
             if (session.CassetteBeatTimer >= beatIncrement) {
-                
+
                 session.CassetteBeatTimer -= beatIncrement;
-                
+
                 // beatIndex is always in sixteenth notes
                 var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>().ToList();
                 int nextBeatIndex = (session.CassetteWonkyBeatIndex + 1) % maxBeats;
