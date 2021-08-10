@@ -84,7 +84,7 @@ Ahorn.editingOptions(entity::PelletEmitterDown) = Dict{String, Any}( "pelletColo
 Ahorn.editingOptions(entity::PelletEmitterLeft) = Dict{String, Any}( "pelletColor" => colors )
 Ahorn.editingOptions(entity::PelletEmitterRight) = Dict{String, Any}( "pelletColor" => colors )
 
-sprite = "objects/StrawberryJam2021/laserEmitter/idle00"
+sprite = "objects/StrawberryJam2021/laserEmitter/simple00"
 
 Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::PelletEmitterUp, room::Maple.Room) = Ahorn.drawSprite(ctx, sprite, 0, 0, jx=0.5, jy=1, rot=0)
 Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::PelletEmitterDown, room::Maple.Room) = Ahorn.drawSprite(ctx, sprite, 16, 16, jx=0.5, jy=1, rot=pi)
