@@ -97,11 +97,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             UpdateFlag();
             MoveHExact(0);  //force a lift update
 
+            Vector2 speed = isFlagged ? targetSpeedFlagged : targetSpeed;
+
             Player player = GetPlayerRider();
-            if (ridingPlayer != null && player == null && ridingPlayer.Speed.Y < 0) {
-                Audio.Play(CustomSoundEffects.game_boost_block_boost);
-                if(!Settings.Instance.DisableFlashes) //disable the flash if photosensetive mode is on
-                    Flash();
+            if (ridingPlayer != null && player == null && ridingPlayer.Speed.Y < 0 && speed.Length() > 1f) {
+                Audio.Play(CustomSoundEffects.game_boost_block_boost).setVolume(0.5f);
+                Flash();
             }
 
             if (doFlash) {
@@ -114,8 +115,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void Flash() {
-            doFlash = true;
-            flashTimer = 0f;
+            if (!Settings.Instance.DisableFlashes) {
+                doFlash = true;
+                flashTimer = 0f;
+            }
         }
 
         public override void MoveHExact(int move) {
@@ -136,7 +139,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Draw.HollowRect(Position, Width, Height, isFlagged ? speedColorFlagged : speedColor);
             MTexture currentTexture = isFlagged ? arrowTextureFlagged : arrowTexture;
-            MTexture currentTextureFlash = isFlagged ? flashTexture : flashTextureFlagged;
+            MTexture currentTextureFlash = isFlagged ? flashTextureFlagged : flashTexture;
 
             //draw the colored rectangle below the arrow texture
             Draw.Rect(Center.X - currentTexture.Width / 2, Center.Y - currentTexture.Height / 2, currentTexture.Width, currentTexture.Height, isFlagged ? speedColorFlagged : speedColor);
