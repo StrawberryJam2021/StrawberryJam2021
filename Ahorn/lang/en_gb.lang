@@ -193,6 +193,17 @@ placements.entities.SJ2021/SwitchCrate.tooltips.TimeToExplode=The time (in secon
 placements.entities.SJ2021/SwitchCrate.tooltips.DepleteOnJumpThru=Whether the explosion timer counts down when the crate is on a jumpthru (rather than on ground).
 placements.entities.SJ2021/SwitchCrate.tooltips.KillMaddyOnExplosion=Whether the player should be killed when the crate explodes. Madeline will die if the crate is squished or dropped out of the level regardless of this option.
 
+# Noded Cloud
+placements.entities.SJ2021/NodedCloud.tooltips.moveTime=How much time the cloud takes to move to the next position, in seconds.
+
+# Directional Booster
+placements.entities.SJ2021/DirectionalBooster.tooltips.boosterColor=The colour to use for booster particles. Defaults to a honeyish yellow.
+
+# Hint Controller
+placements.entities.SJ2021/HintController.tooltips.dialogId=The identifier of the dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
+placements.entities.SJ2021/HintController.tooltips.singleUse=Whether the hint may only be viewed a single time per session.
+
+# Cassette Badeline Block
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.tiletype=The tileset to use when rendering the block.
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.hideFinalTransition=If true, the transition between last and first nodes will be hidden (useful for conveyors).
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.ignoredNodes=A comma separated list of nodes which will not spawn a block, but are still part of the path. Negative indices indicate going backward from the end of list. For example, -1 indicates the final node. The first node cannot be ignored.
