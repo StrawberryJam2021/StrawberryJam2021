@@ -195,3 +195,6 @@ placements.entities.SJ2021/SwitchCrate.tooltips.KillMaddyOnExplosion=Whether the
 
 # Noded Cloud
 placements.entities.SJ2021/NodedCloud.tooltips.moveTime=How much time the cloud takes to move to the next position, in seconds.
+
+# Directional Booster
+placements.entities.SJ2021/DirectionalBooster.tooltips.boosterColor=The colour to use for booster particles. Defaults to a honeyish yellow.
