@@ -192,3 +192,8 @@ placements.triggers.SJ2021/SkateboardTrigger.tooltips.mode=Whether entering the 
 placements.entities.SJ2021/SwitchCrate.tooltips.TimeToExplode=The time (in seconds) it will take for the crate to explode.
 placements.entities.SJ2021/SwitchCrate.tooltips.DepleteOnJumpThru=Whether the explosion timer counts down when the crate is on a jumpthru (rather than on ground).
 placements.entities.SJ2021/SwitchCrate.tooltips.KillMaddyOnExplosion=Whether the player should be killed when the crate explodes. Madeline will die if the crate is squished or dropped out of the level regardless of this option.
+
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.tiletype=The tileset to use when rendering the block.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.hideFinalTransition=If true, the transition between last and first nodes will be hidden (useful for conveyors).
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.ignoredNodes=A comma separated list of nodes which will not spawn a block, but are still part of the path. Negative indices indicate going backward from the end of list. For example, -1 indicates the final node. The first node cannot be ignored.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.offBeat=If true, transitions will occur halfway between cassette swaps.
