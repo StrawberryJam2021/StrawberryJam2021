@@ -51,6 +51,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             CassetteBadelineBlock.Load();
             ConstantDelayFallingBlockController.Load();
             DirectionalBooster.Load();
+            HintController.Load();
         }
 
         public override void Unload() {
@@ -82,6 +83,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             CassetteBadelineBlock.Unload();
             ConstantDelayFallingBlockController.Unload();
             DirectionalBooster.Unload();
+            HintController.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {

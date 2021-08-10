@@ -198,3 +198,7 @@ placements.entities.SJ2021/NodedCloud.tooltips.moveTime=How much time the cloud 
 
 # Directional Booster
 placements.entities.SJ2021/DirectionalBooster.tooltips.boosterColor=The colour to use for booster particles. Defaults to a honeyish yellow.
+
+# Hint Controller
+placements.entities.SJ2021/HintController.tooltips.dialogId=The identifier of the dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
+placements.entities.SJ2021/HintController.tooltips.singleUse=Whether the hint may only be viewed a single time per session.
