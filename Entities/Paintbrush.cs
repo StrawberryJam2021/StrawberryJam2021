@@ -79,50 +79,54 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private float collisionDelayRemaining;
 
-        private static readonly ParticleType blueCooldownParticle = new ParticleType(Booster.P_Burst) {
-            Source = GFX.Game["particles/blob"],
-            Color = Calc.HexToColor("42bfe8"),
-            Color2 = Calc.HexToColor("7550e8"),
-            ColorMode = ParticleType.ColorModes.Fade,
-            LifeMin = 0.5f,
-            LifeMax = 0.8f,
-            Size = 0.7f,
-            SizeRange = 0.25f,
-            ScaleOut = true,
-            Direction = 5.712389f,
-            DirectionRange = 1.17453292f,
-            SpeedMin = 40f,
-            SpeedMax = 100f,
-            SpeedMultiplier = 0.005f,
-            Acceleration = Vector2.Zero,
-        };
+        private static ParticleType blueCooldownParticle;
+        private static ParticleType pinkCooldownParticle;
+        private static ParticleType blueImpactParticle;
+        private static ParticleType pinkImpactParticle;
 
-        private static readonly ParticleType pinkCooldownParticle = new ParticleType(blueCooldownParticle) {
-            Color = Calc.HexToColor("e84292"),
-            Color2 = Calc.HexToColor("9c2a70"),
-        };
+        public static void LoadParticles() {
+            blueCooldownParticle = new ParticleType(Booster.P_Burst) {
+                Source = GFX.Game["particles/blob"],
+                Color = Calc.HexToColor("42bfe8"),
+                Color2 = Calc.HexToColor("7550e8"),
+                ColorMode = ParticleType.ColorModes.Fade,
+                LifeMin = 0.5f,
+                LifeMax = 0.8f,
+                Size = 0.7f,
+                SizeRange = 0.25f,
+                ScaleOut = true,
+                Direction = 5.712389f,
+                DirectionRange = 1.17453292f,
+                SpeedMin = 40f,
+                SpeedMax = 100f,
+                SpeedMultiplier = 0.005f,
+                Acceleration = Vector2.Zero,
+            };
 
-        private static readonly ParticleType blueImpactParticle = new ParticleType(Booster.P_Burst) {
-            Source = GFX.Game["particles/fire"],
-            Color = Calc.HexToColor("ffffff"),
-            Color2 = Calc.HexToColor("73efe8"),
-            ColorMode = ParticleType.ColorModes.Fade,
-            LifeMin = 0.3f,
-            LifeMax = 0.5f,
-            Size = 0.7f,
-            SizeRange = 0.25f,
-            ScaleOut = true,
-            Direction = 4.712389f,
-            DirectionRange = 3.14159f,
-            SpeedMin = 10f,
-            SpeedMax = 80f,
-            SpeedMultiplier = 0.005f,
-            Acceleration = Vector2.Zero,
-        };
+            pinkCooldownParticle = new ParticleType(blueCooldownParticle) {
+                Color = Calc.HexToColor("e84292"), Color2 = Calc.HexToColor("9c2a70"),
+            };
 
-        private static readonly ParticleType pinkImpactParticle = new ParticleType(blueImpactParticle) {
-            Color2 = Calc.HexToColor("ef73bf"),
-        };
+            blueImpactParticle = new ParticleType(Booster.P_Burst) {
+                Source = GFX.Game["particles/fire"],
+                Color = Calc.HexToColor("ffffff"),
+                Color2 = Calc.HexToColor("73efe8"),
+                ColorMode = ParticleType.ColorModes.Fade,
+                LifeMin = 0.3f,
+                LifeMax = 0.5f,
+                Size = 0.7f,
+                SizeRange = 0.25f,
+                ScaleOut = true,
+                Direction = 4.712389f,
+                DirectionRange = 3.14159f,
+                SpeedMin = 10f,
+                SpeedMax = 80f,
+                SpeedMultiplier = 0.005f,
+                Acceleration = Vector2.Zero,
+            };
+
+            pinkImpactParticle = new ParticleType(blueImpactParticle) {Color2 = Calc.HexToColor("ef73bf"),};
+        }
 
         private void setAnimationSpeed(string key, float totalRunTime) {
             if (largeBrushSprite.Animations.TryGetValue(key, out var emitterAnimation))
