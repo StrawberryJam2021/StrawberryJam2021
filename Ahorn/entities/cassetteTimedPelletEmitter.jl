@@ -69,7 +69,7 @@ function Ahorn.selection(entity::CassetteTimedPelletEmitterRight)
     return Ahorn.Rectangle(x, y - 7, 8, 14)
 end
 
-sprite = "objects/StrawberryJam2021/laserEmitter/idle00"
+sprite = "objects/StrawberryJam2021/laserEmitter/simple00"
 
 Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::CassetteTimedPelletEmitterUp, room::Maple.Room) = Ahorn.drawSprite(ctx, sprite, 0, 0, jx=0.5, jy=1, rot=0)
 Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::CassetteTimedPelletEmitterDown, room::Maple.Room) = Ahorn.drawSprite(ctx, sprite, 16, 16, jx=0.5, jy=1, rot=pi)
