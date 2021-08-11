@@ -178,4 +178,18 @@
         <Loop id="fallLoop" path="fallLoop" delay="0.06"/>
         <Anim id="death" path="spawn" delay="0.06" frames="3-0"/>
     </pocketUmbrella>
+
+    <!--Directional Booster-->
+    <directionalBooster path="objects/StrawberryJam2021/boosterDirectional/" start="loop">
+        <Justify x="0.5" y="0.5"/>
+        <Anim id="appear" path="boosterHunny" delay="0.08" frames="26-34" goto="loop"/>
+        <Loop id="loop" path="boosterHunny" delay="0.1" frames="0-4"/>
+        <Loop id="inside" path="boosterHunny" delay="0.1" frames="5-8"/>
+        <Loop id="spin_up" path="boosterHunnyUp" delay="0.06" frames="1-8"/>
+        <Loop id="spin_down" path="boosterHunnyDown" delay="0.06" frames="1-8"/>
+        <Loop id="spin_upright" path="boosterHunnyUpRight" delay="0.06" frames="1-8"/>
+        <Loop id="spin_downright" path="boosterHunnyDownRight" delay="0.06" frames="1-8"/>
+        <Loop id="spin_right" path="boosterHunnyRight" delay="0.06" frames="1-8"/>
+        <Anim id="pop" path="boosterHunny" delay="0.08" frames="9-17"/>
+    </directionalBooster>
 </Sprites>

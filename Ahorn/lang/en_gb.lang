@@ -192,3 +192,13 @@ placements.triggers.SJ2021/SkateboardTrigger.tooltips.mode=Whether entering the 
 placements.entities.SJ2021/SwitchCrate.tooltips.TimeToExplode=The time (in seconds) it will take for the crate to explode.
 placements.entities.SJ2021/SwitchCrate.tooltips.DepleteOnJumpThru=Whether the explosion timer counts down when the crate is on a jumpthru (rather than on ground).
 placements.entities.SJ2021/SwitchCrate.tooltips.KillMaddyOnExplosion=Whether the player should be killed when the crate explodes. Madeline will die if the crate is squished or dropped out of the level regardless of this option.
+
+# Noded Cloud
+placements.entities.SJ2021/NodedCloud.tooltips.moveTime=How much time the cloud takes to move to the next position, in seconds.
+
+# Directional Booster
+placements.entities.SJ2021/DirectionalBooster.tooltips.boosterColor=The colour to use for booster particles. Defaults to a honeyish yellow.
+
+# Hint Controller
+placements.entities.SJ2021/HintController.tooltips.dialogId=The identifier of the dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
+placements.entities.SJ2021/HintController.tooltips.singleUse=Whether the hint may only be viewed a single time per session.

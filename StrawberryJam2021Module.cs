@@ -50,6 +50,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             OshiroAttackTimeTrigger.Load();
             CassetteBadelineBlock.Load();
             ConstantDelayFallingBlockController.Load();
+            DirectionalBooster.Load();
+            HintController.Load();
         }
 
         public override void Unload() {
@@ -80,6 +82,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             OshiroAttackTimeTrigger.Unload();
             CassetteBadelineBlock.Unload();
             ConstantDelayFallingBlockController.Unload();
+            DirectionalBooster.Unload();
+            HintController.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -96,6 +100,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SkateboardTrigger.InitializeTextures();
             PocketUmbrella.LoadParticles();
             Paintbrush.LoadParticles();
+            NodedCloud.LoadParticles();
         }
     }
 }
