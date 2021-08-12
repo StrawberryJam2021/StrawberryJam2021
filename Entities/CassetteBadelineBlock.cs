@@ -50,7 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public CassetteBadelineBlock(EntityData data, Vector2 offset)
             : base(data.Position + offset, data.Width, data.Height, false) {
-            Nodes = new[] {Position}.Concat(data.Nodes).ToArray();
+            Nodes = data.NodesWithPosition(offset);
             TileType = data.Char("tiletype", 'g');
             OffBeat = data.Bool("offBeat");
             HideFinalTransition = data.Bool("hideFinalTransition");
