@@ -114,38 +114,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             cassetteBlockManagerData = null;
         }
 
-        public override void Update() {
-            base.Update();
-
-            if (cassetteBlockManager != null) {
-                var lastState = CurrentState;
-                UpdateState();
-
-                if (CurrentState.Sixteenth != lastState.Sixteenth) {
-                    InvokeOnSixteenth(CurrentState);
-                }
-
-                if (CurrentState.CurrentTick.Index != lastState.CurrentTick.Index) {
-                    InvokeOnSwap(CurrentState);
-                }
-
-                if (CurrentState.Beat != lastState.Beat) {
-                    InvokeOnBeat(CurrentState);
-                }
-
-                if (CurrentState.CurrentTick.Index != lastState.CurrentTick.Index ||
-                    CurrentState.CurrentTick.Offset != lastState.CurrentTick.Offset) {
-                    InvokeOnTick(CurrentState);
-                }
-            }
-        }
-
-        private void UpdateState() {
-            float beatLength = tempoMult * (10f / 60f); // apparently one beat is 10 frames
-            int index = currentIndex;
+        public bool UpdateState() {
+            if (beatsPerTick == 0 || ticksPerSwap == 0)
+                return false;
 
             var currentTick = new CassetteTick {
-                Index = index,
+                Index = currentIndex,
                 Offset = (beatIndex / beatsPerTick) % ticksPerSwap,
             };
 
@@ -160,8 +134,34 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 CurrentTick = currentTick,
                 NextTick = nextTick(currentTick),
                 PreviousTick = previousTick(currentTick),
-                BeatLength = beatLength,
+                BeatLength = tempoMult * (10f / 60f), // apparently one beat is 10 frames
             };
+
+            return true;
+        }
+
+        public override void Update() {
+            base.Update();
+            if (cassetteBlockManager == null) return;
+
+            var lastState = CurrentState;
+            UpdateState();
+
+            if (CurrentState.Sixteenth != lastState.Sixteenth) {
+                InvokeOnSixteenth(CurrentState);
+            }
+
+            if (CurrentState.CurrentTick.Index != lastState.CurrentTick.Index) {
+                InvokeOnSwap(CurrentState);
+            }
+
+            if (CurrentState.Beat != lastState.Beat) {
+                InvokeOnBeat(CurrentState);
+            }
+
+            if (CurrentState.CurrentTick.Index != lastState.CurrentTick.Index || CurrentState.CurrentTick.Offset != lastState.CurrentTick.Offset) {
+                InvokeOnTick(CurrentState);
+            }
         }
 
         public static Color ColorFromCassetteIndex(int index) => index switch {

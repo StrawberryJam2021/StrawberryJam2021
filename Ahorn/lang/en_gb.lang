@@ -66,29 +66,29 @@ placements.entities.SJ2021/LaserEmitterRight.tooltips.disableLasers=Whether or n
 placements.entities.SJ2021/LaserEmitterRight.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same colour channel.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser colour.
 
-# Brush Laser Emitter (Up)
-placements.entities.SJ2021/BrushLaserEmitterUp.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
-placements.entities.SJ2021/BrushLaserEmitterUp.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
-placements.entities.SJ2021/BrushLaserEmitterUp.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
-placements.entities.SJ2021/BrushLaserEmitterUp.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+# Paintbrush (Up)
+placements.entities.SJ2021/PaintbrushUp.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/PaintbrushUp.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/PaintbrushUp.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/PaintbrushUp.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
 
-# Brush Laser Emitter (Down)
-placements.entities.SJ2021/BrushLaserEmitterDown.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
-placements.entities.SJ2021/BrushLaserEmitterDown.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
-placements.entities.SJ2021/BrushLaserEmitterDown.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
-placements.entities.SJ2021/BrushLaserEmitterDown.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+# Paintbrush (Down)
+placements.entities.SJ2021/PaintbrushDown.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/PaintbrushDown.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/PaintbrushDown.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/PaintbrushDown.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
 
-# Brush Laser Emitter (Left)
-placements.entities.SJ2021/BrushLaserEmitterLeft.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
-placements.entities.SJ2021/BrushLaserEmitterLeft.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
-placements.entities.SJ2021/BrushLaserEmitterLeft.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
-placements.entities.SJ2021/BrushLaserEmitterLeft.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+# Paintbrush (Left)
+placements.entities.SJ2021/PaintbrushLeft.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/PaintbrushLeft.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/PaintbrushLeft.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/PaintbrushLeft.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
 
-# Brush Laser Emitter (Right)
-placements.entities.SJ2021/BrushLaserEmitterRight.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
-placements.entities.SJ2021/BrushLaserEmitterRight.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
-placements.entities.SJ2021/BrushLaserEmitterRight.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
-placements.entities.SJ2021/BrushLaserEmitterRight.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+# Paintbrush (Right)
+placements.entities.SJ2021/PaintbrushRight.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/PaintbrushRight.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/PaintbrushRight.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/PaintbrushRight.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
 
 # Bubble Emitter Fire Trigger
 placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of the emitters to fire. Will fire every emitter if empty

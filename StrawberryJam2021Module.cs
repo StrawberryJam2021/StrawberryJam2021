@@ -97,6 +97,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ResizableDashSwitch.LoadParticles();
             SkateboardTrigger.InitializeTextures();
             PocketUmbrella.LoadParticles();
+            Paintbrush.LoadParticles();
             NodedCloud.LoadParticles();
         }
     }
