@@ -58,8 +58,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             string ignoredNodesString = data.Attr("ignoredNodes") ?? string.Empty;
             IgnoredNodes = ignoredNodesString
                 .Trim()
-                .Split(',')
-                .Select(s => int.TryParse(s, out int value) ? value : 0)
+                .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => int.TryParse(s, out int value) ? value : int.MaxValue)
                 .Where(i => Math.Abs(i) < Nodes.Length)
                 .ToArray();
 
@@ -111,6 +111,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     if (!IgnoredNodes.Contains(i) && !IgnoredNodes.Contains(i - Nodes.Length))
                         scene.Add(new CassetteBadelineBlock(this, i));
                 }
+
+                if (IgnoredNodes.Contains(0))
+                    RemoveSelf();
             }
         }
 
