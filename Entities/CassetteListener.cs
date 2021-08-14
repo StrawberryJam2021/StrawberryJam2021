@@ -134,7 +134,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 CurrentTick = currentTick,
                 NextTick = nextTick(currentTick),
                 PreviousTick = previousTick(currentTick),
-                BeatLength = tempoMult * (10f / 60f), // apparently one beat is 10 frames
+                BeatLength = (10f / 60f) / tempoMult, // apparently one beat is 10 frames
             };
 
             return true;
