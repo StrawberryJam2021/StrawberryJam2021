@@ -79,10 +79,10 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteBadeline
     width = Int(get(entity.data, "width", 8))
     height = Int(get(entity.data, "height", 8))
 
-    ghosts = strip(get(entity.data, "ghostNodes", ""))
-    ghostnodes = tryparse.(Int, split(ghosts, r", ?"))
+    ignored = strip(get(entity.data, "ignoredNodes", ""))
+    ignoredNodes = tryparse.(Int, split(ignored, r", ?"))
 
-    if 0 in ghostnodes
+    if 0 in ignoredNodes
         Ahorn.drawTileEntity(ctx, room, entity, material=get(entity.data, "tiletype", "g")[1], alpha=0.5, blendIn=false)
     else
         Ahorn.drawTileEntity(ctx, room, entity, material=get(entity.data, "tiletype", "g")[1], blendIn=false)
@@ -94,7 +94,7 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CassetteBadeline
 
         fakeTiles = Ahorn.createFakeTiles(room, nx, ny, width, height, get(entity.data, "tiletype", "g")[1], blendIn=false)
 
-        if index in ghostnodes
+        if index in ignoredNodes
             Ahorn.drawFakeTiles(ctx, room, fakeTiles, room.objTiles, true, nx, ny, alpha=0.5, clipEdges=true)
         else
             Ahorn.drawFakeTiles(ctx, room, fakeTiles, room.objTiles, true, nx, ny, clipEdges=true)
