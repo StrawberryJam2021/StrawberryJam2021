@@ -2,7 +2,7 @@ module SJ2021
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/AirTimeMusicController" AirTimeMusicController(x::Integer, y::Integer, longAirtimeParam="long_airtime")
+@mapdef Entity "SJ2021/AirTimeMusicController" AirTimeMusicController(x::Integer, y::Integer, activationThreshold::Number=0.1, longAirtimeParam="long_airtime")
 
 const placements = Ahorn.PlacementDict(
     "Airtime Music Controller (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
