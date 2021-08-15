@@ -20,13 +20,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         float lastGroundTime = 0;
-        private EventInstance music;
 
         private Player player;
 
         public override void Update() {
             base.Update();
-            music = Audio.CurrentMusicEventInstance;
 
             player ??= Scene.Tracker.GetEntity<Player>();
             if (player is null)
@@ -36,10 +34,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 lastGroundTime = Scene.TimeActive;
 
             if (Scene.TimeActive - lastGroundTime > airtimeThreshold) {
-                music.setParameterValue(param, 1);
+                Audio.SetMusicParam(param, 1);
                 player.StartDash();
             } else {
-                music.setParameterValue(param, 0);
+                Audio.SetMusicParam(param, 0);
             }
         }
     }
