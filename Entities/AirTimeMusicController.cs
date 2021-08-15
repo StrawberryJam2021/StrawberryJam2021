@@ -16,7 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public AirTimeMusicController(EntityData data, Vector2 offset) : base(data.Position + offset) {
             airtimeThreshold = data.Float("activationThreshold");
-            param = data.Attr("longAirtimeParam", "long_airtime");
+            param = data.Attr("musicParam", "");
         }
 
         float lastGroundTime = 0;
