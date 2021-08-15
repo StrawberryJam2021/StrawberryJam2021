@@ -33,12 +33,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (player.OnSafeGround)
                 lastGroundTime = Scene.TimeActive;
 
-            if (Scene.TimeActive - lastGroundTime > airtimeThreshold) {
+            if (Scene.TimeActive - lastGroundTime > airtimeThreshold)
                 Audio.SetMusicParam(param, 1);
-                player.StartDash();
-            } else {
+            else
                 Audio.SetMusicParam(param, 0);
-            }
         }
     }
 }
