@@ -1,14 +1,11 @@
-using Celeste;
 using Celeste.Mod.Entities;
-using FMOD;
-using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
-using On.Celeste;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 
-    // This controller triggers a certain music parameter when the player is off the ground for a period of time.
+    // This controller enables a music parameter when the player is off the ground for a certain amount of time.
+    // The parameter is turned off when the player lands.
     [CustomEntity("SJ2021/AirTimeMusicController")]
     public class AirTimeMusicController : Entity {
         float airtimeThreshold = 0;
