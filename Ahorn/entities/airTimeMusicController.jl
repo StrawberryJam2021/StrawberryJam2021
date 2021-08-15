@@ -10,9 +10,16 @@ const placements = Ahorn.PlacementDict(
     )
 )
 
-function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::AirTimeMusicController, room::Maple.Room)
-    Ahorn.drawRectangle(ctx, 0, 0, 8, 8, Ahorn.defaultWhiteColor, Ahorn.defaultBlackColor)
+const sprite = "objects/StrawberryJam2021/airTimeMusicController/icon"
+
+function Ahorn.selection(entity::AirTimeMusicController)
+    x, y = Ahorn.position(entity)
+
+    return Ahorn.getSpriteRectangle(sprite, x, y)
 end
 
+function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::AirTimeMusicController)
+    Ahorn.drawSprite(ctx, sprite, 0, 0)
+end
 
 end
