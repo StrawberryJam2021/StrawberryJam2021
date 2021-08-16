@@ -18,8 +18,6 @@ function Ahorn.selection(entity::AirTimeMusicController)
     return Ahorn.getSpriteRectangle(sprite, x, y)
 end
 
-function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::AirTimeMusicController)
-    Ahorn.drawSprite(ctx, sprite, 0, 0)
-end
+Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::AirTimeMusicController) = Ahorn.drawSprite(ctx, sprite, 0, 0)
 
 end
