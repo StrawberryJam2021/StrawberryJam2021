@@ -202,3 +202,7 @@ placements.entities.SJ2021/DirectionalBooster.tooltips.boosterColor=The colour t
 # Hint Controller
 placements.entities.SJ2021/HintController.tooltips.dialogId=The identifier of the dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
 placements.entities.SJ2021/HintController.tooltips.singleUse=Whether the hint may only be viewed a single time per session.
+
+# Airtime Music Controller
+placements.entities.SJ2021/AirTimeMusicController.tooltips.activationThreshold=The amount of airtime in seconds required before the music parameter is enabled.
+placements.entities.SJ2021/AirTimeMusicController.tooltips.musicParam=The music parameter that will be adjusted by this controller.
