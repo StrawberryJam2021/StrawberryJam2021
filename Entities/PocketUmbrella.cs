@@ -33,6 +33,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public PocketUmbrella(Vector2 position, float cost) : base(position) {
             staminaCost = cost;
             Add(sprite = StrawberryJam2021Module.SpriteBank.Create("pocketUmbrella"));
+            sprite.Visible = false;
             Collider = new Hitbox(8, 10, -4, -10);
 
             Add(Hold = new Holdable(0.3f));
@@ -53,12 +54,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             AddTag(Tags.Persistent);
             Depth = Depths.Player + 1;
             player = Hold.Holder;
+            sprite.Visible = true;
             sprite.Play("spawn", true);
             sprite.OnChange = (_, _) => { spawning = false; };
         }
 
         public override void Render() {
-            sprite.DrawSimpleOutline();
+            if (sprite.Visible) {
+                sprite.DrawSimpleOutline();
+            }
             base.Render();
         }
 
