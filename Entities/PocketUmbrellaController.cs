@@ -113,7 +113,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
             foreach (PocketUmbrellaController controller in Engine.Scene.Tracker.GetEntities<PocketUmbrellaController>()) {
-                if (controller.Enabled && player.Dead == false) {
+                if (controller.Enabled && player.Dead == false && player.StateMachine.State != Player.StDash && !Input.Dash.Check) {
                     if (controller.grabCheck()) {
                         if (player.Holding == null && controller.exclusiveGrabCollide(player)) {
                             if (controller.trySpawnJelly(out PocketUmbrella umbrella, player)) {
