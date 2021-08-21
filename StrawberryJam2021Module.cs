@@ -102,5 +102,16 @@ namespace Celeste.Mod.StrawberryJam2021 {
             Paintbrush.LoadParticles();
             NodedCloud.LoadParticles();
         }
+        // Temporary code from vivhelper
+        public static bool VivHelperGetFlags(Level l, string[] flags, string and_or) {
+            if (l == null)
+                return false;
+            bool b = and_or == "and";
+            if (flags.Length == 1 && flags[0] == "") { return true; }
+            foreach (string flag in flags) {
+                if (and_or == "or") { b |= flag[0] != '!' ? l.Session.GetFlag(flag) : !l.Session.GetFlag(flag.TrimStart('!')); } else { b &= flag[0] != '!' ? l.Session.GetFlag(flag) : !l.Session.GetFlag(flag.TrimStart('!')); }
+            }
+            return b;
+        }
     }
 }
