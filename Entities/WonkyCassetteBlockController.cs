@@ -62,7 +62,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             session.CassetteBeatTimer = session.MusicBeatTimer - cassetteOffset;
             session.CassetteWonkyBeatIndex = 0;
             
-            var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>().ToList();
+            var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>();
 
             foreach (WonkyCassetteBlock wonkyBlock in wonkyBlocks) {
                 wonkyBlock.Activated = false;
@@ -140,7 +140,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 session.CassetteBeatTimer -= beatIncrement;
 
                 // beatIndex is always in sixteenth notes
-                var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>().ToList();
+                var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>();
                 int nextBeatIndex = (session.CassetteWonkyBeatIndex + 1) % maxBeats;
                 int beatInBar = session.CassetteWonkyBeatIndex / (16 / beatLength) % barLength; // current beat
 
