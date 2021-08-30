@@ -17,8 +17,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         
         
         public RainDensityTrigger(EntityData data, Vector2 offset) : base(data, offset) {
-            triggerEndDensity = data.Float("density", 0f);
-            triggerDuration = data.Float("duration", 0f);
+            triggerEndDensity = Math.Max(Math.Min(data.Float("density", 0f), 1f), 0f);
+            triggerDuration = Math.Max(data.Float("duration", 0f), 0f);
         }
         
         public static void Load() {
@@ -41,16 +41,13 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             Duration = triggerDuration;
         }
         
-        // replace RainFG.particles.Length with integer determined by Density
+        // multiply RainFG.particles.Length in for loop by Density in order to adjust number of particles rendered
         private static void modRainRender(ILContext il) {
             ILCursor cursor = new ILCursor(il);
-            cursor.TryGotoNext(MoveType.Before, instr => instr.MatchLdlen());
-            cursor.Goto(cursor.Prev, MoveType.Before);
-            cursor.Goto(cursor.Prev, MoveType.Before);
-            
-            cursor.RemoveRange(4);
-            
-            cursor.EmitDelegate<Func<int>>(determineVisibleParticleNumber);
+            while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchConvI4())) {
+                Logger.Log("SJ2021/RainDensityTrigger", $"Adding IL hook at {cursor.Index} to be able to customize rain density");
+                cursor.EmitDelegate<Func<int, int>>(len => (int)(len * Density));
+            }
         }
         
         private static void modRainUpdate(On.Celeste.RainFG.orig_Update orig, RainFG self, Scene scene) {
@@ -60,10 +57,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 float rate = Math.Abs(EndDensity - StartDensity) / Duration;
                 Density = Calc.Approach(Density, EndDensity, rate * Engine.DeltaTime);
             }
-        }
-        
-        private static int determineVisibleParticleNumber() {
-            return (int)Math.Max(Math.Min(240 * Density, 240), 0);
         }
         
         private static void Reset(Level a, LevelExit b, LevelExit.Mode c, Session d, HiresSnow e) {
