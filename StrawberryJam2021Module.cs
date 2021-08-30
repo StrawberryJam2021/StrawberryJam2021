@@ -52,6 +52,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ConstantDelayFallingBlockController.Load();
             DirectionalBooster.Load();
             HintController.Load();
+            RainDensityTrigger.Load();
         }
 
         public override void Unload() {
@@ -84,6 +85,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ConstantDelayFallingBlockController.Unload();
             DirectionalBooster.Unload();
             HintController.Unload();
+            RainDensityTrigger.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {

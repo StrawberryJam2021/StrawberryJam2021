@@ -7,7 +7,6 @@ using System;
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/RainDensityTrigger")]
     class RainDensityTrigger : Trigger {
-        private static bool Hooked = false;
         private static float Density = 1f;
         private static float StartDensity = 1f;
         private static float EndDensity = 1f;
@@ -20,15 +19,19 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         public RainDensityTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             triggerEndDensity = data.Float("density", 0f);
             triggerDuration = data.Float("duration", 0f);
-            
-            if (!Hooked) {
-                On.Celeste.RainFG.Update += modRainUpdate;
-                IL.Celeste.RainFG.Render += modRainRender;
-                Hooked = true;
-                
-                Everest.Events.Level.OnExit += Reset;
-            }
         }
+        
+        public static void Load() {
+            On.Celeste.RainFG.Update += modRainUpdate;
+            IL.Celeste.RainFG.Render += modRainRender;
+            Everest.Events.Level.OnExit += Reset;
+        }
+        
+        public static void Unload() {
+            On.Celeste.RainFG.Update -= modRainUpdate;
+            IL.Celeste.RainFG.Render -= modRainRender;
+            Everest.Events.Level.OnExit -= Reset;
+        } 
         
         public override void OnEnter(Player player) {
             base.OnEnter(player);
@@ -64,15 +67,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
         
         private static void Reset(Level a, LevelExit b, LevelExit.Mode c, Session d, HiresSnow e) {
-            On.Celeste.RainFG.Update -= modRainUpdate;
-            IL.Celeste.RainFG.Render -= modRainRender;
-            Hooked = false;
-            
             Density = 1f;
             StartDensity = 1f;
             EndDensity = 1f;
-            
-            Everest.Events.Level.OnExit -= Reset;
         }
     }
 }
