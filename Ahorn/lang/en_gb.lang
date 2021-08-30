@@ -184,6 +184,7 @@ placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.timeSignature=T
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.sixteenthNoteParam=The FMOD parameter that should be affected in this room.
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.cassetteOffset=The constant offset in seconds that the cassette blocks will lag behind the music progress.\nPositive numbers will make the cassette blocks trigger later.
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.boostFrames=The number of frames after activation that a cassette boost is possible for. Must be at least 1.
+placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.disableFlag=The flag that deactivates all cassette blocks in the room. Leave empty if you don't want to use it.
 
 # Skateboard Trigger
 placements.triggers.SJ2021/SkateboardTrigger.tooltips.mode=Whether entering the trigger will enable, disable, or toggle the skateboard.
