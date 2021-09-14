@@ -15,10 +15,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private float triggerEndDensity;
         private float triggerDuration;
         
-        
         public RainDensityTrigger(EntityData data, Vector2 offset) : base(data, offset) {
-            triggerEndDensity = Math.Max(Math.Min(data.Float("density", 0f), 1f), 0f);
-            triggerDuration = Math.Max(data.Float("duration", 0f), 0f);
+            triggerEndDensity = Calc.Clamp(data.Float("density", 0f), 0f, 1f);
+            triggerDuration = Math.Max(data.Float("duration", 0f), 0.01f);
         }
         
         public static void Load() {
