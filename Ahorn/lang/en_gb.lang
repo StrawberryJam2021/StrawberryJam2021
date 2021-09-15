@@ -207,3 +207,6 @@ placements.entities.SJ2021/HintController.tooltips.singleUse=Whether the hint ma
 # Airtime Music Controller
 placements.entities.SJ2021/AirTimeMusicController.tooltips.activationThreshold=The amount of airtime in seconds required before the music parameter is enabled.
 placements.entities.SJ2021/AirTimeMusicController.tooltips.musicParam=The music parameter that will be adjusted by this controller.
+
+# Pocket Umbrella Trigger
+placements.entities.SJ2021/PocketUmbrellaTrigger.tooltips.musicParam=(Optional) The music layer to be turned on when gliding with the umbrella.

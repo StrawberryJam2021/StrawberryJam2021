@@ -14,6 +14,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Level level;
         private SoundSource fallingSfx;
 
+        private string musicLayer;
+
         static ParticleType P_Glow, P_Glide, P_GlideUp, P_Expand;
 
         public static void LoadParticles() {
@@ -30,8 +32,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             P_Expand = new ParticleType(Glider.P_Expand);
         }
 
-        public PocketUmbrella(Vector2 position, float cost) : base(position) {
+        public PocketUmbrella(Vector2 position, float cost, string musicLayer = "") : base(position) {
             staminaCost = cost;
+            this.musicLayer = musicLayer;
+
             Add(sprite = StrawberryJam2021Module.SpriteBank.Create("pocketUmbrella"));
             sprite.Visible = false;
             Collider = new Hitbox(8, 10, -4, -10);
@@ -92,8 +96,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Vector2 vector = new Vector2(speed.X * 0.5f, (speed.Y < 0f) ? (speed.Y * 2f) : speed.Y);
                 float value = Calc.Map(vector.Length(), 0f, 120f, 0f, 0.7f);
                 fallingSfx.Param("glider_speed", value);
+                Audio.SetMusicParam(musicLayer, 1f);
             } else {
                 fallingSfx.Stop(true);
+                Audio.SetMusicParam(musicLayer, 0f);
             }
             base.Update();
             if (!destroyed) {

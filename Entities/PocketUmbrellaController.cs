@@ -1,10 +1,10 @@
-﻿using Monocle;
-using Celeste.Mod.Entities;
-using System.Reflection;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+using Monocle;
 using MonoMod.Cil;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/PocketUmbrellaController")]
@@ -18,7 +18,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public float StaminaCost { get; set; }
         public float Cooldown { get; set; }
 
-        public PocketUmbrellaController() : this (0, false) {
+        public string MusicLayer { get; set; }
+
+        public PocketUmbrellaController() : this(0, false) {
         }
 
         public PocketUmbrellaController(float cost, bool enabled, float cooldown = 0.2f) {
@@ -132,7 +134,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private bool trySpawnJelly(out PocketUmbrella umbrella, Player player) {
-            umbrella = new PocketUmbrella(player.Position + spawnOffset, StaminaCost);
+            umbrella = new PocketUmbrella(player.Position + spawnOffset, StaminaCost, MusicLayer);
             if (!checkSpawnCondition(player)) {
                 return false;
             }
