@@ -165,12 +165,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         #region Private Fields
 
-        private const float triggerCooldown = 1f;
         private const float flickerFrequency = 4f;
         private const float beamFlickerRange = 0.25f;
         private const float emitterFlickerRange = 0.15f;
 
-        private float triggerCooldownRemaining;
         private float sineValue;
 
         private readonly Sprite emitterSprite;
@@ -235,18 +233,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             };
         }
 
-        public override void Update() {
-            base.Update();
-
-            if (triggerCooldownRemaining > 0)
-                triggerCooldownRemaining -= triggerCooldown * Engine.DeltaTime;
-
-            if (TriggerZipMovers && getLaserSyncFlag(ColorChannel) &&
-                Engine.Scene.Tracker.GetEntity<Player>() is { } player && !Get<PlayerCollider>().Check(player)) {
-                setLaserSyncFlag(ColorChannel, false);
-            }
-        }
-
         public override void Render() {
             // only render beam if we're collidable
             if (Collidable) {
@@ -290,19 +276,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void onPlayerCollide(Player player) {
             var level = player.SceneAs<Level>();
 
-            if (triggerCooldownRemaining <= 0) {
-                triggerCooldownRemaining = triggerCooldown;
+            if (DisableLasers) {
+                level.Entities.With<LaserEmitter>(emitter => {
+                    if (emitter.ColorChannel == ColorChannel)
+                        emitter.Collidable = false;
+                });
+            }
 
-                if (DisableLasers) {
-                    level.Entities.With<LaserEmitter>(emitter => {
-                        if (emitter.ColorChannel == ColorChannel)
-                            emitter.Collidable = false;
-                    });
-                }
-
-                if (TriggerZipMovers) {
-                    setLaserSyncFlag(ColorChannel, true);
-                }
+            if (TriggerZipMovers) {
+                setLaserSyncFlag(ColorChannel, true);
             }
 
             if (KillPlayer) {
@@ -321,10 +303,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Rounded,
         }
 
+        private const string linkedZipMoverTypeName = "Celeste.Mod.AdventureHelper.Entities.LinkedZipMover";
+        private const string linkedZipMoverNoReturnTypeName = "Celeste.Mod.AdventureHelper.Entities.LinkedZipMoverNoReturn";
+        private const string zipMoverSoundControllerTypeName = "Celeste.Mod.AdventureHelper.Entities.ZipMoverSoundController";
+
         private static readonly Type linkedZipMoverType = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "AdventureHelper")!
-            .GetType().Assembly.GetType("Celeste.Mod.AdventureHelper.Entities.LinkedZipMover");
+            .GetType().Assembly.GetType(linkedZipMoverTypeName);
         private static readonly Type linkedZipMoverNoReturnType = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "AdventureHelper")!
-            .GetType().Assembly.GetType("Celeste.Mod.AdventureHelper.Entities.LinkedZipMoverNoReturn");
+            .GetType().Assembly.GetType(linkedZipMoverNoReturnTypeName);
 
         private static readonly MethodInfo linkedZipMoverSequence = linkedZipMoverType.GetMethod("Sequence", BindingFlags.NonPublic | BindingFlags.Instance).GetStateMachineTarget();
         private static readonly PropertyInfo linkedZipMoverColorCode = linkedZipMoverType.GetProperty("ColorCode", BindingFlags.Public | BindingFlags.Instance);
@@ -348,18 +334,46 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void LinkedZipMover_Sequence(ILContext il) {
             var cursor = new ILCursor(il);
+
+            // find the HasPlayerRider check
             cursor.GotoNext(instr => instr.MatchCallvirt<Solid>(nameof(Solid.HasPlayerRider)));
+
+            // emit flag check
             cursor.EmitDelegate<Func<Solid, bool>>(self =>
                 self.HasPlayerRider() || getLaserSyncFlag((string) linkedZipMoverColorCode.GetValue(self)));
             cursor.Emit(OpCodes.Br_S, cursor.Next.Next);
+
+            // find code near the end of the loop
+            cursor.GotoNext(instr => instr.MatchCall(zipMoverSoundControllerTypeName, "StopSound"));
+            cursor.GotoPrev(MoveType.After, instr => instr.MatchCallvirt(linkedZipMoverTypeName, "get_ColorCode"));
+
+            // emit clear flag
+            cursor.EmitDelegate<Func<string, string>>(colorCode => {
+                setLaserSyncFlag(colorCode, false);
+                return colorCode;
+            });
         }
 
         private static void LinkedZipMoverNoReturn_Sequence(ILContext il) {
             var cursor = new ILCursor(il);
+
+            // find the HasPlayerRider check
             cursor.GotoNext(instr => instr.MatchCallvirt<Solid>(nameof(Solid.HasPlayerRider)));
+
+            // emit flag check
             cursor.EmitDelegate<Func<Solid, bool>>(self =>
                 self.HasPlayerRider() || getLaserSyncFlag((string) linkedZipMoverNoReturnColorCode.GetValue(self)));
             cursor.Emit(OpCodes.Br_S, cursor.Next.Next);
+
+            // find code near the end of the loop
+            cursor.GotoNext(instr => instr.MatchCall(zipMoverSoundControllerTypeName, "StopSound"));
+            cursor.GotoPrev(MoveType.After, instr => instr.MatchCallvirt(linkedZipMoverNoReturnTypeName, "get_ColorCode"));
+
+            // emit clear flag
+            cursor.EmitDelegate<Func<string, string>>(colorCode => {
+                setLaserSyncFlag(colorCode, false);
+                return colorCode;
+            });
         }
     }
 }
