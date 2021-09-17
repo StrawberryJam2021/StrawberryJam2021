@@ -71,6 +71,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Update() {
+            if (Hold.IsHeld && !player.OnSafeGround)
+                Audio.SetMusicParam(musicLayer, 1);
+            else
+                Audio.SetMusicParam(musicLayer, 0);
+
             if (Scene.OnInterval(0.05f)) {
                 level.Particles.Emit(P_Glow, 1, Center + Vector2.UnitY * -9f, new Vector2(10f, 4f));
             }
@@ -96,10 +101,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Vector2 vector = new Vector2(speed.X * 0.5f, (speed.Y < 0f) ? (speed.Y * 2f) : speed.Y);
                 float value = Calc.Map(vector.Length(), 0f, 120f, 0f, 0.7f);
                 fallingSfx.Param("glider_speed", value);
-                Audio.SetMusicParam(musicLayer, 1f);
             } else {
                 fallingSfx.Stop(true);
-                Audio.SetMusicParam(musicLayer, 0f);
             }
             base.Update();
             if (!destroyed) {
@@ -128,8 +131,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                     PlayOpen();
                     Input.Rumble(RumbleStrength.Climb, RumbleLength.Short);
+
                 } else if (!spawning) {
                     sprite.Play("held", false, false);
+
                 }
 
                 sprite.Scale.Y = Calc.Approach(sprite.Scale.Y, Vector2.One.Y, Engine.DeltaTime * 2f);
