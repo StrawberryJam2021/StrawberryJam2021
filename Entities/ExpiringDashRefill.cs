@@ -73,5 +73,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 player.OverrideHairColor = flash ? Player.NormalHairColor : Player.UsedHairColor;
             }
         }
+
+        public override void Removed(Scene scene) {
+            Player player = Scene.Tracker.GetEntity<Player>();
+
+            // Make sure the player can't carry their dash out the room and keep it.
+            player.Dashes = 0;
+
+            base.Removed(scene);
+        }
     }
 }
