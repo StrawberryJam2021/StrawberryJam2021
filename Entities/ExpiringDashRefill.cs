@@ -47,11 +47,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Update();
 
             Player player = Scene.Tracker.GetEntity<Player>();
-            player.OverrideHairColor = Player.NormalHairColor;
+            player.OverrideHairColor = null;
 
             if (player.Dashes == 0)
-                timeUntilDashExpire = 0;
-
+                return;
 
             if (timeUntilDashExpire <= 0)
                 return;
@@ -70,7 +69,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (Scene.OnInterval(0.05f))
                     flash = !flash;
 
-                player.OverrideHairColor = flash ? Player.NormalHairColor : Player.UsedHairColor;
+                player.OverrideHairColor = flash ? null : Player.UsedHairColor;
             }
         }
 
@@ -79,6 +78,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // Make sure the player can't carry their dash out the room and keep it.
             player.Dashes = 0;
+
+            // Make sure hair colour overrides are removed, in case player leaves while the hair is flashing blue.
+            player.OverrideHairColor = null;
 
             base.Removed(scene);
         }
