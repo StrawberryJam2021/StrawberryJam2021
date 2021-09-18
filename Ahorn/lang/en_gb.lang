@@ -214,4 +214,4 @@ placements.triggers.SJ2021/RainDensityTrigger.tooltips.duration=The time (in sec
 
 # Expiring Dash Refill
 placements.entities.SJ2021/ExpiringDashRefill.tooltips.dashExpirationTime=The amount of time given before the dash is revoked if not used.
-placements.entities.SJ2021/ExpiringDashRefill.tooltips.hairFlashThreshold=The threshold that determines when the warning flash begins.
+placements.entities.SJ2021/ExpiringDashRefill.tooltips.hairFlashThreshold=The threshold ratio that determines when the warning flash begins. (0 - 1)

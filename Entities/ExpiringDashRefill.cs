@@ -1,32 +1,26 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using System;
 using System.Collections;
 using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/ExpiringDashRefill")]
     public class ExpiringDashRefill : Refill {
-
-        private static readonly MethodInfo OnPlayerMethodInfo = typeof(Refill).GetMethod("OnPlayer", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly MethodInfo RefillRoutine = typeof(Refill).GetMethod("RefillRoutine", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly FieldInfo respawnTimer = typeof(Refill).GetField("respawnTimer", BindingFlags.NonPublic | BindingFlags.Instance);
-        private readonly Action<Player> baseOnPlayer;
 
         // Config stuff
         private readonly float dashExpirationTime;
-        private readonly float hairFlashThreshold;
+        private readonly float hairFlashTime;
 
         // Tracking
         private double timeUntilDashExpire = 0;
 
         public ExpiringDashRefill(EntityData data, Vector2 offset)
             : base(data.Position + offset, false, data.Bool("oneUse")) {
-            baseOnPlayer = (Action<Player>) OnPlayerMethodInfo.CreateDelegate(typeof(Action<Player>), this);
-
             dashExpirationTime = data.Float("dashExpirationTime");
-            hairFlashThreshold = data.Float("hairFlashThreshold");
+            hairFlashTime = dashExpirationTime * data.Float("hairFlashThreshold");
 
             Remove(Components.Get<PlayerCollider>());
             Add(new PlayerCollider(OnPlayer));
@@ -71,7 +65,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
 
-            if (timeUntilDashExpire <= hairFlashThreshold) {
+            if (timeUntilDashExpire <= hairFlashTime) {
                 // Flash hair
                 if (Scene.OnInterval(0.05f))
                     flash = !flash;
