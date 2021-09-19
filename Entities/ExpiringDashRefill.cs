@@ -19,8 +19,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public ExpiringDashRefill(EntityData data, Vector2 offset)
             : base(data.Position + offset, false, data.Bool("oneUse")) {
-            dashExpirationTime = data.Float("dashExpirationTime");
-            hairFlashTime = dashExpirationTime * data.Float("hairFlashThreshold");
+            dashExpirationTime = Calc.Max(data.Float("dashExpirationTime"), 0.01f);
+            hairFlashTime = dashExpirationTime * Calc.Clamp(data.Float("hairFlashThreshold"), 0f, 1f);
 
             Remove(Components.Get<PlayerCollider>());
             Add(new PlayerCollider(OnPlayer));
@@ -28,7 +28,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void OnPlayer(Player player) {
             // Unconditionally add the dash, bypassing inventory limits
-            Scene.Tracker.GetEntity<Player>().Dashes = 1;
+            player.Dashes = 1;
             timeUntilDashExpire = dashExpirationTime;
 
             // Everything after this line is roundabout ways of doing the same things Refill does
@@ -74,7 +74,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Removed(Scene scene) {
-            Player player = Scene.Tracker.GetEntity<Player>();
+            if (scene.Tracker.GetEntity<Player>() is not Player player)
+                return;
 
             // Make sure the player can't carry their dash out the room and keep it.
             player.Dashes = 0;
