@@ -106,7 +106,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Hold.OnCarry = pos => Position = pos + new Vector2(0f, -8f);
             LiftSpeedGraceTime = 0.1f;
             Add(new VertexLight(Collider.Center, Color.White, 1f, 32, 64));
-            Tag = Tags.TransitionUpdate;
             Add(new MirrorReflection());
 
             sprite.OnFinish = delegate {
