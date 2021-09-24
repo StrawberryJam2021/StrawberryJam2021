@@ -13,7 +13,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
 		//fields
         public bool invert;
         private Type[] typesToDespawn;
-        public bool sessionFlag;
+        public string sessionFlagName;
 
 
 
@@ -22,7 +22,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
             : base(data.Position + offset) {
             
 
-            string unsplitNames = data.Attr("NamesOfEntitiesToDespawn");
+            string unsplitNames = data.Attr("namesOfEntitiesToDespawn");
 
 
             if (unsplitNames == "") {
@@ -30,7 +30,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
             }
 
 
-            string[] entitiesToDespawn = data.Attr("NamesOfEntitiesToDespawn").Split(',');
+            string[] entitiesToDespawn = unsplitNames.Split(',');
             typesToDespawn = new Type[entitiesToDespawn.Length];
             int i = 0;
 
@@ -44,8 +44,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
             }
 
 
-            invert = data.Bool("Invert");
-            sessionFlag = SceneAs<Level>().Session.GetFlag(data.Attr("NameOfSessionFlag"));
+            invert = data.Bool("invert");
+            sessionFlagName = data.Attr("nameOfSessionFlag");
         }
 
 
@@ -53,7 +53,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
         //methods
         public override void Awake(Scene scene)
         {
-            
+            bool sessionFlag = SceneAs<Level>().Session.GetFlag(sessionFlagName);
             if (sessionFlag ^ invert) {
 
                 foreach (Type t in typesToDespawn) {
