@@ -1,4 +1,5 @@
 ﻿using Celeste.Mod.Entities;
+using Celeste.Mod.Helpers;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
@@ -10,13 +11,26 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
     public class EntityDespawner : Entity
 	{
 		//fields
-		public bool Despawn; //inverts the thing
-        public string NamesOfEntitiesToDespawn;
+        public bool Despawn; //causes entity to do nothing if set to false
+        private Type[] typesToDespawn;
         public string FlagName;
         //constructors
         public EntityDespawner(EntityData data, Vector2 offset)
             : base(data.Position + offset) {
-            NamesOfEntitiesToDespawn = data.Attr("NamesOfEntitiesToDespawn"); //think of a better name for this field, probably
+            string unsplitNames = data.Attr("NamesOfEntitiesToDespawn");
+            if (unsplitNames == "") {
+                throw new ArgumentException("Names of entities to despawn cannot be empty.");
+            }
+            string[] entitiesToDespawn = data.Attr("NamesOfEntitiesToDespawn").Split(',');
+            typesToDespawn = new Type[entitiesToDespawn.Length];
+            int i = 0;
+            foreach (string name in entitiesToDespawn) {
+                Type t = FakeAssembly.GetFakeEntryAssembly().GetType(name);
+                if (t is null) {
+                    throw new ArgumentException($"\"{name}\" is not a valid entity class name.");
+                }
+                typesToDespawn[i++] = t;
+            }
             Despawn = data.Bool("Despawn");
             FlagName = data.Attr("Name");
         }
@@ -25,25 +39,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
         public override void Awake(Scene scene)
         {
             if (Despawn) {
-                List<Entity> entities = scene.Tracker.GetEntities<Entity>();
-                string[] entitiesToDespawn = NamesOfEntitiesToDespawn.Split(';');
-                foreach (Entity e in entities) {
-                    CustomEntityAttribute entityAttribute =
-                        (CustomEntityAttribute) Attribute.GetCustomAttribute(e.GetType(), typeof(CustomEntityAttribute));
-                    if (entityAttribute is null)
-                        continue;
-                    else {
-                        foreach (string entityName in entityAttribute.IDs) {
-                            foreach (string name in entitiesToDespawn) {
-                                if (name.Equals(entityName)) {
-                                    e.RemoveSelf();
-                                }
-                            }
-                        }
+                foreach (Type t in typesToDespawn) {
+                    scene.Tracker.Entities.TryGetValue(t, out List<Entity> entitiesOfType);
+                    foreach (Entity e in entitiesOfType) {
+                        e.RemoveSelf();
                     }
                 }
             }
         }
 	}
-
 }
