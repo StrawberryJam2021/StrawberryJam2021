@@ -2,7 +2,7 @@ module SJ2021
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/EntityDespawner" EntityDespawner(x::Integer, y::Integer, Name::String="",
+@mapdef Entity "SJ2021/EntityDespawner" EntityDespawner(x::Integer, y::Integer, NameOfSessionFlag::String="",
    NamesOfEntitiesToDespawn::String="", Despawn::Bool=true)
 
 const placements = Ahorn.PlacementDict(
