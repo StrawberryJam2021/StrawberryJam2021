@@ -2,8 +2,8 @@ module SJ2021
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/EntityDespawner" EntityDespawner(x::Integer, y::Integer, NameOfSessionFlag::String="",
-   NamesOfEntitiesToDespawn::String="", Despawn::Bool=true)
+@mapdef Entity "SJ2021/EntityDespawner" EntityDespawner(x::Integer, y::Integer, nameOfSessionFlag::String="",
+   namesOfEntitiesToDespawn::String="", invert::Bool=true)
 
 const placements = Ahorn.PlacementDict(
     "Entity Despawner (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
