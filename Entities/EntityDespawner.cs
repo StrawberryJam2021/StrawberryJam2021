@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities
 {
@@ -25,24 +27,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
             string unsplitNames = data.Attr("namesOfEntitiesToDespawn");
 
 
-            if (unsplitNames == "") {
-                throw new ArgumentException("Names of entities to despawn cannot be empty.");
-            }
+            Assembly fakeEntryAssembly = FakeAssembly.GetFakeEntryAssembly();
 
-
-            string[] entitiesToDespawn = unsplitNames.Split(',');
-            typesToDespawn = new Type[entitiesToDespawn.Length];
-            int i = 0;
-
-
-            foreach (string name in entitiesToDespawn) {
-                Type t = FakeAssembly.GetFakeEntryAssembly().GetType(name);
-                if (t is null) {
-                    throw new ArgumentException($"\"{name}\" is not a valid entity class name.");
-                }
-                typesToDespawn[i++] = t;
-            }
-
+            typesToDespawn = unsplitNames
+                .Split(',')
+                .Select(name => fakeEntryAssembly.GetType(name) ?? throw new Exception("..."))
+                .ToArray();
 
             invert = data.Bool("invert");
             sessionFlagName = data.Attr("nameOfSessionFlag");
