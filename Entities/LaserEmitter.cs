@@ -273,6 +273,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Render();
         }
 
+        public override void Removed(Scene scene) {
+            setLaserSyncFlag(ColorChannel, false);
+            base.Removed(scene);
+        }
+
         private void onPlayerCollide(Player player) {
             var level = player.SceneAs<Level>();
 
