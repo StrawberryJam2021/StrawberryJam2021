@@ -25,13 +25,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
             
 
             string unsplitNames = data.Attr("namesOfEntitiesToDespawn");
-
+            if (string.IsNullOrWhiteSpace(unsplitNames)) throw new ArgumentException("Entity Types cannot be blank.");
 
             Assembly fakeEntryAssembly = FakeAssembly.GetFakeEntryAssembly();
 
             typesToDespawn = unsplitNames
                 .Split(',')
-                .Select(name => fakeEntryAssembly.GetType(name) ?? throw new Exception("..."))
+                .Select(name => fakeEntryAssembly.GetType(name) ?? throw new ArgumentException($"\"{name}\" is not a valid entity class name."))
                 .ToArray();
 
             invert = data.Bool("invert");
