@@ -11,8 +11,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
 {
     [CustomEntity("SJ2021/EntityDespawner")]
     public class EntityDespawner : Entity
-	{
-		//fields
+    {
+        //fields
         public bool invert;
         private Type[] typesToDespawn;
         public string sessionFlagName;
