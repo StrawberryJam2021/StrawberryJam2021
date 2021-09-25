@@ -24,7 +24,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
             : base(data.Position + offset) {
             
 
-            string unsplitNames = data.Attr("namesOfEntitiesToDespawn");
+            string unsplitNames = data.Attr("entityTypes");
             if (string.IsNullOrWhiteSpace(unsplitNames)) throw new ArgumentException("Entity Types cannot be blank.");
 
             Assembly fakeEntryAssembly = FakeAssembly.GetFakeEntryAssembly();
