@@ -13,11 +13,11 @@ const placements = Ahorn.PlacementDict(
 
 const sprite = "objects/StrawberryJam2021/entityDespawner/icon"
 
-function Ahorn.selection(entity::entityDespawner)
+function Ahorn.selection(entity::EntityDespawner)
     x, y = Ahorn.position(entity)
-    return Ahorn.Rectangle(x - sprite_size / 2, y - sprite_size / 2, sprite_size, sprite_size)
+    return Ahorn.getSpriteRectangle(sprite, x, y)
 end
 
-Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::entityDespawner) = Ahorn.drawSprite(ctx, sprite, 0, 0)
+Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::EntityDespawner) = Ahorn.drawSprite(ctx, sprite, 0, 0)
 
 end
