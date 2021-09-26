@@ -91,7 +91,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
             if (Enabled && player.Dead == false) {
-                if (grabCheck()) {
+                if (player.Holding?.Entity is PocketUmbrella && player.StateMachine.State != Player.StClimb &&
+                    Input.GrabCheck && player.ClimbCheck((int) player.Facing, 0) &&
+                    (player.Speed.X != 0 || player.Speed.Y > 0)){
+                    player.StateMachine.ForceState(Player.StClimb);
+                } else if (grabCheck()) {
                     if (player.Holding == null && exclusiveGrabCollide(player)) {
                         if (trySpawnJelly(out PocketUmbrella umbrella, player)) {
                             Scene.Add(umbrella);
