@@ -219,4 +219,4 @@ placements.entities.SJ2021/ExpiringDashRefill.tooltips.hairFlashThreshold=The th
 #Entity Despawner
 placements.entities.SJ2021/EntityDespawner.tooltips.entityTypes=The full class names of the types of entities to despawn. Use commas to add multiple entities to the list (e.g. Celeste.Entity1,Celeste.Entity2)
 placements.entities.SJ2021/EntityDespawner.tooltips.flag=The name of the session flag to watch. Listed entities are removed if the session flag is set when entering the room.
-placements.entities.SJ2021/EntityDespawner.tooltips.invert=If checked, this entity will instead not spawn when the session flag is set and spawn when the session flag is not set.
+placements.entities.SJ2021/EntityDespawner.tooltips.invert=If checked, this entity will instead remove the listed entities when the session flag is not set.
