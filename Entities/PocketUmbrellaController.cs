@@ -13,7 +13,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private Vector2 spawnOffset;
         private float holdDelay;
-        public static MethodInfo wallJumpCheck_MI;
         public bool Enabled { get; set; }
         public float StaminaCost { get; set; }
         public float Cooldown { get; set; }
@@ -33,8 +32,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Player.Drop += Player_Drop;
             On.Celeste.Player.Throw += Player_Throw;
             IL.Monocle.Engine.Update += Engine_Update;
-
-            wallJumpCheck_MI = typeof(Player).GetMethod("WallJumpCheck", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
         public static void Unload() {
@@ -94,7 +91,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
             if (Enabled && player.Dead == false) {
-                if (grabCheck()) {
+                if (player.Holding?.Entity is PocketUmbrella && player.StateMachine.State != Player.StClimb &&
+                    Input.GrabCheck && player.ClimbCheck((int) player.Facing, 0) &&
+                    (player.Speed.X != 0 || player.Speed.Y > 0)){
+                    player.StateMachine.ForceState(Player.StClimb);
+                } else if (grabCheck()) {
                     if (player.Holding == null && exclusiveGrabCollide(player)) {
                         if (trySpawnJelly(out PocketUmbrella umbrella, player)) {
                             Scene.Add(umbrella);
@@ -145,15 +146,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private bool checkSpawnCondition(Player player) {
-            return player.Stamina > 20 && !player.Ducking && !wallJumpCheck(1, player) && !wallJumpCheck(-1, player) && playerStateCheck(player);
+            return player.Stamina > 20 && !player.Ducking && !player.ClimbCheck((int)player.Facing, 0) && playerStateCheck(player);
         }
 
         private bool playerStateCheck(Player player) {
             return player.StateMachine.State is Player.StNormal or Player.StDash or Player.StLaunch;
-        }
-
-        private bool wallJumpCheck(int dir, Player player) {
-            return (bool) wallJumpCheck_MI.Invoke(player, new object[] { dir });
         }
 
         private void dropUmbrella(PocketUmbrella umbrella) {
