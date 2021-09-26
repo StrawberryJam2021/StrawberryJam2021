@@ -215,3 +215,8 @@ placements.triggers.SJ2021/RainDensityTrigger.tooltips.duration=The time (in sec
 # Expiring Dash Refill
 placements.entities.SJ2021/ExpiringDashRefill.tooltips.dashExpirationTime=The amount of time given before the dash is revoked if not used.
 placements.entities.SJ2021/ExpiringDashRefill.tooltips.hairFlashThreshold=The threshold ratio that determines when the warning flash begins. (0 - 1)
+
+#Entity Despawner
+placements.entities.SJ2021/EntityDespawner.tooltips.entityType=The full names of the types of entities to despawn. Use commas to add multiple entities to the list (Ie Celeste.Entity1,Celeste.Entity2)
+placements.entities.SJ2021/EntityDespawner.tooltips.flag=The name of the session flag to watch and activate on.
+placements.entities.SJ2021/EntityDespawner.tooltips.invert=If checked, this entity will do nothing when the session flag is set and activate when the session flag is not set.

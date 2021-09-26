@@ -35,7 +35,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
                 .ToArray();
 
             invert = data.Bool("invert");
-            sessionFlagName = data.Attr("nameOfSessionFlag");
+            sessionFlagName = data.Attr("flag");
         }
 
 
