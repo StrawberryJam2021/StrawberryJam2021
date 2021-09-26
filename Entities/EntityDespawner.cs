@@ -47,11 +47,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
             if (sessionFlag ^ invert) {
 
                 foreach (Type t in typesToDespawn) {
-                    scene.Tracker.Entities.TryGetValue(t, out List<Entity> entitiesOfType);
-
-                    foreach (Entity e in entitiesOfType) {
-                        e.RemoveSelf();
+                    if(scene.Tracker.Entities.TryGetValue(t, out List<Entity> entitiesOfType)) {
+                        foreach (Entity e in entitiesOfType) {
+                            e.RemoveSelf();
+                        }
                     }
+
+                    
                 }
             }
         }
