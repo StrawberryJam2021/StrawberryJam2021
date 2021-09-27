@@ -1,6 +1,9 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Cil;
+using System;
+using System.Collections;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/HintController")]
@@ -10,39 +13,35 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static string FlagForRoom(string roomId) => $"HintController:{roomId}";
 
-        private bool needsHint;
+        private static bool showingHint;
 
         public HintController(EntityData data, Vector2 offset)
             : base(data.Position + offset) {
             DialogId = data.Attr("dialogId");
             SingleUse = data.Bool("singleUse");
-        }
-
-        public void DisplayHint() {
-            if (Scene is not Level level) return;
-            level.Session.SetFlag(FlagForRoom(level.Session.Level));
-
-            if (!string.IsNullOrEmpty(DialogId)) {
-                var player = level.Entities.FindFirst<Player>();
-                Scene.Add(new DialogCutscene(DialogId, player, false));
-            }
-        }
-
-        public override void Update() {
-            base.Update();
-
-            if (needsHint) {
-                needsHint = false;
-                DisplayHint();
-            }
+            Tag = Tags.PauseUpdate;
         }
 
         public static void Load() {
             Everest.Events.Level.OnCreatePauseMenuButtons += Level_OnCreatePauseMenuButtons;
+            IL.Celeste.Textbox.Render += Textbox_Render_Update;
+            IL.Celeste.Textbox.Update += Textbox_Render_Update;
         }
 
         public static void Unload() {
             Everest.Events.Level.OnCreatePauseMenuButtons -= Level_OnCreatePauseMenuButtons;
+            IL.Celeste.Textbox.Render -= Textbox_Render_Update;
+            IL.Celeste.Textbox.Update -= Textbox_Render_Update;
+        }
+
+        private static void Textbox_Render_Update(ILContext il) {
+            var cursor = new ILCursor(il);
+            cursor.GotoNext(MoveType.After,
+                instr => instr.MatchLdloc(0),
+                instr => instr.MatchCallvirt<Level>("get_FrozenOrPaused"));
+
+            // force update and render if showing hint
+            cursor.EmitDelegate<Func<bool, bool>>(fop => !showingHint && fop);
         }
 
         private static void Level_OnCreatePauseMenuButtons(Level level, TextMenu menu, bool minimal) {
@@ -55,12 +54,27 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (hintController != null) {
                 menu.Insert(retryIndex + 1, new TextMenu.Button(Dialog.Clean("sj2021_menu_hint")) {
                     OnPressed = () => {
-                        hintController.needsHint = true;
                         menu.OnCancel();
+                        hintController.ShowHint();
                     },
                     Disabled = hintController.SingleUse && level.Session.GetFlag(FlagForRoom(level.Session.Level)),
                 });
             }
+        }
+
+        private void ShowHint() {
+            if (Scene is Level level)
+                level.Paused = true;
+            Add(new Coroutine(ShowHintSequence()));
+        }
+
+        private IEnumerator ShowHintSequence() {
+            showingHint = true;
+            yield return Textbox.Say(DialogId);
+            showingHint = false;
+
+            if (Scene is Level level)
+                level.Paused = false;
         }
     }
 }
