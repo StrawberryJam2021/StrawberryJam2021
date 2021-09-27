@@ -71,7 +71,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 level.Particles.Emit(P_Glow, 1, Center + Vector2.UnitY * -9f, new Vector2(10f, 4f));
             }
 
-            bool climbUpdate = player.StateMachine.State == Player.StClimb;
+            bool climbUpdate = player?.StateMachine?.State == Player.StClimb ?? false;
 
             float target;
             if (Hold.IsHeld) {
