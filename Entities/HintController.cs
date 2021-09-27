@@ -48,7 +48,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             int retryIndex = menu.GetItems().FindIndex(item =>
                 item.GetType() == typeof(TextMenu.Button) && ((TextMenu.Button) item).Label == Dialog.Clean("menu_pause_retry"));
 
-            if (retryIndex < 0) return;
+            if (retryIndex < 0) {
+                return;
+            }
+
             var hintController = level.Entities.FindFirst<HintController>();
 
             if (hintController != null) {
@@ -63,8 +66,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void ShowHint() {
-            if (Scene is Level level)
+            if (Scene is Level level) {
                 level.Paused = true;
+            }
+
             Add(new Coroutine(ShowHintSequence()));
         }
 
@@ -73,8 +78,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             yield return Textbox.Say(DialogId);
             showingHint = false;
 
-            if (Scene is Level level)
+            if (Scene is Level level) {
                 level.Paused = false;
+            }
         }
     }
 }
