@@ -80,9 +80,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 level.Particles.Emit(P_Glow, 1, Center + Vector2.UnitY * -9f, new Vector2(10f, 4f));
             }
 
+            bool climbUpdate = player.StateMachine.State == Player.StClimb;
+
             float target;
             if (Hold.IsHeld) {
-                if (Hold.Holder.OnGround(1)) {
+                if (climbUpdate) {
+                    target = Calc.ClampedMap(400 * (int) player.Facing, -300f, 300f, (float) Math.PI / 4.5f, -(float) Math.PI / 4.5f);
+                } else if(Hold.Holder.OnGround(1)) {
                     target = Calc.ClampedMap(Hold.Holder.Speed.X, -300f, 300f, (float) Math.PI / 4.5f, -(float) Math.PI / 4.5f);
                 } else {
                     target = Calc.ClampedMap(Hold.Holder.Speed.X, -300f, 300f, (float) Math.PI / 3f, -(float) Math.PI / 3f);
@@ -141,7 +145,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 sprite.Scale.X = Calc.Approach(sprite.Scale.X, Math.Sign(sprite.Scale.X) * Vector2.One.X, Engine.DeltaTime * 2f);
 
                 if (Hold.IsHeld) {
-                    Hold.Holder.Stamina -= staminaCost * Engine.DeltaTime;
+                    if (!climbUpdate)
+                        Hold.Holder.Stamina -= staminaCost * Engine.DeltaTime;
                     if (Hold.Holder.Stamina <= 0) {
                         Hold.Holder.Drop();
                     }
