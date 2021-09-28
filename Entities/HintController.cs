@@ -35,13 +35,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void Textbox_Render_Update(ILContext il) {
+            Logger.Log("SJ2021/HintController", $"Adding IL hook for {il.Method.Name}");
             var cursor = new ILCursor(il);
-            cursor.GotoNext(MoveType.After,
-                instr => instr.MatchLdloc(0),
-                instr => instr.MatchCallvirt<Level>("get_FrozenOrPaused"));
-
-            // force update and render if showing hint
-            cursor.EmitDelegate<Func<bool, bool>>(fop => !showingHint && fop);
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCallvirt<Level>("get_FrozenOrPaused"))) {
+                // force update and render if showing hint
+                cursor.EmitDelegate<Func<bool, bool>>(fop => !showingHint && fop);
+            } else {
+                Logger.Log("SJ2021/HintController", "Failed to add IL hook!");
+            }
         }
 
         private static void Level_OnCreatePauseMenuButtons(Level level, TextMenu menu, bool minimal) {
