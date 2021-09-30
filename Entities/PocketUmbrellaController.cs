@@ -1,6 +1,6 @@
 ﻿using Monocle;
 using Celeste.Mod.Entities;
-using System.Reflection;
+using Mono.Cecil.Cil;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using MonoMod.Cil;
@@ -91,9 +91,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
             if (Enabled && player.Dead == false) {
-                if (player.Holding?.Entity is PocketUmbrella && player.StateMachine.State != Player.StClimb &&
-                    Input.GrabCheck && player.ClimbCheck((int) player.Facing, 0) &&
-                    (player.Speed.X != 0 || player.Speed.Y > 0)){
+                if (shouldGrabWall(player)){
                     player.StateMachine.ForceState(Player.StClimb);
                 } else if (grabCheck()) {
                     if (player.Holding == null && exclusiveGrabCollide(player)) {
@@ -103,6 +101,31 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                 }
             }
+        }
+
+        private bool shouldGrabWall(Player player) {
+            // this essentially emulates the checks that Player.NormalUpdate makes to figure out if the player should transition to grab state or not
+            // except for the Holding == null part as well as all stamina and ducking checks because the player *must* be unducked and have stamina to hold the umbrella.
+            return player.Holding?.Entity is PocketUmbrella && player.StateMachine.State == Player.StNormal &&
+                    Input.GrabCheck && player.Speed.Y > 0f && !(Math.Sign(player.Speed.X) == -(int) player.Facing) &&
+                    // all the above checks are common for the two individual situations where the game decides to switch to StGrab, the or'd checks below are the unique checks.
+                    (
+                        (player.ClimbCheck((int) player.Facing, 0) && !SaveData.Instance.Assists.NoGrabbing) ||
+                        !SaveData.Instance.Assists.NoGrabbing && Input.MoveY < 1f && weirdCheck(player)
+                    );
+
+        }
+
+        //this is called that bc I honestly have no clue what it does or why it does it but hey its in the original code so its here too.
+        private bool weirdCheck(Player player) {
+            for (int i = 1; i <= 2; i++) {
+                if (!CollideCheck<Solid>(player.Position + Vector2.UnitY * -i) && player.ClimbCheck((int) player.Facing, -i)) {
+                    player.MoveVExact(-i, null, null);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static void frozen_update() {
