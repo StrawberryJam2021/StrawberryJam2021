@@ -1,6 +1,5 @@
 ﻿using Monocle;
 using Celeste.Mod.Entities;
-using Mono.Cecil.Cil;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using MonoMod.Cil;
@@ -32,12 +31,39 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Player.Drop += Player_Drop;
             On.Celeste.Player.Throw += Player_Throw;
             IL.Monocle.Engine.Update += Engine_Update;
+            IL.Celeste.Player.NormalUpdate += Player_NormalUpdate;
         }
 
         public static void Unload() {
             On.Celeste.Player.Drop -= Player_Drop;
             On.Celeste.Player.Throw -= Player_Throw;
             IL.Monocle.Engine.Update -= Engine_Update;
+            IL.Celeste.Player.NormalUpdate -= Player_NormalUpdate;
+        }
+
+        private static void Player_NormalUpdate(ILContext il) {
+            ILCursor cursor1 = new ILCursor(il);
+            if (cursor1.TryGotoNext(MoveType.After,
+                    instr => instr.MatchLdfld<Player>("Stamina"),
+                    instr => instr.MatchLdcR4(0),
+                    instr => instr.MatchBleUn(out _),
+                    instr => instr.MatchLdarg(0),
+                    instr => instr.MatchCallvirt<Player>("get_Holding"))) {
+                ILCursor cursor0 = cursor1.Clone();
+                if (cursor1.TryGotoNext(MoveType.After,
+                        instr => instr.MatchLdfld<Player>("Stamina"),
+                        instr => instr.MatchLdcR4(0),
+                        instr => instr.MatchBleUn(out _),
+                        instr => instr.MatchLdarg(0),
+                        instr => instr.MatchCallvirt<Player>("get_Holding"))) {
+                    ModForPocketUmbrella(cursor0);
+                    ModForPocketUmbrella(cursor1);
+                }
+            }
+        }
+
+        private static void ModForPocketUmbrella(ILCursor cursor) {
+            cursor.EmitDelegate<Func<Holdable, bool>>((h) => h == null ? false : !(h.Entity is PocketUmbrella));
         }
 
         private static void Engine_Update(ILContext il) {
@@ -91,8 +117,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
             if (Enabled && player.Dead == false) {
-                if (shouldGrabWall(player)){
-                    player.StateMachine.ForceState(Player.StClimb);
+                if (shouldGrabWall(player)) {
+                    player.StateMachine.State = Player.StClimb;
                 } else if (grabCheck()) {
                     if (player.Holding == null && exclusiveGrabCollide(player)) {
                         if (trySpawnJelly(out PocketUmbrella umbrella, player)) {
@@ -119,7 +145,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         //this is called that bc I honestly have no clue what it does or why it does it but hey its in the original code so its here too.
         private bool weirdCheck(Player player) {
             for (int i = 1; i <= 2; i++) {
-                if (!CollideCheck<Solid>(player.Position + Vector2.UnitY * -i) && player.ClimbCheck((int) player.Facing, -i)) {
+                if (!player.CollideCheck<Solid>(player.Position + Vector2.UnitY * -i) && player.ClimbCheck((int) player.Facing, -i)) {
                     player.MoveVExact(-i, null, null);
                     return true;
                 }
