@@ -17,13 +17,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
         private Type[] typesToDespawn;
         public string sessionFlagName;
 
-
-
         //constructors
         public EntityDespawner(EntityData data, Vector2 offset)
             : base(data.Position + offset) {
-            
-
             string unsplitNames = data.Attr("entityTypes");
             if (string.IsNullOrWhiteSpace(unsplitNames)) throw new ArgumentException("Entity Types cannot be blank.");
 
@@ -36,22 +32,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
             sessionFlagName = data.Attr("flag");
         }
 
-
-
         //methods
         public override void Awake(Scene scene)
         {
             bool sessionFlag = SceneAs<Level>().Session.GetFlag(sessionFlagName);
             if (sessionFlag ^ invert) {
-
                 foreach (Type t in typesToDespawn) {
                     if(scene.Tracker.Entities.TryGetValue(t, out List<Entity> entitiesOfType)) {
                         foreach (Entity e in entitiesOfType) {
                             e.RemoveSelf();
                         }
                     }
-
-                    
                 }
             }
         }
