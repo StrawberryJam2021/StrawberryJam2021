@@ -2,6 +2,7 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
+using System.Collections;
 using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
@@ -19,14 +20,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2 sourcePosition;
         private Vector2 targetPosition;
         private float moveTimeRemaining;
-
-        private Vector2 lerpedPosition {
-            get {
-                float progress = 1 - moveTimeRemaining / cassetteListener.CurrentState.TickLength;
-                float eased = MathHelper.Clamp(Ease.CubeIn(progress), 0, 1);
-                return Vector2.Lerp(sourcePosition, targetPosition, eased);
-            }
-        }
 
         private readonly int initialNodeIndex;
         private CassetteListener cassetteListener;
@@ -90,14 +83,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             sourcePosition = Nodes[sourceNodeIndex];
                             targetPosition = Nodes[targetNodeIndex];
 
-                            float mod = (state.Beat % state.BeatsPerTick) / (float)state.BeatsPerTick;
-                            moveTimeRemaining = state.TickLength * (1 - mod);
-
-                            bool shouldTeleport = targetNodeIndex == 0 && HideFinalTransition;
-                            TeleportTo(shouldTeleport ? targetPosition : lerpedPosition);
+                            if (targetNodeIndex == 0 && HideFinalTransition) {
+                                TeleportTo(targetPosition);
+                            } else {
+                                float mod = (state.Beat % state.BeatsPerTick) / (float)state.BeatsPerTick;
+                                moveTimeRemaining = state.TickLength * (1 - mod);
+                            }
                         }
                     },
-                }
+                },
+                new Coroutine(MoveSequence())
             );
         }
 
@@ -121,30 +116,44 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Update();
 
             Visible = Collidable = !HideFinalTransition || moveTimeRemaining <= 0 || targetNodeIndex != 0;
-
-            if (moveTimeRemaining >= 0) {
-                moveTimeRemaining -= Engine.DeltaTime;
-
-                if (!HideFinalTransition || targetNodeIndex != 0)
-                    MoveTo(lerpedPosition);
-
-                if (moveTimeRemaining < 0) {
-                    var moveAmount = targetPosition - sourcePosition;
-                    if (Math.Abs(moveAmount.LengthSquared()) > 0.1f) {
-                        if (CollideCheck<SolidTiles>(Position + moveAmount.SafeNormalize() * 2f)) {
-                            Audio.Play("event:/game/06_reflection/fallblock_boss_impact", Center);
-                            ImpactParticles(moveAmount);
-                        } else {
-                            StopParticles(moveAmount);
-                        }
-                    }
-                }
-            }
+            moveTimeRemaining -= Engine.DeltaTime;
         }
 
         private void TeleportTo(Vector2 to) {
             MoveStaticMovers(to - Position);
             Position = to;
+        }
+
+        private IEnumerator MoveSequence() {
+            var block = this;
+            while (Scene != null) {
+                while (block.moveTimeRemaining <= 0) {
+                    yield return null;
+                }
+
+                float time = block.moveTimeRemaining;
+                var to = block.targetPosition;
+                var from = block.sourcePosition;
+
+                if (time < block.cassetteListener.CurrentState.TickLength) {
+                    block.TeleportTo(to);
+                } else {
+                    var tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeIn, time, true);
+                    tween.OnUpdate = t => MoveTo(Vector2.Lerp(from, to, t.Eased));
+                    tween.OnComplete = _ => {
+                        if (block.CollideCheck<SolidTiles>(block.Position + (to - from).SafeNormalize() * 2f)) {
+                            Audio.Play("event:/game/06_reflection/fallblock_boss_impact", block.Center);
+                            block.ImpactParticles(to - from);
+                        } else {
+                            block.StopParticles(to - from);
+                        }
+                    };
+
+                    block.Add(tween);
+                }
+
+                yield return time;
+            }
         }
 
         protected void StopParticles(Vector2 moved) {
