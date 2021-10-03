@@ -11,6 +11,7 @@ using ..Ahorn, Maple
     sixteenthNoteParam="sixteenth_note",
     cassetteOffset::Float64=0.0,
     boostFrames::Integer=1,
+    disableFlag::String="",
 )
 
 const placements = Ahorn.PlacementDict(
@@ -27,6 +28,7 @@ const placements = Ahorn.PlacementDict(
             "sixteenthNoteParam" => "78_eighth_note",
             "cassetteOffset" => 0.0,
             "boostFrames" => 2,
+            "disableFlag" => "",
         )
     ),
     "Wonky Cassette Block Controller\n(116 BPM, 6 bars of 10/8, \"108_eighth_note\") (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
@@ -39,6 +41,7 @@ const placements = Ahorn.PlacementDict(
             "sixteenthNoteParam" => "108_eighth_note",
             "cassetteOffset" => 0.0,
             "boostFrames" => 2,
+            "disableFlag" => "",
         )
     ),
     "Wonky Cassette Block Controller\n(174 BPM, 8 bars of 13/8, \"138_eighth_note\") (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
@@ -51,6 +54,7 @@ const placements = Ahorn.PlacementDict(
             "sixteenthNoteParam" => "138_eighth_note",
             "cassetteOffset" => 0.0,
             "boostFrames" => 2,
+            "disableFlag" => "",
         )
     ),
 )
