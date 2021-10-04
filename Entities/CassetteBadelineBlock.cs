@@ -13,6 +13,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public int[] IgnoredNodes { get; }
         public bool OffBeat { get; }
         public char TileType { get; }
+        public bool PlayImpactSounds { get; }
+        public bool EmitImpactParticles { get; }
 
         private int offsetNodeIndex;
         private int sourceNodeIndex;
@@ -30,6 +32,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             IgnoredNodes = parent.IgnoredNodes;
             HideFinalTransition = parent.HideFinalTransition;
             OffBeat = parent.OffBeat;
+            PlayImpactSounds = parent.PlayImpactSounds;
+            EmitImpactParticles = parent.EmitImpactParticles;
 
             this.initialNodeIndex = sourceNodeIndex = targetNodeIndex = initialNodeIndex;
             sourcePosition = targetPosition = Position;
@@ -45,6 +49,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             TileType = data.Char("tiletype", 'g');
             OffBeat = data.Bool("offBeat");
             HideFinalTransition = data.Bool("hideFinalTransition");
+            PlayImpactSounds = data.Bool("playImpactSounds", true);
+            EmitImpactParticles = data.Bool("emitImpactParticles", true);
 
             string ignoredNodesString = data.Attr("ignoredNodes") ?? string.Empty;
             IgnoredNodes = ignoredNodesString
@@ -131,8 +137,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     tween.OnUpdate = t => MoveTo(Vector2.Lerp(from, to, t.Eased));
                     tween.OnComplete = _ => {
                         if (block.CollideCheck<SolidTiles>(block.Position + (to - from).SafeNormalize() * 2f)) {
-                            Audio.Play("event:/game/06_reflection/fallblock_boss_impact", block.Center);
-                            block.ImpactParticles(to - from);
+                            if (block.PlayImpactSounds) {
+                                Audio.Play("event:/game/06_reflection/fallblock_boss_impact", block.Center);
+                            }
+                            if (block.EmitImpactParticles) {
+                                block.ImpactParticles(to - from);
+                            }
                         } else {
                             block.StopParticles(to - from);
                         }

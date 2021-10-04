@@ -6,18 +6,21 @@ using ..Ahorn, Maple
     x::Integer, y::Integer,
     width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight,
     nodes=Tuple{Int,Int}[],
-    tiletype::String="g", hideFinalTransition::Bool=true, ignoredNodes::String="", offBeat::Bool=false
+    tiletype::String="g", hideFinalTransition::Bool=true, ignoredNodes::String="", offBeat::Bool=false,
+    playImpactSounds::Bool=true, emitImpactParticles::Bool=true
 )
 
 Ahorn.editingOrder(entity::CassetteBadelineBlock) = String[
-    "x", "y", "width", "height", "tiletype", "ignoredNodes", "hideFinalTransition", "offBeat"
+    "x", "y", "width", "height",
+    "tiletype", "ignoredNodes", "hideFinalTransition", "offBeat",
+    "playImpactSounds", "emitImpactParticles"
 ]
 
 const placements = Ahorn.PlacementDict(
     "Cassette Timed Conveyor Block (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         CassetteBadelineBlock,
         "rectangle",
-        Dict{String,Any}(),
+        Dict{String,Any}("playImpactSounds" => false, "emitImpactParticles" => false),
         function (entity)
             entity.data["nodes"] = [
                 (Int(entity.data["x"]) + Int(entity.data["width"]) + 8,      Int(entity.data["y"])),
