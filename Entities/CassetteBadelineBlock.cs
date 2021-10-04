@@ -19,7 +19,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int targetNodeIndex;
         private Vector2 sourcePosition;
         private Vector2 targetPosition;
-        private float moveTimeRemaining;
 
         private readonly int initialNodeIndex;
         private CassetteListener cassetteListener;
@@ -32,9 +31,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             HideFinalTransition = parent.HideFinalTransition;
             OffBeat = parent.OffBeat;
 
-            this.initialNodeIndex = initialNodeIndex;
+            this.initialNodeIndex = sourceNodeIndex = targetNodeIndex = initialNodeIndex;
             sourcePosition = targetPosition = Position;
-            moveTimeRemaining = 0;
 
             Tag = Tags.FrozenUpdate;
 
@@ -57,7 +55,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 .ToArray();
 
             sourcePosition = targetPosition = Position;
-            moveTimeRemaining = 0;
 
             Tag = Tags.FrozenUpdate;
 
@@ -72,23 +69,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 cassetteListener = new CassetteListener {
                     OnBeat = state => {
                         bool indexWillChange = state.NextTick.Index != state.CurrentTick.Index;
-                        if (OffBeat != indexWillChange && moveTimeRemaining <= 0) {
+                        if (sourceNodeIndex == targetNodeIndex && OffBeat != indexWillChange) {
                             if (offsetNodeIndex < 0)
-                                offsetNodeIndex = state.NextTick.Index;
+                                offsetNodeIndex = initialNodeIndex;
                             else
                                 offsetNodeIndex++;
 
-                            sourceNodeIndex = (initialNodeIndex + offsetNodeIndex) % Nodes.Length;
+                            sourceNodeIndex = offsetNodeIndex % Nodes.Length;
                             targetNodeIndex = (sourceNodeIndex + 1) % Nodes.Length;
                             sourcePosition = Nodes[sourceNodeIndex];
                             targetPosition = Nodes[targetNodeIndex];
-
-                            if (targetNodeIndex == 0 && HideFinalTransition) {
-                                TeleportTo(targetPosition);
-                            } else {
-                                float mod = (state.Beat % state.BeatsPerTick) / (float)state.BeatsPerTick;
-                                moveTimeRemaining = state.TickLength * (1 - mod);
-                            }
                         }
                     },
                 },
@@ -115,8 +105,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
 
-            Visible = Collidable = !HideFinalTransition || moveTimeRemaining <= 0 || targetNodeIndex != 0;
-            moveTimeRemaining -= Engine.DeltaTime;
+            Visible = Collidable = !HideFinalTransition || targetNodeIndex != 0;
         }
 
         private void TeleportTo(Vector2 to) {
@@ -127,15 +116,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private IEnumerator MoveSequence() {
             var block = this;
             while (Scene != null) {
-                while (block.moveTimeRemaining <= 0) {
+                while (sourceNodeIndex == targetNodeIndex) {
                     yield return null;
                 }
 
-                float time = block.moveTimeRemaining;
+                float time = block.cassetteListener.CurrentState.TickLength;
                 var to = block.targetPosition;
                 var from = block.sourcePosition;
 
-                if (time < block.cassetteListener.CurrentState.TickLength) {
+                if (targetNodeIndex == 0 && HideFinalTransition) {
                     block.TeleportTo(to);
                 } else {
                     var tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeIn, time, true);
@@ -153,6 +142,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
 
                 yield return time;
+                sourceNodeIndex = targetNodeIndex;
             }
         }
 
