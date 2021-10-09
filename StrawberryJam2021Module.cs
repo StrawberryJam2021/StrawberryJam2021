@@ -48,7 +48,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SkateboardTrigger.Load();
             LaserEmitter.Load();
             OshiroAttackTimeTrigger.Load();
-            CassetteBadelineBlock.Load();
             ConstantDelayFallingBlockController.Load();
             DirectionalBooster.Load();
             HintController.Load();
@@ -81,7 +80,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SkateboardTrigger.Unload();
             LaserEmitter.Unload();
             OshiroAttackTimeTrigger.Unload();
-            CassetteBadelineBlock.Unload();
             ConstantDelayFallingBlockController.Unload();
             DirectionalBooster.Unload();
             HintController.Unload();

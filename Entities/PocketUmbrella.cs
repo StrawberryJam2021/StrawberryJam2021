@@ -7,12 +7,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     class PocketUmbrella : Actor {
         private float staminaCost;
         private Sprite sprite;
-        private Player player;
 
         public bool destroyed = false, spawning = true;
         public Holdable Hold;
         private Level level;
         private SoundSource fallingSfx;
+        private Player player;
 
         private string musicParam;
 
@@ -75,17 +75,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 level.Particles.Emit(P_Glow, 1, Center + Vector2.UnitY * -9f, new Vector2(10f, 4f));
             }
 
-            bool climbUpdate = player.StateMachine.State == Player.StClimb;
-
-            if (Hold.IsHeld && !player.OnGround() && !climbUpdate)
-                Audio.SetMusicParam(musicParam, 1);
-            else
-                Audio.SetMusicParam(musicParam, 0);
+            bool climbUpdate = false;
 
             float target;
             if (Hold.IsHeld) {
+                climbUpdate = Hold.Holder.StateMachine.State == Player.StClimb;
                 if (climbUpdate) {
-                    target = Calc.ClampedMap(400 * (int) player.Facing, -300f, 300f, (float) Math.PI / 4.5f, -(float) Math.PI / 4.5f);
+                    target = Calc.ClampedMap(400 * (int) Hold.Holder.Facing, -300f, 300f, (float) Math.PI / 4.5f, -(float) Math.PI / 4.5f);
                 } else if (Hold.Holder.OnGround(1)) {
                     target = Calc.ClampedMap(Hold.Holder.Speed.X, -300f, 300f, (float) Math.PI / 4.5f, -(float) Math.PI / 4.5f);
                 } else {
@@ -94,6 +90,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             } else {
                 target = 0f;
             }
+
+            if (Hold.IsHeld && !player.OnGround() && !climbUpdate)
+                Audio.SetMusicParam(musicParam, 1);
+            else
+                Audio.SetMusicParam(musicParam, 0);
+
             sprite.Rotation = Calc.Approach(sprite.Rotation, target, (float) Math.PI * Engine.DeltaTime);
 
             if (Hold.IsHeld && !Hold.Holder.OnGround(1) && (sprite.CurrentAnimationID == "fall" || sprite.CurrentAnimationID == "fallLoop")) {

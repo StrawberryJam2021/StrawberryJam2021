@@ -204,6 +204,14 @@ placements.entities.SJ2021/DirectionalBooster.tooltips.boosterColor=The colour t
 placements.entities.SJ2021/HintController.tooltips.dialogId=The identifier of the dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
 placements.entities.SJ2021/HintController.tooltips.singleUse=Whether the hint may only be viewed a single time per session.
 
+# Cassette Badeline Block
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.tiletype=The tileset to use when rendering the block.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.hideFinalTransition=If true, the transition between last and first nodes will be hidden (useful for conveyors).
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.ignoredNodes=A comma separated list of nodes which will not spawn a block, but are still part of the path. Negative indices indicate going backward from the end of list. For example, -1 indicates the final node. The first node cannot be ignored.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.offBeat=If true, transitions will occur halfway between cassette swaps.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.playImpactSounds=If true, blocks will make slamming sounds when hitting another solid. Disable this if using a conveyor.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.emitImpactParticles=If true, blocks will emit dust particles when hitting another solid. Disable this if using a conveyor.
+
 # Airtime Music Controller
 placements.entities.SJ2021/AirTimeMusicController.tooltips.activationThreshold=The amount of airtime in seconds required before the music parameter is enabled.
 placements.entities.SJ2021/AirTimeMusicController.tooltips.musicParam=The music parameter that will be adjusted by this controller.
@@ -215,6 +223,11 @@ placements.triggers.SJ2021/RainDensityTrigger.tooltips.duration=The time (in sec
 # Expiring Dash Refill
 placements.entities.SJ2021/ExpiringDashRefill.tooltips.dashExpirationTime=The amount of time given before the dash is revoked if not used.
 placements.entities.SJ2021/ExpiringDashRefill.tooltips.hairFlashThreshold=The threshold ratio that determines when the warning flash begins. (0 - 1)
+
+#Entity Despawner
+placements.entities.SJ2021/EntityDespawner.tooltips.entityTypes=The full class names of the types of entities to despawn. Use commas to add multiple entities to the list (e.g. Celeste.Entity1,Celeste.Entity2)
+placements.entities.SJ2021/EntityDespawner.tooltips.flag=The name of the session flag to watch. Listed entities are removed if the session flag is set when entering the room.
+placements.entities.SJ2021/EntityDespawner.tooltips.invert=If checked, this entity will instead remove the listed entities when the session flag is not set.
 
 # Pocket Umbrella Trigger
 placements.entities.SJ2021/PocketUmbrellaTrigger.tooltips.musicParam=(Optional) The music parameter to be turned on when gliding with the umbrella.

@@ -1,4 +1,4 @@
-module SJ2021
+module SJ2021BulletTimeController
 
 using ..Ahorn, Maple
 
