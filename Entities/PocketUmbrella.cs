@@ -71,16 +71,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Update() {
-            if (Hold.IsHeld && !player.OnGround())
-                Audio.SetMusicParam(musicLayer, 1);
-            else
-                Audio.SetMusicParam(musicLayer, 0);
-
             if (Scene.OnInterval(0.05f)) {
                 level.Particles.Emit(P_Glow, 1, Center + Vector2.UnitY * -9f, new Vector2(10f, 4f));
             }
 
             bool climbUpdate = player.StateMachine.State == Player.StClimb;
+
+            if (Hold.IsHeld && !player.OnGround() && !climbUpdate)
+                Audio.SetMusicParam(musicLayer, 1);
+            else
+                Audio.SetMusicParam(musicLayer, 0);
 
             float target;
             if (Hold.IsHeld) {
