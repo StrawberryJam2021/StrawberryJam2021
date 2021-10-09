@@ -17,7 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public float StaminaCost { get; set; }
         public float Cooldown { get; set; }
 
-        public string MusicLayer { get; set; }
+        public string MusicParam { get; set; }
 
         public PocketUmbrellaController() : this(0, false) {
         }
@@ -95,7 +95,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (Enabled && player.Dead == false) {
                 if (player.Holding?.Entity is PocketUmbrella && player.StateMachine.State != Player.StClimb &&
                     Input.GrabCheck && player.ClimbCheck((int) player.Facing, 0) &&
-                    (player.Speed.X != 0 || player.Speed.Y > 0)){
+                    (player.Speed.X != 0 || player.Speed.Y > 0)) {
                     player.StateMachine.ForceState(Player.StClimb);
                 } else if (grabCheck()) {
                     if (player.Holding == null && exclusiveGrabCollide(player)) {
@@ -135,7 +135,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private bool trySpawnJelly(out PocketUmbrella umbrella, Player player) {
-            umbrella = new PocketUmbrella(player.Position + spawnOffset, StaminaCost, MusicLayer);
+            umbrella = new PocketUmbrella(player.Position + spawnOffset, StaminaCost, MusicParam);
             if (!checkSpawnCondition(player)) {
                 return false;
             }
@@ -148,7 +148,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private bool checkSpawnCondition(Player player) {
-            return player.Stamina > 20 && !player.Ducking && !player.ClimbCheck((int)player.Facing, 0) && playerStateCheck(player);
+            return player.Stamina > 20 && !player.Ducking && !player.ClimbCheck((int) player.Facing, 0) && playerStateCheck(player);
         }
 
         private bool playerStateCheck(Player player) {

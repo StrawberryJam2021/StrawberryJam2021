@@ -217,4 +217,4 @@ placements.entities.SJ2021/ExpiringDashRefill.tooltips.dashExpirationTime=The am
 placements.entities.SJ2021/ExpiringDashRefill.tooltips.hairFlashThreshold=The threshold ratio that determines when the warning flash begins. (0 - 1)
 
 # Pocket Umbrella Trigger
-placements.entities.SJ2021/PocketUmbrellaTrigger.tooltips.musicParam=(Optional) The music layer to be turned on when gliding with the umbrella.
+placements.entities.SJ2021/PocketUmbrellaTrigger.tooltips.musicParam=(Optional) The music parameter to be turned on when gliding with the umbrella.

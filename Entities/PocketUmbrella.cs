@@ -14,7 +14,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Level level;
         private SoundSource fallingSfx;
 
-        private string musicLayer;
+        private string musicParam;
 
         static ParticleType P_Glow, P_Glide, P_GlideUp, P_Expand;
 
@@ -32,9 +32,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             P_Expand = new ParticleType(Glider.P_Expand);
         }
 
-        public PocketUmbrella(Vector2 position, float cost, string musicLayer = "") : base(position) {
+        public PocketUmbrella(Vector2 position, float cost, string musicParam = "") : base(position) {
             staminaCost = cost;
-            this.musicLayer = musicLayer;
+            this.musicParam = musicParam;
 
             Add(sprite = StrawberryJam2021Module.SpriteBank.Create("pocketUmbrella"));
             sprite.Visible = false;
@@ -78,9 +78,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             bool climbUpdate = player.StateMachine.State == Player.StClimb;
 
             if (Hold.IsHeld && !player.OnGround() && !climbUpdate)
-                Audio.SetMusicParam(musicLayer, 1);
+                Audio.SetMusicParam(musicParam, 1);
             else
-                Audio.SetMusicParam(musicLayer, 0);
+                Audio.SetMusicParam(musicParam, 0);
 
             float target;
             if (Hold.IsHeld) {
