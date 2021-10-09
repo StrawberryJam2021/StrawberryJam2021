@@ -71,7 +71,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Update() {
-            if (Hold.IsHeld && !player.OnSafeGround)
+            if (Hold.IsHeld && !player.OnGround())
                 Audio.SetMusicParam(musicLayer, 1);
             else
                 Audio.SetMusicParam(musicLayer, 0);
@@ -86,7 +86,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (Hold.IsHeld) {
                 if (climbUpdate) {
                     target = Calc.ClampedMap(400 * (int) player.Facing, -300f, 300f, (float) Math.PI / 4.5f, -(float) Math.PI / 4.5f);
-                } else if(Hold.Holder.OnGround(1)) {
+                } else if (Hold.Holder.OnGround(1)) {
                     target = Calc.ClampedMap(Hold.Holder.Speed.X, -300f, 300f, (float) Math.PI / 4.5f, -(float) Math.PI / 4.5f);
                 } else {
                     target = Calc.ClampedMap(Hold.Holder.Speed.X, -300f, 300f, (float) Math.PI / 3f, -(float) Math.PI / 3f);
