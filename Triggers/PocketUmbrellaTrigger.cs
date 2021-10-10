@@ -9,11 +9,14 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private bool Enable = true, revertOnLeave = false, prevVal;
         private float staminaCost, prevCost, cooldown, prevCooldown;
 
+        private string musicParam;
+
         public PocketUmbrellaTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             Enable = data.Bool("enabled", true);
             revertOnLeave = data.Bool("revertOnLeave", false);
             staminaCost = data.Float("staminaCost", 100 / 2.2f);
             cooldown = data.Float("cooldown", 0.2f);
+            musicParam = data.Attr("musicParam", "");
         }
 
         public override void OnEnter(Player player) {
@@ -29,6 +32,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 controller.Enabled = true;
                 controller.StaminaCost = staminaCost;
                 controller.Cooldown = cooldown;
+                controller.MusicParam = musicParam;
             } else {
                 Scene.Remove(controller);
             }

@@ -14,6 +14,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private SoundSource fallingSfx;
         private Player player;
 
+        private string musicParam;
+
         static ParticleType P_Glow, P_Glide, P_GlideUp, P_Expand;
 
         public static void LoadParticles() {
@@ -30,8 +32,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             P_Expand = new ParticleType(Glider.P_Expand);
         }
 
-        public PocketUmbrella(Vector2 position, float cost) : base(position) {
+        public PocketUmbrella(Vector2 position, float cost, string musicParam = "") : base(position) {
             staminaCost = cost;
+            this.musicParam = musicParam;
+
             Add(sprite = StrawberryJam2021Module.SpriteBank.Create("pocketUmbrella"));
             sprite.Visible = false;
             Collider = new Hitbox(8, 10, -4, -10);
@@ -78,7 +82,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 climbUpdate = Hold.Holder.StateMachine.State == Player.StClimb;
                 if (climbUpdate) {
                     target = Calc.ClampedMap(400 * (int) Hold.Holder.Facing, -300f, 300f, (float) Math.PI / 4.5f, -(float) Math.PI / 4.5f);
-                } else if(Hold.Holder.OnGround(1)) {
+                } else if (Hold.Holder.OnGround(1)) {
                     target = Calc.ClampedMap(Hold.Holder.Speed.X, -300f, 300f, (float) Math.PI / 4.5f, -(float) Math.PI / 4.5f);
                 } else {
                     target = Calc.ClampedMap(Hold.Holder.Speed.X, -300f, 300f, (float) Math.PI / 3f, -(float) Math.PI / 3f);
@@ -86,6 +90,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             } else {
                 target = 0f;
             }
+
+            if (Hold.IsHeld && !player.OnGround() && !climbUpdate)
+                Audio.SetMusicParam(musicParam, 1);
+            else
+                Audio.SetMusicParam(musicParam, 0);
+
             sprite.Rotation = Calc.Approach(sprite.Rotation, target, (float) Math.PI * Engine.DeltaTime);
 
             if (Hold.IsHeld && !Hold.Holder.OnGround(1) && (sprite.CurrentAnimationID == "fall" || sprite.CurrentAnimationID == "fallLoop")) {
@@ -127,8 +137,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                     PlayOpen();
                     Input.Rumble(RumbleStrength.Climb, RumbleLength.Short);
+
                 } else if (!spawning) {
                     sprite.Play("held", false, false);
+
                 }
 
                 sprite.Scale.Y = Calc.Approach(sprite.Scale.Y, Vector2.One.Y, Engine.DeltaTime * 2f);

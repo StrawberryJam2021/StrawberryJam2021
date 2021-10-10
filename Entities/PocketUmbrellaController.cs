@@ -1,9 +1,9 @@
-﻿using Monocle;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+using Monocle;
 using MonoMod.Cil;
 using System;
+using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/PocketUmbrellaController")]
@@ -16,7 +16,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public float StaminaCost { get; set; }
         public float Cooldown { get; set; }
 
-        public PocketUmbrellaController() : this (0, false) {
+        public string MusicParam { get; set; }
+
+        public PocketUmbrellaController() : this(0, false) {
         }
 
         public PocketUmbrellaController(float cost, bool enabled, float cooldown = 0.2f) {
@@ -182,7 +184,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private bool trySpawnJelly(out PocketUmbrella umbrella, Player player) {
-            umbrella = new PocketUmbrella(player.Position + spawnOffset, StaminaCost);
+            umbrella = new PocketUmbrella(player.Position + spawnOffset, StaminaCost, MusicParam);
             if (!checkSpawnCondition(player)) {
                 return false;
             }
@@ -195,7 +197,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private bool checkSpawnCondition(Player player) {
-            return player.Stamina > 20 && !player.Ducking && !player.ClimbCheck((int)player.Facing, 0) && playerStateCheck(player);
+            return player.Stamina > 20 && !player.Ducking && !player.ClimbCheck((int) player.Facing, 0) && playerStateCheck(player);
         }
 
         private bool playerStateCheck(Player player) {
