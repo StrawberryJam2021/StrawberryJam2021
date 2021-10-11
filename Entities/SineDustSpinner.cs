@@ -50,6 +50,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             lastPos = Position;
             Position = origPos + getXAdjust() + getYAdjust();
             Sprite.EyeDirection = Vector2.Normalize(Position - lastPos);
+            if (Scene.OnInterval(0.02f)) {
+                SceneAs<Level>().ParticlesBG.Emit(P_Move, 1, Position, Vector2.One * 4f);
+            }
         }
 
         private Vector2 getYAdjust() {
