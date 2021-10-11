@@ -10,10 +10,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2 lastPos;
         private float xAmplitude, yAmplitude;
         private float xPeriod, xPhase, yPeriod, yPhase;
-        private float AwakeOffset;
         private bool xLinear, yLinear;
 
-        private float TimeSinceAwake { get { return Scene.TimeActive - AwakeOffset; } }
+        private float TimeSinceAwake = 0;
 
         public SineDustSpinner(EntityData data, Vector2 offset) : base(data, offset) {
             Collider = new Circle(6, 0, 0);
@@ -45,17 +44,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Sprite.EyeDirection = Vector2.Normalize(Position - p);
         }
 
-        public override void Awake(Scene scene) {
-            // add 2/3rds of a second to the awake offset to account for the time the transition takes
-            // except when the player is in the respawn state while this entity is added, then we need to wait 0.6f for the respawn to complete
-            AwakeOffset = scene.TimeActive + (scene.Tracker.GetEntity<Player>().StateMachine.State != Player.StIntroRespawn ? (2f / 3) : 0.6f);
-        }
-
         public override void Update() {
+            TimeSinceAwake += Engine.DeltaTime;
             base.Update();
             lastPos = Position;
             Position = origPos + getXAdjust() + getYAdjust();
             Sprite.EyeDirection = Vector2.Normalize(Position - lastPos);
+            if (Scene.OnInterval(0.02f)) {
+                SceneAs<Level>().ParticlesBG.Emit(P_Move, 1, Position, Vector2.One * 4f);
+            }
         }
 
         private Vector2 getYAdjust() {
