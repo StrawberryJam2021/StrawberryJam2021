@@ -26,7 +26,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public const float DefaultRadius = 1.5f;
 
         public static ParticleType P_RedRefill;
-        public static float CurrentTimeRateMult;
+        public static float CurrentTimeRateMult = 1f;
 
         private static BindingFlags privateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
         private static MethodInfo dashCoroutineInfo = typeof(Player).GetMethod("DashCoroutine", privateInstance).GetStateMachineTarget();
