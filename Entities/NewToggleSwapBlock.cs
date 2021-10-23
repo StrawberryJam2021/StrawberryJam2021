@@ -1,8 +1,4 @@
-﻿//using Celeste;
-//using MonoMod.Utils;
-//using Celeste.;
-//using Celeste.Mod.CanyonHelper;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -13,51 +9,39 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 	[CustomEntity("SJ2021/NewToggleSwapBlock")]
     public class NewToggleSwapBlock : Solid {
 		private DashListener dashListener;
-
 		private EventInstance moveSfx;
-
-		private Color offColor = Color.DarkGray;
-
+        private Color offColor = Color.DarkGray;
 		private Color onColor = Color.MediumPurple;
-
 		private Color endColor = new Color(0.65f, 0.4f, 0.4f);
-
 		private ToggleBlockLaser[] lasers;
-
 		private int laserCount;
-
-		//private Sprite middleRed;
-
 		private float lerp;
-
 		private MTexture[,] nineSliceBlock;
-
 		private Vector2[] nodes;
-
 		private ToggleBlockNode[] nodeTextures;
-
 		private int nodeIndex = 0;
-
 		private bool moving = false;
-
 		private float travelSpeed = 5f;
-
 		private bool oscillate = false;
-
 		private bool returning = false;
-
 		private bool stopAtEnd = false;
-
 		private Vector2 dirVector = Vector2.Zero;
-
-		private bool stopped = false;
-
+        private bool stopped = false;
 		private string customTexturePath;
-
 		private Level level => (Level) base.Scene;
 
+		private readonly bool allowDashSliding;
+		private readonly bool disableTracks;
+		private readonly bool isConstant;
+		private readonly float constantSpeed;
+		private const float vanillaSpeed = 360f;
+		private readonly bool accelerate;
+		private float speed;
+		private Vector2 targetPosition;
+		private Vector2 startPosition;
+		private Vector2 lerpVector;
+
 		public NewToggleSwapBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, false) {
-			//((object) null).GetType();
 			base.Depth = -9999;
 			nodes = new Vector2[data.Nodes.Length + 1];
 			nodes[0] = base.Position;
@@ -68,12 +52,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 			oscillate = data.Bool("oscillate", false);
 			stopAtEnd = data.Bool("stopAtEnd", false);
 			customTexturePath = data.Attr("customTexturePath", "");
+			allowDashSliding = data.Bool("allowDashSliding", false);
+			disableTracks = data.Bool("disableTracks", true);
+			isConstant = data.Bool("constantSpeed", false);
+			if (isConstant) {
+				constantSpeed = travelSpeed * vanillaSpeed;
+				//travelSpeed = constantSpeed
+            }
+			accelerate = data.Bool("accelerate", false);
 			DashListener val = new DashListener();
 			DashListener val2 = val;
 			dashListener = val;
 			base.Add(val2);
 			base.Add(new LightOcclude(0.2f));
-			//base.Add((middleRed = CanyonModule.SpriteBank.Create("toggleBlockLightRed")));
 			dashListener.OnDash = OnPlayerDashed;
 			MTexture val3 = (customTexturePath.Length <= 0) ? GFX.Game["objects/canyon/toggleblock/block1"] : GFX.Game[customTexturePath];
 			nineSliceBlock = new MTexture[3, 3];
@@ -109,6 +100,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 				level.Add(nodeTextures[j] = Engine.Pooler.Create<ToggleBlockNode>().Init(nodes[j] + radius));
 			}
 			RecalculateLaserColor();
+
+			if (disableTracks) {
+				HideEntities(lasers);
+				HideEntities(nodeTextures);
+            }
+		}
+
+		private static void HideEntities(Entity[] entities) {
+			foreach (Entity e in entities) {
+				e.Visible = false;
+			}
 		}
 
 		private int GetNextNode(int node) {
@@ -174,22 +176,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 					nodeIndex = 0;
 				}
 			}
-			//middleRed.Play("moving", false, false);
 			moveSfx = Audio.Play("event:/game/05_mirror_temple/swapblock_move", base.Center);
 			Vector2 targetPosition = nodes[nodeIndex];
 			Vector2 startPosition = base.Position;
 			dirVector = targetPosition - startPosition;
-			Vector2 lerpVector = dirVector * travelSpeed;
+			float relativeSpeed = travelSpeed;
+			//if (isConstant) {
+   //             relativeSpeed /= dirVector.Length();
+   //         }
+            Vector2 lerpVector = dirVector * relativeSpeed;
 			base.Scene.Tracker.GetEntity<Player>();
 			while (base.Position != targetPosition) {
 				base.MoveTo(Vector2.Lerp(startPosition, targetPosition, lerp), lerpVector);
-				lerp = Calc.Approach(lerp, 1f, travelSpeed * Engine.DeltaTime);
+				lerp = Calc.Approach(lerp, 1f, relativeSpeed * Engine.DeltaTime);
 				yield return null;
 			}
 			lerp = 0f;
 			(base.Scene as Level).Displacement.AddBurst(base.Center, 0.2f, 0f, 16f, 1f, null, null);
 			moving = false;
-			//middleRed.Play("idle", false, false);
 			Audio.Stop(moveSfx, true);
 			moveSfx = null;
 			Audio.Play("event:/game/05_mirror_temple/swapblock_move_end", base.Center);
@@ -198,31 +202,51 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 		public override void Update() {
 			base.Update();
-			Player entity = base.Scene.Tracker.GetEntity<Player>();
-			Vector2 one = Vector2.One;
-			if (entity == null || entity.StateMachine.State != 2) {
-				return;
-			}
-			if (entity.DashDir.X != 0f && Input.Grab.Check && entity.CollideCheck(this, entity.Position + Vector2.UnitX * Math.Sign(entity.DashDir.X)) && Math.Sign(dirVector.X) == Math.Sign(entity.DashDir.X)) {
-				entity.StateMachine.State = 1;
-				entity.Speed = Vector2.Zero;
-			}
-			if (entity.CollideCheck(this, entity.Position + Vector2.UnitY) && lerp > 0f) {
-				if (entity.DashDir.X != 0f && Math.Sign(dirVector.X) == Math.Sign(entity.DashDir.X)) {
-					entity.Speed.X = (one.X = 0f);
-					if (lerp >= 0.8) {
-						entity.StateMachine.State = 0;
-					}
+			if (!allowDashSliding) {
+				Player player = base.Scene.Tracker.GetEntity<Player>();
+				//Vector2 one = Vector2.One;
+				if (player == null || player.StateMachine.State != 2) {
+					return;
 				}
-				if (entity.DashDir.Y != 0f && Math.Sign(dirVector.Y) == Math.Sign(entity.DashDir.Y)) {
-					entity.Speed.Y = (one.Y = 0f);
-					if (lerp >= 0.8) {
-						entity.StateMachine.State = 0;
-					}
+				if (player.DashDir.X != 0f && Input.Grab.Check && player.CollideCheck(this, player.Position + Vector2.UnitX * Math.Sign(player.DashDir.X)) && Math.Sign(dirVector.X) == Math.Sign(player.DashDir.X)) {
+					player.StateMachine.State = 1;
+					player.Speed = Vector2.Zero;
+				}
+				if (player.CollideCheck(this, player.Position + Vector2.UnitY) && lerp > 0f) {
+					if (player.DashDir.X != 0f && Math.Sign(dirVector.X) == Math.Sign(player.DashDir.X)) {
+						player.Speed.X = 0f;  // (one.X = 0f);
+						if (lerp >= 0.8) {
+                            player.StateMachine.State = 0;
+                        }
+                    }
+					if (player.DashDir.Y != 0f && Math.Sign(dirVector.Y) == Math.Sign(player.DashDir.Y)) {
+						player.Speed.Y = 0f;  // (one.Y = 0f);
+						if (lerp >= 0.8) {
+                            player.StateMachine.State = 0;
+                        }
+                    }
+				}
+				//player.Speed.X *= one.X;
+				//player.Speed.Y *= one.Y;
+				//entity.Speed *= one;
+			}
+
+			if (moving) {
+				if (base.Position != targetPosition) {
+					speed = Calc.Approach(speed, travelSpeed, travelSpeed / 0.2f * Engine.DeltaTime);
+					lerp = Calc.Approach(lerp, 1f, speed * Engine.DeltaTime);
+					base.MoveTo(Vector2.Lerp(startPosition, targetPosition, lerp), lerpVector);
+				} else {
+					lerp = 0f;
+					(base.Scene as Level).Displacement.AddBurst(base.Center, 0.2f, 0f, 16f, 1f, null, null);
+					moving = false;
+					//middleRed.Play("idle", false, false);
+					Audio.Stop(moveSfx, true);
+					moveSfx = null;
+					Audio.Play("event:/game/05_mirror_temple/swapblock_move_end", base.Center);
+					RecalculateLaserColor();
 				}
 			}
-			entity.Speed.X = entity.Speed.X * one.X;
-			entity.Speed.Y = entity.Speed.Y * one.Y;
 		}
 
 		private void RecalculateLaserColor() {
@@ -239,10 +263,60 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 					lasers[i].color = endColor;
 				}
 			}
-		}
+
+			if (isConstant) {
+                travelSpeed = constantSpeed / (nodes[nodeIndex] - nodes[GetNextNode(nodeIndex)]).Length();
+            }
+        }
 
 		private void OnPlayerDashed(Vector2 direction) {
-			base.Add(new Coroutine(TriggeredMove(), true));
+			//if (!accelerate) {
+			//	base.Add(new Coroutine(TriggeredMove(), true));
+			//	return;
+			//}
+
+			if (moving || stopped) {
+				if (stopped) {
+					base.StartShaking(0.25f);
+				}
+				return;
+			}
+			moving = true;
+			if (nodeIndex < nodes.Length - 1 && nodeIndex != 0) {
+				if (!returning) {
+					nodeIndex++;
+				} else {
+					nodeIndex--;
+				}
+			} else if (nodeIndex == 0) {
+				if (returning) {
+					returning = false;
+				}
+				nodeIndex++;
+			} else {
+				if (stopAtEnd) {
+					nodeIndex = -1;
+					stopped = true;
+					//moving = false;
+					base.StartShaking(0.5f);
+					return;
+				}
+				if (oscillate) {
+					nodeIndex--;
+					returning = true;
+				} else {
+					nodeIndex = 0;
+				}
+			}
+			//middleRed.Play("moving", false, false);
+			moveSfx = Audio.Play("event:/game/05_mirror_temple/swapblock_move", base.Center);
+			targetPosition = nodes[nodeIndex];
+			startPosition = base.Position;
+			dirVector = targetPosition - startPosition;
+			lerpVector = dirVector * travelSpeed;
+			base.Scene.Tracker.GetEntity<Player>();
+
+			speed = accelerate ? MathHelper.Lerp(travelSpeed * 0.333f, travelSpeed, 0f) : travelSpeed;
 		}
 
 		public override void Render() {

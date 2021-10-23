@@ -51,8 +51,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void Load() {
             Everest.Events.Level.OnLoadEntity += OnLoadEntity;
-            createHooks(privateHookMethods, BindingFlags.NonPublic);
-            createHooks(publicHookMethods, BindingFlags.Public);
+            CreateHooks(privateHookMethods, BindingFlags.NonPublic);
+            CreateHooks(publicHookMethods, BindingFlags.Public);
         }
 
         public static void Unload() {
@@ -63,7 +63,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hooks.Clear();
         }
 
-        private static void createHooks(string[] methodNames, BindingFlags publicFlag) {
+        private static void CreateHooks(string[] methodNames, BindingFlags publicFlag) {
             foreach (string name in methodNames) {
                 hooks.Add(new Hook(toggleSwapBlockType.GetMethod(name, publicFlag | BindingFlags.Instance),
                     typeof(ToggleSwapBlock).GetMethod("Mod" + name, BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType)));
