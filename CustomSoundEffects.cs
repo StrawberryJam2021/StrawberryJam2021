@@ -1,6 +1,5 @@
 ﻿namespace Celeste.Mod.StrawberryJam2021 {
-    class CustomSoundEffects {
-
+    public static class CustomSoundEffects {
         // Dash Zip Mover
         public const string game_dash_zip_mover_zip_mover = "event:/strawberry_jam_2021/game/dash_zip_mover/zip_mover";
 
@@ -23,5 +22,8 @@
         // Drum Swap Blocks
         public const string game_drum_swapblock_move = "event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move";
         public const string game_drum_swapblock_move_end = "event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move_end";
+        
+        // Dash Sequence Controller Fail Jingle
+        public const string game_dash_seq_fail = "event:/strawberry_jam_2021/game/dash_seq/fail";
     }
 }
