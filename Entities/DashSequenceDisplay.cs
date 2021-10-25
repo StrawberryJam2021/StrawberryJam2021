@@ -57,6 +57,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void InitializeDashCodes(Level level) {
+            codePosition = 0;
             dashCodes.Clear();
             DashSequenceController[] controllers = level.Tracker.GetEntities<DashSequenceController>().Cast<DashSequenceController>().ToArray();
             if (controllers.Length != 0) {
@@ -128,9 +129,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 KeyValuePair<int, MTexture[]> nextCode = this.nextCode ?? default;
 
                 int count = -1;
-                if (nextCode.Value != null)
+                if (nextCode.Value != null) {
                     count = nextCode.Value.Length;
-                else if (currentCodeArrows != null)
+                    // don't swap code when the arrows are the same (but the references to the arrays aren't)
+                    if (currentCodeArrows != null && nextCode.Value.SequenceEqual(currentCodeArrows)) {
+                        currentCodeArrows = nextCode.Value;
+                        continue;
+                    }
+                } else if (currentCodeArrows != null)
                     yield return 0.5f;
 
                 bool changedLength = false;
@@ -171,26 +177,29 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         internal static void Load() {
             On.Celeste.Level.TransitionRoutine += Level_TransitionRoutine;
-            On.Celeste.LevelLoader.LoadingThread += LevelLoader_LoadingThread;
+            On.Celeste.Level.LoadLevel += Level_LoadLevel;
         }
 
         internal static void Unload() {
             On.Celeste.Level.TransitionRoutine -= Level_TransitionRoutine;
-            On.Celeste.LevelLoader.LoadingThread -= LevelLoader_LoadingThread;
+            On.Celeste.Level.LoadLevel -= Level_LoadLevel;
         }
 
         private static IEnumerator Level_TransitionRoutine(On.Celeste.Level.orig_TransitionRoutine orig, Level self, LevelData next, Vector2 direction) {
             yield return new SwapImmediately(orig(self, next, direction));
 
-            DashSequenceDisplay display = self.Tracker.GetEntity<DashSequenceDisplay>();
-            if (display != null)
-                display.InitializeDashCodes(self);
+            //DashSequenceDisplay display = self.Tracker.GetEntity<DashSequenceDisplay>();
+            //if (display != null)
+            //    display.InitializeDashCodes(self);
         }
 
-        private static void LevelLoader_LoadingThread(On.Celeste.LevelLoader.orig_LoadingThread orig, LevelLoader self) {
-            orig(self);
-            if (self.Level.Tracker.GetEntity<DashSequenceDisplay>() == null)
-                self.Level.Add(new DashSequenceDisplay());
+
+        private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
+            orig(self, playerIntro, isFromLoader);
+            DashSequenceDisplay display = self.Tracker.GetEntity<DashSequenceDisplay>();
+            if (display == null)
+                self.Add(display = new DashSequenceDisplay());
+            display.InitializeDashCodes(self);
         }
 
         #endregion
