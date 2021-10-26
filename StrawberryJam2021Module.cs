@@ -103,7 +103,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
             Paintbrush.LoadParticles();
             NodedCloud.LoadParticles();
             MaskedOutline.LoadTexture();
+            BeeFireball.LoadContent();
         }
+
         // Temporary code from vivhelper
         public static bool VivHelperGetFlags(Level l, string[] flags, string and_or) {
             if (l == null)
