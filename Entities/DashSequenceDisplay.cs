@@ -46,7 +46,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             Y = Calc.Approach(Y, y, Engine.DeltaTime * 800f);
 
-            drawlerp = Calc.Approach(drawlerp, true ? 1 : 0, Engine.DeltaTime * 2);
+            drawlerp = Calc.Approach(drawlerp, currentCodeArrows == null ? 0 : 1, Engine.DeltaTime * 2);
             lengthLerp = Calc.Approach(lengthLerp, 1, Engine.DeltaTime * 1.5f);
 
             if (currentCodeArrowsAnim != null)
@@ -169,6 +169,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         animThreshold = Calc.Approach(animThreshold, 1f, Engine.DeltaTime * 4f);
                         yield return null;
                     }
+                } else {
+                    RemoveSelf();
                 }
             }
         }
@@ -176,21 +178,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         #region Hooks
 
         internal static void Load() {
-            On.Celeste.Level.TransitionRoutine += Level_TransitionRoutine;
             On.Celeste.Level.LoadLevel += Level_LoadLevel;
         }
 
         internal static void Unload() {
-            On.Celeste.Level.TransitionRoutine -= Level_TransitionRoutine;
             On.Celeste.Level.LoadLevel -= Level_LoadLevel;
-        }
-
-        private static IEnumerator Level_TransitionRoutine(On.Celeste.Level.orig_TransitionRoutine orig, Level self, LevelData next, Vector2 direction) {
-            yield return new SwapImmediately(orig(self, next, direction));
-
-            //DashSequenceDisplay display = self.Tracker.GetEntity<DashSequenceDisplay>();
-            //if (display != null)
-            //    display.InitializeDashCodes(self);
         }
 
 
