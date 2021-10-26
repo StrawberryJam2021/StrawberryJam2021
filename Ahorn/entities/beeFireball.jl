@@ -46,7 +46,7 @@ function Ahorn.renderSelectedAbs(ctx::Ahorn.Cairo.CairoContext, entity::BeeFireb
         nx, ny = Int.(node)
 
         Ahorn.drawArrow(ctx, px, py, nx, ny, Ahorn.colors.selection_selected_fc, headLength=6)
-        Ahorn.drawSprite(ctx, sprite, nx, ny; jx=0.53, jy=0.45)
+        Ahorn.drawSprite(ctx, sprite, nx - 2, ny + 3)
 
         px, py = nx, ny
     end
@@ -54,7 +54,7 @@ end
 
 function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::BeeFireball, room::Maple.Room)
     x, y = Ahorn.position(entity)
-    Ahorn.drawSprite(ctx, sprite, x, y; jx=0.53, jy=0.45)
+    Ahorn.drawSprite(ctx, sprite, x - 2, y + 3)
 end
 
 end
