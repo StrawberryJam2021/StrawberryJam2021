@@ -2,11 +2,13 @@
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Utils;
 using System;
 using System.Collections;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 	[CustomEntity("SJ2021/NewToggleSwapBlock")]
+	[Tracked]
     public class NewToggleSwapBlock : Solid {
 		private DashListener dashListener;
 		private EventInstance moveSfx;
@@ -20,12 +22,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		private Vector2[] nodes;
 		private ToggleBlockNode[] nodeTextures;
 		private int nodeIndex = 0;
-		private bool moving = false;
+		public bool moving = false;
 		private float travelSpeed = 5f;
 		private bool oscillate = false;
 		private bool returning = false;
 		private bool stopAtEnd = false;
-		private Vector2 dirVector = Vector2.Zero;
+		public Vector2 dirVector = Vector2.Zero;
         private bool stopped = false;
 		private string customTexturePath;
 		private Level level => (Level) base.Scene;

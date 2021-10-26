@@ -47,6 +47,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SkateboardTrigger.Load();
             LaserEmitter.Load();
             OshiroAttackTimeTrigger.Load();
+            DashCoroutineLoader.Load();
         }
 
         public override void Unload() {
