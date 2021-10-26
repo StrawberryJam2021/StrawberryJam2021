@@ -22,6 +22,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private KeyValuePair<int, MTexture[]>? nextCode;
         private float[] currentCodeArrowsAnim;
         private float animThreshold;
+        private bool doNotRemove;
 
         private int codePosition;
         private readonly Wiggler wiggler;
@@ -59,6 +60,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public void InitializeDashCodes(Level level) {
             codePosition = 0;
             dashCodes.Clear();
+            doNotRemove = true;
             DashSequenceController[] controllers = level.Tracker.GetEntities<DashSequenceController>().Cast<DashSequenceController>().ToArray();
             if (controllers.Length != 0) {
                 foreach (DashSequenceController controller in controllers)
@@ -74,15 +76,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             codePosition++;
             wiggler.Start();
             if (codePosition >= currentCodeArrows.Length) {
+                Audio.Play(SFX.game_01_birdbros_thrust);
                 KeyValuePair<int, MTexture[]> next = dashCodes.FirstOrDefault(pair => pair.Key > Index);
                 if (next.Value != null)
                     nextCode = next;
                 else
                     nextCode = null;
-            }
+            } else
+                Audio.Play(SFX.game_06_supersecret_dashflavour);
         }
 
         public void Fail() {
+            if (codePosition > 0)
+                Audio.Play(CustomSoundEffects.game_dash_seq_fail);
             codePosition = 0;
         }
 
@@ -123,9 +129,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private IEnumerator ChangingDashCodeRoutine() {
             while (true) {
+                doNotRemove = false;
                 while (this.nextCode?.Value == currentCodeArrows)
                     yield return null;
-
                 KeyValuePair<int, MTexture[]> nextCode = this.nextCode ?? default;
 
                 int count = -1;
@@ -169,7 +175,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         animThreshold = Calc.Approach(animThreshold, 1f, Engine.DeltaTime * 4f);
                         yield return null;
                     }
-                } else {
+                } else if (!doNotRemove) {
                     RemoveSelf();
                 }
             }
