@@ -7,4 +7,5 @@
 {6ecab556-6965-434c-9578-f5f41ae1d298} event:/strawberry_jam_2021/game/loop_block/sideboost
 {c15bfcdf-f9e0-49cb-a570-895273ca788e} event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move
 {2f705622-54ba-4dfa-a5e8-426c69ee8c10} event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move_end
+{95103014-8d0c-49a7-8b97-e763669f78be} event:/strawberry_jam_2021/game/dash_seq/fail
 {449c0225-4aa9-4151-b834-588cedee088a} bank:/StrawberryJam2021Bank
