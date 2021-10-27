@@ -18,6 +18,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool Controller;
         private EntityData data;
+        private MaskedOutline[] children;
         private Entity parent;
         private SineWave RefillSine;
         private OutlineType type;
@@ -72,32 +73,40 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             dot_positions = new();
             parent = entity;
             Add(tween = Tween.Create(Tween.TweenMode.Looping, null, 3, true));
+            
+        }
+
+        private void CheckParent() {
+            for (int i = 0; i < children.Length; i++) {
+                if (children[i].parent.Scene is null) {
+                    children[i].Visible = false;
+                    children[i].RemoveSelf();
+                }
+            }
+            RemoveSelf();
         }
 
         public MaskedOutline(EntityData data, Vector2 offset) : base(data.Position + offset) {
             Controller = true;
             this.data = data;
-            Add(new TransitionListener() { OnInEnd = AddOutlines });
-        }
-
-        private void AddOutlines() {
-            List<Entity> candidates = new();
-            candidates.AddRange(Scene.Entities.FindAll<Booster>());
-            candidates.AddRange(Scene.Entities.FindAll<Refill>());
-            for (int i = 0; i < candidates.Count; i++) {
-                Scene.Add(new MaskedOutline(data, Position, candidates[i]));
-            }
-            RemoveSelf();
+            Add(new TransitionListener() { OnInEnd = CheckParent });
         }
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
             if (Controller) {
+                List<Entity> candidates = new();
+                candidates.AddRange(scene.Entities.FindAll<Booster>());
+                candidates.AddRange(scene.Entities.FindAll<Refill>());
+                children = new MaskedOutline[candidates.Count];
+                for (int i = 0; i < candidates.Count; i++) {
+                    Scene.Add(children[i] = new MaskedOutline(data, Position, candidates[i]));
+                }
                 return;
             }
             if (parent is Booster) {
                 type = OutlineType.Booster;
-            } else if (parent is Refill r) {
+            } else if (parent is Refill r){
                 type = r.Get<Image>().Texture.AtlasPath.Contains("Two") ? OutlineType.DoubleRefill : OutlineType.Refill; // yeah I know but this is faster
             }
             Setup();
@@ -108,7 +117,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             switch (type) {
                 case OutlineType.Booster:
                     dot_positions.AddRange(BoosterDots);
-                    color = Color.White;
+                    color = parent.Get<Sprite>().Texture.AtlasPath.Contains("Red") ? Color.Red : Color.White;
                     break;
                 case OutlineType.Refill:
                     dot_positions.AddRange(RefillDots);
@@ -137,6 +146,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Render() {
             if (Controller) {
+                RemoveSelf();
                 return;
             }
             base.Render();
@@ -151,7 +161,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private Vector2 GetRefillOffset() {
-            return parent.Collidable ? RefillSine.Value * 2 * Vector2.UnitY : Vector2.Zero;
+            return parent.Collidable? RefillSine.Value * 2 * Vector2.UnitY : Vector2.Zero;
         }
     }
 }
