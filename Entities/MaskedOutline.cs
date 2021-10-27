@@ -77,27 +77,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public MaskedOutline(EntityData data, Vector2 offset) : base(data.Position + offset) {
             Controller = true;
             this.data = data;
-            Add(new TransitionListener() { OnInEnd = AddOutlines });
-        }
-
-        private void AddOutlines() {
-            List<Entity> candidates = new();
-            candidates.AddRange(Scene.Entities.FindAll<Booster>());
-            candidates.AddRange(Scene.Entities.FindAll<Refill>());
-            for (int i = 0; i < candidates.Count; i++) {
-                Scene.Add(new MaskedOutline(data, Position, candidates[i]));
-            }
-            RemoveSelf();
         }
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
             if (Controller) {
+                List<Entity> candidates = new();
+                candidates.AddRange(scene.Entities.FindAll<Booster>());
+                candidates.AddRange(scene.Entities.FindAll<Refill>());
+                for (int i = 0; i < candidates.Count; i++) {
+                    Scene.Add(new MaskedOutline(data, Position, candidates[i]));
+                }
+                RemoveSelf();
                 return;
             }
             if (parent is Booster) {
                 type = OutlineType.Booster;
-            } else if (parent is Refill r) {
+            } else if (parent is Refill r){
                 type = r.Get<Image>().Texture.AtlasPath.Contains("Two") ? OutlineType.DoubleRefill : OutlineType.Refill; // yeah I know but this is faster
             }
             Setup();
@@ -136,9 +132,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
-            if (Controller) {
-                return;
-            }
             base.Render();
             List<Entity> solids = parent.CollideAll<Solid>();
             for (int j = 0; j < solids.Count; j++) {
@@ -151,7 +144,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private Vector2 GetRefillOffset() {
-            return parent.Collidable ? RefillSine.Value * 2 * Vector2.UnitY : Vector2.Zero;
+            return parent.Collidable? RefillSine.Value * 2 * Vector2.UnitY : Vector2.Zero;
         }
     }
 }
