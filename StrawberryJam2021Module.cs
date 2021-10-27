@@ -53,6 +53,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             HintController.Load();
             RainDensityTrigger.Load();
             MaskedOutline.Load();
+            DashSequenceDisplay.Load();
         }
 
         public override void Unload() {
@@ -85,6 +86,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DirectionalBooster.Unload();
             HintController.Unload();
             RainDensityTrigger.Unload();
+            DashSequenceDisplay.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {

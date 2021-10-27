@@ -1,3 +1,4 @@
+using Celeste.Mod.StrawberryJam2021.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Session : EverestModuleSession {
@@ -11,5 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
         public bool OshiroBSideMode = false;
 
         public bool SkateboardEnabled = false;
+
+        public DashSequenceDisplay DashSequenceDisplay;
     }
 }
