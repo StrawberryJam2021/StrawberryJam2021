@@ -117,7 +117,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             switch (type) {
                 case OutlineType.Booster:
                     dot_positions.AddRange(BoosterDots);
-                    color = Color.White;
+                    color = parent.Get<Sprite>().Texture.AtlasPath.Contains("Red") ? Color.Red : Color.White;
                     break;
                 case OutlineType.Refill:
                     dot_positions.AddRange(RefillDots);
