@@ -73,23 +73,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             dot_positions = new();
             parent = entity;
             Add(tween = Tween.Create(Tween.TweenMode.Looping, null, 3, true));
-            
-        }
-
-        private void CheckParent() {
-            for (int i = 0; i < children.Length; i++) {
-                if (children[i].parent.Scene is null) {
-                    children[i].Visible = false;
-                    children[i].RemoveSelf();
-                }
-            }
-            RemoveSelf();
         }
 
         public MaskedOutline(EntityData data, Vector2 offset) : base(data.Position + offset) {
             Controller = true;
             this.data = data;
-            Add(new TransitionListener() { OnInEnd = CheckParent });
         }
 
         public override void Awake(Scene scene) {
@@ -145,7 +133,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
-            if (Controller) {
+            if (Controller || parent.Scene == null) {
                 RemoveSelf();
                 return;
             }
