@@ -12,8 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [Tracked]
     public class ArbiterOfCheeseCrimes : Trigger {
 
-        public ArbiterOfCheeseCrimes(EntityData data, Vector2 offset)
-            : base(data, offset) { }
+        public ArbiterOfCheeseCrimes(EntityData data, Vector2 offset) : base(data, offset) { }
 
         public static void Load() {
             ModSupport.Instance.Load();
@@ -68,9 +67,14 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
             private static List<IDetour> hooks = new();
 
-            private void TryBind(string modName, string typename, string methodName, BindingFlags flags, string targetMethod, BindingFlags targetMethodFlags, HookConfig cfg) {
+            private void TryHookMethod(string modName, string typename, string methodName, BindingFlags flags, string targetMethod, BindingFlags targetMethodFlags, HookConfig cfg) {
                 try {
                     var mod = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == modName);
+
+                    if (mod == null) {
+                        return;
+                    }
+
                     var type = mod?.GetType().Assembly.GetType(typename);
 
                     var hookedMethod = type?.GetMethod(methodName, flags);
@@ -79,17 +83,60 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     hooks.Add(new Hook(hookedMethod, target, cfg));
 
                 } catch (Exception) {
-                    Logger.Log(LogLevel.Error, nameof(StrawberryJam2021Module), $"Exception loading mod support for {modName}.");
+                    Logger.Log(LogLevel.Error, nameof(StrawberryJam2021Module), $"Exception loading mod support for {modName}, method {methodName}.");
+                }
+            }
+
+            private void TryHookPropertyGet(string modName, string typename, string propName, BindingFlags flags, string targetMethod, BindingFlags targetMethodFlags, bool nonPublicGet, HookConfig cfg) {
+                try {
+                    var mod = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == modName);
+
+                    if (mod == null) {
+                        return;
+                    }
+
+                    var type = mod?.GetType().Assembly.GetType(typename);
+
+                    var hookedMethod = type?.GetProperty(propName, flags)?.GetGetMethod(nonPublicGet);
+
+                    var target = GetType().GetMethod(targetMethod, targetMethodFlags);
+                    hooks.Add(new Hook(hookedMethod, target, cfg));
+
+                } catch (Exception) {
+                    Logger.Log(LogLevel.Error, nameof(StrawberryJam2021Module), $"Exception loading mod support for {modName}, property {propName}.");
                 }
             }
 
             internal void Load() {
-                TryBind("SpeedrunTool", "Celeste.Mod.SpeedrunTool.SaveLoad.StateManager", 
+                TryHookMethod("SpeedrunTool", "Celeste.Mod.SpeedrunTool.SaveLoad.StateManager", 
                     "LoadState", BindingFlags.Instance | BindingFlags.NonPublic,
                     nameof(SpeedrunTool_LoadState), BindingFlags.Static | BindingFlags.NonPublic,
                     new HookConfig {After = new[] {"*"}});
+                TryHookMethod("SpeedrunTool", "Celeste.Mod.SpeedrunTool.SaveLoad.StateManager", 
+                    "SaveState", BindingFlags.Instance | BindingFlags.NonPublic,
+                    nameof(SpeedrunTool_SaveState), BindingFlags.Static | BindingFlags.NonPublic,
+                    new HookConfig {After = new[] {"*"}});
+                TryHookPropertyGet("SpeedrunTool", "Celeste.Mod.SpeedrunTool.SpeedrunToolSettings", 
+                    "FreezeAfterLoadState", BindingFlags.Instance | BindingFlags.Public,
+                    nameof(SpeedrunTool_FreezeAfterLoadState_Get), BindingFlags.Static | BindingFlags.NonPublic,
+                    false, new HookConfig {After = new[] {"*"}});
 
-                TryBind("DJMapHelper", "Celeste.Mod.DJMapHelper.DebugFeatures.LookoutBuilder", 
+                try {
+                    var mod = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "SpeedrunTool");
+
+                    if (mod != null) {
+                        var type = mod?.GetType().Assembly.GetType("Celeste.Mod.SpeedrunTool.SaveLoad.StateManager");
+
+                        SpeedrunTool_ClearState =
+                            type?.GetMethod("ClearState", BindingFlags.Instance | BindingFlags.Public);
+                        SpeedrunTool_StateManagerInstance =
+                            type?.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public);
+                    }
+                } catch (Exception) {
+                    Logger.Log(LogLevel.Error, nameof(StrawberryJam2021Module), $"Exception loading mod support for SpeedrunTool, getting the state manager.");
+                }
+
+                TryHookMethod("DJMapHelper", "Celeste.Mod.DJMapHelper.DebugFeatures.LookoutBuilder", 
                     "LevelOnUpdate", BindingFlags.Static | BindingFlags.NonPublic,
                     nameof(DJMapHelper_LevelOnUpdate), BindingFlags.Static | BindingFlags.NonPublic,
                     new HookConfig {After = new[] {"*"}});
@@ -107,8 +154,46 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     var controllers = level.Tracker.GetEntities<ArbiterOfCheeseCrimes>().Cast<ArbiterOfCheeseCrimes>();
 
                     if (controllers.Any(e => e.PlayerIsInside)) {
-                        // TODO Just punishment
                         return false;
+                    }
+                }
+
+                return orig(self, tas);
+            }
+
+            // This one is needed because the actual freeze after a state save is deeply nested inside SaveState()
+            // in a part of code that frequently changes. Pretending this setting is unset while inside the trigger
+            // is a much more stable solution, but this might have side effects.
+            // It does not appear to permanently change any mod options, at least.
+            private static bool SpeedrunTool_FreezeAfterLoadState_Get(Func<object, bool> orig, object self) {
+                if (Engine.Scene is Level level) {
+                    var controllers = level.Tracker.GetEntities<ArbiterOfCheeseCrimes>().Cast<ArbiterOfCheeseCrimes>();
+
+                    if (controllers.Any(e => e.PlayerIsInside)) {
+                        return false;
+                    }
+                }
+
+                return orig(self);
+            }
+
+            private static MethodInfo SpeedrunTool_ClearState;
+            private static PropertyInfo SpeedrunTool_StateManagerInstance;
+
+            private static bool SpeedrunTool_SaveState(Func<object, bool, bool> orig, object self, bool tas) {
+                if (Engine.Scene is Level level) {
+                    var controllers = level.Tracker.GetEntities<ArbiterOfCheeseCrimes>().Cast<ArbiterOfCheeseCrimes>();
+
+                    if (controllers.Any(e => e.PlayerIsInside)) {
+                        bool res = orig(self, tas);
+
+                        try {
+                            SpeedrunTool_ClearState?.Invoke(SpeedrunTool_StateManagerInstance?.GetValue(null), new object[] { });
+                        } catch (Exception) {
+                            // Silently fail
+                        }
+
+                        return res;
                     }
                 }
 
