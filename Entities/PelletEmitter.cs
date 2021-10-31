@@ -5,41 +5,6 @@ using Monocle;
 using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    /// <summary>
-    /// Entity that automatically emits pellets that will kill the player on contact.
-    /// Has four available orientations, indicated by the <see cref="OrientableEntity.Orientations"/> enum.
-    /// </summary>
-    /// <remarks>
-    /// Emitter configurable values from Ahorn:
-    /// <list type="bullet">
-    /// <item><term>frequency</term><description>
-    /// How often pellets should be fired, in seconds. Defaults to 2 seconds.
-    /// </description></item>
-    /// <item><term>offset</term><description>
-    /// The number of seconds to delay firing.
-    /// Defaults to 0 (fires immediately).
-    /// </description></item>
-    /// <item><term>count</term><description>
-    /// The number of pellets that should be fired at once.
-    /// Defaults to 1.
-    /// </description></item>
-    /// </list>
-    /// Pellet configurable values from Ahorn:
-    /// <list type="bullet">
-    /// <item><term>collideWithSolids</term><description>
-    /// Whether or not pellets will be blocked by <see cref="Solid"/>s.
-    /// Defaults to true.
-    /// </description></item>
-    /// <item><term>pelletColor</term><description>
-    /// The <see cref="Microsoft.Xna.Framework.Color"/> used to render the pellets.
-    /// Defaults to <see cref="Microsoft.Xna.Framework.Color.Red"/>.
-    /// </description></item>
-    /// <item><term>pelletSpeed</term><description>
-    /// The number of units per second that the pellet should travel.
-    /// Defaults to 100.
-    /// </description></item>
-    /// </list>
-    /// </remarks>
     [CustomEntity("SJ2021/PelletEmitterUp = LoadUp",
         "SJ2021/PelletEmitterDown = LoadDown",
         "SJ2021/PelletEmitterLeft = LoadLeft",
@@ -82,6 +47,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private string chargingAnimationKey => $"{AnimationKeyPrefix}_charging";
         private string firingAnimationKey => $"{AnimationKeyPrefix}_firing";
 
+        private float chargeTimeRemaining;
+
         protected PelletEmitter(EntityData data, Vector2 offset, Orientations orientation)
             : base(data, offset, orientation) {
             const float shotOriginOffset = 12f;
@@ -107,12 +74,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 new LedgeBlocker(),
                 new PlayerCollider(OnPlayerCollide),
                 new CassetteListener {
-                    OnTick = state => {
-                        if (state.NextTick.Index != state.CurrentTick.Index && state.NextTick.Index == CassetteIndex) {
-                            // var animation = emitterSprite.Animations[chargingAnimationKey];
-                            // animation.Delay = state.Beat;
-                            // float expectedDelay = 0.1f;
-                            // EmitterSprite.Play(chargingAnimationKey);
+                    OnSixteenth = state => {
+                        if (state.Sixteenth % 8 == 7 && state.NextTick.Index != state.CurrentTick.Index && state.NextTick.Index == CassetteIndex) {
+                            chargeTimeRemaining = state.SwapLength / 8f;
+                            var animation = EmitterSprite.Animations[chargingAnimationKey];
+                            animation.Delay = chargeTimeRemaining / 2f;
                         }
                     },
                     OnSwap = state => {
@@ -129,6 +95,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 var shot = Engine.Pooler.Create<PelletShot>().Init(this, i * Delay);
                 action?.Invoke(shot);
                 Scene.Add(shot);
+            }
+        }
+
+        public override void Update() {
+            base.Update();
+            if (chargeTimeRemaining > 0) {
+                chargeTimeRemaining -= Engine.DeltaTime;
+                if (chargeTimeRemaining <= 0) {
+                    EmitterSprite.Play(chargingAnimationKey);
+                }
             }
         }
 
