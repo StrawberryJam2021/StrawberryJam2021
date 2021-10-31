@@ -192,11 +192,36 @@
         <Loop id="spin_right" path="boosterHunnyRight" delay="0.06" frames="1-8"/>
         <Anim id="pop" path="boosterHunny" delay="0.08" frames="9-17"/>
     </directionalBooster>
-  
+
     <!--Bee Fireball-->
     <beeFireball path="objects/StrawberryJam2021/beeFireball/" start="idle">
         <Justify x="0.53" y="0.45"/>
         <Loop id="idle" path="beefireball" delay="0.08"/>
         <Anim id="rotate" path="beeturnaround" delay="0.08" goto="idle"/>
     </beeFireball>
+
+    <!--Pellet Emitter-->
+    <pelletEmitter path="objects/StrawberryJam2021/pelletEmitter/" start="blue_idle">
+        <Justify x="0" y="0.5"/>
+        <Anim id="blue_idle" path="blue/emitter" delay="0.1" frames="0" />
+        <Anim id="blue_charging" path="blue/emitter" delay="0.1" frames="1-2" />
+        <Anim id="blue_firing" path="blue/emitter" delay="0.1" frames="3-9" goto="blue_idle" />
+        <Anim id="pink_idle" path="pink/emitter" delay="0.1" frames="0" />
+        <Anim id="pink_charging" path="pink/emitter" delay="0.1" frames="1-2" />
+        <Anim id="pink_firing" path="pink/emitter" delay="0.1" frames="3-9" goto="pink_idle" />
+    </pelletEmitter>
+
+    <!--Pellet Projectile-->
+    <pelletProjectile path="objects/StrawberryJam2021/pelletEmitter/" start="blue">
+        <Justify x="0.5" y="0.5"/>
+        <Loop id="blue" path="blue/projectile" delay="0.1" frames="0-8" />
+        <Loop id="pink" path="pink/projectile" delay="0.1" frames="0-8" />
+    </pelletProjectile>
+
+    <!--Pellet Impact-->
+    <pelletImpact path="objects/StrawberryJam2021/pelletEmitter/" start="blue">
+        <Justify x="1" y="0.5"/>
+        <Anim id="blue" path="blue/impact" delay="0.1" frames="0-10" />
+        <Anim id="pink" path="pink/impact" delay="0.1" frames="0-10" />
+    </pelletImpact>
 </Sprites>
