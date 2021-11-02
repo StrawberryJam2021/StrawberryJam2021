@@ -48,12 +48,22 @@ const placements = Ahorn.PlacementDict(
     )
 )
 
+const colorNames = Dict{String, Int}(
+    "Both" => -1,
+    "Blue" => 0,
+    "Rose" => 1,
+)
+
 const pelletEmitterUnion = Union{PelletEmitterUp, PelletEmitterDown, PelletEmitterLeft, PelletEmitterRight}
 
 function Ahorn.selection(entity::pelletEmitterUnion)
     x, y = Ahorn.position(entity)
     return Ahorn.getSpriteRectangle(spriteForEntity(entity), x, y)
 end
+
+Ahorn.editingOptions(entity::pelletEmitterUnion) = Dict{String, Any}(
+    "cassetteIndex" => colorNames
+)
 
 sprite_path = "objects/StrawberryJam2021/pelletEmitter"
 

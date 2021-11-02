@@ -41,13 +41,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public readonly Sprite EmitterSprite;
 
-        public string AnimationKeyPrefix => $"{(CassetteIndex == 0 ? "blue" : "pink")}";
+        public string AnimationKeyPrefix => $"{CassetteIndex switch {0 => "blue", 1 => "pink", _ => "both"}}";
 
         private string idleAnimationKey => $"{AnimationKeyPrefix}_idle";
         private string chargingAnimationKey => $"{AnimationKeyPrefix}_charging";
         private string firingAnimationKey => $"{AnimationKeyPrefix}_firing";
-
-        private float chargeTimeRemaining;
 
         protected PelletEmitter(EntityData data, Vector2 offset, Orientations orientation)
             : base(data, offset, orientation) {
@@ -64,7 +62,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             EmitterSprite = StrawberryJam2021Module.SpriteBank.Create("pelletEmitter");
             EmitterSprite.Rotation = Orientation.Angle() - (float)Math.PI / 2f;
-            EmitterSprite.Effects = Orientation is Orientations.Right or Orientations.Down
+            EmitterSprite.Effects = Orientation is Orientations.Left or Orientations.Down
                     ? SpriteEffects.FlipVertically
                     : SpriteEffects.None;
 
@@ -74,15 +72,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 new LedgeBlocker(),
                 new PlayerCollider(OnPlayerCollide),
                 new CassetteListener {
-                    OnSixteenth = state => {
-                        if (state.Sixteenth % 8 == 7 && state.NextTick.Index != state.CurrentTick.Index && state.NextTick.Index == CassetteIndex) {
-                            chargeTimeRemaining = state.SwapLength / 8f;
-                            var animation = EmitterSprite.Animations[chargingAnimationKey];
-                            animation.Delay = chargeTimeRemaining / 2f;
+                    OnTick = state => {
+                        if (state.NextTick.Index != state.CurrentTick.Index &&
+                            (CassetteIndex < 0 || CassetteIndex == state.NextTick.Index)) {
+                            string key = chargingAnimationKey;
+                            var animation = EmitterSprite.Animations[key];
+                            animation.Delay = state.TickLength / animation.Frames.Length;
+                            EmitterSprite.Play(key);
                         }
                     },
                     OnSwap = state => {
-                        if (state.CurrentTick.Index == CassetteIndex) {
+                        if (CassetteIndex < 0 || CassetteIndex == state.NextTick.Index) {
                             EmitterSprite.Play(firingAnimationKey);
                             Fire();
                         }
@@ -95,16 +95,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 var shot = Engine.Pooler.Create<PelletShot>().Init(this, i * Delay);
                 action?.Invoke(shot);
                 Scene.Add(shot);
-            }
-        }
-
-        public override void Update() {
-            base.Update();
-            if (chargeTimeRemaining > 0) {
-                chargeTimeRemaining -= Engine.DeltaTime;
-                if (chargeTimeRemaining <= 0) {
-                    EmitterSprite.Play(chargingAnimationKey);
-                }
             }
         }
 
@@ -122,18 +112,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             private float delayTimeRemaining;
 
-            private Orientations orientation;
             private string projectileAnimationKey;
             private string impactAnimationKey;
 
-            private readonly Hitbox impactHitbox = new Hitbox(12, 12, -6, -6);
             private readonly Hitbox killHitbox = new Hitbox(8, 8, -4, -4);
 
-            public PelletShot()
-                : base(Vector2.Zero) {
-                Collider = new Hitbox(4f, 4f, -2f, -2f);
-                Depth = Depths.Top;
-
+            public PelletShot() : base(Vector2.Zero) {
+                Depth = Depths.Above;
                 Add(projectileSprite = StrawberryJam2021Module.SpriteBank.Create("pelletProjectile"),
                     impactSprite = StrawberryJam2021Module.SpriteBank.Create("pelletImpact"),
                     new PlayerCollider(OnPlayerCollide));
@@ -147,18 +132,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 CollideWithSolids = emitter.CollideWithSolids;
                 Collider = killHitbox;
                 Collidable = true;
-                orientation = emitter.Orientation;
 
                 impactSprite.Rotation = projectileSprite.Rotation = emitter.EmitterSprite.Rotation;
-                impactSprite.Effects = projectileSprite.Effects =
-                    orientation is Orientations.Right or Orientations.Down
-                        ? SpriteEffects.FlipVertically
-                        : SpriteEffects.None;
+                impactSprite.Effects = projectileSprite.Effects = emitter.EmitterSprite.Effects;
 
                 projectileAnimationKey = impactAnimationKey = emitter.AnimationKeyPrefix;
 
                 impactSprite.Visible = false;
+                impactSprite.Stop();
+
                 projectileSprite.Visible = delay == 0;
+                projectileSprite.Stop();
 
                 return this;
             }
@@ -205,10 +189,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     projectileSprite.Play(projectileAnimationKey);
                 }
 
-                // our impact hitbox is bigger than our kill hitbox
-                Collider = impactHitbox;
                 Move();
-                Collider = killHitbox;
 
                 // destroy the shot if it leaves the room bounds
                 var level = SceneAs<Level>();
@@ -224,45 +205,52 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 // check whether the target position would trigger a new solid collision
                 if (CollideWithSolids && CollideCheckOutside<Solid>(target)) {
                     var normal = delta.SafeNormalize();
-                    float amount = delta.Length();
 
-                    // move one pixel at a time to find the exact collision point
-                    while (amount > 0) {
-                        amount--;
-                        Position += normal;
+                    // snap the current position away from the solid
+                    if (normal.X != 0) {
+                        Position.X = normal.X < 0 ? (float) Math.Ceiling(Position.X) : (float) Math.Floor(Position.X);
+                    }
+                    if (normal.Y != 0) {
+                        Position.Y = normal.Y < 0 ? (float) Math.Ceiling(Position.Y) : (float) Math.Floor(Position.Y);
+                    }
 
+                    // move one pixel at a time to find the exact collision point (with safety counter)
+                    int safety = 50;
+                    while (safety-- > 0) {
                         // if it collided...
-                        if (CollideCheck<Solid>()) {
+                        var solid = CollideFirst<Solid>(Position + normal);
+                        if (solid != null) {
                             // snap the shot to the collision point
                             if (normal.X < 0) {
-                                Position.X = (float) Math.Ceiling(Collider.AbsoluteLeft);
+                                Position.X = (float) Math.Floor(Collider.AbsoluteLeft);
                             } else if (normal.X > 0) {
-                                Position.X = (float) Math.Floor(Collider.AbsoluteRight - 1f);
+                                Position.X = (float) Math.Ceiling(Collider.AbsoluteRight);
                             }
                             if (normal.Y < 0) {
-                                Position.Y = (float) Math.Ceiling(Collider.AbsoluteTop);
+                                Position.Y = (float) Math.Floor(Collider.AbsoluteTop);
                             } else if (normal.Y > 0) {
-                                Position.Y = (float) Math.Floor(Collider.AbsoluteBottom - 1f);
+                                Position.Y = (float) Math.Ceiling(Collider.AbsoluteBottom);
                             }
 
                             // stop... hammer time!
                             Speed = Vector2.Zero;
 
                             // trigger the impact animation
-                            Impact();
+                            Impact(solid is not SolidTiles);
                             return;
                         }
+
+                        Position += normal;
                     }
                 }
 
-                // naive movement since we're done
                 Position = target;
             }
 
-            private void Impact() {
+            private void Impact(bool air) {
                 projectileSprite.Stop();
                 projectileSprite.Visible = false;
-                impactSprite.Play(impactAnimationKey);
+                impactSprite.Play(air ? $"{impactAnimationKey}_air" : impactAnimationKey);
                 impactSprite.Visible = true;
                 Collidable = false;
             }
