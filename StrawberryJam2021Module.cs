@@ -54,6 +54,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             HintController.Load();
             RainDensityTrigger.Load();
             MaskHooks.Load();
+            MaskedOutline.Load();
+            DashSequenceDisplay.Load();
         }
 
         public override void Unload() {
@@ -87,6 +89,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             HintController.Unload();
             RainDensityTrigger.Unload();
             MaskHooks.Unload();
+            DashSequenceDisplay.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -104,7 +107,10 @@ namespace Celeste.Mod.StrawberryJam2021 {
             PocketUmbrella.LoadParticles();
             Paintbrush.LoadParticles();
             NodedCloud.LoadParticles();
+            MaskedOutline.LoadTexture();
+            BeeFireball.LoadContent();
         }
+
         // Temporary code from vivhelper
         public static bool VivHelperGetFlags(Level l, string[] flags, string and_or) {
             if (l == null)

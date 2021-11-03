@@ -192,4 +192,11 @@
         <Loop id="spin_right" path="boosterHunnyRight" delay="0.06" frames="1-8"/>
         <Anim id="pop" path="boosterHunny" delay="0.08" frames="9-17"/>
     </directionalBooster>
+  
+    <!--Bee Fireball-->
+    <beeFireball path="objects/StrawberryJam2021/beeFireball/" start="idle">
+        <Justify x="0.53" y="0.45"/>
+        <Loop id="idle" path="beefireball" delay="0.08"/>
+        <Anim id="rotate" path="beeturnaround" delay="0.08" goto="idle"/>
+    </beeFireball>
 </Sprites>
