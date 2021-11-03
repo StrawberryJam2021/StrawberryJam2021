@@ -1,5 +1,6 @@
 using Celeste.Mod.StrawberryJam2021.Entities;
 using Celeste.Mod.StrawberryJam2021.Triggers;
+using Celeste.Mod.StrawberryJam2021.StylegroundMasks;
 using Monocle;
 using System;
 
@@ -52,6 +53,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DirectionalBooster.Load();
             HintController.Load();
             RainDensityTrigger.Load();
+            MaskHooks.Load();
         }
 
         public override void Unload() {
@@ -84,6 +86,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DirectionalBooster.Unload();
             HintController.Unload();
             RainDensityTrigger.Unload();
+            MaskHooks.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
