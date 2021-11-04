@@ -82,17 +82,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         }
                     },
                     OnSwap = state => {
-                        if (CassetteIndex < 0 || CassetteIndex == state.NextTick.Index) {
+                        if (CassetteIndex < 0 || CassetteIndex == state.CurrentTick.Index) {
                             EmitterSprite.Play(firingAnimationKey);
-                            Fire();
+                            Fire(state.CurrentTick.Index);
                         }
                     },
                 });
         }
 
-        public void Fire(Action<PelletShot> action = null) {
+        public void Fire(int? cassetteIndex = null, Action<PelletShot> action = null) {
             for (int i = 0; i < Count; i++) {
-                var shot = Engine.Pooler.Create<PelletShot>().Init(this, i * Delay);
+                var shot = Engine.Pooler.Create<PelletShot>().Init(this, i * Delay, cassetteIndex ?? CassetteIndex);
                 action?.Invoke(shot);
                 Scene.Add(shot);
             }
@@ -103,6 +103,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         [Pooled]
         [Tracked]
         public class PelletShot : Entity {
+            public static ParticleType P_BlueTrail;
+            public static ParticleType P_PinkTrail;
+
             public bool Dead { get; set; }
             public Vector2 Speed { get; set; }
             public bool CollideWithSolids { get; set; }
@@ -121,6 +124,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             private const float wiggleAmount = 2f;
             private const float wiggleFrequency = 2f;
 
+            private ParticleType particleType;
+
+            public static void LoadParticles() {
+                P_BlueTrail = new ParticleType {
+                    Color = CassetteListener.ColorFromCassetteIndex(0),
+                    Color2 = Calc.HexToColor("7550e8"),
+                    ColorMode = ParticleType.ColorModes.Blink,
+                    FadeMode = ParticleType.FadeModes.Late,
+                    Size = 1f,
+                    SizeRange = 0f,
+                    LifeMin = 0.3f,
+                    LifeMax = 0.8f,
+                    SpeedMin = 5f,
+                    SpeedMax = 25f,
+                    DirectionRange = 0.5f,
+                };
+
+                P_PinkTrail = new ParticleType(P_BlueTrail) {
+                    Color = CassetteListener.ColorFromCassetteIndex(1),
+                };
+            }
+
             public PelletShot() : base(Vector2.Zero) {
                 Depth = Depths.Above;
                 Add(projectileSprite = StrawberryJam2021Module.SpriteBank.Create("pelletProjectile"),
@@ -129,7 +154,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     sineWave = new SineWave(wiggleFrequency));
             }
 
-            public PelletShot Init(PelletEmitter emitter, float delay) {
+            public PelletShot Init(PelletEmitter emitter, float delay, int cassetteIndex) {
                 delayTimeRemaining = delay;
                 Dead = false;
                 Speed = emitter.Direction * emitter.Speed;
@@ -138,10 +163,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Collider = killHitbox;
                 Collidable = true;
 
+                particleType = cassetteIndex == 0 ? P_BlueTrail : P_PinkTrail;
+
                 impactSprite.Rotation = projectileSprite.Rotation = emitter.EmitterSprite.Rotation;
                 impactSprite.Effects = projectileSprite.Effects = emitter.EmitterSprite.Effects;
 
-                projectileAnimationKey = impactAnimationKey = emitter.AnimationKeyPrefix;
+                projectileAnimationKey = impactAnimationKey = cassetteIndex == 0 ? "blue" : "pink";
 
                 impactSprite.Visible = false;
                 impactSprite.Stop();
@@ -174,11 +201,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 // fast fail if the pooled shot is no longer alive
                 if (Dead) return;
 
-                // update collider and projectile sprite with sinewave
-                var newCentre = Speed.Perpendicular().SafeNormalize() * sineWave.Value * wiggleAmount;
-                killHitbox.Center = newCentre;
-                projectileSprite.Position = newCentre;
-
                 // only show the impact sprite if it's animating
                 impactSprite.Visible = impactSprite.Animating;
 
@@ -189,6 +211,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                     return;
                 }
+
+                // update collider and projectile sprite with sinewave
+                var newCentre = Speed.Perpendicular().SafeNormalize() * sineWave.Value * wiggleAmount;
+                killHitbox.Center = newCentre;
+                projectileSprite.Position = newCentre;
 
                 // delayed init
                 if (delayTimeRemaining > 0) {
@@ -203,10 +230,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 Move();
 
-                // destroy the shot if it leaves the room bounds
-                var level = SceneAs<Level>();
-                if (!level.IsInBounds(this)) {
-                    Destroy();
+                if (Scene is Level level) {
+                    if (level.OnInterval(0.05f)) {
+                        level.ParticlesBG.Emit(particleType, 1, Center, Vector2.One * 2f, (-Speed).Angle());
+                    }
+
+                    // destroy the shot if it leaves the room bounds
+                    if (!level.IsInBounds(this)) {
+                        Destroy();
+                    }
                 }
             }
 
@@ -268,6 +300,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 impactSprite.Play(air ? $"{impactAnimationKey}_air" : impactAnimationKey);
                 impactSprite.Visible = true;
                 Collidable = false;
+                killHitbox.Center = projectileSprite.Position = Vector2.Zero;
             }
 
             private void OnPlayerCollide(Player player) => player.Die((player.Center - Position).SafeNormalize());
