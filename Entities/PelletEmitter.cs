@@ -115,13 +115,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             private string projectileAnimationKey;
             private string impactAnimationKey;
 
-            private readonly Hitbox killHitbox = new Hitbox(8, 8, -4, -4);
+            private readonly Hitbox killHitbox = new Hitbox(8, 8);
+            private readonly SineWave sineWave;
+
+            private const float wiggleAmount = 2f;
+            private const float wiggleFrequency = 2f;
 
             public PelletShot() : base(Vector2.Zero) {
                 Depth = Depths.Above;
                 Add(projectileSprite = StrawberryJam2021Module.SpriteBank.Create("pelletProjectile"),
                     impactSprite = StrawberryJam2021Module.SpriteBank.Create("pelletImpact"),
-                    new PlayerCollider(OnPlayerCollide));
+                    new PlayerCollider(OnPlayerCollide),
+                    sineWave = new SineWave(wiggleFrequency));
             }
 
             public PelletShot Init(PelletEmitter emitter, float delay) {
@@ -144,13 +149,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 projectileSprite.Visible = delay == 0;
                 projectileSprite.Stop();
 
+                sineWave.Reset();
+
                 return this;
             }
 
             public override void Added(Scene scene) {
                 base.Added(scene);
                 if (delayTimeRemaining <= 0) {
-                    projectileSprite.Play(projectileAnimationKey);
+                    projectileSprite.Play(projectileAnimationKey, randomizeFrame: true);
                 }
             }
 
@@ -166,6 +173,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 // fast fail if the pooled shot is no longer alive
                 if (Dead) return;
+
+                // update collider and projectile sprite with sinewave
+                var newCentre = Speed.Perpendicular().SafeNormalize() * sineWave.Value * wiggleAmount;
+                killHitbox.Center = newCentre;
+                projectileSprite.Position = newCentre;
 
                 // only show the impact sprite if it's animating
                 impactSprite.Visible = impactSprite.Animating;
@@ -223,13 +235,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             // snap the shot to the collision point
                             if (normal.X < 0) {
                                 Position.X = (float) Math.Floor(Collider.AbsoluteLeft);
+                                Position.Y = (float) Math.Round(Collider.CenterY + Position.Y);
                             } else if (normal.X > 0) {
                                 Position.X = (float) Math.Ceiling(Collider.AbsoluteRight);
-                            }
-                            if (normal.Y < 0) {
+                                Position.Y = (float) Math.Round(Collider.CenterY + Position.Y);
+                            } else if (normal.Y < 0) {
                                 Position.Y = (float) Math.Floor(Collider.AbsoluteTop);
+                                Position.X = (float) Math.Round(Collider.CenterX + Position.X);
                             } else if (normal.Y > 0) {
                                 Position.Y = (float) Math.Ceiling(Collider.AbsoluteBottom);
+                                Position.X = (float) Math.Round(Collider.CenterX + Position.X);
                             }
 
                             // stop... hammer time!
