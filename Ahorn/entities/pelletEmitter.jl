@@ -5,6 +5,9 @@ using ..Ahorn, Maple
 const DEFAULT_PELLET_SPEED = 100.0
 const DEFAULT_PELLET_DELAY = 0.25
 
+const width = 16.0
+const length = 16.0
+
 @mapdef Entity "SJ2021/PelletEmitterUp" PelletEmitterUp(
     x::Integer, y::Integer,
     pelletSpeed::Real=DEFAULT_PELLET_SPEED, pelletCount::Integer=1,
@@ -56,9 +59,24 @@ const colorNames = Dict{String, Int}(
 
 const pelletEmitterUnion = Union{PelletEmitterUp, PelletEmitterDown, PelletEmitterLeft, PelletEmitterRight}
 
-function Ahorn.selection(entity::pelletEmitterUnion)
+function Ahorn.selection(entity::PelletEmitterUp)
     x, y = Ahorn.position(entity)
-    return Ahorn.getSpriteRectangle(spriteForEntity(entity), x, y)
+    return Ahorn.Rectangle(x - width / 2, y - length, width, length)
+end
+
+function Ahorn.selection(entity::PelletEmitterDown)
+    x, y = Ahorn.position(entity)
+    return Ahorn.Rectangle(x - width / 2, y, width, length)
+end
+
+function Ahorn.selection(entity::PelletEmitterLeft)
+    x, y = Ahorn.position(entity)
+    return Ahorn.Rectangle(x - length, y - width / 2, length, width)
+end
+
+function Ahorn.selection(entity::PelletEmitterRight)
+    x, y = Ahorn.position(entity)
+    return Ahorn.Rectangle(x, y - width / 2, length, width)
 end
 
 Ahorn.editingOptions(entity::pelletEmitterUnion) = Dict{String, Any}(
