@@ -20,39 +20,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static readonly MethodInfo CreateTrail = playerType.GetMethod("CreateTrail", flags);
 		//private static readonly MethodInfo DashCoroutine = playerType.GetMethod("DashCoroutine", flags);
 		private static IDetour hook_Player_DashCoroutine;
-		private static MethodInfo m = typeof(Player).GetMethod("DashCoroutine", BindingFlags.NonPublic | BindingFlags.Instance).GetStateMachineTarget();
+		//private static MethodInfo m = typeof(Player).GetMethod("DashCoroutine", BindingFlags.NonPublic | BindingFlags.Instance).GetStateMachineTarget();
 
 
 		public static void Load() {
-            On.Celeste.Player.DashCoroutine += ModDashCoroutine;
-            //IL.Celeste.Player.DashBegin += modDashLength;
-            //IL.Celeste.Player.DashCoroutine += modDashLength;
-            //hook_Player_DashCoroutine = new ILHook(m, ModDashSpeed);
-			//hook_Player_DashCoroutine = new ILHook(m, (il) => PlayerDashCoroutine(m.DeclaringType.GetField("<>4__this"), il));
+            //On.Celeste.Player.DashCoroutine += ModDashCoroutine;
+            MethodInfo m = typeof(Player).GetMethod("DashCoroutine", BindingFlags.NonPublic | BindingFlags.Instance).GetStateMachineTarget();
+            hook_Player_DashCoroutine = new ILHook(m, ModDashSpeed);
 		}
 
-		//public static void Unload() {
-		//	hook_Player_DashCoroutine.Dispose();
-  //      }
+        public static void Unload() {
+            hook_Player_DashCoroutine.Dispose();
+        }
 
-		//private static void PlayerDashCoroutine(FieldInfo playerFieldInfo, ILContext il) {
-		//	ILCursor cursor = new ILCursor(il);
-
-		//	cursor.Emit(OpCodes.Ldarg_0);
-		//	cursor.Emit(OpCodes.Ldfld, playerFieldInfo);
-
-		//	while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(1.2f))) {
-		//		cursor.EmitDelegate<Func<float>>(Ten);
-		//		cursor.Emit(OpCodes.Mul);
-		//	}
-		//}
-
-		//private static float Ten() {
-		//	return 10f;
-		//}
-
-        //Hooks into Player::DashCoroutine to implement changes with NewToggleSwapBlock, written by @Viv#1113
-        private static void ModDashSpeed(ILContext il) {
+            private static void ModDashSpeed(ILContext il) {
             ILCursor cursor = new ILCursor(il); //Creates a new cursor to read through the Instruction list from
                                                 //We don't need any Variable Definitions because I found a very cheeky solution
                                                 //The next comment represents the code that we are changing in IL and exactly how. comment lines starting with ////PATCH//// refer to any additional IL patched in by the cursor.
@@ -97,45 +78,80 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             //The process: First we get our cursors in position and retrieve our ILLabel to which we will branch to
             int playerIndex = 1; //The assumed value is first.
             ILLabel VanillaTarget = null;
-            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchBneUn(out VanillaTarget), //VanillaTarget is now well-defined
+            if (cursor.TryGotoNext(MoveType.Before, instr => instr.MatchBneUn(out VanillaTarget), //VanillaTarget is now well-defined
                 instr => instr.MatchLdloc(out playerIndex), // playerIndex is now well-defined
                 instr => instr.MatchLdfld<Player>("StateMachine"), instr => instr.MatchLdcI4(1))) //Remaining checks to confirm we're in the correct position.
                                                                                                   //Cursor is now directly before, or "at" the instruction `bne.un.s IL_036f`
             {
                 if (VanillaTarget != null) {
+                    //ILLabel targetLabel = cursor.MarkLabel();
+                    //OurTarget.
+                    //Instruction targetInstr = targetLabel.Target;
+                    //Console.WriteLine();
+                    //Console.WriteLine();
+                    //for (int i = 0; i < 4; i++) {
+                    //    Console.WriteLine(targetInstr.OpCode);
+                    //    targetInstr = targetInstr.Next;
+                    //}
+                    //Console.WriteLine("Cursor Index: " + cursor.Index);
+                    //int i = 0;
+                    //foreach (Instruction instr in cursor.Instrs) {
+                    //    Console.WriteLine("OpCode: " + instr.OpCode);
+                    //    //Console.WriteLine("Operand: " + instr.Operand);
+                    //}
+                    //Console.WriteLine();
+                    //Console.WriteLine();
+                    cursor.Index++; //Move after bne.un.s
+                    ILLabel OurTarget = cursor.MarkLabel();
+                    //cursor.
                     cursor.GotoLabel(VanillaTarget, MoveType.Before);
                     //cursor is now exactly at IL_036f and any code written here will come, crucially, *before* ldarg.0, so any branches to IL_036f will actually branch to our code first.
                     ILCursor cursor2 = cursor.Clone();
                     //We want to clone the cursor and leave our first cursor here to operate later.
                     //this is a good practice of making a "safe" hook, only hooking once you know you have all the materials to cleanly hook.
-                    if (cursor2.TryGotoNext(instr => instr.MatchCall<Vector2>("get_One"), instr => instr.MatchStfld(out FieldReference _))) {
-                        cursor2.Index++; //Move After Vector2::get_One()
+                    MethodInfo getOne = typeof(Vector2).GetProperty("One", BindingFlags.Static | BindingFlags.Public).GetGetMethod();
+                    if (cursor2.TryGotoNext(MoveType.After, instr => instr.MatchCall(getOne))) {
+                        //if (cursor2.TryGotoNext(instr => instr.MatchCall<Vector2>("get_One"), instr => instr.MatchStfld(out FieldReference _))) {
+                        //cursor2.Index++; //Move After Vector2::get_One()
 
                         //It's hooking time babey
-                        cursor.Emit(OpCodes.Ldloc, playerIndex); // Add Player to Stack
-                        cursor.EmitDelegate<Func<Player, bool>>(CheckForNewToggleSwapBlocks); // check the code with NewToggleSwapBlocks in mind
-                        cursor.Emit(OpCodes.Brtrue, VanillaTarget); // If player Collides with a NewToggleSwapBlock with direction matching the sign of player Dash Direction, jump back to the code inside the if statement
+                        cursor2.Emit(OpCodes.Ldloc, playerIndex); // Add Player to Stack
+                        cursor2.EmitDelegate<Func<Player, bool>>(CheckForNewToggleSwapBlocks); // check the code with NewToggleSwapBlocks in mind
+                        cursor2.Emit(OpCodes.Brtrue, OurTarget); // If player Collides with a NewToggleSwapBlock with direction matching the sign of player Dash Direction, jump back to the code inside the if statement
+
+                        //cursor2.Emit(OpCodes.Ldloc, playerIndex); // Add Player to Stack
+                        //cursor2.EmitDelegate<Func<Player, bool>>(TestHook); //Modify the code with our NewToggleSwapBlocks
+                        //cursor.Emit(OpCodes.Brtrue, OurTarget);
 
                         cursor2.Emit(OpCodes.Ldloc, playerIndex); // Add Player to Stack
                         cursor2.EmitDelegate<Func<Vector2, Player, Vector2>>(ModifyDashSpeedWithSwapBlock); //Modify the code with our NewToggleSwapBlocks
-                    }
 
+                        //cursor.Emit(OpCodes.Ldloc, playerIndex);
+                        //cursor.EmitDelegate<Func<Player, bool>>(TestHook);
+                        //cursor.Emit(OpCodes.Brtrue, OurTarget);
+                    }
                 }
             }
         }
 
         private static bool CheckForNewToggleSwapBlocks(Player player) {
-            if (player.DashDir.X != 0f && Input.GrabCheck)
+            //((object) null).GetType();
+            if (!(player.DashDir.X != 0f && Input.GrabCheck))
                 return false; // We wanna get rid of this case because it's the initial case that we dont wanna worry about.
             NewToggleSwapBlock ntsb = player.CollideFirst<NewToggleSwapBlock>(player.Position + Vector2.UnitX * Math.Sign(player.DashDir.X)); //Same thing as the SwapBlock but with NewToggleSwapBlock
-            return ntsb != null && ntsb.dirVector.X == (float) Math.Sign(player.DashDir.X); //if this is true then brtrue will pass it back to the inside of the if statement
+            return ntsb != null && Math.Sign(ntsb.dirVector.X) == Math.Sign(player.DashDir.X); //if this is true then brtrue will pass it back to the inside of the if statement
         }
 
-        //Important detail! Since swapCancel's X and Y values are 1 and 0 only we can do this. Normally we wouldn't be allowed to do this.
-        private static Vector2 ModifyDashSpeedWithSwapBlock(Vector2 orig, Player player) {
+        private static bool TestHook(Player player) {
+            player.Speed = new Vector2(100, 0);
+            return true;
+        }
+
+            //Important detail! Since swapCancel's X and Y values are 1 and 0 only we can do this. Normally we wouldn't be allowed to do this.
+            private static Vector2 ModifyDashSpeedWithSwapBlock(Vector2 orig, Player player) {
             Vector2 swapCancel = orig;
             foreach (NewToggleSwapBlock entity in player.Scene.Tracker.GetEntities<NewToggleSwapBlock>()) {
-                if (player.CollideCheck(entity, player.Position + Vector2.UnitY) && entity != null && entity.moving) {
+                if (entity != null && entity.moving && entity.GetPlayerRider() == player) {
                     if (player.DashDir.X != 0f && Math.Sign(entity.dirVector.X) == Math.Sign(player.DashDir.X)) {
                         player.Speed.X = (swapCancel.X = 0f);
                     }
