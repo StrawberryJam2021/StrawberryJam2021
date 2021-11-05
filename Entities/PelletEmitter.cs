@@ -119,12 +119,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             private string impactAnimationKey;
 
             private readonly Hitbox killHitbox = new Hitbox(8, 8);
-            private readonly SineWave sineWave;
+            private readonly SineWave travelSineWave;
+            private readonly Wiggler hitWiggler;
 
             private const float wiggleAmount = 2f;
             private const float wiggleFrequency = 2f;
 
             private ParticleType particleType;
+            private Vector2 hitDir;
 
             public static void LoadParticles() {
                 P_BlueTrail = new ParticleType {
@@ -151,7 +153,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Add(projectileSprite = StrawberryJam2021Module.SpriteBank.Create("pelletProjectile"),
                     impactSprite = StrawberryJam2021Module.SpriteBank.Create("pelletImpact"),
                     new PlayerCollider(OnPlayerCollide),
-                    sineWave = new SineWave(wiggleFrequency));
+                    travelSineWave = new SineWave(wiggleFrequency),
+                    hitWiggler = Wiggler.Create(1.2f, 2f));
+
+                hitWiggler.StartZero = true;
             }
 
             public PelletShot Init(PelletEmitter emitter, float delay, int cassetteIndex) {
@@ -176,7 +181,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 projectileSprite.Visible = delay == 0;
                 projectileSprite.Stop();
 
-                sineWave.Reset();
+                travelSineWave.Active = true;
+                travelSineWave.Reset();
+                hitWiggler.StopAndClear();
+                hitDir = Vector2.Zero;
 
                 return this;
             }
@@ -213,7 +221,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
 
                 // update collider and projectile sprite with sinewave
-                var newCentre = Speed.Perpendicular().SafeNormalize() * sineWave.Value * wiggleAmount;
+                var newCentre = Speed.Perpendicular().SafeNormalize() * travelSineWave.Value * wiggleAmount;
+                newCentre += hitDir * hitWiggler.Value * 8f;
+
                 killHitbox.Center = newCentre;
                 projectileSprite.Position = newCentre;
 
@@ -303,7 +313,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 killHitbox.Center = projectileSprite.Position = Vector2.Zero;
             }
 
-            private void OnPlayerCollide(Player player) => player.Die((player.Center - Position).SafeNormalize());
+            private void OnPlayerCollide(Player player) {
+                var direction = (player.Center - Position).SafeNormalize();
+                if (player.Die(direction) == null) return;
+                Speed = Vector2.Zero;
+                travelSineWave.Active = false;
+                hitDir = direction;
+                hitWiggler.Start();
+            }
         }
     }
 }
