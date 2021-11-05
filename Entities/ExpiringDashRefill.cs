@@ -46,7 +46,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
 
-            Player player = Scene.Tracker.GetEntity<Player>();
+            if (Scene.Tracker.GetEntity<Player>() is not Player player)
+                return;
+
             player.OverrideHairColor = null;
 
             if (player.Dashes == 0)
