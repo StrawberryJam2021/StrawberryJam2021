@@ -41,8 +41,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public readonly Sprite EmitterSprite;
 
-        public string AnimationKeyPrefix => $"{CassetteIndex switch {0 => "blue", 1 => "pink", _ => "blue"}}";
-        // public string AnimationKeyPrefix => $"{CassetteIndex switch {0 => "blue", 1 => "pink", _ => "both"}}";
+        public string AnimationKeyPrefix => $"{CassetteIndex switch {0 => "blue", 1 => "pink", _ => "both"}}";
 
         private string idleAnimationKey => $"{AnimationKeyPrefix}_idle";
         private string chargingAnimationKey => $"{AnimationKeyPrefix}_charging";

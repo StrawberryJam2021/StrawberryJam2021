@@ -209,6 +209,9 @@
         <Anim id="pink_idle" path="pink/emitter" delay="0.1" frames="0" />
         <Anim id="pink_charging" path="pink/emitter" delay="0.1" frames="1-8" />
         <Anim id="pink_firing" path="pink/emitter" delay="0.1" frames="9-15" goto="pink_idle" />
+        <Anim id="both_idle" path="both/emitter" delay="0.1" frames="0" />
+        <Anim id="both_charging" path="both/emitter" delay="0.1" frames="1-8" />
+        <Anim id="both_firing" path="both/emitter" delay="0.1" frames="9-15" goto="both_idle" />
     </pelletEmitter>
 
     <!--Pellet Projectile-->
