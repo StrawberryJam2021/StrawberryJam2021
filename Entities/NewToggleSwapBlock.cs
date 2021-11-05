@@ -27,7 +27,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		private bool oscillate = false;
 		private bool returning = false;
 		private bool stopAtEnd = false;
-		public Vector2 dirVector = Vector2.Zero;
+		public Vector2 Direction = Vector2.Zero;
         private bool stopped = false;
 		private string customTexturePath;
 		private Level level => (Level) base.Scene;
@@ -181,12 +181,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 			moveSfx = Audio.Play("event:/game/05_mirror_temple/swapblock_move", base.Center);
 			Vector2 targetPosition = nodes[nodeIndex];
 			Vector2 startPosition = base.Position;
-			dirVector = targetPosition - startPosition;
+			Direction = targetPosition - startPosition;
 			float relativeSpeed = travelSpeed;
 			//if (isConstant) {
    //             relativeSpeed /= dirVector.Length();
    //         }
-            Vector2 lerpVector = dirVector * relativeSpeed;
+            Vector2 lerpVector = Direction * relativeSpeed;
 			base.Scene.Tracker.GetEntity<Player>();
 			while (base.Position != targetPosition) {
 				base.MoveTo(Vector2.Lerp(startPosition, targetPosition, lerp), lerpVector);
@@ -210,18 +210,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 				if (player == null || player.StateMachine.State != 2) {
 					return;
 				}
-				if (player.DashDir.X != 0f && Input.Grab.Check && player.CollideCheck(this, player.Position + Vector2.UnitX * Math.Sign(player.DashDir.X)) && Math.Sign(dirVector.X) == Math.Sign(player.DashDir.X)) {
+				if (player.DashDir.X != 0f && Input.Grab.Check && player.CollideCheck(this, player.Position + Vector2.UnitX * Math.Sign(player.DashDir.X)) && Math.Sign(Direction.X) == Math.Sign(player.DashDir.X)) {
 					player.StateMachine.State = 1;
 					player.Speed = Vector2.Zero;
 				}
 				if (player.CollideCheck(this, player.Position + Vector2.UnitY) && lerp > 0f) {
-					if (player.DashDir.X != 0f && Math.Sign(dirVector.X) == Math.Sign(player.DashDir.X)) {
+					if (player.DashDir.X != 0f && Math.Sign(Direction.X) == Math.Sign(player.DashDir.X)) {
 						player.Speed.X = 0f;  // (one.X = 0f);
 						if (lerp >= 0.8) {
                             player.StateMachine.State = 0;
                         }
                     }
-					if (player.DashDir.Y != 0f && Math.Sign(dirVector.Y) == Math.Sign(player.DashDir.Y)) {
+					if (player.DashDir.Y != 0f && Math.Sign(Direction.Y) == Math.Sign(player.DashDir.Y)) {
 						player.Speed.Y = 0f;  // (one.Y = 0f);
 						if (lerp >= 0.8) {
                             player.StateMachine.State = 0;
@@ -314,8 +314,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 			moveSfx = Audio.Play("event:/game/05_mirror_temple/swapblock_move", base.Center);
 			targetPosition = nodes[nodeIndex];
 			startPosition = base.Position;
-			dirVector = targetPosition - startPosition;
-			lerpVector = dirVector * travelSpeed;
+			Direction = targetPosition - startPosition;
+			lerpVector = Direction * travelSpeed;
 			base.Scene.Tracker.GetEntity<Player>();
 
 			speed = accelerate ? MathHelper.Lerp(travelSpeed * 0.333f, travelSpeed, 0f) : travelSpeed;
