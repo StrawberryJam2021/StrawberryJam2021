@@ -1,4 +1,6 @@
-﻿using Mono.Cecil.Cil;
+﻿using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
+using Monocle;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using System;
@@ -9,7 +11,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    class GroupedParallaxDecal {
+    public class GroupedParallaxDecal : Entity {
+        
+
+        // GroupedParallaxDecal class should have a constructor with params LevelData ld and DecalData dd,
+        public GroupedParallaxDecal(LevelData ld, DecalData dd) {
+
+        }
+
         private static IDetour hook_Level_orig_LoadLevel;
         private static Dictionary<string, GroupedParallaxDecal> ParallaxDecalByGroup; //Key = group name, Value = ParallaxDecalGroupHolder thingy
 
@@ -17,10 +26,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hook_Level_orig_LoadLevel = new ILHook(typeof(Level).GetMethod("orig_LoadLevel", BindingFlags.Public | BindingFlags.Instance), NoTouchy);
             On.Celeste.Level.UnloadLevel += disposeOfParallaxDecalByGroup_Dictionary_Here;
         }
+
+        private static void disposeOfParallaxDecalByGroup_Dictionary_Here(On.Celeste.Level.orig_UnloadLevel orig, Level self) {
+            ParallaxDecalByGroup.;
+        }
+
         public static void Unload() {
             hook_Level_orig_LoadLevel?.Dispose();
             On.Celeste.Level.UnloadLevel -= disposeOfParallaxDecalByGroup_Dictionary_Here;
         }
+
         private static void NoTouchy(ILContext il) {
             ILCursor cursor = new ILCursor(il);
             ILLabel target = null; //required because out target is not always responsive.
@@ -35,7 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         cursor.Emit(OpCodes.Ldarg_0);
                         cursor.Emit(OpCodes.Ldloc, dIndex); //dIndex is absolutely set
                         cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if 
-                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool>>(ImplementCustomDecalToEntitySet);
+                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool>>(TheMethodYouNeedToActuallyWorkWith);
                         cursor.Emit(OpCodes.Brtrue, target);
                     }
                 }
@@ -53,11 +68,30 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        // GroupedParallaxDecal class should have a constructor with params LevelData ld and DecalData dd, as well as a method to add an DecalData to its list and store that Image from that method, as well as its Position relative to the first DecalData added, we'll call this AddDecalToGroup(DecalData newDD)
+        //a method to add an DecalData to its list and store that Image from that method (class? -Ly), as well as its Position relative to the first DecalData added, we'll call this AddDecalToGroup(DecalData newDD)
+        private static bool AddDecalToGroup(DecalData newDD) {
+            return false;
+        }
 
-        private static bool TheMethodYouNeedToActuallyWorkWith(Level level, DecalData data, LevelData levelData) {
+        private static bool TheMethodYouNeedToActuallyWorkWith(Level level, DecalData dd, LevelData ld) {
             //If the conditions are not met to add this to the Grouped Parallax Decal, return false, otherwise determine its group,
             //If its group is found in the ParallaxDecalByGroup dictionary already, run AddDecalToGroup, otherwise construct the GroupedParallaxDecal with that DecalData and add it to the Dictionary by group
+            
+            
+            if (!dd.Texture.Contains("Gameplay/decals/SJGroupedParallaxDecals/")) {
+                return false;
+            }
+
+            //group name is contained in the file path, probably a better way to do this but Idk the file path structure but I know this will work.
+            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("SJGroupedParallaxDecals/") + 26);
+            groupName = groupName.Substring(groupName.IndexOf("/"));
+
+            if (ParallaxDecalByGroup.ContainsKey(groupName)) {
+                AddDecalToGroup(dd);
+            } else {
+                ParallaxDecalByGroup.Add(groupName, new GroupedParallaxDecal(ld, dd));
+            }
+
         }
     }
 }
