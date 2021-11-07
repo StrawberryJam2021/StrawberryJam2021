@@ -21,7 +21,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Depth = isFG ? Depths.FGDecals : Depths.BGDecals;
             Position = dd.Position;
 
-            Image i = (new Image(GFX.Game[dd.Texture])));
+            Image i = new Image(GFX.Game[dd.Texture]);
             i.Position = dd.Position;
             Add(i);
         }
@@ -78,8 +78,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         //a method to add an DecalData to its list and store that Image from that method (class? -Ly), as well as its Position relative to the first DecalData added, we'll call this AddDecalToGroup(DecalData newDD)
-        private static void AddDecalToGroup(GroupedParallaxDecal newDecal) {
-            Add()
+        private static void AddDecalToGroup(GroupedParallaxDecal group, DecalData dd) {
+            Image i = new Image(GFX.Game[dd.Texture]);
+            i.Position = dd.Position - group.Position;
+            group.Add(i);
         }
 
         private static bool TheMethodYouNeedToActuallyWorkWith(Level level, DecalData dd, LevelData ld, bool isFG) {
@@ -96,7 +98,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             groupName = groupName.Substring(groupName.IndexOf("/"));
 
             if (ParallaxDecalByGroup.ContainsKey(groupName)) {
-                AddDecalToGroup(ParallaxDecalByGroup[groupName]);
+                AddDecalToGroup(ParallaxDecalByGroup[groupName], dd);
             } else {
                 ParallaxDecalByGroup.Add(groupName, new GroupedParallaxDecal(ld, dd, isFG));
             }
