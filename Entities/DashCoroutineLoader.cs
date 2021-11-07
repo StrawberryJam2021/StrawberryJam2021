@@ -26,8 +26,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		public static void Load() {
             //On.Celeste.Player.DashCoroutine += ModDashCoroutine;
             MethodInfo m = typeof(Player).GetMethod("DashCoroutine", BindingFlags.NonPublic | BindingFlags.Instance).GetStateMachineTarget();
-            //hook_Player_DashCoroutine = new ILHook(m, ModDashSpeed);
-            hook_Player_DashCoroutine = new ILHook(m, ModDashSpeedNew);
+            hook_Player_DashCoroutine = new ILHook(m, ModDashSpeed);
+            //hook_Player_DashCoroutine = new ILHook(m, ModDashSpeedNew);
             //hook_Player_DashCoroutine = new ILHook(m, SetRidingState);
         }
 
@@ -59,63 +59,32 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             {
                 cursor.Index++; //Move after bne.un.s
                 ILCursor cursor2 = cursor.Clone();
-                ILLabel OurTarget = cursor.MarkLabel();
-                MethodInfo getGrabCheck = typeof(Input).GetProperty("GrabCheck", BindingFlags.Static | BindingFlags.Public).GetGetMethod();
-                if (cursor.TryGotoPrev(MoveType.Before,
-                    instr => instr.MatchCall(getGrabCheck)
-                    //instr => instr.MatchBrfalse(out _)
-                    ))
-                {
-                    //((object) null).GetType();
-                    //if (cursor.MarkLabel().Target.OpCode.ToString().Equals("ldloc.1")) {
-                    //    ((object) null).GetType();
-                    //}
-                    //debugWriteInstrs(cursor.MarkLabel().Target, 30);
+                //ILLabel OurTarget = cursor.MarkLabel();
+                //MethodInfo getGrabCheck = typeof(Input).GetProperty("GrabCheck", BindingFlags.Static | BindingFlags.Public).GetGetMethod();
+                //if (cursor.TryGotoPrev(MoveType.Before,
+                //    instr => instr.MatchCall(getGrabCheck)
+                //    //instr => instr.MatchBrfalse(out _)
+                //    //instr => instr.MatchRet()
+                //    ))
+                //{
+                //    //((object) null).GetType();
 
-                    cursor.Emit(OpCodes.Ldloc, playerIndex);
-                    cursor.EmitDelegate<Func<Player, bool>>(CheckForNewToggleSwapBlocks);
-                    cursor.Emit(OpCodes.Brtrue, OurTarget);
-                }
-                //cursor.GotoLabel(VanillaTarget, MoveType.Before);
+                //    debugWriteInstrs(cursor.MarkLabel().Target, 20);
+                //    cursor.Index += 5;
+                //    debugWriteInstrs(cursor.MarkLabel().Target, 20);
+                //    for (int i = 0; i < 6; i++) {
+                //        cursor.Remove();
+                //    }
+                //    debugWriteInstrs(cursor.MarkLabel().Target, 20);
+
+                //    cursor.Emit(OpCodes.Ldloc, playerIndex);
+                //    cursor.EmitDelegate<Func<Player, bool>>(CheckForNewToggleSwapBlocks);
+                //    cursor.Emit(OpCodes.Brtrue, OurTarget);
+                //}
                 MethodInfo getOne = typeof(Vector2).GetProperty("One", BindingFlags.Static | BindingFlags.Public).GetGetMethod();
                 if (cursor2.TryGotoNext(MoveType.After, instr => instr.MatchCall(getOne))) {
                     cursor2.Emit(OpCodes.Ldloc, playerIndex);
                     cursor2.EmitDelegate<Func<Vector2, Player, Vector2>>(ModifyDashSpeedWithSwapBlock); 
-                }
-            }
-        }
-
-        private static void SetRidingState(ILContext il) {
-            ILCursor cursor = new ILCursor(il);
-            int playerIndex = 1; 
-            MethodInfo getOne = typeof(Vector2).GetProperty("One", BindingFlags.Static | BindingFlags.Public).GetGetMethod();
-            //MethodInfo getGrabCheck = typeof(Input).GetProperty("GrabCheck", BindingFlags.Static | BindingFlags.Public).GetGetMethod();
-            //if (cursor.TryGotoNext(MoveType.Before, instr => instr.MatchBneUn(out _), //VanillaTarget is now well-defined
-            //    instr => instr.MatchLdloc(out playerIndex), // playerIndex is now well-defined
-            //    instr => instr.MatchLdfld<Player>("StateMachine"), instr => instr.MatchLdcI4(1)))
-            if (cursor.TryGotoNext(MoveType.After,
-                instr => instr.MatchRet(),
-                instr => instr.MatchLdarg(out _),
-                instr => instr.MatchCall(getOne)
-                //instr => instr.MatchStfld(out _)
-                //instr => instr.MatchLdloc(out playerIndex)
-                ))
-            //if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCall(getGrabCheck), //VanillaTarget is now well-defined
-            //    instr => instr.MatchBrfalse(out _),
-            //    instr => instr.MatchLdloc(out playerIndex)))
-            {
-                //((object) null).GetType();
-                //cursor.Index--;
-                //ILCursor cursorFixed = cursor.Clone();
-                //cursorFixed.Emit(OpCodes.Ldloc, playerIndex);
-                //cursorFixed.EmitDelegate<Func<Player, bool>>(CheckForNewToggleSwapBlocks);
-                //cursorFixed.Emit(OpCodes.Brtrue, OurTarget);
-                //cursor.Index++;
-                debugWriteInstrs(cursor.MarkLabel().Target, 10);
-                //if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCall(getOne)))
-                {
-                    cursor.Emit(OpCodes.Ldloc, playerIndex); // Add Player to Stack
-                    cursor.EmitDelegate<Func<Vector2, Player, Vector2>>(ModifyDashSpeedWithSwapBlock); //Modify the code with our NewToggleSwapBlocks
                 }
             }
         }
@@ -174,18 +143,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 ILLabel OurTarget = cursor.MarkLabel();
                 cursor.GotoLabel(VanillaTarget, MoveType.Before);
                 //cursor is now exactly at IL_036f and any code written here will come, crucially, *before* ldarg.0, so any branches to IL_036f will actually branch to our code first.
-                //ILCursor cursor = cursor.Clone();
-                //We want to clone the cursor and leave our first cursor here to operate later.
-                //this is a good practice of making a "safe" hook, only hooking once you know you have all the materials to cleanly hook.
                 MethodInfo getOne = typeof(Vector2).GetProperty("One", BindingFlags.Static | BindingFlags.Public).GetGetMethod();
-                if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCall(getOne))) {
-
-                    debugWriteInstrs(cursor.MarkLabel().Target, 10);
+                if (cursor.TryGotoNext(MoveType.Before, instr => instr.MatchCall(getOne))) {
 
                     //It's hooking time babey
                     cursor.Emit(OpCodes.Ldloc, playerIndex); // Add Player to Stack
                     cursor.EmitDelegate<Func<Player, bool>>(CheckForNewToggleSwapBlocks); // check the code with NewToggleSwapBlocks in mind
                     cursor.Emit(OpCodes.Brtrue, OurTarget); // If player Collides with a NewToggleSwapBlock with direction matching the sign of player Dash Direction, jump back to the code inside the if statement
+
+                    cursor.Index++;
 
                     cursor.Emit(OpCodes.Ldloc, playerIndex); // Add Player to Stack
                     cursor.EmitDelegate<Func<Vector2, Player, Vector2>>(ModifyDashSpeedWithSwapBlock); //Modify the code with our NewToggleSwapBlocks
@@ -194,6 +160,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static bool CheckForNewToggleSwapBlocks(Player player) {
+            //((object) null).GetType();
             if (!(player.DashDir.X != 0f && Input.GrabCheck))
                 return false; // We wanna get rid of this case because it's the initial case that we dont wanna worry about.
             NewToggleSwapBlock ntsb = player.CollideFirst<NewToggleSwapBlock>(player.Position + Vector2.UnitX * Math.Sign(player.DashDir.X)); //Same thing as the SwapBlock but with NewToggleSwapBlock
