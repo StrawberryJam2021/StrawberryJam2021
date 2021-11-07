@@ -13,9 +13,12 @@ using System.Threading.Tasks;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class GroupedParallaxDecal : Entity {
         
-
+        LevelData levelData;
         // GroupedParallaxDecal class should have a constructor with params LevelData ld and DecalData dd,
-        public GroupedParallaxDecal(LevelData ld, DecalData dd) {
+        public GroupedParallaxDecal(LevelData ld, DecalData dd)  {
+            ld = levelData;
+            Image i = (new Image(GFX.Game[dd.Texture])));
+            Add(i.Position);
 
         }
 
