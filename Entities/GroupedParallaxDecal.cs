@@ -28,7 +28,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static IDetour hook_Level_orig_LoadLevel;
         private static Dictionary<string, GroupedParallaxDecal> ParallaxDecalByGroup; //Key = group name, Value = ParallaxDecalGroupHolder thingy
-        private bool isFG;
 
         public static void Load() {
             hook_Level_orig_LoadLevel = new ILHook(typeof(Level).GetMethod("orig_LoadLevel", BindingFlags.Public | BindingFlags.Instance), NoTouchy);
