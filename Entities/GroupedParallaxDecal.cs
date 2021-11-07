@@ -58,7 +58,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         cursor.Emit(OpCodes.Ldloc, dIndex); //dIndex is absolutely set
                         cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if 
                         cursor.Emit(OpCodes.Ldc_I4, 1); 
-                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(TheMethodYouNeedToActuallyWorkWith);
+                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(CheckAndAddDecalToGroup);
                         cursor.Emit(OpCodes.Brtrue, target);
                     }
                 }
@@ -70,7 +70,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         cursor.Emit(OpCodes.Ldloc, dIndex); //dIndex is absolutely set
                         cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if 
                         cursor.Emit(OpCodes.Ldc_I4, 0);
-                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(TheMethodYouNeedToActuallyWorkWith);
+                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(CheckAndAddDecalToGroup);
                         cursor.Emit(OpCodes.Brtrue, target);
                     }
                 }
@@ -84,7 +84,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             group.Add(i);
         }
 
-        private static bool TheMethodYouNeedToActuallyWorkWith(Level level, DecalData dd, LevelData ld, bool isFG) {
+        private static bool CheckAndAddDecalToGroup(Level level, DecalData dd, LevelData ld, bool isFG) {
             //If the conditions are not met to add this to the Grouped Parallax Decal, return false, otherwise determine its group,
             //If its group is found in the ParallaxDecalByGroup dictionary already, run AddDecalToGroup, otherwise construct the GroupedParallaxDecal with that DecalData and add it to the Dictionary by group
             
