@@ -19,7 +19,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             ld = levelData;
 
             Depth = isFG ? Depths.FGDecals : Depths.BGDecals;
-            Position = dd.Position;
             
             Image i = new Image(GFX.Game[dd.Texture]);
             i.Position = dd.Position;
@@ -80,7 +79,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         //a method to add an DecalData to its list and store that Image from that method (class? -Ly), as well as its Position relative to the first DecalData added, we'll call this AddDecalToGroup(DecalData newDD)
         private static void AddDecalToGroup(GroupedParallaxDecal group, DecalData dd) {
             Image i = new Image(GFX.Game[dd.Texture]);
-            i.Position = dd.Position - group.Position;
+            i.Position = group.Position - dd.Position;
             group.Add(i);
         }
 
@@ -89,18 +88,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             //If its group is found in the ParallaxDecalByGroup dictionary already, run AddDecalToGroup, otherwise construct the GroupedParallaxDecal with that DecalData and add it to the Dictionary by group
             
             
-            if (!dd.Texture.Contains("Gameplay/decals/SJGroupedParallaxDecals/")) {
+            if (!dd.Texture.Contains("sjgroupedparallaxdecals")) {
                 return false;
             }
 
+            Logger.Log("GroupedParallaxDecal", dd.Texture);
+
             //group name is contained in the file path, probably a better way to do this but Idk the file path structure but I know this will work.
-            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("SJGroupedParallaxDecals/") + 26); //len("SJGroupedParallaxDecals/") = 26
-            groupName = groupName.Substring(groupName.IndexOf("/"));
+            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 25); //len("sjgroupedparallaxdecals/") = 25
+            groupName = groupName.Substring(0, groupName.IndexOf("/"));
+
+            Logger.Log("GroupedParallaxDecal", groupName);
 
             if (ParallaxDecalByGroup.ContainsKey(groupName)) {
                 AddDecalToGroup(ParallaxDecalByGroup[groupName], dd);
             } else {
                 ParallaxDecalByGroup.Add(groupName, new GroupedParallaxDecal(ld, dd, isFG));
+                
             }
             return true;
         }
