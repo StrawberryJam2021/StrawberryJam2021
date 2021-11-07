@@ -20,7 +20,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Depth = isFG ? Depths.FGDecals : Depths.BGDecals;
             Position = dd.Position;
-
+            
             Image i = new Image(GFX.Game[dd.Texture]);
             i.Position = dd.Position;
             Add(i);
@@ -30,6 +30,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static Dictionary<string, GroupedParallaxDecal> ParallaxDecalByGroup; //Key = group name, Value = ParallaxDecalGroupHolder thingy
 
         public static void Load() {
+            ParallaxDecalByGroup = new Dictionary<string, GroupedParallaxDecal>();
             hook_Level_orig_LoadLevel = new ILHook(typeof(Level).GetMethod("orig_LoadLevel", BindingFlags.Public | BindingFlags.Instance), NoTouchy);
             On.Celeste.Level.UnloadLevel += disposeOfParallaxDecalByGroup_Dictionary_Here;
         }
@@ -93,7 +94,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             //group name is contained in the file path, probably a better way to do this but Idk the file path structure but I know this will work.
-            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("SJGroupedParallaxDecals/") + 26);
+            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("SJGroupedParallaxDecals/") + 26); //len("SJGroupedParallaxDecals/") = 26
             groupName = groupName.Substring(groupName.IndexOf("/"));
 
             if (ParallaxDecalByGroup.ContainsKey(groupName)) {
