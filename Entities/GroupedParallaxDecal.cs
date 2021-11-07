@@ -15,15 +15,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         
         LevelData levelData;
         // GroupedParallaxDecal class should have a constructor with params LevelData ld and DecalData dd,
-        public GroupedParallaxDecal(LevelData ld, DecalData dd)  {
+        public GroupedParallaxDecal(LevelData ld, DecalData dd, bool isFG)  {
             ld = levelData;
-            Image i = (new Image(GFX.Game[dd.Texture])));
-            Add(i.Position);
 
+            Depth = isFG ? Depths.FGDecals : Depths.BGDecals;
+            Position = dd.Position;
+
+            Image i = (new Image(GFX.Game[dd.Texture])));
+            i.Position = dd.Position;
+            Add(i);
         }
 
         private static IDetour hook_Level_orig_LoadLevel;
         private static Dictionary<string, GroupedParallaxDecal> ParallaxDecalByGroup; //Key = group name, Value = ParallaxDecalGroupHolder thingy
+        private bool isFG;
 
         public static void Load() {
             hook_Level_orig_LoadLevel = new ILHook(typeof(Level).GetMethod("orig_LoadLevel", BindingFlags.Public | BindingFlags.Instance), NoTouchy);
@@ -52,7 +57,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         cursor.Emit(OpCodes.Ldarg_0);
                         cursor.Emit(OpCodes.Ldloc, dIndex); //dIndex is absolutely set
                         cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if 
-                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool>>(TheMethodYouNeedToActuallyWorkWith);
+                        cursor.Emit(OpCodes.Ldc_I4, 1); 
+                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(TheMethodYouNeedToActuallyWorkWith);
                         cursor.Emit(OpCodes.Brtrue, target);
                     }
                 }
@@ -63,7 +69,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         cursor.Emit(OpCodes.Ldarg_0);
                         cursor.Emit(OpCodes.Ldloc, dIndex); //dIndex is absolutely set
                         cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if 
-                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool>>(TheMethodYouNeedToActuallyWorkWith);
+                        cursor.Emit(OpCodes.Ldc_I4, 0);
+                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(TheMethodYouNeedToActuallyWorkWith);
                         cursor.Emit(OpCodes.Brtrue, target);
                     }
                 }
@@ -71,11 +78,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         //a method to add an DecalData to its list and store that Image from that method (class? -Ly), as well as its Position relative to the first DecalData added, we'll call this AddDecalToGroup(DecalData newDD)
-        private static bool AddDecalToGroup(DecalData newDD) {
-            return false;
+        private static void AddDecalToGroup(GroupedParallaxDecal newDecal) {
+            Add()
         }
 
-        private static bool TheMethodYouNeedToActuallyWorkWith(Level level, DecalData dd, LevelData ld) {
+        private static bool TheMethodYouNeedToActuallyWorkWith(Level level, DecalData dd, LevelData ld, bool isFG) {
             //If the conditions are not met to add this to the Grouped Parallax Decal, return false, otherwise determine its group,
             //If its group is found in the ParallaxDecalByGroup dictionary already, run AddDecalToGroup, otherwise construct the GroupedParallaxDecal with that DecalData and add it to the Dictionary by group
             
@@ -89,9 +96,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             groupName = groupName.Substring(groupName.IndexOf("/"));
 
             if (ParallaxDecalByGroup.ContainsKey(groupName)) {
-                AddDecalToGroup(dd);
+                AddDecalToGroup(ParallaxDecalByGroup[groupName]);
             } else {
-                ParallaxDecalByGroup.Add(groupName, new GroupedParallaxDecal(ld, dd));
+                ParallaxDecalByGroup.Add(groupName, new GroupedParallaxDecal(ld, dd, isFG));
             }
             return true;
         }
