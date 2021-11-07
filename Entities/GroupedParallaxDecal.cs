@@ -28,7 +28,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void disposeOfParallaxDecalByGroup_Dictionary_Here(On.Celeste.Level.orig_UnloadLevel orig, Level self) {
-            ParallaxDecalByGroup.;
+            ParallaxDecalByGroup.Clear();
         }
 
         public static void Unload() {
@@ -42,7 +42,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             int lIndex = -1; //LevelData Index
             int dIndex = -1; //DecalData Index
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCallvirt<Session>("get_LevelData"), i2 => i2.MatchStloc(out lIndex))) {
-                cursor.EmitDelegate<Action>(() => { idIntegerForDecalEntities = 0; });
                 if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdfld<LevelData>("FgDecals")) && cursor.TryGotoNext(MoveType.After, instr => instr.MatchStloc(out int _), instr => instr.MatchBr(out target))) {
                     //brtrue <target> is now our free "continue" operator
                     if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchStloc(out dIndex))) //it is safe to assume that since we have retrieved the stloc.s X, that that will remain consistent, since it is within the context of the function running it.
@@ -91,7 +90,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             } else {
                 ParallaxDecalByGroup.Add(groupName, new GroupedParallaxDecal(ld, dd));
             }
-
+            return true;
         }
     }
 }
