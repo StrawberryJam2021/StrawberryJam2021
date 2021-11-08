@@ -40,10 +40,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
 
-            Image i = new(GFX.Game["decals/" + path]);
-            i.Position = new(0,0);
-            i.CenterOrigin();
-            Add(i);
+            AddDecalToGroup(this, dd);
         }
 
         public override void Render() {
