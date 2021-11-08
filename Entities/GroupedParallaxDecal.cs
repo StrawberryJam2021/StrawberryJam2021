@@ -30,23 +30,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             DecalInfo dInfo = DecalRegistry.RegisteredDecals[path];
 
-            Logger.Log("GroupedParallaxDecal", "dInfo: " + (dInfo.CustomProperties is null ? "Not Found" : "Found"));
-
-            KeyValuePair<string, System.Xml.XmlAttributeCollection> something = dInfo.CustomProperties.Find(x => {
-                Logger.Log("GroupedParallaxDecal", "Checking Property: " + x.Key);
-                return x.Key.Equals("parallax");
-            });
-            Logger.Log("GroupedParallaxDecal", "KeyValue Key: " + (something.Key is null ? "Not Found" : "Found"));
-            Logger.Log("GroupedParallaxDecal", "XML Parallax Node: " + (something.Value is null ? "Not Found" : "Found"));
-            foreach (XmlAttribute x in something.Value) {
-                Logger.Log("GroupedParallaxDecal", "Attribute: " + (x.Name));
+            //there's two relevant attributes to parallaxing: depth and parallax amount
+            //do this way instead of using something like List.Find(...) because most parallaxed decals only have two xml attributes, and we need both of them.
+            foreach (KeyValuePair<string, XmlAttributeCollection> xmlAC in dInfo.CustomProperties) {
+                if (xmlAC.Key.Equals("parallax")) {
+                    parallaxAmount = float.Parse(xmlAC.Value["amount"].Value);
+                } else if (xmlAC.Key.Equals("depth")) {
+                    Depth = int.Parse(xmlAC.Value["value"].Value);
+                }
             }
-            Logger.Log("GroupedParallaxDecal", "Amount (Tag): " + something.Value["amount"] is not null ? "Found" : "Not Found");
-            Logger.Log("GroupedParallaxDecal", "Amount (Value): " + something.Value["amount"].Value is not null ? "Found" : "Not Found");
-            parallaxAmount = float.Parse(something.Value["amount"].Value);
-            Logger.Log("GroupedParallaxDecal", "Amount: " + parallaxAmount);
 
-            Depth = isFG ? Depths.FGDecals : Depths.BGDecals;
             Image i = new(GFX.Game["decals/" + path]);
             i.Position = new(0,0);
             i.CenterOrigin();
