@@ -34,7 +34,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Depth = isFG ? Depths.FGDecals : Depths.BGDecals;
 
             //there's two relevant attributes to parallaxing: depth and parallax amount
-            //do this way instead of using something like List.Find(...) because most parallaxed decals have exactly two decal attributes, and we need both of them.
+            //most parallaxed decals have exactly two decal attributes, and we need both of them (and we only support those two of them anyway), so looping through the list isn't a bad way to do this
             foreach (KeyValuePair<string, XmlAttributeCollection> xmlAC in dInfo.CustomProperties) {
                 if (xmlAC.Key.Equals("parallax")) {
                     parallaxAmount = float.Parse(xmlAC.Value["amount"].Value);
