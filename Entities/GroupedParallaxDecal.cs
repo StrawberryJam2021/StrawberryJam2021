@@ -24,10 +24,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public GroupedParallaxDecal(LevelData ld, DecalData dd, bool isFG): base(dd.Position)  {
             ld = levelData;
             string path = dd.Texture.Substring(0, dd.Texture.Length - 4).Trim();
+
             Logger.Log("GroupedParallaxDecal", "Path: " + dd.Texture);
             Logger.Log("GroupedParallaxDecal", "Path Length: " + path.Length);
+
             DecalInfo dInfo = DecalRegistry.RegisteredDecals[path];
+
             Logger.Log("GroupedParallaxDecal", "dInfo: " + (dInfo.CustomProperties is null ? "Not Found" : "Found"));
+
             KeyValuePair<string, System.Xml.XmlAttributeCollection> something = dInfo.CustomProperties.Find(x => {
                 Logger.Log("GroupedParallaxDecal", "Checking Property: " + x.Key);
                 return x.Key.Equals("parallax");
@@ -41,6 +45,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Logger.Log("GroupedParallaxDecal", "Amount (Value): " + something.Value["amount"].Value is not null ? "Found" : "Not Found");
             parallaxAmount = float.Parse(something.Value["amount"].Value);
             Logger.Log("GroupedParallaxDecal", "Amount: " + parallaxAmount);
+
             Depth = isFG ? Depths.FGDecals : Depths.BGDecals;
             Image i = new(GFX.Game["decals/" + path]);
             i.Position = new(0,0);
@@ -130,7 +135,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             
             //group name is contained in the file path, probably a better way to do this but Idk the file path structure but I know this will work.
-            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 24); //len("sjgroupedparallaxdecals/") = 25
+            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 24); //len("sjgroupedparallaxdecals/") = 24
             groupName = groupName.Substring(0, groupName.IndexOf("/"));
 
             Logger.Log("GroupedParallaxDecal", dd.Texture);
