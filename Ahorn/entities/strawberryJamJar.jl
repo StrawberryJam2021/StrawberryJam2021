@@ -2,7 +2,8 @@ module SJ2021StrawberryJamJar
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/StrawberryJamJar" StrawberryJamJar(x::Integer, y::Integer, map::String="Celeste/1-ForsakenCity", sprite::String="trailer")
+@mapdef Entity "SJ2021/StrawberryJamJar" StrawberryJamJar(x::Integer, y::Integer, map::String="Celeste/1-ForsakenCity", sprite::String="trailer",
+    returnToLobbyMode::String="SetReturnToHere", allowSaving::Bool=true)
 
 const placements = Ahorn.PlacementDict(
     "Strawberry Jam Jar (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
@@ -11,7 +12,8 @@ const placements = Ahorn.PlacementDict(
 )
 
 Ahorn.editingOptions(entity::StrawberryJamJar) = Dict{String, Any}(
-    "sprite" => String["trailer"]
+    "sprite" => String["trailer"],
+    "returnToLobbyMode" => String["SetReturnToHere", "RemoveReturn", "DoNotChangeReturn"]
 )
 
 function Ahorn.selection(entity::StrawberryJamJar)
