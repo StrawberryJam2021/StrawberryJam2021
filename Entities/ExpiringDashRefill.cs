@@ -52,9 +52,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public static void UpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player player, bool applyGravity) {
-            if (player.Scene.Tracker.GetEntity<ExpiringDashRefill>() is ExpiringDashRefill refill)
-                if (refill.flash)
+            if (player.Scene.Tracker.GetEntity<ExpiringDashRefill>() is ExpiringDashRefill refill) {
+                if (refill.flash) {
                     player.OverrideHairColor = Player.UsedHairColor;
+                }
+            }
 
             orig.Invoke(player, applyGravity);
         }
