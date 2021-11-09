@@ -15,14 +15,12 @@ using static Celeste.Mod.DecalRegistry;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class GroupedParallaxDecal : Entity {
         
-        LevelData levelData;
 
         private float parallaxAmount;
 
 
         // GroupedParallaxDecal class should have a constructor with params LevelData ld and DecalData dd,
-        public GroupedParallaxDecal(LevelData ld, DecalData dd, bool isFG): base(dd.Position)  {
-            ld = levelData;
+        public GroupedParallaxDecal(DecalData dd, bool isFG): base(dd.Position)  {
             string path = dd.Texture.Substring(0, dd.Texture.Length - 4).Trim();
 
             DecalInfo dInfo = DecalRegistry.RegisteredDecals[path]; //all decals in a group should have the same properties anyway.
@@ -137,7 +135,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (ParallaxDecalByGroup.ContainsKey(groupName)) {
                 AddDecalToGroup(ParallaxDecalByGroup[groupName], dd);
             } else {
-                GroupedParallaxDecal groupeddecal = new(ld, dd, isFG);
+                GroupedParallaxDecal groupeddecal = new(dd, isFG);
                 ParallaxDecalByGroup.Add(groupName, groupeddecal);
                 level.Add(groupeddecal);
             }
