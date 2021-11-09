@@ -121,17 +121,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static bool CheckAndAddDecalToGroup(Level level, DecalData dd, LevelData ld, bool isFG) {
             //If the conditions are not met to add this to the Grouped Parallax Decal, return false, otherwise determine its group,
             //If its group is found in the ParallaxDecalByGroup dictionary already, run AddDecalToGroup, otherwise construct the GroupedParallaxDecal with that DecalData and add it to the Dictionary by group
-            
-            if (!dd.Texture.Contains("sjgroupedparallaxdecals")) {
-                
-
+            if (!dd.Texture.Contains("sjgroupedparallaxdecals"))
                 return false;
-            }
             
             //group name is contained in the file path, probably a better way to do this but Idk the file path structure but I know this will work.
             string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 24); //len("sjgroupedparallaxdecals/") = 24
-            groupName = groupName.Substring(0, groupName.IndexOf("/"));
-
+            groupName = groupName.Substring(0, groupName.LastIndexOf("/"));
             if (ParallaxDecalByGroup.ContainsKey(groupName)) {
                 AddDecalToGroup(ParallaxDecalByGroup[groupName], dd);
             } else {
@@ -139,6 +134,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 ParallaxDecalByGroup.Add(groupName, groupeddecal);
                 level.Add(groupeddecal);
             }
+
             return true;
         }
     }
