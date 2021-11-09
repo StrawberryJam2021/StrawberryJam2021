@@ -24,8 +24,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Depth = isFG ? Depths.FGDecals : Depths.BGDecals; //Set this here incase there is no Depth value in the DecalRegistry
 
             //there's two relevant attributes to parallaxing: depth and parallax amount
-            //most parallaxed decals have exactly two decal attributes, and we need both of them (and we only support those two of them anyway)
-            //so looping through the list isn't a bad way to do this
+            //most parallaxed decals have exactly two decal attributes, and we need both of them (and we only support those two anyway)
+            //which means looping through the list isn't a bad way to do this
             foreach (KeyValuePair<string, XmlAttributeCollection> xmlAC in dInfo.CustomProperties) {
                 if (xmlAC.Key.Equals("parallax")) {
                     parallaxAmount = float.Parse(xmlAC.Value["amount"].Value);
@@ -48,7 +48,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static IDetour hook_Level_orig_LoadLevel;
-        private static Dictionary<string, GroupedParallaxDecal> ParallaxDecalByGroup; //Key = group name, Value = ParallaxDecalGroupHolder thingy
+        private static Dictionary<string, GroupedParallaxDecal> ParallaxDecalByGroup;
 
         public static void Load() {
             ParallaxDecalByGroup = new Dictionary<string, GroupedParallaxDecal>();
