@@ -22,14 +22,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         // GroupedParallaxDecal class should have a constructor with params LevelData ld and DecalData dd,
         public GroupedParallaxDecal(DecalData dd, bool isFG): base(dd.Position)  {
             string path = dd.Texture.Substring(0, dd.Texture.Length - 4).Trim();
-
-            DecalInfo dInfo = DecalRegistry.RegisteredDecals[path]; //all decals in a group should have the same properties anyway.
-
-            //Set this here incase there is no Depth value in the DecalRegistry
-            Depth = isFG ? Depths.FGDecals : Depths.BGDecals;
+            DecalInfo dInfo = DecalRegistry.RegisteredDecals[path]; //all decals in a group should have the same properties, so we can just load the details for the first one.
+            Depth = isFG ? Depths.FGDecals : Depths.BGDecals; //Set this here incase there is no Depth value in the DecalRegistry
 
             //there's two relevant attributes to parallaxing: depth and parallax amount
-            //most parallaxed decals have exactly two decal attributes, and we need both of them (and we only support those two of them anyway), so looping through the list isn't a bad way to do this
+            //most parallaxed decals have exactly two decal attributes, and we need both of them (and we only support those two of them anyway)
+            //so looping through the list isn't a bad way to do this
             foreach (KeyValuePair<string, XmlAttributeCollection> xmlAC in dInfo.CustomProperties) {
                 if (xmlAC.Key.Equals("parallax")) {
                     parallaxAmount = float.Parse(xmlAC.Value["amount"].Value);
