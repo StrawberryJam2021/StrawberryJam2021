@@ -60,12 +60,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void ClearParallaxDecalsDict(On.Celeste.Level.orig_UnloadLevel orig, Level self) {
-            Logger.Log("GroupedParallaxDecal", "Cleared Parallax Groups Dictionary (UnloadLevel)");
             ParallaxDecalByGroup.Clear();
         }
 
         private static void ClearParallaxDecalsDict(On.Celeste.Level.orig_End orig, Level self) {
-            Logger.Log("GroupedParallaxDecal", "Cleared Parallax Groups Dictionary (End)");
             ParallaxDecalByGroup.Clear();
         }
 
@@ -122,8 +120,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!dd.Texture.Contains("sjgroupedparallaxdecals"))
                 return false;
             
-            //group name is contained in the file path, probably a better way to do this but Idk the file path structure but I know this will work.
-            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 24); //len("sjgroupedparallaxdecals/") = 24
+            //Is there a better way to do this?
+            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 24); //len("sjgroupedparallaxdecals/") = 24 (I'm not sure if this is faster)
             groupName = groupName.Substring(0, groupName.LastIndexOf("/"));
             if (ParallaxDecalByGroup.ContainsKey(groupName)) {
                 AddDecalToGroup(ParallaxDecalByGroup[groupName], dd);
