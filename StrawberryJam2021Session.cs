@@ -1,5 +1,4 @@
 using Celeste.Mod.StrawberryJam2021.Entities;
-using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Session : EverestModuleSession {
@@ -15,6 +14,5 @@ namespace Celeste.Mod.StrawberryJam2021 {
         public bool SkateboardEnabled = false;
 
         public DashSequenceDisplay DashSequenceDisplay;
-
     }
 }
