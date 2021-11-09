@@ -120,8 +120,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!dd.Texture.Contains("sjgroupedparallaxdecals"))
                 return false;
             
-            //Is there a better way to do this?
-            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 24); //len("sjgroupedparallaxdecals/") = 24 (I'm not sure if this is faster)
+            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 24); //len("sjgroupedparallaxdecals/") = 24
             groupName = groupName.Substring(0, groupName.LastIndexOf("/"));
             if (ParallaxDecalByGroup.ContainsKey(groupName)) {
                 AddDecalToGroup(ParallaxDecalByGroup[groupName], dd);
