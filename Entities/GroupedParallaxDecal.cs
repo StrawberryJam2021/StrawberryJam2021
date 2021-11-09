@@ -15,9 +15,7 @@ using static Celeste.Mod.DecalRegistry;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class GroupedParallaxDecal : Entity {
         
-
         private float parallaxAmount;
-
 
         // GroupedParallaxDecal class should have a constructor with params LevelData ld and DecalData dd,
         public GroupedParallaxDecal(DecalData dd, bool isFG): base(dd.Position)  {
@@ -129,7 +127,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 ParallaxDecalByGroup.Add(groupName, groupeddecal);
                 level.Add(groupeddecal);
             }
-
             return true;
         }
     }
