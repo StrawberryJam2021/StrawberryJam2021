@@ -18,7 +18,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float parallaxAmount;
 
         // GroupedParallaxDecal class should have a constructor with params LevelData ld and DecalData dd,
-        public GroupedParallaxDecal(DecalData dd, bool isFG): base(dd.Position)  {
+        public GroupedParallaxDecal(LevelData ld, DecalData dd, bool isFG, Vector2 offset): base(offset)  {
             string path = dd.Texture.Substring(0, dd.Texture.Length - 4).Trim();
             DecalInfo dInfo = DecalRegistry.RegisteredDecals[path]; //all decals in a group should have the same properties, so we can just load the details for the first one.
             Depth = isFG ? Depths.FGDecals : Depths.BGDecals; //Set this here incase there is no Depth value in the DecalRegistry
@@ -33,8 +33,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Depth = int.Parse(xmlAC.Value["value"].Value);
                 }
             }
-
-            AddDecalToGroup(this, dd);
+            Rectangle roomBounds = ld.Bounds;
+            AddDecalToGroup(this, dd, new Vector2(roomBounds.X, roomBounds.Y));
         }
 
         public override void Render() {
@@ -106,9 +106,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         //a method to add a DecalData to its list and store that Image from that method (class? -Ly), as well as its Position relative to the first DecalData added, we'll call this AddDecalToGroup(DecalData newDD)
-        private static void AddDecalToGroup(GroupedParallaxDecal group, DecalData dd) {
+        private static void AddDecalToGroup(GroupedParallaxDecal group, DecalData dd, Vector2 offset) {
             Image i = new(GFX.Game["decals/" + dd.Texture.Substring(0, dd.Texture.Length - 4)]);
-            i.Position = dd.Position - group.Position;
+            i.Position = dd.Position + offset - group.Position;
             i.CenterOrigin();
             group.Add(i);
         }
@@ -118,16 +118,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             //If its group is found in the ParallaxDecalByGroup dictionary already, run AddDecalToGroup, otherwise construct the GroupedParallaxDecal with that DecalData and add it to the Dictionary by group
             if (!dd.Texture.Contains("sjgroupedparallaxdecals"))
                 return false;
-            
             string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 24); //len("sjgroupedparallaxdecals/") = 24
             groupName = groupName.Substring(0, groupName.LastIndexOf("/"));
             if (ParallaxDecalByGroup.ContainsKey(groupName)) {
-                AddDecalToGroup(ParallaxDecalByGroup[groupName], dd);
+                Rectangle roomBounds = ld.Bounds;
+                AddDecalToGroup(ParallaxDecalByGroup[groupName], dd, new Vector2(roomBounds.X, roomBounds.Y));
             } else {
-                GroupedParallaxDecal groupeddecal = new(dd, isFG);
+                Rectangle roomBounds = ld.Bounds;
+                GroupedParallaxDecal groupeddecal = new(ld, dd, isFG, new Vector2(roomBounds.X + roomBounds.Width / 2, roomBounds.Y + roomBounds.Height / 2));
                 ParallaxDecalByGroup.Add(groupName, groupeddecal);
                 level.Add(groupeddecal);
             }
+            
             return true;
         }
     }
