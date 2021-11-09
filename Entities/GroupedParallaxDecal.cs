@@ -52,7 +52,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void Load() {
             ParallaxDecalByGroup = new Dictionary<string, GroupedParallaxDecal>();
-            hook_Level_orig_LoadLevel = new ILHook(typeof(Level).GetMethod("orig_LoadLevel", BindingFlags.Public | BindingFlags.Instance), NoTouchy);
+            hook_Level_orig_LoadLevel = new ILHook(typeof(Level).GetMethod("orig_LoadLevel", BindingFlags.Public | BindingFlags.Instance), MakeParallaxGroupsIL);
             On.Celeste.Level.UnloadLevel += ClearParallaxDecalsDict;
             On.Celeste.Level.End += ClearParallaxDecalsDict;
         }
@@ -71,7 +71,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Level.End -= ClearParallaxDecalsDict;
         }
 
-        private static void NoTouchy(ILContext il) {
+        //Viv wrote this part. Viv named the method "NoTouchy" so I haven't.
+        private static void MakeParallaxGroupsIL(ILContext il) {
             ILCursor cursor = new ILCursor(il);
             ILLabel target = null; //required because out target is not always responsive.
             int lIndex = -1; //LevelData Index
@@ -85,7 +86,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         cursor.Emit(OpCodes.Ldloc, dIndex); //dIndex is absolutely set
                         cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if 
                         cursor.Emit(OpCodes.Ldc_I4, 1); 
-                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(CheckAndAddDecalToGroup);
+                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(MakeParallaxGroup);
                         cursor.Emit(OpCodes.Brtrue, target);
                     }
                 }
@@ -97,14 +98,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         cursor.Emit(OpCodes.Ldloc, dIndex); //dIndex is absolutely set
                         cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if 
                         cursor.Emit(OpCodes.Ldc_I4, 0);
-                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(CheckAndAddDecalToGroup);
+                        cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(MakeParallaxGroup);
                         cursor.Emit(OpCodes.Brtrue, target);
                     }
                 }
             }
         }
 
-        //a method to add an DecalData to its list and store that Image from that method (class? -Ly), as well as its Position relative to the first DecalData added, we'll call this AddDecalToGroup(DecalData newDD)
+        //a method to add a DecalData to its list and store that Image from that method (class? -Ly), as well as its Position relative to the first DecalData added, we'll call this AddDecalToGroup(DecalData newDD)
         private static void AddDecalToGroup(GroupedParallaxDecal group, DecalData dd) {
             Image i = new(GFX.Game["decals/" + dd.Texture.Substring(0, dd.Texture.Length - 4)]);
             i.Position = dd.Position - group.Position;
@@ -112,7 +113,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             group.Add(i);
         }
 
-        private static bool CheckAndAddDecalToGroup(Level level, DecalData dd, LevelData ld, bool isFG) {
+        private static bool MakeParallaxGroup(Level level, DecalData dd, LevelData ld, bool isFG) {
             //If the conditions are not met to add this to the Grouped Parallax Decal, return false, otherwise determine its group,
             //If its group is found in the ParallaxDecalByGroup dictionary already, run AddDecalToGroup, otherwise construct the GroupedParallaxDecal with that DecalData and add it to the Dictionary by group
             if (!dd.Texture.Contains("sjgroupedparallaxdecals"))
