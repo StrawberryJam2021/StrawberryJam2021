@@ -56,7 +56,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Level.UnloadLevel += ClearParallaxDecalsDict;
             On.Celeste.Level.End += ClearParallaxDecalsDict;
             On.Celeste.Level.TransitionTo += ClearParallaxDecalsDict;
-
         }
 
         private static void ClearParallaxDecalsDict(On.Celeste.Level.orig_TransitionTo orig, Level self, LevelData next, Vector2 direction) {
@@ -115,7 +114,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        //a method to add a DecalData to its list and store that Image from that method (class? -Ly), as well as its Position relative to the first DecalData added, we'll call this AddDecalToGroup(DecalData newDD)
         private static void AddDecalToGroup(GroupedParallaxDecal group, DecalData dd, Rectangle roomBounds) {
             Image i = new(GFX.Game["decals/" + dd.Texture.Substring(0, dd.Texture.Length - 4)]);
             i.Position = dd.Position + new Vector2(roomBounds.X, roomBounds.Y) - group.Position;
