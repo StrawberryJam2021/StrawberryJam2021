@@ -25,9 +25,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             ld = levelData;
             string path = dd.Texture.Substring(0, dd.Texture.Length - 4).Trim();
 
-            Logger.Log("GroupedParallaxDecal", "Path: " + dd.Texture);
-            Logger.Log("GroupedParallaxDecal", "Path Length: " + path.Length);
-
             DecalInfo dInfo = DecalRegistry.RegisteredDecals[path]; //all decals in a group should have the same properties anyway.
 
             //Set this here incase there is no Depth value in the DecalRegistry
@@ -120,7 +117,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Image i = new(GFX.Game["decals/" + dd.Texture.Substring(0, dd.Texture.Length - 4)]);
             i.Position = dd.Position - group.Position;
             i.CenterOrigin();
-            Logger.Log("GroupedParallaxDecal", i.Position.X + "|" + i.Position.Y);
             group.Add(i);
         }
 
@@ -129,7 +125,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             //If its group is found in the ParallaxDecalByGroup dictionary already, run AddDecalToGroup, otherwise construct the GroupedParallaxDecal with that DecalData and add it to the Dictionary by group
             
             if (!dd.Texture.Contains("sjgroupedparallaxdecals")) {
-                Logger.Log("GroupedParallaxDecal", dd.Texture);
                 
 
                 return false;
@@ -138,9 +133,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             //group name is contained in the file path, probably a better way to do this but Idk the file path structure but I know this will work.
             string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 24); //len("sjgroupedparallaxdecals/") = 24
             groupName = groupName.Substring(0, groupName.IndexOf("/"));
-
-            Logger.Log("GroupedParallaxDecal", dd.Texture);
-            Logger.Log("GroupedParallaxDecal", groupName);
 
             if (ParallaxDecalByGroup.ContainsKey(groupName)) {
                 AddDecalToGroup(ParallaxDecalByGroup[groupName], dd);
