@@ -58,10 +58,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void ClearParallaxDecalsDict(On.Celeste.Level.orig_UnloadLevel orig, Level self) {
+            orig(self);
             ParallaxDecalByGroup.Clear();
         }
 
         private static void ClearParallaxDecalsDict(On.Celeste.Level.orig_End orig, Level self) {
+            orig(self);
             ParallaxDecalByGroup.Clear();
         }
 
@@ -85,7 +87,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         cursor.Emit(OpCodes.Ldarg_0);
                         cursor.Emit(OpCodes.Ldloc, dIndex); //dIndex is absolutely set
                         cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if 
-                        cursor.Emit(OpCodes.Ldc_I4, 1); 
+                        cursor.Emit(OpCodes.Ldc_I4_1); 
                         cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(MakeParallaxGroup);
                         cursor.Emit(OpCodes.Brtrue, target);
                     }
@@ -97,7 +99,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         cursor.Emit(OpCodes.Ldarg_0);
                         cursor.Emit(OpCodes.Ldloc, dIndex); //dIndex is absolutely set
                         cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if 
-                        cursor.Emit(OpCodes.Ldc_I4, 0);
+                        cursor.Emit(OpCodes.Ldc_I4_0);
                         cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(MakeParallaxGroup);
                         cursor.Emit(OpCodes.Brtrue, target);
                     }
