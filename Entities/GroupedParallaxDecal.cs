@@ -62,24 +62,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static void Load() {
             ParallaxDecalByGroup = new Dictionary<string, GroupedParallaxDecal>();
             hook_Level_orig_LoadLevel = new ILHook(typeof(Level).GetMethod("orig_LoadLevel", BindingFlags.Public | BindingFlags.Instance), NoTouchy);
-            On.Celeste.Level.UnloadLevel += disposeOfParallaxDecalByGroup_Dictionary_Here;
-            On.Celeste.Level.End += disposeOfParallaxDecalByGroup_Dictionary_Here;
+            On.Celeste.Level.UnloadLevel += ClearParallaxDecalsDict;
+            On.Celeste.Level.End += ClearParallaxDecalsDict;
         }
 
-        private static void disposeOfParallaxDecalByGroup_Dictionary_Here(On.Celeste.Level.orig_UnloadLevel orig, Level self) {
+        private static void ClearParallaxDecalsDict(On.Celeste.Level.orig_UnloadLevel orig, Level self) {
             Logger.Log("GroupedParallaxDecal", "Cleared Parallax Groups Dictionary (UnloadLevel)");
             ParallaxDecalByGroup.Clear();
         }
 
-        private static void disposeOfParallaxDecalByGroup_Dictionary_Here(On.Celeste.Level.orig_End orig, Level self) {
+        private static void ClearParallaxDecalsDict(On.Celeste.Level.orig_End orig, Level self) {
             Logger.Log("GroupedParallaxDecal", "Cleared Parallax Groups Dictionary (End)");
             ParallaxDecalByGroup.Clear();
         }
 
         public static void Unload() {
             hook_Level_orig_LoadLevel?.Dispose();
-            On.Celeste.Level.UnloadLevel -= disposeOfParallaxDecalByGroup_Dictionary_Here;
-            On.Celeste.Level.End -= disposeOfParallaxDecalByGroup_Dictionary_Here;
+            On.Celeste.Level.UnloadLevel -= ClearParallaxDecalsDict;
+            On.Celeste.Level.End -= ClearParallaxDecalsDict;
         }
 
         private static void NoTouchy(ILContext il) {
