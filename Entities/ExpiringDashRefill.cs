@@ -5,6 +5,7 @@ using System.Collections;
 using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
+    [Tracked]
     [CustomEntity("SJ2021/ExpiringDashRefill")]
     public class ExpiringDashRefill : Refill {
         private static readonly MethodInfo RefillRoutine = typeof(Refill).GetMethod("RefillRoutine", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -43,10 +44,29 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool flash;
 
+        public static void Load() {
+            On.Celeste.Player.UpdateHair += UpdateHair;
+        }
+        public static void Unload() {
+            On.Celeste.Player.UpdateHair -= UpdateHair;
+        }
+
+        public static void UpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player player, bool applyGravity) {
+            if (player.Scene.Tracker.GetEntity<ExpiringDashRefill>() is ExpiringDashRefill refill) {
+                if (refill.flash) {
+                    player.OverrideHairColor = Player.UsedHairColor;
+                }
+            }
+
+            orig.Invoke(player, applyGravity);
+        }
+
         public override void Update() {
             base.Update();
 
-            Player player = Scene.Tracker.GetEntity<Player>();
+            if (Scene.Tracker.GetEntity<Player>() is not Player player)
+                return;
+
             player.OverrideHairColor = null;
 
             if (player.Dashes == 0)
@@ -68,8 +88,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 // Flash hair
                 if (Scene.OnInterval(0.05f))
                     flash = !flash;
-
-                player.OverrideHairColor = flash ? null : Player.UsedHairColor;
             }
         }
 

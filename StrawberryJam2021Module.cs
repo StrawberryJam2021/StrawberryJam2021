@@ -55,6 +55,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             MaskedOutline.Load();
             DashSequenceDisplay.Load();
             GroupedParallaxDecal.Load();
+            ExpiringDashRefill.Load();
         }
 
         public override void Unload() {
@@ -89,6 +90,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             RainDensityTrigger.Unload();
             DashSequenceDisplay.Unload();
             GroupedParallaxDecal.Unload();
+            ExpiringDashRefill.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
