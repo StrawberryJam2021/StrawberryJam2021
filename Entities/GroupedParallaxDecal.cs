@@ -38,9 +38,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
-            //adapted from Decal.Render()
+            //adapted from Celeste.Decal.Render()
             Vector2 position = Position;
-            Vector2 vector = (base.Scene as Level).Camera.Position + new Vector2(160f, 90f);
+            Vector2 vector = (base.Scene as Level).Camera.Position + new Vector2(160f, 90f); //magic numbers explicitly taken from original parallaxing code in Celeste.Decal
             Vector2 vector2 = (Position - vector) * parallaxAmount;
             Position += vector2;
             base.Render();
