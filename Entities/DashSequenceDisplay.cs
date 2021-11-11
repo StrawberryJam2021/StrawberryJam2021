@@ -47,7 +47,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             Y = Calc.Approach(Y, y, Engine.DeltaTime * 800f);
 
-            drawlerp = Calc.Approach(drawlerp, currentCodeArrows == null ? 0 : 1, Engine.DeltaTime * 2);
+            bool show = currentCodeArrows != null && StrawberryJam2021Module.Settings.DisplayDashSequence;
+            drawlerp = Calc.Approach(drawlerp, show ? 1 :0 , Engine.DeltaTime * 2);
             lengthLerp = Calc.Approach(lengthLerp, 1, Engine.DeltaTime * 1.5f);
 
             if (currentCodeArrowsAnim != null)
