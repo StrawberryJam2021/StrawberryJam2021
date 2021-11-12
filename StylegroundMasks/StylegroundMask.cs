@@ -23,13 +23,13 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         public static Dictionary<string, VirtualRenderTarget> BgBuffers = new Dictionary<string, VirtualRenderTarget>();
         public static Dictionary<string, VirtualRenderTarget> FgBuffers = new Dictionary<string, VirtualRenderTarget>();
-
         public string[] RenderTags = new string[] { };
         public bool Foreground = false;
         public bool EntityRenderer = false;
         public bool BehindForeground = false;
-        public float AlphaFrom = 0f;
-        public float AlphaTo = 1f;
+        
+        public float AlphaFrom;
+        public float AlphaTo;
 
         private ColorGradeMask coreModeGrading;
 
@@ -162,7 +162,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     }
                 }
             }
-            foreach (var i in bufferDict.Keys.Where((key) => !renderedKeys.Contains(key)).ToList()) {
+            foreach (var i in bufferDict.Keys.Where((key) => !renderedKeys.Contains(key)).ToArray()) {
                 bufferDict[i].Dispose();
                 bufferDict.Remove(i);
             }

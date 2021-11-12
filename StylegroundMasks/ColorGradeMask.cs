@@ -31,10 +31,10 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
          * - (core)
         */
 
-        public string ColorGradeFrom    = "(current)";
-        public string ColorGradeTo      = "(current)";
-        public float FadeFrom = 0f;
-        public float FadeTo = 1f;
+        public string ColorGradeFrom;
+        public string ColorGradeTo;
+        public float FadeFrom;
+        public float FadeTo;
 
         public int BufferIndex;
 
@@ -81,24 +81,24 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchLdnull(),
                 instr => instr.MatchCallOrCallvirt<GraphicsDevice>("SetRenderTarget"))) {
 
-                Logger.Log("FlushelineCollab/ColorGradeMask", $"Adding color grade fade mask rendering at {cursor.Index} in IL for Level.Render");
+                Logger.Log("SJ2021/ColorGradeMask", $"Adding color grade fade mask rendering at {cursor.Index} in IL for Level.Render");
 
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>(level => {
-                    var masks = level.Tracker.GetEntities<ColorGradeMask>().OfType<ColorGradeMask>().Where(mask => mask.Fade == FadeType.Custom).ToList();
-                    if (FadeBuffers.Count > masks.Count) {
-                        for (var i = masks.Count; i < FadeBuffers.Count; i++)
+                    var masks = level.Tracker.GetEntities<ColorGradeMask>().OfType<ColorGradeMask>().Where(mask => mask.Fade == FadeType.Custom).ToArray();
+                    if (FadeBuffers.Count > masks.Length) {
+                        for (var i = masks.Length; i < FadeBuffers.Count; i++)
                             FadeBuffers[i].Dispose();
-                        FadeBuffers.RemoveRange(masks.Count, FadeBuffers.Count - masks.Count);
+                        FadeBuffers.RemoveRange(masks.Length, FadeBuffers.Count - masks.Length);
                     } else {
-                        for (var i = FadeBuffers.Count; i < masks.Count; i++)
+                        for (var i = FadeBuffers.Count; i < masks.Length; i++)
                             FadeBuffers.Add(VirtualContent.CreateRenderTarget($"colorgrademaskfade{i}", 320, 180));
                     }
-                    if (masks.Count > 0) {
+                    if (masks.Length > 0) {
                         var renderTargets = Engine.Graphics.GraphicsDevice.GetRenderTargets();
 
                         Draw.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, level.Camera.Matrix);
-                        for (var i = 0; i < masks.Count; i++) {
+                        for (var i = 0; i < masks.Length; i++) {
                             var mask = masks[i];
                             mask.BufferIndex = i;
 
@@ -128,7 +128,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchStloc(out matrixLocal));
 
             if (matrixLocal == -1) {
-                Logger.Log("FlushelineCollab/ColorGradeMask", $"Failed to find local variable 'matrix' in Level.Render - Color Grade Mask disabled");
+                Logger.Log("SJ2021/ColorGradeMask", $"Failed to find local variable 'matrix' in Level.Render - Color Grade Mask disabled");
                 return;
             }
 
@@ -136,7 +136,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchLdarg(0),
                 instr => instr.MatchLdfld<Level>("Pathfinder"))) {
 
-                Logger.Log("FlushelineCollab/ColorGradeMask", $"Adding color grade mask rendering at {cursor.Index} in IL for Level.Render");
+                Logger.Log("SJ2021/ColorGradeMask", $"Adding color grade mask rendering at {cursor.Index} in IL for Level.Render");
 
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.Emit(OpCodes.Ldloc_S, (byte)matrixLocal);

@@ -34,16 +34,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             AlphaBlendFunction = BlendFunction.Subtract
         };
 
-        public static BlendState Uhh = new BlendState
-	    {
-			ColorSourceBlend = Blend.One,
-			ColorDestinationBlend = Blend.One,
-			ColorBlendFunction = BlendFunction.Max,
-			AlphaSourceBlend = Blend.Zero,
-			AlphaDestinationBlend = Blend.One,
-			AlphaBlendFunction = BlendFunction.Add
-        };
-
         public static BlendState DestinationTransparencySubtractAlpha = new BlendState {
             ColorSourceBlend = Blend.InverseSourceAlpha,
             ColorDestinationBlend = Blend.One,
@@ -83,18 +73,18 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 var lastTargets = Engine.Graphics.GraphicsDevice.GetRenderTargets();
                 var lightingRects = new List<Rectangle>();
 
-                var fadeMasks = lightingMasks.OfType<LightingMask>().Where(mask => mask.Fade == FadeType.Custom).ToList();
-                if (FadeBuffers.Count > fadeMasks.Count) {
-                    for (var i = fadeMasks.Count; i < FadeBuffers.Count; i++)
+                var fadeMasks = lightingMasks.OfType<LightingMask>().Where(mask => mask.Fade == FadeType.Custom).ToArray();
+                if (FadeBuffers.Count > fadeMasks.Length) {
+                    for (var i = fadeMasks.Length; i < FadeBuffers.Count; i++)
                         FadeBuffers[i].Dispose();
-                    FadeBuffers.RemoveRange(fadeMasks.Count, FadeBuffers.Count - fadeMasks.Count);
+                    FadeBuffers.RemoveRange(fadeMasks.Length, FadeBuffers.Count - fadeMasks.Length);
                 } else {
-                    for (var i = FadeBuffers.Count; i < fadeMasks.Count; i++)
+                    for (var i = FadeBuffers.Count; i < fadeMasks.Length; i++)
                         FadeBuffers.Add(VirtualContent.CreateRenderTarget($"lightingmaskfade{i}", 320, 180));
                 }
-                if (fadeMasks.Count > 0) {
+                if (fadeMasks.Length > 0) {
                     Draw.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, level.Camera.Matrix);
-                    for (var i = 0; i < fadeMasks.Count; i++) {
+                    for (var i = 0; i < fadeMasks.Length; i++) {
                         var mask = fadeMasks[i];
                         mask.BufferIndex = i;
 
@@ -120,27 +110,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                             Engine.Graphics.GraphicsDevice.BlendState = InvertAlpha;
                             foreach (var slice in mask.GetMaskSlices())
                                 Draw.SpriteBatch.Draw(GameplayBuffers.Light, slice.Position, slice.Source, Color.White);
-                            //  Draw.Rect(slice.Position, slice.Source.Width, slice.Source.Height, Color.White);
                         }
-
-                        /*
-
-                        Engine.Graphics.GraphicsDevice.SetRenderTarget(GameplayBuffers.TempA);
-                        Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
-                        Engine.Graphics.GraphicsDevice.BlendState = BlendState.AlphaBlend;
-                        foreach (var slice in mask.GetMaskSlices())
-                            Draw.Rect(slice.Position, slice.Source.Width, slice.Source.Height, Color.Lerp(Color.White, Color.Black, lightingFrom));
-                        mask.DrawFadeMask(Color.Lerp(Color.White, Color.Black, lightingTo));
-
-                        Engine.Graphics.GraphicsDevice.SetRenderTarget(GameplayBuffers.Light);
-                        Engine.Graphics.GraphicsDevice.BlendState = Uhh;
-                        foreach (var slice in mask.GetMaskSlices())
-                            Draw.SpriteBatch.Draw(GameplayBuffers.TempA, slice.Position, slice.Source, Color.White);*/
-
-                        /*Engine.Graphics.GraphicsDevice.SetRenderTarget(GameplayBuffers.Light);
-                        Engine.Graphics.GraphicsDevice.BlendState = Uhh;
-                        foreach (var slice in mask.GetMaskSlices())
-                            Draw.Rect(slice.Position, slice.Source.Width, slice.Source.Height, Color.Lerp(Color.White, Color.Black, level.BaseLightingAlpha));*/
                     }
                     Draw.SpriteBatch.End();
                     Engine.Graphics.GraphicsDevice.SetRenderTargets(lastTargets);

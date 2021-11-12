@@ -300,5 +300,5 @@ placements.entities.SJ2021/AllInOneMask.tooltips.colorGradeFrom=The color gradin
 placements.entities.SJ2021/AllInOneMask.tooltips.colorGradeTo=The color grading to use at the end of the fade.
 placements.entities.SJ2021/AllInOneMask.tooltips.lightingFrom=The lighting of the region at the start of the fade. (-1 for current value)
 placements.entities.SJ2021/AllInOneMask.tooltips.lightingTo=The lighting of the region at the end of the fade. (-1 for current value)
-placements.entities.SJ2021/LightingMask.tooltips.addBaseLight=Whether the level's darkness alpha will be added to the mask's darkness.
+placements.entities.SJ2021/AllInOneMask.tooltips.addBaseLight=Whether the level's darkness alpha will be added to the mask's darkness.
 

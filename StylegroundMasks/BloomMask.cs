@@ -34,19 +34,16 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             StrengthFrom = data.Float("strengthFrom", -1f);
             StrengthTo = data.Float("strengthTo", -1f);
         }
-
-
-
         public static void Load() {
             On.Celeste.GameplayBuffers.Create += GameplayBuffers_Create;
-            On.Celeste.BloomRenderer.Apply += BloomRenderer_Apply1;
-            IL.Celeste.BloomRenderer.Apply += BloomRenderer_Apply;
+            On.Celeste.BloomRenderer.Apply += BloomRenderer_Apply;
+            IL.Celeste.BloomRenderer.Apply += BloomRenderer_ApplyIL;
         }
 
         public static void UnLoad() {
             On.Celeste.GameplayBuffers.Create -= GameplayBuffers_Create;
-            On.Celeste.BloomRenderer.Apply -= BloomRenderer_Apply1;
-            IL.Celeste.BloomRenderer.Apply -= BloomRenderer_Apply;
+            On.Celeste.BloomRenderer.Apply -= BloomRenderer_Apply;
+            IL.Celeste.BloomRenderer.Apply -= BloomRenderer_ApplyIL;
         }
 
         private static void GameplayBuffers_Create(On.Celeste.GameplayBuffers.orig_Create orig) {
@@ -55,14 +52,14 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             BloomBuffer = VirtualContent.CreateRenderTarget("bloomMask-buffer", 320, 180);
         }
 
-        private static void BloomRenderer_Apply1(On.Celeste.BloomRenderer.orig_Apply orig, BloomRenderer self, VirtualRenderTarget target, Scene scene) {
+        private static void BloomRenderer_Apply(On.Celeste.BloomRenderer.orig_Apply orig, BloomRenderer self, VirtualRenderTarget target, Scene scene) {
             new DynData<BloomRenderer>(self).Set("bloomMaskLastStrength", self.Strength);
             if (scene.Tracker.GetEntity<BloomMask>() != null)
                 self.Strength = 1f;
             orig(self, target, scene);
         }
 
-        private static void BloomRenderer_Apply(ILContext il) {
+        private static void BloomRenderer_ApplyIL(ILContext il) {
             var cursor = new ILCursor(il);
 
             var textureLoc = 0;
@@ -70,7 +67,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchCall(typeof(GaussianBlur), "Blur"),
                 instr => instr.MatchStloc(out textureLoc))) {
 
-                Logger.Log("FlushelineCollab/BloomMask", $"Failed to find local variable 'texture' in BloomRenderer.Apply - Bloom Mask disabled");
+                Logger.Log("SJ2021/BloomMask", $"Failed to find local variable 'texture' in BloomRenderer.Apply - Bloom Mask disabled");
                 return;
             }
 
@@ -81,7 +78,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 if (cursor.TryGotoPrev(MoveType.AfterLabel,
                     instr => instr.MatchCall(typeof(Draw), "get_SpriteBatch"))) {
 
-                    Logger.Log("FlushelineCollab/BloomMask", $"Adding bloom mask rendering at {cursor.Index} in IL for BloomRenderer.Apply");
+                    Logger.Log("SJ2021/BloomMask", $"Adding bloom mask rendering at {cursor.Index} in IL for BloomRenderer.Apply");
 
                     cursor.Emit(OpCodes.Ldarg_0);
                     cursor.Emit(OpCodes.Ldarg_1);
@@ -92,6 +89,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                         var sliceRects = new List<Rectangle>();
                         var renderedMask = false;
                         var lastTargets = Engine.Graphics.GraphicsDevice.GetRenderTargets();
+                        var bloomMaskLastStrength = selfData.Get<float>("bloomMaskLastStrength");
                         foreach (BloomMask entity in scene.Tracker.GetEntities<BloomMask>()) {
                             var level = scene as Level;
                             renderedMask = true;
@@ -99,8 +97,8 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                             var baseFrom = (entity.BaseFrom >= 0f ? entity.BaseFrom : self.Base);
                             var baseTo = (entity.BaseTo >= 0f ? entity.BaseTo : self.Base);
 
-                            var strengthFrom = (entity.StrengthFrom >= 0f ? entity.StrengthFrom : selfData.Get<float>("bloomMaskLastStrength"));
-                            var strengthTo = (entity.StrengthTo >= 0f ? entity.StrengthTo : selfData.Get<float>("bloomMaskLastStrength"));
+                            var strengthFrom = (entity.StrengthFrom >= 0f ? entity.StrengthFrom : bloomMaskLastStrength);
+                            var strengthTo = (entity.StrengthTo >= 0f ? entity.StrengthTo : bloomMaskLastStrength);
 
                             var slices = entity.GetMaskSlices();
 
@@ -141,7 +139,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchCallvirt<Game>("get_GraphicsDevice"),
                 instr => instr.MatchLdarg(1))) {
 
-                Logger.Log("FlushelineCollab/BloomMask", $"Cutting bloom mask slices at {cursor.Index} in IL for BloomRenderer.Apply");
+                Logger.Log("SJ2021/BloomMask", $"Cutting bloom mask slices at {cursor.Index} in IL for BloomRenderer.Apply");
 
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.Emit(OpCodes.Ldarg_2);
