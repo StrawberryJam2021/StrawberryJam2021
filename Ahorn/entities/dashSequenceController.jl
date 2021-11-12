@@ -3,7 +3,7 @@ module SJ2021DashSequenceController
 using ..Ahorn, Maple
 
 @mapdef Entity "SJ2021/DashSequenceController" DashController(x::Integer, y::Integer,
-    dashCode::String="", flagLabel::String="", flagOnFailure::String="")
+    dashCode::String="", flagLabel::String="", flagOnFailure::String="", index::Integer=0)
 
 const placements = Ahorn.PlacementDict(
     "Dash Code Flag Sequence Controller\n(Strawberry Jam 2021)" => Ahorn.EntityPlacement(
