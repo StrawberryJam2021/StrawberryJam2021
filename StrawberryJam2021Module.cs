@@ -8,6 +8,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public static StrawberryJam2021Module Instance;
 
+        public override Type SettingsType => typeof(StrawberryJam2021Settings);
+        public static StrawberryJam2021Settings Settings => (StrawberryJam2021Settings) Instance._Settings;
+
         public override Type SaveDataType => typeof(StrawberryJam2021SaveData);
         public static StrawberryJam2021SaveData SaveData => (StrawberryJam2021SaveData) Instance._SaveData;
 
