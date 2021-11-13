@@ -234,3 +234,31 @@ placements.entities.SJ2021/EntityDespawner.tooltips.invert=If checked, this enti
 
 # Pocket Umbrella Trigger
 placements.entities.SJ2021/PocketUmbrellaTrigger.tooltips.musicParam=(Optional) The music parameter to be turned on when gliding with the umbrella.
+
+# Pellet Emitter (Up)
+placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+
+# Pellet Emitter (Down)
+placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+
+# Pellet Emitter (Left)
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+
+# Pellet Emitter (Right)
+placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.

@@ -110,6 +110,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SkateboardTrigger.InitializeTextures();
             PocketUmbrella.LoadParticles();
             Paintbrush.LoadParticles();
+            PelletEmitter.PelletShot.LoadParticles();
             NodedCloud.LoadParticles();
             MaskedOutline.LoadTexture();
             BeeFireball.LoadContent();
