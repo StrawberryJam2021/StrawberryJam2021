@@ -9,6 +9,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public static StrawberryJam2021Module Instance;
 
+        public override Type SettingsType => typeof(StrawberryJam2021Settings);
+        public static StrawberryJam2021Settings Settings => (StrawberryJam2021Settings) Instance._Settings;
+
         public override Type SaveDataType => typeof(StrawberryJam2021SaveData);
         public static StrawberryJam2021SaveData SaveData => (StrawberryJam2021SaveData) Instance._SaveData;
 
@@ -56,6 +59,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             MaskHooks.Load();
             MaskedOutline.Load();
             DashSequenceDisplay.Load();
+            GroupedParallaxDecal.Load();
+            ExpiringDashRefill.Load();
         }
 
         public override void Unload() {
@@ -90,6 +95,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             RainDensityTrigger.Unload();
             MaskHooks.Unload();
             DashSequenceDisplay.Unload();
+            GroupedParallaxDecal.Unload();
+            ExpiringDashRefill.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -106,6 +113,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SkateboardTrigger.InitializeTextures();
             PocketUmbrella.LoadParticles();
             Paintbrush.LoadParticles();
+            PelletEmitter.PelletShot.LoadParticles();
             NodedCloud.LoadParticles();
             MaskedOutline.LoadTexture();
             BeeFireball.LoadContent();

@@ -13,7 +13,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private const int STAY = 8, DONE = 9;
         private const float vanillaSpeed = 360f;
         private static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
-        private static string defaultIndicatorPath = "objects/StrawberryJam2021/toggleIndicator/plain/";
+        private static readonly string defaultIndicatorPath = "objects/StrawberryJam2021/toggleIndicator/plain/";
+        private static readonly string defaultStartAudio = "event:/game/05_mirror_temple/swapblock_move";
+        private static readonly string defaultEndAudio = "event:/game/05_mirror_temple/swapblock_move_end";
         private static Type toggleSwapBlockType = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "CanyonHelper").GetType().Assembly.GetType("Celeste.Mod.CanyonHelper.ToggleSwapBlock");
         private static MethodInfo getNextNode = toggleSwapBlockType.GetMethod("GetNextNode", BindingFlags.NonPublic | BindingFlags.Instance);
         private static MethodInfo recalculateLaserColor = toggleSwapBlockType.GetMethod("RecalculateLaserColor", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -36,9 +38,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             public readonly bool disableTracks;
             public readonly bool allowDashSliding;
             public readonly bool accelerate;
+            public readonly string startAudio;
+            public readonly string stopAudio;
             public MTexture indicatorTexture;
 
-            public DataComponent(bool useIndicators, string indicatorPath, bool isConstant, float speed, bool disableTracks, bool allowDashSliding, bool accelerate) : base(false, false) {
+            public DataComponent(bool useIndicators, string indicatorPath, bool isConstant, float speed, bool disableTracks, bool allowDashSliding,
+                bool accelerate, string startAudio, string stopAudio) : base(false, false)
+            {
                 this.useIndicators = useIndicators;
                 this.indicatorPath = indicatorPath;
                 this.isConstant = isConstant;
@@ -46,6 +52,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 this.disableTracks = disableTracks;
                 this.allowDashSliding = allowDashSliding;
                 this.accelerate = accelerate;
+                this.startAudio = startAudio;
+                this.stopAudio = stopAudio;
             }
         }
 
@@ -70,6 +78,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
+        private static string getDefaultIfEmpty(EntityData entityData, string attrName, string defaultAttr) {
+            string attr = entityData.Attr(attrName, "");
+            return attr.Equals("") ? defaultAttr : attr;
+        }
+
         private static bool OnLoadEntity(Level level, LevelData levelData, Vector2 offset, EntityData entityData) {
             bool isSJToggleBlock = entityData.Name == "SJ2021/ToggleSwapBlock";
             if (isSJToggleBlock) {
@@ -77,17 +90,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 bool useIndicators = entityData.Bool("directionIndicator", true);
                 bool isConstant = entityData.Bool("constantSpeed", false);
                 float speed = vanillaSpeed * entityData.Float("travelSpeed", 1f);
-                string indicatorPath = entityData.Attr("customIndicatorPath", "");
-                if (indicatorPath == "") {
-                    indicatorPath = defaultIndicatorPath;
-                }
+                string indicatorPath = getDefaultIfEmpty(entityData, "customIndicatorPath", defaultIndicatorPath);
                 if (indicatorPath.Last() != '/') {
                     indicatorPath += '/';
                 }
                 bool disableTracks = entityData.Bool("disableTracks", false);
                 bool allowDashSliding = entityData.Bool("allowDashSliding", false);
                 bool accelerate = entityData.Bool("accelerate", false);
-                Component dataComponent = new DataComponent(useIndicators, indicatorPath, isConstant, speed, disableTracks, allowDashSliding, accelerate);
+                string startAudio = getDefaultIfEmpty(entityData, "customStartAudio", defaultStartAudio);
+                string endAudio = getDefaultIfEmpty(entityData, "customStopAudio", defaultEndAudio);
+                Component dataComponent = new DataComponent(useIndicators, indicatorPath, isConstant, speed, disableTracks, allowDashSliding, accelerate, startAudio, endAudio);
                 block.Add(dataComponent);
                 level.Add(block);
             }
@@ -148,7 +160,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
             middleRed.Play("moving", false, false);
-            data.Set("moveSfx", Audio.Play("event:/game/05_mirror_temple/swapblock_move", self.Center));
+            data.Set("moveSfx", Audio.Play(dataComp.startAudio, self.Center));
             Vector2 targetPosition = nodes[nodeIndex];
             Vector2 startPosition = self.Position;
             Vector2 dirVector = targetPosition - startPosition;
@@ -214,7 +226,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 middleRed.Play("idle", false, false);
                 Audio.Stop(moveSfx, true);
                 data.Set<EventInstance>("moveSfx", null);
-                Audio.Play("event:/game/05_mirror_temple/swapblock_move_end", self.Center);
+                Audio.Play(dataComp.stopAudio, self.Center);
                 recalculateLaserColor.Invoke(self, new object[] { });
             }
         }
