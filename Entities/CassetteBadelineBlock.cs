@@ -1,139 +1,230 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System;
+using System.Collections;
+using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    /* Large parts of this code are copied from Brokemia's non-badeline-dependant moving block helper.
-       Thank you to Brokemia for letting me use his code in this project! */
-
     [CustomEntity("SJ2021/CassetteBadelineBlock")]
-    public class CassetteBadelineBlock : CassetteTimedBlock {
-        private int nodeIndex;
-        private readonly Vector2[] nodes;
+    public class CassetteBadelineBlock : Solid {
+        public bool HideFinalTransition { get; }
+        public Vector2[] Nodes { get; }
+        public int[] IgnoredNodes { get; }
+        public bool OffBeat { get; }
+        public char TileType { get; }
+        public bool PlayImpactSounds { get; }
+        public bool EmitImpactParticles { get; }
 
-        private int moveForwardBeat;
-        private int moveBackBeat;
-        private readonly int preDelay;
-        private readonly int transitionDuration;
-        private readonly bool oneWay;
-        private readonly bool teleportBack;
+        private int offsetNodeIndex;
+        private int sourceNodeIndex;
+        private int targetNodeIndex;
+        private Vector2 sourcePosition;
+        private Vector2 targetPosition;
 
-        public CassetteBadelineBlock(Vector2[] nodes, float width, float height, char tiletype, int moveForwardBeat, int moveBackBeat, int preDelay,
-            int transitionDuration, bool oneWay, bool teleportBack) : base(nodes[0], width, height, false) {
-            this.nodes = nodes;
-            TileGrid sprite = GFX.FGAutotiler.GenerateBox(tiletype, (int) Width / 8, (int) Height / 8).TileGrid;
-            Add(sprite);
-            Add(new TileInterceptor(sprite, false));
-            Add(new LightOcclude());
+        private readonly int initialNodeIndex;
+        private CassetteListener cassetteListener;
 
-            this.moveForwardBeat = moveForwardBeat;
-            this.moveBackBeat = moveBackBeat;
-            this.preDelay = preDelay;
-            this.transitionDuration = transitionDuration;
-            this.oneWay = oneWay;
-            this.teleportBack = teleportBack;
+        public CassetteBadelineBlock(CassetteBadelineBlock parent, int initialNodeIndex)
+            : base(parent.Nodes[initialNodeIndex], parent.Width, parent.Height, false) {
+            Nodes = parent.Nodes;
+            TileType = parent.TileType;
+            IgnoredNodes = parent.IgnoredNodes;
+            HideFinalTransition = parent.HideFinalTransition;
+            OffBeat = parent.OffBeat;
+            PlayImpactSounds = parent.PlayImpactSounds;
+            EmitImpactParticles = parent.EmitImpactParticles;
+
+            this.initialNodeIndex = sourceNodeIndex = targetNodeIndex = initialNodeIndex;
+            sourcePosition = targetPosition = Position;
+
+            Tag = Tags.FrozenUpdate;
+
+            AddComponents();
         }
 
         public CassetteBadelineBlock(EntityData data, Vector2 offset)
-            : this(data.NodesWithPosition(offset), data.Width, data.Height, data.Char("tiletype", 'g'),
-                data.Int("moveForwardBeat", 0), data.Int("moveBackBeat", 8), data.Int("preDelay", 0),
-                data.Int("transitionDuration", 4), data.Bool("oneWay", false), data.Bool("teleportBack", false)) {
+            : base(data.Position + offset, data.Width, data.Height, false) {
+            Nodes = data.NodesWithPosition(offset);
+            TileType = data.Char("tiletype", 'g');
+            OffBeat = data.Bool("offBeat");
+            HideFinalTransition = data.Bool("hideFinalTransition");
+            PlayImpactSounds = data.Bool("playImpactSounds", true);
+            EmitImpactParticles = data.Bool("emitImpactParticles", true);
+
+            string ignoredNodesString = data.Attr("ignoredNodes") ?? string.Empty;
+            IgnoredNodes = ignoredNodesString
+                .Trim()
+                .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => int.TryParse(s, out int value) ? value : int.MaxValue)
+                .Where(i => Math.Abs(i) < Nodes.Length)
+                .ToArray();
+
+            sourcePosition = targetPosition = Position;
+
+            Tag = Tags.FrozenUpdate;
+
+            AddComponents();
         }
 
-        public override void Awake(Scene scene) {
-            base.Awake(scene);
+        private void AddComponents() {
+            TileGrid sprite = GFX.FGAutotiler.GenerateBox(TileType, (int) Width / 8, (int) Height / 8).TileGrid;
+            Add(sprite,
+                new TileInterceptor(sprite, false),
+                new LightOcclude(),
+                cassetteListener = new CassetteListener {
+                    OnBeat = state => {
+                        bool indexWillChange = state.NextTick.Index != state.CurrentTick.Index;
+                        if (sourceNodeIndex == targetNodeIndex && OffBeat != indexWillChange) {
+                            if (offsetNodeIndex < 0)
+                                offsetNodeIndex = initialNodeIndex;
+                            else
+                                offsetNodeIndex++;
 
-            // If we spawn in and we're supposed to be at the end or moving from the end, place us there
-            var timerState = GetCassetteTimerState(false);
-            var blockState = GetMovingBlockState(timerState.Value.Beat);
-
-            if (blockState == MovingBlockState.MoveToStart || blockState == MovingBlockState.AtEnd)
-                Teleport();
+                            sourceNodeIndex = offsetNodeIndex % Nodes.Length;
+                            targetNodeIndex = (sourceNodeIndex + 1) % Nodes.Length;
+                            sourcePosition = Nodes[sourceNodeIndex];
+                            targetPosition = Nodes[targetNodeIndex];
+                        }
+                    },
+                },
+                new Coroutine(MoveSequence())
+            );
         }
 
-        // "AtStart" and "AtEnd" signify that we're either at the start/end or we're actively moving to them
-        // "MoveToStart" and "MoveToEnd" signify that we should move to the start (or the end) *on this frame*
-        private enum MovingBlockState {
-            AtStart, AtEnd, MoveToStart, MoveToEnd
-        }
+        public override void Added(Scene scene) {
+            base.Added(scene);
 
-        private MovingBlockState GetMovingBlockState(int beat) {
-            int segment = beat % 16;
+            offsetNodeIndex = -1;
 
-            if (beat < preDelay)
-                return MovingBlockState.AtStart;
+            if (initialNodeIndex == 0) {
+                for (int i = 1; i < Nodes.Length; i++) {
+                    if (!IgnoredNodes.Contains(i) && !IgnoredNodes.Contains(i - Nodes.Length))
+                        scene.Add(new CassetteBadelineBlock(this, i));
+                }
 
-            if (segment == moveForwardBeat)
-                return MovingBlockState.MoveToEnd;
-            if (segment == moveBackBeat)
-                return MovingBlockState.MoveToStart;
-
-            if (moveForwardBeat < moveBackBeat) {
-                if (segment > moveForwardBeat && segment < moveBackBeat)
-                    return MovingBlockState.AtEnd;
-                else // (segment < moveForwardBeat || segment > moveBackBeat)
-                    return MovingBlockState.AtStart;
-            } else {
-                if (segment > moveBackBeat && segment < moveForwardBeat)
-                    return MovingBlockState.AtStart;
-                else // (segment < moveBackBeat || segment > moveForwardBeat)
-                    return MovingBlockState.AtEnd;
+                if (IgnoredNodes.Contains(0))
+                    RemoveSelf();
             }
         }
 
         public override void Update() {
             base.Update();
 
-            var timerState = GetCassetteTimerState();
+            Visible = Collidable = !HideFinalTransition || targetNodeIndex != 0;
+        }
 
-            if (!timerState.HasValue || !timerState.Value.ChangedSinceLastBeat)
-                return;
+        private void TeleportTo(Vector2 to) {
+            MoveStaticMovers(to - Position);
+            Position = to;
+        }
 
-            var blockState = GetMovingBlockState(timerState.Value.Beat);
-            if (blockState == MovingBlockState.MoveToStart || blockState == MovingBlockState.MoveToEnd) {
-                if (blockState == MovingBlockState.MoveToStart && teleportBack)
-                    Teleport();
-                else
-                    Move();
+        private IEnumerator MoveSequence() {
+            var block = this;
+            while (Scene != null) {
+                while (sourceNodeIndex == targetNodeIndex) {
+                    yield return null;
+                }
 
-                if (oneWay) {
-                    moveForwardBeat = -1;
-                    moveBackBeat = -1;
+                float time = block.cassetteListener.CurrentState.TickLength;
+                var to = block.targetPosition;
+                var from = block.sourcePosition;
+
+                if (targetNodeIndex == 0 && HideFinalTransition) {
+                    block.TeleportTo(to);
+                } else {
+                    var tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeIn, time, true);
+                    tween.OnUpdate = t => MoveTo(Vector2.Lerp(from, to, t.Eased));
+                    tween.OnComplete = _ => {
+                        if (block.CollideCheck<SolidTiles>(block.Position + (to - from).SafeNormalize() * 2f)) {
+                            if (block.PlayImpactSounds) {
+                                Audio.Play("event:/game/06_reflection/fallblock_boss_impact", block.Center);
+                            }
+                            if (block.EmitImpactParticles) {
+                                block.ImpactParticles(to - from);
+                            }
+                        } else {
+                            block.StopParticles(to - from);
+                        }
+                    };
+
+                    block.Add(tween);
+                }
+
+                yield return time;
+                sourceNodeIndex = targetNodeIndex;
+            }
+        }
+
+        protected void StopParticles(Vector2 moved) {
+            Level level = SceneAs<Level>();
+            float direction = moved.Angle();
+            if (moved.X > 0f) {
+                Vector2 value = new Vector2(Right - 1f, Top);
+                for (int i = 0; i < Height; i += 4) {
+                    level.Particles.Emit(FinalBossMovingBlock.P_Stop, value + Vector2.UnitY * (2 + i + Calc.Random.Range(-1, 1)), direction);
+                }
+            } else if (moved.X < 0f) {
+                Vector2 value2 = new Vector2(Left, Top);
+                for (int j = 0; j < Height; j += 4) {
+                    level.Particles.Emit(FinalBossMovingBlock.P_Stop, value2 + Vector2.UnitY * (2 + j + Calc.Random.Range(-1, 1)), direction);
+                }
+            }
+            if (moved.Y > 0f) {
+                Vector2 value3 = new Vector2(Left, Bottom - 1f);
+                for (int k = 0; k < Width; k += 4) {
+                    level.Particles.Emit(FinalBossMovingBlock.P_Stop, value3 + Vector2.UnitX * (2 + k + Calc.Random.Range(-1, 1)), direction);
+                }
+            } else if (moved.Y < 0f) {
+                Vector2 value4 = new Vector2(Left, Top);
+                for (int l = 0; l < Width; l += 4) {
+                    level.Particles.Emit(FinalBossMovingBlock.P_Stop, value4 + Vector2.UnitX * (2 + l + Calc.Random.Range(-1, 1)), direction);
                 }
             }
         }
 
-        private void Move() {
-            float actualTransitionDuration = BeatsToSeconds(transitionDuration);
-
-            nodeIndex++;
-            nodeIndex %= nodes.Length;
-            Vector2 from = Position;
-            Vector2 to = nodes[nodeIndex];
-
-            Tween tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeIn, actualTransitionDuration, true);
-            tween.OnUpdate = delegate(Tween t) {
-                MoveTo(Vector2.Lerp(from, to, t.Eased));
-            };
-
-            tween.OnComplete = delegate {
-                if (CollideCheck<SolidTiles>(Position + (to - from).SafeNormalize() * 2f)) {
-                    Audio.Play("event:/game/06_reflection/fallblock_boss_impact", Center);
-                    ImpactParticles(to - from);
-                } else {
-                    StopParticles(to - from);
+        protected void ImpactParticles(Vector2 moved) {
+            if (moved.X < 0f) {
+                Vector2 offset = new Vector2(0f, 2f);
+                for (int i = 0; i < Height / 8f; i++) {
+                    Vector2 collideCheckPos = new Vector2(Left - 1f, Top + 4f + (i * 8));
+                    if (!Scene.CollideCheck<Water>(collideCheckPos) && Scene.CollideCheck<Solid>(collideCheckPos)) {
+                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos + offset, 0f);
+                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos - offset, 0f);
+                    }
                 }
-            };
-
-            Add(tween);
-        }
-
-        private void Teleport() {
-            nodeIndex++;
-            nodeIndex %= nodes.Length;
-            Vector2 to = nodes[nodeIndex];
-            MoveStaticMovers(to - Position);
-            Position = to;
+            } else if (moved.X > 0f) {
+                Vector2 offset = new Vector2(0f, 2f);
+                for (int j = 0; j < Height / 8f; j++) {
+                    Vector2 collideCheckPos = new Vector2(Right + 1f, Top + 4f + (j * 8));
+                    if (!Scene.CollideCheck<Water>(collideCheckPos) && Scene.CollideCheck<Solid>(collideCheckPos)) {
+                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos + offset, (float) Math.PI);
+                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos - offset, (float) Math.PI);
+                    }
+                }
+            }
+            if (moved.Y < 0f) {
+                Vector2 offset = new Vector2(2f, 0f);
+                for (int k = 0; k < Width / 8f; k++) {
+                    Vector2 collideCheckPos = new Vector2(Left + 4f + (k * 8), Top - 1f);
+                    if (!Scene.CollideCheck<Water>(collideCheckPos) && Scene.CollideCheck<Solid>(collideCheckPos)) {
+                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos + offset, (float) Math.PI / 2f);
+                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos - offset, (float) Math.PI / 2f);
+                    }
+                }
+            } else {
+                if (!(moved.Y > 0f)) {
+                    return;
+                }
+                Vector2 offset = new Vector2(2f, 0f);
+                for (int l = 0; l < Width / 8f; l++) {
+                    Vector2 collideCheckPos = new Vector2(Left + 4f + (l * 8), Bottom + 1f);
+                    if (!Scene.CollideCheck<Water>(collideCheckPos) && Scene.CollideCheck<Solid>(collideCheckPos)) {
+                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos + offset, -(float) Math.PI / 2f);
+                        SceneAs<Level>().ParticlesFG.Emit(CrushBlock.P_Impact, collideCheckPos - offset, -(float) Math.PI / 2f);
+                    }
+                }
+            }
         }
     }
 }

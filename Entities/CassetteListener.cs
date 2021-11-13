@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Utils;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -48,19 +49,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public CassetteState CurrentState { get; private set; }
 
-        private int beatsPerTick => cassetteBlockManager == null ? 4 : (int) beatsPerTickFieldInfo.GetValue(cassetteBlockManager);
-        private int ticksPerSwap => cassetteBlockManager == null ? 2 : (int) ticksPerSwapFieldInfo.GetValue(cassetteBlockManager);
-        private int maxBeat => cassetteBlockManager == null ? 16 : (int) maxBeatFieldInfo.GetValue(cassetteBlockManager);
-        private int beatIndex => cassetteBlockManager == null ? 0 : (int) beatIndexFieldInfo.GetValue(cassetteBlockManager);
-        private int beatIndexMax => cassetteBlockManager == null ? 0 : (int) beatIndexMaxFieldInfo.GetValue(cassetteBlockManager);
-        private int currentIndex => cassetteBlockManager == null ? 0 : (int) currentIndexFieldInfo.GetValue(cassetteBlockManager);
-        private float tempoMult => cassetteBlockManager == null ? 1f : (float) tempoMultFieldInfo.GetValue(cassetteBlockManager);
+        private int beatsPerTick => cassetteBlockManagerData?.Get<int>(nameof(beatsPerTick)) ?? 4;
+        private int ticksPerSwap => cassetteBlockManagerData?.Get<int>(nameof(ticksPerSwap)) ?? 2;
+        private int maxBeat => cassetteBlockManagerData?.Get<int>(nameof(maxBeat)) ?? 16;
+        private int beatIndex => cassetteBlockManagerData?.Get<int>(nameof(beatIndex)) ?? 0;
+        private int beatIndexMax => cassetteBlockManagerData?.Get<int>(nameof(beatIndexMax)) ?? 0;
+        private int currentIndex => cassetteBlockManagerData?.Get<int>(nameof(currentIndex)) ?? 0;
+        private float tempoMult => cassetteBlockManagerData?.Get<float>(nameof(tempoMult)) ?? 1f;
 
         #endregion
 
         #region Private Fields
 
         private CassetteBlockManager cassetteBlockManager;
+        private DynData<CassetteBlockManager> cassetteBlockManagerData;
 
         private static readonly FieldInfo currentIndexFieldInfo = typeof(CassetteBlockManager).GetField("currentIndex", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo beatIndexFieldInfo = typeof(CassetteBlockManager).GetField("beatIndex", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -103,23 +105,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             cassetteBlockManager = scene.Tracker.GetEntity<CassetteBlockManager>() ?? scene.Entities.ToAdd.OfType<CassetteBlockManager>().FirstOrDefault();
             if (cassetteBlockManager == null)
                 scene.Add(cassetteBlockManager = new CassetteBlockManager());
+            cassetteBlockManagerData = new DynData<CassetteBlockManager>(cassetteBlockManager);
         }
 
         public override void EntityRemoved(Scene scene) {
             base.EntityRemoved(scene);
             cassetteBlockManager = null;
+            cassetteBlockManagerData = null;
         }
 
-        public override void Update() {
-            base.Update();
-            if (cassetteBlockManager == null) return;
+        public bool UpdateState() {
+            if (beatsPerTick == 0 || ticksPerSwap == 0)
+                return false;
 
             var currentTick = new CassetteTick {
                 Index = currentIndex,
-                Offset = (beatIndex / beatsPerTick) % ticksPerSwap
+                Offset = (beatIndex / beatsPerTick) % ticksPerSwap,
             };
-
-            var lastState = CurrentState;
 
             CurrentState = new CassetteState {
                 BeatsPerTick = beatsPerTick,
@@ -127,12 +129,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 BeatCount = beatIndexMax,
                 BlockCount = maxBeat / (beatsPerTick * ticksPerSwap),
                 Sixteenth = cassetteBlockManager.GetSixteenthNote(),
+                TempoMultiplier = tempoMult,
                 Beat = beatIndex,
                 CurrentTick = currentTick,
                 NextTick = nextTick(currentTick),
                 PreviousTick = previousTick(currentTick),
-                TickLength = tempoMult * beatsPerTick * (10f / 60f), // apparently one beat is 10 frames
+                BeatLength = (10f / 60f) / tempoMult, // apparently one beat is 10 frames
             };
+
+            return true;
+        }
+
+        public override void Update() {
+            base.Update();
+            if (cassetteBlockManager == null) return;
+
+            var lastState = CurrentState;
+            UpdateState();
 
             if (CurrentState.Sixteenth != lastState.Sixteenth) {
                 InvokeOnSixteenth(CurrentState);
@@ -169,10 +182,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             public int TicksPerSwap;
             public int BeatCount;
             public int BlockCount;
-            public float TickLength;
-
+            public float BeatLength;
+            public float TempoMultiplier;
             public int Sixteenth;
             public int Beat;
+
+            public float TickLength => BeatLength * BeatsPerTick;
+            public float SwapLength => BeatLength * BeatsPerTick * TicksPerSwap;
 
             public CassetteTick CurrentTick;
             public CassetteTick NextTick;

@@ -3,7 +3,8 @@ module SJ2021ToggleSwapBlock
 using ..Ahorn, Maple
 
 @mapdef Entity "SJ2021/ToggleSwapBlock" ToggleBlock(width::Integer=16, height::Integer=16, travelSpeed::Number=5.0, oscillate::Bool=false, stopAtEnd::Bool=false,
-    directionIndicator::Bool=false, constantSpeed::Bool=false, customTexturePath::String="", customIndicatorPath::String="", disableTracks::Bool=false)
+    directionIndicator::Bool=false, constantSpeed::Bool=false, customTexturePath::String="", customIndicatorPath::String="", disableTracks::Bool=false, allowDashSliding::Bool=false,
+    accelerate::Bool=false, customStartAudio::String="", customStopAudio::String="")
 
 function getXYWidthHeight(entity::ToggleBlock)
     x, y = Ahorn.position(entity)

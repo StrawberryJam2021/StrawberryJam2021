@@ -2,6 +2,7 @@
 placements.entities.SJ2021/DashSequenceController.tooltips.dashCode=The code the player needs to input. Should be in the form of "U,DR,L", with commas separating each direction. When writing diagonals, write them with vertical first, then horizontal, with no space. * is also a valid input, meaning you can dash any direction for it to work.
 placements.entities.SJ2021/DashSequenceController.tooltips.flagLabel=The starting label of the flags that will get activated. Every time a dash is successfully inputted, a flag with this label + "-#" will be set to true (e.g. "test" followed by a successful dash will set "test-1" to true).
 placements.entities.SJ2021/DashSequenceController.tooltips.flagOnFailure=Flag that will get set to true if the sequence has started, but fails partway through.
+placements.entities.SJ2021/DashSequenceController.tooltips.index=This sequence's index, used by the UI entity to correctly display dash sequences in order.
 
 # Sharded Refill
 placements.entities.SJ2021/RefillShard.tooltips.collectAmount=The amount of shards needed for collection. (0 for all)
@@ -66,29 +67,29 @@ placements.entities.SJ2021/LaserEmitterRight.tooltips.disableLasers=Whether or n
 placements.entities.SJ2021/LaserEmitterRight.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same colour channel.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser colour.
 
-# Brush Laser Emitter (Up)
-placements.entities.SJ2021/BrushLaserEmitterUp.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
-placements.entities.SJ2021/BrushLaserEmitterUp.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
-placements.entities.SJ2021/BrushLaserEmitterUp.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
-placements.entities.SJ2021/BrushLaserEmitterUp.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+# Paintbrush (Up)
+placements.entities.SJ2021/PaintbrushUp.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/PaintbrushUp.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/PaintbrushUp.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/PaintbrushUp.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
 
-# Brush Laser Emitter (Down)
-placements.entities.SJ2021/BrushLaserEmitterDown.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
-placements.entities.SJ2021/BrushLaserEmitterDown.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
-placements.entities.SJ2021/BrushLaserEmitterDown.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
-placements.entities.SJ2021/BrushLaserEmitterDown.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+# Paintbrush (Down)
+placements.entities.SJ2021/PaintbrushDown.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/PaintbrushDown.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/PaintbrushDown.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/PaintbrushDown.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
 
-# Brush Laser Emitter (Left)
-placements.entities.SJ2021/BrushLaserEmitterLeft.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
-placements.entities.SJ2021/BrushLaserEmitterLeft.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
-placements.entities.SJ2021/BrushLaserEmitterLeft.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
-placements.entities.SJ2021/BrushLaserEmitterLeft.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+# Paintbrush (Left)
+placements.entities.SJ2021/PaintbrushLeft.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/PaintbrushLeft.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/PaintbrushLeft.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/PaintbrushLeft.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
 
-# Brush Laser Emitter (Right)
-placements.entities.SJ2021/BrushLaserEmitterRight.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
-placements.entities.SJ2021/BrushLaserEmitterRight.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
-placements.entities.SJ2021/BrushLaserEmitterRight.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
-placements.entities.SJ2021/BrushLaserEmitterRight.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+# Paintbrush (Right)
+placements.entities.SJ2021/PaintbrushRight.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/PaintbrushRight.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/PaintbrushRight.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/PaintbrushRight.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
 
 # Bubble Emitter Fire Trigger
 placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of the emitters to fire. Will fire every emitter if empty
@@ -170,6 +171,9 @@ placements.entities.SJ2021/ToggleSwapBlock.tooltips.directionIndicator=If checke
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.constantSpeed=If checked, the velocity of the block will be the same each time it moves, and not scale with the distance between nodes.  Furthermore, "Travel Speed" will be interpretted as a multiplier, with 1.0 corresponding to vanilla swap block speed.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customIndicatorPath=Path to a folder containing textures named "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", and "done", which are displayed depending on the direction the block moves next, in place of the default indicators.  Built-in examples include "objects/StrawberryJam2021/toggleIndicator/plain/" (default), "objects/StrawberryJam2021/toggleIndicator/negative/", "objects/StrawberryJam2021/toggleIndicator/value/", "objects/StrawberryJam2021/toggleIndicator/sticker/".
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.disableTracks=Disables the tracks that appear along the path of the block.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.allowDashSliding=Allow player to slide on top of the block while dashing, instead of being fixed in place.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStartAudio=Custom audio to play when the block starts moving.  If blank, vanilla swap block sound is used.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStopAudio=Custom audio to play when the block stops moving.  If blank, vanilla swap block sound is used.
 
 # Wonky Cassette Block
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.onAtBeats=A list of integers (separated by a comma) corresponding to the beats on which this block should activate, being deactivated on all other beats not included in this list.\nExample: 1, 2, 4
@@ -183,6 +187,78 @@ placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.timeSignature=T
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.sixteenthNoteParam=The FMOD parameter that should be affected in this room.
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.cassetteOffset=The constant offset in seconds that the cassette blocks will lag behind the music progress.\nPositive numbers will make the cassette blocks trigger later.
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.boostFrames=The number of frames after activation that a cassette boost is possible for. Must be at least 1.
+placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.disableFlag=The flag that deactivates all cassette blocks in the room. Leave empty if you don't want to use it.
 
 # Skateboard Trigger
 placements.triggers.SJ2021/SkateboardTrigger.tooltips.mode=Whether entering the trigger will enable, disable, or toggle the skateboard.
+
+# Switch Crate
+placements.entities.SJ2021/SwitchCrate.tooltips.TimeToExplode=The time (in seconds) it will take for the crate to explode.
+placements.entities.SJ2021/SwitchCrate.tooltips.DepleteOnJumpThru=Whether the explosion timer counts down when the crate is on a jumpthru (rather than on ground).
+placements.entities.SJ2021/SwitchCrate.tooltips.KillMaddyOnExplosion=Whether the player should be killed when the crate explodes. Madeline will die if the crate is squished or dropped out of the level regardless of this option.
+
+# Noded Cloud
+placements.entities.SJ2021/NodedCloud.tooltips.moveTime=How much time the cloud takes to move to the next position, in seconds.
+
+# Directional Booster
+placements.entities.SJ2021/DirectionalBooster.tooltips.boosterColor=The colour to use for booster particles. Defaults to a honeyish yellow.
+
+# Hint Controller
+placements.entities.SJ2021/HintController.tooltips.dialogId=The identifier of the dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
+placements.entities.SJ2021/HintController.tooltips.singleUse=Whether the hint may only be viewed a single time per session.
+
+# Cassette Badeline Block
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.tiletype=The tileset to use when rendering the block.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.hideFinalTransition=If true, the transition between last and first nodes will be hidden (useful for conveyors).
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.ignoredNodes=A comma separated list of nodes which will not spawn a block, but are still part of the path. Negative indices indicate going backward from the end of list. For example, -1 indicates the final node. The first node cannot be ignored.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.offBeat=If true, transitions will occur halfway between cassette swaps.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.playImpactSounds=If true, blocks will make slamming sounds when hitting another solid. Disable this if using a conveyor.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.emitImpactParticles=If true, blocks will emit dust particles when hitting another solid. Disable this if using a conveyor.
+
+# Airtime Music Controller
+placements.entities.SJ2021/AirTimeMusicController.tooltips.activationThreshold=The amount of airtime in seconds required before the music parameter is enabled.
+placements.entities.SJ2021/AirTimeMusicController.tooltips.musicParam=The music parameter that will be adjusted by this controller.
+
+# Rain Density Trigger
+placements.triggers.SJ2021/RainDensityTrigger.tooltips.density=The target rain density, expressed as a number between 0 and 1.\n0 = No rain, 1 = Full rain.
+placements.triggers.SJ2021/RainDensityTrigger.tooltips.duration=The time (in seconds) spent transitioning to the target rain density.
+
+# Expiring Dash Refill
+placements.entities.SJ2021/ExpiringDashRefill.tooltips.dashExpirationTime=The amount of time given before the dash is revoked if not used.
+placements.entities.SJ2021/ExpiringDashRefill.tooltips.hairFlashThreshold=The threshold ratio that determines when the warning flash begins. (0 - 1)
+
+#Entity Despawner
+placements.entities.SJ2021/EntityDespawner.tooltips.entityTypes=The full class names of the types of entities to despawn. Use commas to add multiple entities to the list (e.g. Celeste.Entity1,Celeste.Entity2)
+placements.entities.SJ2021/EntityDespawner.tooltips.flag=The name of the session flag to watch. Listed entities are removed if the session flag is set when entering the room.
+placements.entities.SJ2021/EntityDespawner.tooltips.invert=If checked, this entity will instead remove the listed entities when the session flag is not set.
+
+# Pocket Umbrella Trigger
+placements.entities.SJ2021/PocketUmbrellaTrigger.tooltips.musicParam=(Optional) The music parameter to be turned on when gliding with the umbrella.
+
+# Pellet Emitter (Up)
+placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+
+# Pellet Emitter (Down)
+placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+
+# Pellet Emitter (Left)
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+
+# Pellet Emitter (Right)
+placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.

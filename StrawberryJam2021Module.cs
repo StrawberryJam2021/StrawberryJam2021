@@ -8,6 +8,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         public static StrawberryJam2021Module Instance;
 
+        public override Type SettingsType => typeof(StrawberryJam2021Settings);
+        public static StrawberryJam2021Settings Settings => (StrawberryJam2021Settings) Instance._Settings;
+
         public override Type SaveDataType => typeof(StrawberryJam2021SaveData);
         public static StrawberryJam2021SaveData SaveData => (StrawberryJam2021SaveData) Instance._SaveData;
 
@@ -44,9 +47,18 @@ namespace Celeste.Mod.StrawberryJam2021 {
             WonkyCassetteBlock.Load();
             WonkyCassetteBlockController.Load();
             SpeedPreservePuffer.Load();
+            ResizableDashSwitch.Load();
             SkateboardTrigger.Load();
             LaserEmitter.Load();
             OshiroAttackTimeTrigger.Load();
+            ConstantDelayFallingBlockController.Load();
+            DirectionalBooster.Load();
+            HintController.Load();
+            RainDensityTrigger.Load();
+            MaskedOutline.Load();
+            DashSequenceDisplay.Load();
+            GroupedParallaxDecal.Load();
+            ExpiringDashRefill.Load();
         }
 
         public override void Unload() {
@@ -71,9 +83,17 @@ namespace Celeste.Mod.StrawberryJam2021 {
             WonkyCassetteBlock.Unload();
             WonkyCassetteBlockController.Unload();
             SpeedPreservePuffer.Unload();
+            ResizableDashSwitch.Unload();
             SkateboardTrigger.Unload();
             LaserEmitter.Unload();
             OshiroAttackTimeTrigger.Unload();
+            ConstantDelayFallingBlockController.Unload();
+            DirectionalBooster.Unload();
+            HintController.Unload();
+            RainDensityTrigger.Unload();
+            DashSequenceDisplay.Unload();
+            GroupedParallaxDecal.Unload();
+            ExpiringDashRefill.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -86,7 +106,26 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SwitchCrateHolder.SetupParticles();
             LoopBlock.InitializeTextures();
             DashBoostField.LoadParticles();
+            ResizableDashSwitch.LoadParticles();
             SkateboardTrigger.InitializeTextures();
+            PocketUmbrella.LoadParticles();
+            Paintbrush.LoadParticles();
+            PelletEmitter.PelletShot.LoadParticles();
+            NodedCloud.LoadParticles();
+            MaskedOutline.LoadTexture();
+            BeeFireball.LoadContent();
+        }
+
+        // Temporary code from vivhelper
+        public static bool VivHelperGetFlags(Level l, string[] flags, string and_or) {
+            if (l == null)
+                return false;
+            bool b = and_or == "and";
+            if (flags.Length == 1 && flags[0] == "") { return true; }
+            foreach (string flag in flags) {
+                if (and_or == "or") { b |= flag[0] != '!' ? l.Session.GetFlag(flag) : !l.Session.GetFlag(flag.TrimStart('!')); } else { b &= flag[0] != '!' ? l.Session.GetFlag(flag) : !l.Session.GetFlag(flag.TrimStart('!')); }
+            }
+            return b;
         }
     }
 }

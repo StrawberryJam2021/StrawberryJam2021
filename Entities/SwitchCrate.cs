@@ -58,6 +58,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         bool DepleteOnJumpThru = false;
 
+        private bool KillMaddyOnExplosion;
+
         bool IsFirstFrame = true;
 
         bool HasStarted = false;
@@ -71,6 +73,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             TimeToExplode = data.Float("TimeToExplode", 1);
             DepleteOnJumpThru = data.Bool("DepleteOnJumpThru");
+            KillMaddyOnExplosion = data.Bool("KillMaddyOnExplosion", defaultValue: true);
 
             FlagName = "battery_" + data.ID;
             this.id = id;
@@ -81,7 +84,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             sprite = new Sprite(GFX.Game, "objects/StrawberryJam2021/SwitchCrate/");
             float t = 1f / 6f;
             sprite.Add("idle", "idle", t);
-            sprite.Rate = 1/ TimeToExplode;
+            sprite.Rate = 1 / TimeToExplode;
             Add(sprite);
             sprite.Play("idle", true);
 
@@ -103,12 +106,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Hold.OnCarry = pos => Position = pos + new Vector2(0f, -8f);
             LiftSpeedGraceTime = 0.1f;
             Add(new VertexLight(Collider.Center, Color.White, 1f, 32, 64));
-            Tag = Tags.TransitionUpdate;
             Add(new MirrorReflection());
 
-            sprite.OnFinish = delegate
-            {
-                Die();
+            sprite.OnFinish = delegate {
+                Die(forceKillMaddy: false);
             };
         }
 
@@ -157,8 +158,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                                 Speed.Y = 0f;
                             }
                         }
-                    } else { 
-                        if(IsFirstFrame && !HasStarted) {
+                    } else {
+                        if (IsFirstFrame && !HasStarted) {
                             HasStarted = true;
                         }
                         Restartanim();
@@ -198,7 +199,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         Speed.Y = -300f;
                         Audio.Play("event:/game/general/assist_screenbottom", Position);
                     } else if (Top > (float) Level.Bounds.Bottom) {
-                        Die();
+                        Die(forceKillMaddy: true);
                     }
                     if (X < (float) (Level.Bounds.Left + 10)) {
                         MoveH(32f * Engine.DeltaTime);
@@ -217,7 +218,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     hitSeeker = null;
                 }
             }
-            if(IsHeld) {
+            if (IsHeld) {
                 Restartanim();
             }
             IsFirstFrame = false;
@@ -278,7 +279,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public bool OnSolidTile(int downCheck = 1) {
-            if(Collide.Check(this, Scene.Tracker.Entities[FloorBoosterType], Position + Vector2.UnitY * downCheck)) {
+            if (Collide.Check(this, Scene.Tracker.Entities[FloorBoosterType], Position + Vector2.UnitY * downCheck)) {
                 return false;
             }
             if (CollideCheckOutside<JumpThru>(Position + Vector2.UnitY * downCheck)) {
@@ -288,7 +289,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return false;
             }
             if (!CollideCheck<SolidTiles>(Position + Vector2.UnitY * downCheck)) {
-                    return false;
+                return false;
             }
 
 
@@ -340,7 +341,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         protected override void OnSquish(CollisionData data) {
             if (!TrySquishWiggle(data, 3, 3) && !SaveData.Instance.Assists.Invincible) {
-                Die();
+                Die(forceKillMaddy: true);
             }
         }
 
@@ -351,7 +352,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return false;
         }
 
-        public void Die() {
+        public void Die(bool forceKillMaddy) {
             if (!dead) {
                 dead = true;
                 Remove(Hold);
@@ -360,6 +361,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 sprite.Visible = false;
                 Depth = -1000000;
                 AllowPushing = false;
+
+                if (KillMaddyOnExplosion || forceKillMaddy) {
+                    Scene.Tracker.GetEntity<Player>()?.Die(Vector2.Zero);
+                }
             }
         }
 

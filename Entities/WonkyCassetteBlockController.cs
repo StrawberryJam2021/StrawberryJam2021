@@ -3,7 +3,6 @@ using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -22,6 +21,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public readonly int ExtraBoostFrames;
 
+        private readonly string DisableFlag;
+
         private float beatIncrement;
         private int maxBeats;
 
@@ -30,9 +31,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private EventInstance snapshot;
 
         public WonkyCassetteBlockController(EntityData data, Vector2 offset)
-            : this(data.Position + offset, data.Int("bpm"), data.Int("bars"), data.Attr("timeSignature"), data.Attr("sixteenthNoteParam", "sixteenth_note"), data.Float("cassetteOffset"), data.Int("boostFrames", 1)) { }
+            : this(data.Position + offset, data.Int("bpm"), data.Int("bars"), data.Attr("timeSignature"), data.Attr("sixteenthNoteParam", "sixteenth_note"), data.Float("cassetteOffset"), data.Int("boostFrames", 1), data.Attr("disableFlag")) { }
 
-        public WonkyCassetteBlockController(Vector2 position, int bpm, int bars, string timeSignature, string param, float cassetteOffset, int boostFrames)
+        public WonkyCassetteBlockController(Vector2 position, int bpm, int bars, string timeSignature, string param, float cassetteOffset, int boostFrames, string disableFlag)
             : base(position) {
             this.bpm = bpm;
             this.bars = bars;
@@ -50,6 +51,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 throw new ArgumentException($"Boost Frames must be 1 or greater, but is set to {boostFrames}.");
 
             ExtraBoostFrames = boostFrames - 1;
+
+            this.DisableFlag = disableFlag;
+        }
+
+        public void DisableAndReset(Scene scene, StrawberryJam2021Session session) {
+            session.MusicBeatTimer = 0;
+            session.MusicWonkyBeatIndex = 0;
+
+            session.CassetteBeatTimer = session.MusicBeatTimer - cassetteOffset;
+            session.CassetteWonkyBeatIndex = 0;
+            
+            var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>();
+
+            foreach (WonkyCassetteBlock wonkyBlock in wonkyBlocks) {
+                wonkyBlock.Activated = false;
+            }
+
+            session.CassetteBlocksDisabled = true;
         }
 
         public override void Awake(Scene scene) {
@@ -80,17 +99,48 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // Re-synchronize the beat timers
             // Positive offsets will make the cassette blocks lag behind the music progress
             session.CassetteBeatTimer = session.MusicBeatTimer - cassetteOffset;
+
+            // Reset timers on song change
+            if (session.CassetteBlocksLastParameter != param) {
+                DisableAndReset(scene, session);
+                session.CassetteBlocksLastParameter = param;
+            }
         }
 
-        private void AdvanceMusic(float time, Scene scene, EventInstance sfx, StrawberryJam2021Session session) {
+        public void CheckDisableAndReset() {
+            StrawberryJam2021Session session = StrawberryJam2021Module.Session;
+
+            if (DisableFlag.Length == 0) {
+                if (session.CassetteBlocksDisabled)
+                    session.CassetteBlocksDisabled = false;
+                return;
+            }
+
+            Level level = SceneAs<Level>();
+            bool shouldDisable = level.Session.GetFlag(DisableFlag);
+
+            if (!session.CassetteBlocksDisabled && shouldDisable) {
+                DisableAndReset(level, session);
+
+            } else if (session.CassetteBlocksDisabled && !shouldDisable) {
+                session.CassetteBlocksDisabled = false;
+            }
+        }
+
+        private void AdvanceMusic(float time, Scene scene, StrawberryJam2021Session session) {
+            CheckDisableAndReset();
+
+            if (session.CassetteBlocksDisabled)
+                return;
+
             session.CassetteBeatTimer += time;
 
             if (session.CassetteBeatTimer >= beatIncrement) {
-                
+
                 session.CassetteBeatTimer -= beatIncrement;
-                
+
                 // beatIndex is always in sixteenth notes
-                var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>().ToList();
+                var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>();
                 int nextBeatIndex = (session.CassetteWonkyBeatIndex + 1) % maxBeats;
                 int beatInBar = session.CassetteWonkyBeatIndex / (16 / beatLength) % barLength; // current beat
 
@@ -108,7 +158,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 // Doing this here because it would go to the next beat with a sixteenth note offset at start
                 session.CassetteWonkyBeatIndex = (session.CassetteWonkyBeatIndex + 1) % maxBeats;
             }
-            
+
             session.MusicBeatTimer += time;
 
             if (session.MusicBeatTimer >= beatIncrement) {
@@ -140,16 +190,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Audio.Play("event:/game/general/cassette_block_switch_2");
                 sfx.start();
             } else {
-                AdvanceMusic(Engine.DeltaTime, Scene, sfx, StrawberryJam2021Module.Session);
+                AdvanceMusic(Engine.DeltaTime, Scene, StrawberryJam2021Module.Session);
             }
         }
 
         public static void Load() {
             On.Celeste.Level.LoadLevel += Level_LoadLevel;
+            On.Monocle.Engine.Update += Engine_Update;
         }
 
         public static void Unload() {
             On.Celeste.Level.LoadLevel -= Level_LoadLevel;
+            On.Monocle.Engine.Update -= Engine_Update;
         }
 
         private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
@@ -158,7 +210,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             StrawberryJam2021Session session = StrawberryJam2021Module.Session;
             foreach (WonkyCassetteBlock wonkyBlock in self.Tracker.GetEntities<WonkyCassetteBlock>()) {
                 WonkyCassetteBlockController controller = self.Tracker.GetEntity<WonkyCassetteBlockController>();
-                wonkyBlock.SetActivatedSilently(controller != null && wonkyBlock.OnAtBeats.Contains(session.CassetteWonkyBeatIndex / (16 / controller.beatLength) % controller.barLength));
+                wonkyBlock.SetActivatedSilently(controller != null && !session.CassetteBlocksDisabled && wonkyBlock.OnAtBeats.Contains(session.CassetteWonkyBeatIndex / (16 / controller.beatLength) % controller.barLength));
+            }
+        }
+
+        private static void Engine_Update(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gametime) {
+            float oldFreezeTimer = Engine.FreezeTimer;
+
+            orig(self, gametime);
+
+            if (!Engine.DashAssistFreeze && oldFreezeTimer > 0f) {
+                Engine.Scene.Tracker.GetEntity<WonkyCassetteBlockController>()?.AdvanceMusic(Engine.DeltaTime, Engine.Scene, StrawberryJam2021Module.Session);
+                Engine.Scene.Tracker.GetEntities<WonkyCassetteBlock>().ForEach(block => block.Update());
             }
         }
     }
