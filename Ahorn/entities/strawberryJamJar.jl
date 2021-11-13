@@ -12,7 +12,7 @@ const placements = Ahorn.PlacementDict(
 )
 
 Ahorn.editingOptions(entity::StrawberryJamJar) = Dict{String, Any}(
-    "sprite" => String["trailer"],
+    "sprite" => String["trailer", "beginner", "intermediate", "advanced", "expert", "grandmaster"],
     "returnToLobbyMode" => String["SetReturnToHere", "RemoveReturn", "DoNotChangeReturn"]
 )
 

@@ -4,6 +4,7 @@ using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
+using System;
 using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
@@ -48,7 +49,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (animation == "before_fill") {
                 sprite.OnChange = (lastAnimationId, currentAnimationId) => {
                     if (currentAnimationId == "fill") {
-                        SoundSource sound = new SoundSource(new Vector2(0, -20f), CustomSoundEffects.game_jars_open_demo) { RemoveOnOneshotEnd = true };
+                        SoundSource sound = new SoundSource(new Vector2(0, -20f), pickFillSoundEffect(spriteName)) { RemoveOnOneshotEnd = true };
                         new DynData<SoundSource>(sound).Get<EventInstance>("instance").setVolume(0.3f);
                         Add(sound);
                     }
@@ -73,6 +74,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     { "allowSaving", allowSaving }
                 }
             }, Vector2.Zero));
+        }
+
+        private string pickFillSoundEffect(string spriteName) {
+            switch (spriteName) {
+                case "beginner":
+                    return CustomSoundEffects.game_jars_open_beginner;
+                case "intermediate":
+                    return CustomSoundEffects.game_jars_open_intermediate;
+                case "advanced":
+                    return CustomSoundEffects.game_jars_open_advanced;
+                case "expert":
+                    return CustomSoundEffects.game_jars_open_expert;
+                case "grandmaster":
+                    return CustomSoundEffects.game_jars_open_grandmaster;
+                default:
+                    return CustomSoundEffects.game_jars_open_demo;
+            }
         }
     }
 }
