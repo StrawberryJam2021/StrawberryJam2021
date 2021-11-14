@@ -79,7 +79,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             UpdateY();
             Depth = Depths.Pickups;
-            Collider = new Hitbox(12f, 12f, -6f, -6f);
+            Collider = new Hitbox(16f, 16f, -8f, -8f);
         }
 
         public override void Update() {
