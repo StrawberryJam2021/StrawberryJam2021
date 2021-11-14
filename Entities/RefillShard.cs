@@ -34,7 +34,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool renderShard; //we can't use the standard Visible modifier without removing the dotted outline
 
-        public RefillShard(RefillShardController controller, Vector2 position, int index, bool two, bool groundReset, bool oneUse) 
+        public RefillShard(RefillShardController controller, Vector2 position, int index, bool two, bool groundReset) 
             : base(position) {
             this.index = index;
             this.controller = controller;
@@ -72,33 +72,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             flash.OnFinish = (_) => flash.Visible = false;
             flash.CenterOrigin();
 
-            
+            Add(outlineSprite = new Sprite(GFX.Game, $"objects/StrawberryJam2021/refillShard/outline"));
+            outlineSprite.AddLoop("idle", "", 0.1f);
+            outlineSprite.Play("idle");
+            outlineSprite.CenterOrigin();
+            outlineSprite.Rotation = sprite.Rotation;
 
-            sprite.Rotation = flash.Rotation = Calc.Random.Next(4) * ((float) Math.PI / 2f);
+            outlineSprite.Rotation = sprite.Rotation = flash.Rotation = Calc.Random.Next(4) * ((float) Math.PI / 2f);
 
-            
-
-
-            
-
-            if (!oneUse) {
-                Add(outlineSprite = new Sprite(GFX.Game, $"objects/StrawberryJam2021/refillShard/{("outline")}"));
-                outlineSprite.AddLoop("idle", "", 0.1f);
-                outlineSprite.Play("idle");
-                outlineSprite.CenterOrigin();
-                outlineSprite.Rotation = sprite.Rotation;
-                
-            } else {
-                
-            }
-
-            Add(wiggler = Wiggler.Create(1f, 4f, value => {
-                sprite.Scale = flash.Scale = Vector2.One * (1f + value * 0.2f);
-                if (outlineSprite is not null) {
-                    outlineSprite.Scale = sprite.Scale;
-                }
-            }
-            ));
+            Add(wiggler = Wiggler.Create(1f, 4f, value => sprite.Scale = outlineSprite.Scale = flash.Scale = Vector2.One * (1f + value * 0.2f)));
 
             Add(bloom = new BloomPoint(0.8f, 8f));
             Add(light = new VertexLight(Color.White, 1f, 8, 32));
@@ -151,11 +133,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (sprite.Visible && renderShard) 
                 sprite.DrawOutline();
            
-            if (outlineSprite is not null) {
-                outlineSprite.RenderPosition = start + new Vector2(0, sine.Value * 2f);
-                outlineSprite.Render();
-            }
-            
+            outlineSprite.RenderPosition = start + new Vector2(0, sine.Value * 2f);
+            outlineSprite.Render();
+
             if (renderShard)
                 base.Render();
         }
@@ -181,10 +161,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void UpdateY() {
-            flash.Y = sprite.Y = bloom.Y = sine.Value * 2f;
-            if (outlineSprite is not null) {
-                outlineSprite.Y = sprite.Y;
-            }
+            outlineSprite.Y = flash.Y = sprite.Y = bloom.Y = sine.Value * 2f;
         }
 
         private void OnGainLeader() {

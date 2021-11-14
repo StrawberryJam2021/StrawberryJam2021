@@ -48,7 +48,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Shards = new List<RefillShard>();
 
             for (int i = 0; i < nodes.Length; i++) {
-                var shard = new RefillShard(this, nodes[i], i, twoDashes, resetOnGround, oneUse);
+                var shard = new RefillShard(this, nodes[i], i, twoDashes, resetOnGround);
                 Shards.Add(shard);
                 scene.Add(shard);
             }
