@@ -163,6 +163,20 @@
         <Loop id="full" path="jarfull_idle" delay="0.1"/>
     </jamJar_trailer>
 
+    <jamJar_beginner path="objects/StrawberryJam2021/jamJar/beginner/" start="empty">
+        <Justify x="0.5" y="1"/>
+        <Loop id="empty" path="jarempty_idle" delay="0.1"/>
+        <Anim id="before_fill" path="jarempty_idle" delay="0.1" frames="8-15" goto="fill"/>
+        <Anim id="fill" path="jarfill_" delay="0.1" goto="full"/>
+        <Anim id="full" path="jarfull_idle" delay="0.1" goto="full:9,fullB:1"/>
+        <Anim id="fullB" path="idle_b/jartilt_" delay="0.1" goto="full:9,fullB:1"/>
+    </jamJar_beginner>
+
+    <jamJar_intermediate copy="jamJar_beginner" path="objects/StrawberryJam2021/jamJar/intermediate/"/>
+    <jamJar_advanced copy="jamJar_beginner" path="objects/StrawberryJam2021/jamJar/advanced/"/>
+    <jamJar_expert copy="jamJar_beginner" path="objects/StrawberryJam2021/jamJar/expert/"/>
+    <jamJar_grandmaster copy="jamJar_beginner" path="objects/StrawberryJam2021/jamJar/grandmaster/"/>
+
     <!--Resizable Dash Switch lightning effect-->
     <bigSwitch_lightning path="objects/StrawberryJam2021/bigDashSwitch/" start="hit">
         <Justify x="0.5" y="0.5"/>
@@ -171,7 +185,7 @@
 
     <!--Pocket Umbrella-->
     <pocketUmbrella path="objects/StrawberryJam2021/pocketUmbrella/" start="held">
-		<Justify x="0.5" y="0.58"/>
+        <Justify x="0.5" y="0.58"/>
         <Anim id="spawn" path="spawn" delay="0.06" goto="held"/>
         <Loop id="held" path="held" delay="0.1"/>
         <Anim id="fall" path="fall" delay="0.06" goto="fallLoop"/>
