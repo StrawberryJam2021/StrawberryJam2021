@@ -32,7 +32,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private VertexLight light;
         private SineWave sine;
 
-        private bool renderShard; //we can't use the standard Visible modifier without removing the dotted outline
+        private bool renderShard; //we can't use the standard Visible modifier without removing the dotted outline after grabbing a shard
 
         public RefillShard(RefillShardController controller, Vector2 position, int index, bool two, bool groundReset) 
             : base(position) {
