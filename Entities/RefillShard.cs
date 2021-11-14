@@ -23,6 +23,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private Sprite sprite;
         private Sprite flash;
+        private Sprite outlineSprite;
         private ParticleType p_shatter;
         private ParticleType p_regen;
         private ParticleType p_glow;
@@ -31,7 +32,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private VertexLight light;
         private SineWave sine;
 
-        public RefillShard(RefillShardController controller, Vector2 position, int index, bool two, bool groundReset) 
+        private bool renderShard; //we can't use the standard Visible modifier without removing the dotted outline
+
+        public RefillShard(RefillShardController controller, Vector2 position, int index, bool two, bool groundReset, bool oneUse) 
             : base(position) {
             this.index = index;
             this.controller = controller;
@@ -69,9 +72,33 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             flash.OnFinish = (_) => flash.Visible = false;
             flash.CenterOrigin();
 
+            
+
             sprite.Rotation = flash.Rotation = Calc.Random.Next(4) * ((float) Math.PI / 2f);
 
-            Add(wiggler = Wiggler.Create(1f, 4f, value => sprite.Scale = flash.Scale = Vector2.One * (1f + value * 0.2f)));
+            
+
+
+            
+
+            if (!oneUse) {
+                Add(outlineSprite = new Sprite(GFX.Game, $"objects/StrawberryJam2021/refillShard/{("outline")}"));
+                outlineSprite.AddLoop("idle", "", 0.1f);
+                outlineSprite.Play("idle");
+                outlineSprite.CenterOrigin();
+                outlineSprite.Rotation = sprite.Rotation;
+                
+            } else {
+                
+            }
+
+            Add(wiggler = Wiggler.Create(1f, 4f, value => {
+                sprite.Scale = flash.Scale = Vector2.One * (1f + value * 0.2f);
+                if (outlineSprite is not null) {
+                    outlineSprite.Scale = sprite.Scale;
+                }
+            }
+            ));
 
             Add(bloom = new BloomPoint(0.8f, 8f));
             Add(light = new VertexLight(Color.White, 1f, 8, 32));
@@ -80,6 +107,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             UpdateY();
             Depth = Depths.Pickups;
             Collider = new Hitbox(16f, 16f, -8f, -8f);
+
+            renderShard = true;
         }
 
         public override void Update() {
@@ -119,9 +148,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
-            if (sprite.Visible)
+            if (sprite.Visible && renderShard) 
                 sprite.DrawOutline();
-            base.Render();
+           
+            if (outlineSprite is not null) {
+                outlineSprite.RenderPosition = start + new Vector2(0, sine.Value * 2f);
+                outlineSprite.Render();
+            }
+            
+            if (renderShard)
+                base.Render();
         }
 
         public void OnCollectCutscene() {
@@ -139,13 +175,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 RemoveSelf();
             } else {
                 Collidable = false;
-                Visible = false;
+                renderShard = false;
                 Add(Alarm.Create(Alarm.AlarmMode.Oneshot, Respawn, 3.6f + (index * 0.1f), true));
             }
         }
 
         private void UpdateY() {
             flash.Y = sprite.Y = bloom.Y = sine.Value * 2f;
+            if (outlineSprite is not null) {
+                outlineSprite.Y = sprite.Y;
+            }
         }
 
         private void OnGainLeader() {
@@ -178,7 +217,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 float dir = Calc.Random.NextFloat((float) Math.PI * 2f);
                 SceneAs<Level>().ParticlesFG.Emit(StrawberrySeed.P_Burst, 1, Position + Calc.AngleToVector(dir, 4f), Vector2.Zero, dir);
             }
-            Visible = false;
+            renderShard = false;
             yield return 0.3f + (index * 0.1f);
 
             Respawn();
@@ -195,7 +234,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             SceneAs<Level>().ParticlesFG.Emit(p_regen, 8, Position, Vector2.One * 2f);
             sprite.Scale = flash.Scale = Vector2.One;
             wiggler.Start();
-            Visible = true;
+            renderShard = true;
             Collidable = true;
             Finished = false;
         }
