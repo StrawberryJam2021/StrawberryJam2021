@@ -76,7 +76,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             outlineSprite.AddLoop("idle", "", 0.1f);
             outlineSprite.Play("idle");
             outlineSprite.CenterOrigin();
-            outlineSprite.Rotation = sprite.Rotation;
 
             outlineSprite.Rotation = sprite.Rotation = flash.Rotation = Calc.Random.Next(4) * ((float) Math.PI / 2f);
 
