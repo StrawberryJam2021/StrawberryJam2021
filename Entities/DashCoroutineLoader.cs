@@ -93,14 +93,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static bool CheckForNewToggleSwapBlocks(Player player) {
             if (!(player.DashDir.X != 0f && Input.GrabCheck))
                 return false; // We wanna get rid of this case because it's the initial case that we dont wanna worry about.
-            NewToggleSwapBlock ntsb = player.CollideFirst<NewToggleSwapBlock>(player.Position + Vector2.UnitX * Math.Sign(player.DashDir.X)); //Same thing as the SwapBlock but with NewToggleSwapBlock
+            ToggleSwapBlock ntsb = player.CollideFirst<ToggleSwapBlock>(player.Position + Vector2.UnitX * Math.Sign(player.DashDir.X)); //Same thing as the SwapBlock but with NewToggleSwapBlock
             return ntsb != null && !ntsb.allowDashSliding && Math.Sign(ntsb.Direction.X) == Math.Sign(player.DashDir.X); //if this is true then brtrue will pass it back to the inside of the if statement
         }
 
         //Important detail! Since swapCancel's X and Y values are 1 and 0 only we can do this. Normally we wouldn't be allowed to do this.
         private static Vector2 ModifyDashSpeedWithSwapBlock(Vector2 orig, Player player) {
             Vector2 swapCancel = orig;
-            foreach (NewToggleSwapBlock entity in player.Scene.Tracker.GetEntities<NewToggleSwapBlock>()) {
+            foreach (ToggleSwapBlock entity in player.Scene.Tracker.GetEntities<ToggleSwapBlock>()) {
                 if (entity != null && !entity.allowDashSliding && entity.moving && entity.GetPlayerRider() == player) {
                     if (player.DashDir.X != 0f && Math.Sign(entity.Direction.X) == Math.Sign(player.DashDir.X)) {
                         player.Speed.X = (swapCancel.X = 0f);

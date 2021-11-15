@@ -1,293 +1,311 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Entities;
+using FMOD.Studio;
+using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-using MonoMod.RuntimeDetour;
-using MonoMod.Utils;
-using FMOD.Studio;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    public static class ToggleSwapBlock {
-        private const int STAY = 8, DONE = 9;
-        private const float vanillaSpeed = 360f;
-        private static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
-        private static string defaultIndicatorPath = "objects/StrawberryJam2021/toggleIndicator/plain/";
-        private static Type toggleSwapBlockType = Everest.Modules.FirstOrDefault(m => m.Metadata.Name == "CanyonHelper").GetType().Assembly.GetType("Celeste.Mod.CanyonHelper.ToggleSwapBlock");
-        private static MethodInfo getNextNode = toggleSwapBlockType.GetMethod("GetNextNode", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static MethodInfo recalculateLaserColor = toggleSwapBlockType.GetMethod("RecalculateLaserColor", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static string[] privateHookMethods = new string[] {
-            "RecalculateLaserColor",
-            "DrawBlockStyle",
-            "OnPlayerDashed"
-        };
-        private static string[] publicHookMethods = new string[] {
-            "Added",
-            "Update"
-        };
-        private static List<Hook> hooks = new List<Hook>();
+	[Tracked]
+	[CustomEntity("SJ2021/ToggleSwapBlock")]
+	public class ToggleSwapBlock : Solid {
+		private const int STAY = 8, DONE = 9;
+		private static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
+		private static readonly string defaultIndicatorPath = "objects/StrawberryJam2021/toggleIndicator/plain/";
+		private static readonly string defaultStartAudio = "event:/game/05_mirror_temple/swapblock_move";
+		private static readonly string defaultStopAudio = "event:/game/05_mirror_temple/swapblock_move_end";
+		private DashListener dashListener;
+		private EventInstance moveSfx;
+		private Color offColor = Color.DarkGray;
+		private Color onColor = Color.MediumPurple;
+		private Color endColor = new Color(0.65f, 0.4f, 0.4f);
+		private ToggleBlockLaser[] lasers;
+		private int laserCount;
+		//private Sprite middleRed;
+		private float lerp;
+		private MTexture[,] nineSliceBlock;
+		private Vector2[] nodes;
+		private ToggleBlockNode[] nodeTextures;
+		private int nodeIndex = 0;
+		public bool moving = false;
+		private float travelSpeed = 5f;
+		private bool oscillate = false;
+		private bool returning = false;
+		private bool stopAtEnd = false;
+		public Vector2 Direction = Vector2.Zero;
+		private bool stopped = false;
+		private string customTexturePath;
+		private Level level => (Level) (object) (Level) base.Scene;
 
-        private class DataComponent : Component {
-            public readonly bool useIndicators;
-            public readonly string indicatorPath;
-            public readonly bool isConstant;
-            public readonly float speed;
-            public readonly bool disableTracks;
-            public readonly bool allowDashSliding;
-            public readonly bool accelerate;
-            public MTexture indicatorTexture;
+		private readonly bool useIndicators;
+		public readonly string indicatorPath;
+		public MTexture indicatorTexture;
+		public readonly bool allowDashSliding;
+		private readonly bool disableTracks;
+		private readonly bool isConstant;
+		private readonly float constantSpeed;
+		private const float vanillaSpeed = 360f;
+		private readonly bool accelerate;
+		private readonly string startAudio;
+		private readonly string stopAudio;
+		private float speed;
+		private Vector2 targetPosition;
+		private Vector2 startPosition;
+		private Vector2 lerpVector;
 
-            public DataComponent(bool useIndicators, string indicatorPath, bool isConstant, float speed, bool disableTracks, bool allowDashSliding, bool accelerate) : base(false, false) {
-                this.useIndicators = useIndicators;
-                this.indicatorPath = indicatorPath;
-                this.isConstant = isConstant;
-                this.speed = speed;
-                this.disableTracks = disableTracks;
-                this.allowDashSliding = allowDashSliding;
-                this.accelerate = accelerate;
-            }
+		public ToggleSwapBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, false) {
+			base.Depth = -9999;
+			nodes = new Vector2[data.Nodes.Length + 1];
+			nodes[0] = base.Position;
+			for (int i = 0; i < data.Nodes.Length; i++) {
+				nodes[i + 1] = data.NodesOffset(offset)[i];
+			}
+			travelSpeed = data.Float("travelSpeed", 5f);
+			oscillate = data.Bool("oscillate", false);
+			stopAtEnd = data.Bool("stopAtEnd", false);
+			customTexturePath = data.Attr("customTexturePath", "");
+			allowDashSliding = data.Bool("allowDashSliding", false);
+			isConstant = data.Bool("constantSpeed", false);
+			if (isConstant) {
+				constantSpeed = travelSpeed * vanillaSpeed;
+				travelSpeed = constantSpeed;
+			}
+			accelerate = data.Bool("accelerate", false);
+			disableTracks = nodes.Length < 2 || data.Bool("disableTracks", false);
+			useIndicators = data.Bool("directionIndicator", false);
+			startAudio = GetDefaultIfEmpty(data, "customStartAudio", defaultStartAudio);
+			stopAudio = GetDefaultIfEmpty(data, "customStopAudio", defaultStopAudio);
+			indicatorPath = GetDefaultIfEmpty(data, "customIndicatorPath", defaultIndicatorPath);
+			if (indicatorPath.Last() != '/') {
+				indicatorPath += '/';
+			}
+			DashListener val = new DashListener();
+			DashListener val2 = val;
+			dashListener = val;
+			base.Add(val2);
+			base.Add(new LightOcclude(0.2f));
+			dashListener.OnDash = OnPlayerDashed;
+			MTexture val3 = GFX.Game[(customTexturePath.Length <= 0) ? "objects/canyon/toggleblock/block1" : customTexturePath];
+			nineSliceBlock = new MTexture[3, 3];
+			for (int j = 0; j < 3; j++) {
+				for (int k = 0; k < 3; k++) {
+					nineSliceBlock[j, k] = val3.GetSubtexture(new Rectangle(j * 8, k * 8, 8, 8));
+				}
+			}
+			if (oscillate || stopAtEnd || nodes.Length <= 2) {
+				laserCount = nodes.Length - 1;
+			} else {
+				laserCount = nodes.Length;
+			}
+			lasers = new ToggleBlockLaser[laserCount];
+			nodeTextures = new ToggleBlockNode[nodes.Length];
+		}
+
+		private string GetDefaultIfEmpty(EntityData data, string attrName, string defaultAttr) {
+			string attr = data.Attr(attrName, "");
+			return attr.Equals("") ? defaultAttr : attr;
         }
 
-        public static void Load() {
-            Everest.Events.Level.OnLoadEntity += OnLoadEntity;
-            CreateHooks(privateHookMethods, BindingFlags.NonPublic);
-            CreateHooks(publicHookMethods, BindingFlags.Public);
-        }
+		public override void Added(Scene scene) {
+			base.Added(scene);
+			if (!disableTracks) {
+				Vector2 radius = new Vector2(base.Width, base.Height) / 2f;
+				if (nodes.Length != 2) {
+					for (int i = 0; i < laserCount; i++) {
+						level.Add(lasers[i] = Engine.Pooler.Create<ToggleBlockLaser>().Init(nodes[i] + radius, nodes[GetNextNode(i)] + radius));
+					}
+				} else {
+					level.Add(lasers[0] = Engine.Pooler.Create<ToggleBlockLaser>().Init(nodes[0] + radius, nodes[1] + radius));
+				}
+				for (int j = 0; j < nodes.Length; j++) {
+					level.Add(nodeTextures[j] = Engine.Pooler.Create<ToggleBlockNode>().Init(nodes[j] + radius));
+				}
+			}
+			UpdateSegment();
+		}
 
-        public static void Unload() {
-            Everest.Events.Level.OnLoadEntity -= OnLoadEntity;
-            foreach (Hook hook in hooks) {
-                hook.Dispose();
-            }
-            hooks.Clear();
-        }
+		private int GetNextNode(int node) {
+			if (!oscillate && node == nodes.Length - 1) {
+				return 0;
+			}
+			if (!oscillate) {
+				return node + 1;
+			}
+			if (node == nodes.Length - 1) {
+				return node - 1;
+			}
+			if (node != 0) {
+				return node + ((!returning) ? 1 : (-1));
+			}
+			return 1;
+		}
 
-        private static void CreateHooks(string[] methodNames, BindingFlags publicFlag) {
-            foreach (string name in methodNames) {
-                hooks.Add(new Hook(toggleSwapBlockType.GetMethod(name, publicFlag | BindingFlags.Instance),
-                    typeof(ToggleSwapBlock).GetMethod("Mod" + name, BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(toggleSwapBlockType)));
-            }
-        }
+		public override void Removed(Scene scene) {
+			base.Removed(scene);
+			if (moveSfx != null) {
+				Audio.Stop(moveSfx, true);
+			}
+		}
 
-        private static bool OnLoadEntity(Level level, LevelData levelData, Vector2 offset, EntityData entityData) {
-            bool isSJToggleBlock = entityData.Name == "SJ2021/ToggleSwapBlock";
-            if (isSJToggleBlock) {
-                Entity block = (Entity) Activator.CreateInstance(toggleSwapBlockType, new object[] { entityData, offset });
-                bool useIndicators = entityData.Bool("directionIndicator", true);
-                bool isConstant = entityData.Bool("constantSpeed", false);
-                float speed = vanillaSpeed * entityData.Float("travelSpeed", 1f);
-                string indicatorPath = entityData.Attr("customIndicatorPath", "");
-                if (indicatorPath == "") {
-                    indicatorPath = defaultIndicatorPath;
-                }
-                if (indicatorPath.Last() != '/') {
-                    indicatorPath += '/';
-                }
-                bool disableTracks = entityData.Bool("disableTracks", false);
-                bool allowDashSliding = entityData.Bool("allowDashSliding", false);
-                bool accelerate = entityData.Bool("accelerate", false);
-                Component dataComponent = new DataComponent(useIndicators, indicatorPath, isConstant, speed, disableTracks, allowDashSliding, accelerate);
-                block.Add(dataComponent);
-                level.Add(block);
-            }
-            return isSJToggleBlock;
-        }
+		public override void SceneEnd(Scene scene) {
+			base.SceneEnd(scene);
+			if (moveSfx != null) {
+				Audio.Stop(moveSfx, true);
+			}
+		}
 
-        private static void ModOnPlayerDashed<ToggleSwapBlock>(Action<ToggleSwapBlock, Vector2> orig, ToggleSwapBlock self, Vector2 direction) where ToggleSwapBlock : Solid {
+		public override void Update() {
+			base.Update();
 
-            DataComponent dataComp = self.Get<DataComponent>();
-            if (dataComp == null || !dataComp.accelerate) {
-                orig(self, direction);
-                return;
-            }
+			if (moving) {
+				if (base.Position != targetPosition) {
+					speed = Calc.Approach(speed, travelSpeed, travelSpeed / 0.2f * Engine.DeltaTime);
+					lerp = Calc.Approach(lerp, 1f, speed * Engine.DeltaTime);
+					base.MoveTo(Vector2.Lerp(startPosition, targetPosition, lerp), lerpVector);
+				} else {
+					lerp = 0f;
+					(base.Scene as Level).Displacement.AddBurst(base.Center, 0.2f, 0f, 16f, 1f, null, null);
+					moving = false;
+					//middleRed.Play("idle", false, false);
+					Audio.Stop(moveSfx, true);
+					moveSfx = null;
+					Audio.Play(stopAudio, base.Center);
+					UpdateSegment();
+				}
+			}
+		}
 
+		private void UpdateSegment() {
+			Vector2 dir = nodes[GetNextNode(nodeIndex)] - nodes[nodeIndex];
 
-            DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
-            bool oscillate = data.Get<bool>("oscillate");
-            bool stopAtEnd = data.Get<bool>("stopAtEnd");
-            bool moving = data.Get<bool>("moving");
-            bool stopped = data.Get<bool>("stopped");
-            bool returning = data.Get<bool>("returning");
-            int nodeIndex = data.Get<int>("nodeIndex");
-            float travelSpeed = data.Get<float>("travelSpeed");
-            Vector2[] nodes = data.Get<Vector2[]>("nodes");
-            Sprite middleRed = data.Get<Sprite>("middleRed");
+			if (isConstant) {
+				travelSpeed = constantSpeed / dir.Length();
+			}
 
-            if (moving || stopped) {
-                if (stopped) {
-                    self.StartShaking(0.25f);
-                }
-                return;
-            }
-            data.Set("moving", true);
-            if (nodeIndex < nodes.Length - 1 && nodeIndex != 0) {
-                if (!returning) {
-                    nodeIndex++;
-                } else {
-                    nodeIndex--;
-                }
-            } else if (nodeIndex == 0) {
-                if (returning) {
-                    returning = false;
-                }
-                nodeIndex++;
-            } else {
-                if (stopAtEnd) {
-                    data.Set("nodeIndex", -1);
-                    data.Set("stopped", true);
-                    data.Set("moving", false);
-                    self.StartShaking(0.5f);
-                    return;
-                }
-                if (oscillate) {
-                    nodeIndex--;
-                    returning = true;
-                } else {
-                    nodeIndex = 0;
-                }
-            }
-            middleRed.Play("moving", false, false);
-            data.Set("moveSfx", Audio.Play("event:/game/05_mirror_temple/swapblock_move", self.Center));
-            Vector2 targetPosition = nodes[nodeIndex];
-            Vector2 startPosition = self.Position;
-            Vector2 dirVector = targetPosition - startPosition;
-            Vector2 lerpVector = dirVector * travelSpeed;
-            self.Scene.Tracker.GetEntity<Player>();
+			if (useIndicators) {
+				int indicator;
+				if (stopAtEnd && nodeIndex == nodes.Length - 1) {
+					indicator = DONE;
+				} else {
+					if (dir.Equals(Vector2.Zero)) {
+						indicator = STAY;
+					} else {
+						indicator = (int) Math.Round(dir.Angle() * (4 / Math.PI));
+						if (indicator < 0) {
+							indicator += 8;
+						}
+					}
+				}
+				indicatorTexture = GFX.Game[indicatorPath + paths[indicator]];
+			}
 
-            data.Set("returning", returning);
-            data.Set("nodeIndex", nodeIndex);
-            data.Set("dirVector", dirVector);
-            data.Set("lerpVector", lerpVector);
-            data.Set("targetPosition", targetPosition);
-            data.Set("startPosition", startPosition);
-            data.Set("speed", MathHelper.Lerp(travelSpeed * 0.333f, travelSpeed, 0f));
-        }
+			if (!disableTracks) {
+				Vector2 radius = new Vector2(base.Width, base.Height) / 2f;
+				for (int i = 0; i < laserCount; i++) {
+					if (lasers[i].start == nodes[nodeIndex] + radius && lasers[i].end == nodes[GetNextNode(nodeIndex)] + radius) {
+						lasers[i].color = onColor;
+					} else if (lasers[i].end == nodes[nodeIndex] + radius && lasers[i].start == nodes[GetNextNode(nodeIndex)] + radius) {
+						lasers[i].color = onColor;
+					} else {
+						lasers[i].color = offColor;
+					}
+					if (stopAtEnd && i == laserCount - 1) {
+						lasers[i].color = endColor;
+					}
+				}
+			}
+		}
 
-        private static void ModUpdate<ToggleSwapBlock>(Action<ToggleSwapBlock> orig, ToggleSwapBlock self) where ToggleSwapBlock : Platform {
-            DataComponent dataComp = self.Get<DataComponent>();
-            if (dataComp == null) {
-                orig(self);
-                return;
-            }
+		private void OnPlayerDashed(Vector2 direction) {
 
-            Player player = self.Scene.Tracker.GetEntity<Player>();
-            if (player == null || !dataComp.allowDashSliding) {
-                orig(self);
-            } else {
-                Vector2 speed = player.Speed;
-                player.StateMachine.Locked = true;
-                orig(self);
-                player.Speed = speed;
-                player.StateMachine.Locked = false;
-            }
+			if (moving || stopped) {
+				if (stopped) {
+					base.StartShaking(0.25f);
+				}
+				return;
+			}
+			moving = true;
+			if (nodeIndex < nodes.Length - 1 && nodeIndex != 0) {
+				if (!returning) {
+					nodeIndex++;
+				} else {
+					nodeIndex--;
+				}
+			} else if (nodeIndex == 0) {
+				if (returning) {
+					returning = false;
+				}
+				nodeIndex++;
+			} else {
+				if (stopAtEnd) {
+					nodeIndex = -1;
+					stopped = true;
+					moving = false;
+					base.StartShaking(0.5f);
+					return;
+				}
+				if (oscillate) {
+					nodeIndex--;
+					returning = true;
+				} else {
+					nodeIndex = 0;
+				}
+			}
+			//middleRed.Play("moving", false, false);
+			moveSfx = Audio.Play(startAudio, base.Center);
+			targetPosition = nodes[nodeIndex];
+			startPosition = base.Position;
+			Direction = targetPosition - startPosition;
+			lerpVector = Direction * travelSpeed;
+			base.Scene.Tracker.GetEntity<Player>();
 
-            if (!dataComp.accelerate) {
-                return;
-            }
+			speed = accelerate ? MathHelper.Lerp(travelSpeed * 0.333f, travelSpeed, 0f) : travelSpeed;
+		}
 
-            DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
-            bool moving = data.Get<bool>("moving");
+		public override void Render() {
+			int num = (oscillate || nodeIndex != nodes.Length - 1) ? ((!oscillate) ? (nodeIndex + 1) : ((nodeIndex == nodes.Length - 1) ? (nodeIndex - 1) : ((nodeIndex == 0) ? 1 : (nodeIndex + ((!returning) ? 1 : (-1)))))) : 0;
+			for (int i = 0; i < nodes.Length; i++) {
+				if (stopAtEnd && i == nodes.Length - 1) {
+					nodeTextures[i].color = endColor;
+				} else if (stopAtEnd && (i == 0 || (oscillate && i == nodes.Length - 2))) {
+					nodeTextures[i].color = offColor;
+				} else if (moving || stopped) {
+					nodeTextures[i].color = offColor;
+				} else {
+					nodeTextures[i].color = ((num == i) ? onColor : offColor);
+				}
+			}
+			DrawBlockStyle(base.Position + base.Shake, base.Width, base.Height, nineSliceBlock, null, Color.White);
+		}
 
-            if (!moving) {
-                return;
-            }
-
-            Vector2 targetPosition = data.Get<Vector2>("targetPosition");
-            if (self.Position != targetPosition) {
-                float travelSpeed = data.Get<float>("travelSpeed");
-                float lerp = data.Get<float>("lerp");
-                Vector2 startPosition = data.Get<Vector2>("startPosition");
-                Vector2 lerpVector = data.Get<Vector2>("lerpVector");
-                float speed = data.Get<float>("speed");
-                speed = Calc.Approach(speed, travelSpeed, travelSpeed / 0.2f * Engine.DeltaTime);
-                lerp = Calc.Approach(lerp, 1f, speed * Engine.DeltaTime);
-                self.MoveTo(Vector2.Lerp(startPosition, targetPosition, lerp), lerpVector);
-                data.Set("lerp", lerp);
-                data.Set("speed", speed);
-            } else {
-                EventInstance moveSfx = data.Get<EventInstance>("moveSfx");
-                Sprite middleRed = data.Get<Sprite>("middleRed");
-
-                data.Set("lerp", 0f);
-                (self.Scene as Level).Displacement.AddBurst(self.Center, 0.2f, 0f, 16f, 1f, null, null);
-                data.Set("moving", false);
-                middleRed.Play("idle", false, false);
-                Audio.Stop(moveSfx, true);
-                data.Set<EventInstance>("moveSfx", null);
-                Audio.Play("event:/game/05_mirror_temple/swapblock_move_end", self.Center);
-                recalculateLaserColor.Invoke(self, new object[] { });
-            }
-        }
-
-        private static void ModAdded<ToggleSwapBlock>(Action<ToggleSwapBlock, Scene> orig, ToggleSwapBlock self, Scene scene) where ToggleSwapBlock : Entity {
-            orig(self, scene);
-
-            DataComponent dataComp = self.Get<DataComponent>();
-            if (dataComp == null || !dataComp.disableTracks) {
-                return;
-            }
-
-            DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
-            HideEntities(data.Get<Entity[]>("lasers"));
-            HideEntities(data.Get<Entity[]>("nodeTextures"));
-        }
-
-        private static void HideEntities(Entity[] entities) {
-            foreach (Entity e in entities) {
-                e.Visible = false;
-            }
-        }
-
-        private static void ModRecalculateLaserColor<ToggleSwapBlock>(Action<ToggleSwapBlock> orig, ToggleSwapBlock self) where ToggleSwapBlock : Entity {
-            orig(self);
-
-            DataComponent dataComp = self.Get<DataComponent>();
-            if (dataComp == null) {
-                return;
-            }
-
-            ((object) null).GetType();
-
-            DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
-            Vector2[] nodes = data.Get<Vector2[]>("nodes");
-            int currNode = data.Get<int>("nodeIndex");
-            int nextNode = (int) getNextNode.Invoke(self, new object[] { currNode });
-            Vector2 dir = nodes[nextNode] - nodes[currNode];
-
-            if (dataComp.useIndicators) {
-                bool stopAtEnd = data.Get<bool>("stopAtEnd");
-                int indicator;
-                if (stopAtEnd && currNode == nodes.Length - 1) {
-                    indicator = DONE;
-                } else {
-                    if (dir.Equals(Vector2.Zero)) {
-                        indicator = STAY;
-                    } else {
-                        indicator = (int) Math.Round(dir.Angle() * (4 / Math.PI));
-                        if (indicator < 0) {
-                            indicator += 8;
-                        }
-                    }
-                }
-                dataComp.indicatorTexture = GFX.Game[dataComp.indicatorPath + paths[indicator]];
-            }
-
-            if (dataComp.isConstant) {
-                data.Set("travelSpeed", dataComp.speed / dir.Length());
-            }
-        }
-
-        private static void ModDrawBlockStyle<ToggleSwapBlock>(Action<ToggleSwapBlock, Vector2, float, float, MTexture[,], Sprite, Color> orig,
-            ToggleSwapBlock self, Vector2 pos, float width, float height, MTexture[,] ninSlice, Sprite middle, Color color) where ToggleSwapBlock : Entity {
-            DataComponent dataComp = self.Get<DataComponent>();
-
-            if (dataComp == null || !dataComp.useIndicators) {
-                orig(self, pos, width, height, ninSlice, middle, color);
-            } else {
-                orig(self, pos, width, height, ninSlice, null, color);
-                dataComp.indicatorTexture.DrawCentered(pos + self.Center - self.Position);
-            }
-        }
-    }
+		private void DrawBlockStyle(Vector2 pos, float width, float height, MTexture[,] ninSlice, Sprite middle, Color color) {
+			int num = (int) (width / 8f);
+			int num2 = (int) (height / 8f);
+			ninSlice[0, 0].Draw(pos + new Vector2(0f, 0f), Vector2.Zero, color);
+			ninSlice[2, 0].Draw(pos + new Vector2(width - 8f, 0f), Vector2.Zero, color);
+			ninSlice[0, 2].Draw(pos + new Vector2(0f, height - 8f), Vector2.Zero, color);
+			ninSlice[2, 2].Draw(pos + new Vector2(width - 8f, height - 8f), Vector2.Zero, color);
+			for (int i = 1; i < num - 1; i++) {
+				ninSlice[1, 0].Draw(pos + new Vector2(i * 8, 0f), Vector2.Zero, color);
+				ninSlice[1, 2].Draw(pos + new Vector2(i * 8, height - 8f), Vector2.Zero, color);
+			}
+			for (int j = 1; j < num2 - 1; j++) {
+				ninSlice[0, 1].Draw(pos + new Vector2(0f, j * 8), Vector2.Zero, color);
+				ninSlice[2, 1].Draw(pos + new Vector2(width - 8f, j * 8), Vector2.Zero, color);
+			}
+			for (int k = 1; k < num - 1; k++) {
+				for (int l = 1; l < num2 - 1; l++) {
+					ninSlice[1, 1].Draw(pos + new Vector2(k, l) * 8f, Vector2.Zero, color);
+				}
+			}
+			if (middle != null) {
+				middle.Color = color;
+				middle.RenderPosition = (pos + new Vector2(width / 2f, height / 2f));
+				middle.Render();
+			}
+			if (useIndicators) {
+				indicatorTexture.DrawCentered(pos + base.Center - base.Position);
+			}
+		}
+	}
 }
