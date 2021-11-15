@@ -1,92 +1,23 @@
-﻿using Celeste.Mod.Entities;
-using FMOD.Studio;
-using Microsoft.Xna.Framework;
-using Mono.Cecil;
+﻿using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
-using Monocle;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using System;
-using System.Collections;
 using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public static class DashCoroutineLoader {
-		private static readonly Type playerType = typeof(Player);
-        private static readonly BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
-		private static readonly MethodInfo CorrectDashPrecision = playerType.GetMethod("CorrectDashPrecision", flags);
-        private static readonly MethodInfo CallDashEvents = playerType.GetMethod("CallDashEvents", flags);
-        private static readonly MethodInfo CreateTrail = playerType.GetMethod("CreateTrail", flags);
-		//private static readonly MethodInfo DashCoroutine = playerType.GetMethod("DashCoroutine", flags);
-		private static IDetour hook_Player_DashCoroutine;
-		//private static MethodInfo m = typeof(Player).GetMethod("DashCoroutine", BindingFlags.NonPublic | BindingFlags.Instance).GetStateMachineTarget();
 
+        private static IDetour hook_Player_DashCoroutine;
 
-		public static void Load() {
-            //On.Celeste.Player.DashCoroutine += ModDashCoroutine;
+        public static void Load() {
             MethodInfo m = typeof(Player).GetMethod("DashCoroutine", BindingFlags.NonPublic | BindingFlags.Instance).GetStateMachineTarget();
             hook_Player_DashCoroutine = new ILHook(m, ModDashSpeed);
-            //hook_Player_DashCoroutine = new ILHook(m, ModDashSpeedNew);
-            //hook_Player_DashCoroutine = new ILHook(m, SetRidingState);
         }
 
         public static void Unload() {
             hook_Player_DashCoroutine.Dispose();
-        }
-
-        private static void debugWriteInstrs(Instruction instr, int numInstrs) {
-            Console.WriteLine();
-            Console.WriteLine();
-            for (int i = 0; i < numInstrs; i++) {
-                Console.WriteLine(instr.OpCode.ToString());
-                instr = instr.Next;
-            }
-            Console.WriteLine();
-            Console.WriteLine();
-        }
-
-        private static void ModDashSpeedNew(ILContext il) {
-            ILCursor cursor = new ILCursor(il);
-            int playerIndex = 1; //The assumed value is first.
-            ILLabel VanillaTarget = null;
-            if (cursor.TryGotoNext(MoveType.Before,
-                instr => instr.MatchBneUn(out VanillaTarget),
-                instr => instr.MatchLdloc(out playerIndex),
-                instr => instr.MatchLdfld<Player>("StateMachine"),
-                instr => instr.MatchLdcI4(1))
-                && VanillaTarget != null)
-            {
-                cursor.Index++; //Move after bne.un.s
-                ILCursor cursor2 = cursor.Clone();
-                //ILLabel OurTarget = cursor.MarkLabel();
-                //MethodInfo getGrabCheck = typeof(Input).GetProperty("GrabCheck", BindingFlags.Static | BindingFlags.Public).GetGetMethod();
-                //if (cursor.TryGotoPrev(MoveType.Before,
-                //    instr => instr.MatchCall(getGrabCheck)
-                //    //instr => instr.MatchBrfalse(out _)
-                //    //instr => instr.MatchRet()
-                //    ))
-                //{
-                //    //((object) null).GetType();
-
-                //    debugWriteInstrs(cursor.MarkLabel().Target, 20);
-                //    cursor.Index += 5;
-                //    debugWriteInstrs(cursor.MarkLabel().Target, 20);
-                //    for (int i = 0; i < 6; i++) {
-                //        cursor.Remove();
-                //    }
-                //    debugWriteInstrs(cursor.MarkLabel().Target, 20);
-
-                //    cursor.Emit(OpCodes.Ldloc, playerIndex);
-                //    cursor.EmitDelegate<Func<Player, bool>>(CheckForNewToggleSwapBlocks);
-                //    cursor.Emit(OpCodes.Brtrue, OurTarget);
-                //}
-                MethodInfo getOne = typeof(Vector2).GetProperty("One", BindingFlags.Static | BindingFlags.Public).GetGetMethod();
-                if (cursor2.TryGotoNext(MoveType.After, instr => instr.MatchCall(getOne))) {
-                    cursor2.Emit(OpCodes.Ldloc, playerIndex);
-                    cursor2.EmitDelegate<Func<Vector2, Player, Vector2>>(ModifyDashSpeedWithSwapBlock); 
-                }
-            }
         }
 
         private static void ModDashSpeed(ILContext il) {
@@ -160,18 +91,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static bool CheckForNewToggleSwapBlocks(Player player) {
-            //((object) null).GetType();
             if (!(player.DashDir.X != 0f && Input.GrabCheck))
                 return false; // We wanna get rid of this case because it's the initial case that we dont wanna worry about.
             NewToggleSwapBlock ntsb = player.CollideFirst<NewToggleSwapBlock>(player.Position + Vector2.UnitX * Math.Sign(player.DashDir.X)); //Same thing as the SwapBlock but with NewToggleSwapBlock
-            return ntsb != null && Math.Sign(ntsb.Direction.X) == Math.Sign(player.DashDir.X); //if this is true then brtrue will pass it back to the inside of the if statement
+            return ntsb != null && !ntsb.allowDashSliding && Math.Sign(ntsb.Direction.X) == Math.Sign(player.DashDir.X); //if this is true then brtrue will pass it back to the inside of the if statement
         }
 
         //Important detail! Since swapCancel's X and Y values are 1 and 0 only we can do this. Normally we wouldn't be allowed to do this.
         private static Vector2 ModifyDashSpeedWithSwapBlock(Vector2 orig, Player player) {
             Vector2 swapCancel = orig;
             foreach (NewToggleSwapBlock entity in player.Scene.Tracker.GetEntities<NewToggleSwapBlock>()) {
-                if (entity != null && entity.moving && entity.GetPlayerRider() == player) {
+                if (entity != null && !entity.allowDashSliding && entity.moving && entity.GetPlayerRider() == player) {
                     if (player.DashDir.X != 0f && Math.Sign(entity.Direction.X) == Math.Sign(player.DashDir.X)) {
                         player.Speed.X = (swapCancel.X = 0f);
                     }
@@ -181,119 +111,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
             return swapCancel;
-        }
-
-        private static IEnumerator ModDashCoroutine(On.Celeste.Player.orig_DashCoroutine orig, Player self) {
-            yield return null;
-
-            DynData<Player> data = new DynData<Player>(self);
-
-            Vector2 beforeDashSpeed = data.Get<Vector2>("beforeDashSpeed");
-            Level level = data.Get<Level>("level");
-
-            if (SaveData.Instance.Assists.DashAssist) {
-                Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
-            }
-            level.Displacement.AddBurst(self.Center, 0.4f, 8f, 64f, 0.5f, Ease.QuadOut, Ease.QuadOut);
-            Vector2 value = data.Get<Vector2>("lastAim");
-            if (self.OverrideDashDirection.HasValue) {
-                value = self.OverrideDashDirection.Value;
-            }
-            if (CorrectDashPrecision == null) {
-                ((object) null).GetType();
-            }
-            value = (Vector2) CorrectDashPrecision.Invoke(self, new object[] { value });
-            Vector2 speed = value * 240f;
-            if (Math.Sign(beforeDashSpeed.X) == Math.Sign(speed.X) && Math.Abs(beforeDashSpeed.X) > Math.Abs(speed.X)) {
-                speed.X = beforeDashSpeed.X;
-            }
-            self.Speed = speed;
-            if (self.CollideCheck<Water>()) {
-                self.Speed *= 0.75f;
-            }
-            self.DashDir = value;
-            data.Set("gliderBoostDir", value);
-            self.SceneAs<Level>().DirectionalShake(self.DashDir, 0.2f);
-            if (self.DashDir.X != 0f) {
-                self.Facing = (Facings) Math.Sign(self.DashDir.X);
-            }
-            CallDashEvents.Invoke(self, new object[] { });
-            if (self.StateMachine.PreviousState == 19) {
-                level.Particles.Emit(FlyFeather.P_Boost, 12, self.Center, Vector2.One * 4f, (-value).Angle());
-            }
-            if (data.Get<bool>("onGround") && self.DashDir.X != 0f && self.DashDir.Y > 0f && self.Speed.Y > 0f && (!self.Inventory.DreamDash || !self.CollideCheck<DreamBlock>(self.Position + Vector2.UnitY))) {
-                self.DashDir.X = Math.Sign(self.DashDir.X);
-                self.DashDir.Y = 0f;
-                self.Speed.Y = 0f;
-                self.Speed.X *= 1.2f;
-                self.Ducking = true;
-            }
-            SlashFx.Burst(self.Center, self.DashDir.Angle());
-            CreateTrail.Invoke(self, new object[] { });
-            if (SaveData.Instance.Assists.SuperDashing) {
-                data.Set("dashTrailTimer", 0.1f);
-                data.Set("dashTrailCounter", 2);
-            } else {
-                data.Set("dashTrailTimer", 0.08f);
-                data.Set("dashTrailCounter", 1);
-            }
-
-            if (self.DashDir.X != 0f && Input.GrabCheck) {
-                SwapBlock swapBlock = self.CollideFirst<SwapBlock>(self.Position + Vector2.UnitX * Math.Sign(self.DashDir.X));
-                if (swapBlock != null && swapBlock.Direction.X == (float) Math.Sign(self.DashDir.X)) {
-                    self.StateMachine.State = 1;
-                    self.Speed = Vector2.Zero;
-                    yield break;
-                }
-
-                NewToggleSwapBlock newToggleSwapBlock = self.CollideFirst<NewToggleSwapBlock>(self.Position + Vector2.UnitX * Math.Sign(self.DashDir.X));
-                if (newToggleSwapBlock != null && Math.Sign(newToggleSwapBlock.Direction.X) == Math.Sign(self.DashDir.X)) {
-                    self.StateMachine.State = 1;
-                    self.Speed = Vector2.Zero;
-                    yield break;
-                }
-            }
-
-            Vector2 swapCancel = Vector2.One;
-            foreach (SwapBlock entity in self.Scene.Tracker.GetEntities<SwapBlock>()) {
-                if (self.CollideCheck(entity, self.Position + Vector2.UnitY) && entity != null && entity.Swapping) {
-                    if (self.DashDir.X != 0f && entity.Direction.X == (float) Math.Sign(self.DashDir.X)) {
-                        self.Speed.X = (swapCancel.X = 0f);
-                    }
-                    if (self.DashDir.Y != 0f && entity.Direction.Y == (float) Math.Sign(self.DashDir.Y)) {
-                        self.Speed.Y = (swapCancel.Y = 0f);
-                    }
-                }
-            }
-            foreach (NewToggleSwapBlock entity in self.Scene.Tracker.GetEntities<NewToggleSwapBlock>()) {
-                if (self.CollideCheck(entity, self.Position + Vector2.UnitY) && entity != null && entity.moving) {
-                    if (self.DashDir.X != 0f && Math.Sign(entity.Direction.X) == Math.Sign(self.DashDir.X)) {
-                        self.Speed.X = (swapCancel.X = 0f);
-                    }
-                    if (self.DashDir.Y != 0f && Math.Sign(entity.Direction.Y) == Math.Sign(self.DashDir.Y)) {
-                        self.Speed.Y = (swapCancel.Y = 0f);
-                    }
-                }
-            }
-
-            if (SaveData.Instance.Assists.SuperDashing) {
-                yield return 0.3f;
-            } else {
-                yield return 0.15f;
-            }
-
-            CreateTrail.Invoke(self, new object[] { });
-            self.AutoJump = true;
-            self.AutoJumpTimer = 0f;
-            if (self.DashDir.Y <= 0f) {
-                self.Speed = self.DashDir * 160f;
-                self.Speed.X *= swapCancel.X;
-                self.Speed.Y *= swapCancel.Y;
-            }
-            if (self.Speed.Y < 0f) {
-                self.Speed.Y *= 0.75f;
-            }
-            self.StateMachine.State = 0;
         }
     }
 }

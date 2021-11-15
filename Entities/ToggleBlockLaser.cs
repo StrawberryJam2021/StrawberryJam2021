@@ -18,7 +18,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 		public Color color;
 
-		public Vector2 start;
+        public Vector2 start;
 
 		public Vector2 end;
 

@@ -247,6 +247,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
 
+            ((object) null).GetType();
+
             DynData<ToggleSwapBlock> data = new DynData<ToggleSwapBlock>(self);
             Vector2[] nodes = data.Get<Vector2[]>("nodes");
             int currNode = data.Get<int>("nodeIndex");
