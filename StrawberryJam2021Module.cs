@@ -17,7 +17,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
         public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
         private SpriteBank _CustomEntitySpriteBank;
 
-
         public StrawberryJam2021Module() {
             Instance = this;
         }
@@ -52,6 +51,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DirectionalBooster.Load();
             HintController.Load();
             RainDensityTrigger.Load();
+            ZeroGBarrier.Load();
+            DarkMatterHooks.Load();
         }
 
         public override void Unload() {
@@ -84,6 +85,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DirectionalBooster.Unload();
             HintController.Unload();
             RainDensityTrigger.Unload();
+            ZeroGBarrier.Unload();
+            DarkMatterHooks.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -101,6 +104,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
             PocketUmbrella.LoadParticles();
             Paintbrush.LoadParticles();
             NodedCloud.LoadParticles();
+            DarkMatterHooks.LoadContent(firstLoad);
+
+            Utilities.LoadContent();
         }
         // Temporary code from vivhelper
         public static bool VivHelperGetFlags(Level l, string[] flags, string and_or) {

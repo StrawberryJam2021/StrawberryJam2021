@@ -25,5 +25,8 @@
         
         // Dash Sequence Controller Fail Jingle
         public const string game_dash_seq_fail = "event:/strawberry_jam_2021/game/dash_seq/fail";
+
+        //Dark Matter Ambient Electrical Audio
+        public const string env_darkMatter = "event:/strawberry_jam_2021/env/darkMatter";
     }
 }

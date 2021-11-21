@@ -11,5 +11,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
         public bool OshiroBSideMode = false;
 
         public bool SkateboardEnabled = false;
+
+        public bool ZeroG = false;
     }
 }
