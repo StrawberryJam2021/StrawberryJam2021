@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Celeste.Mod.MaxHelpingHand.Effects;
+using Celeste.Mod.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [Tracked]
