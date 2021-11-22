@@ -32,7 +32,9 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         private ColorGradeMask coreModeGrading;
 
-        public StylegroundMask(Vector2 position, float width, float height)
+        public static readonly string DynDataRendererName = "SJ21_StylegroundMaskRenderer";
+
+            public StylegroundMask(Vector2 position, float width, float height)
             : base(position, width, height) {
 
             Depth = 2000000;
@@ -127,7 +129,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
             if (isFromLoader) {
                 var renderer = new StylegroundMaskRenderer();
-                new DynData<Level>(self).Set("StylegroundMaskRenderer", renderer);
+                new DynData<Level>(self).Set(DynDataRendererName, renderer);
                 self.Add(renderer);
             }
         }
@@ -194,7 +196,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 Logger.Log("FlushelineCollab/StylegroundMask", $"Adding background styleground mask render call at {cursor.Index} in IL for Level.Render");
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
-                    new DynData<Level>(level).Get<StylegroundMaskRenderer>("StylegroundMaskRenderer")?.RenderWith(level, false);
+                    new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName)?.RenderWith(level, false);
                 });
             }
 
@@ -208,14 +210,14 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 Logger.Log("FlushelineCollab/StylegroundMask", $"Adding foreground styleground mask render behind call at {cursor.Index} in IL for Level.Render");
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
-                    new DynData<Level>(level).Get<StylegroundMaskRenderer>("StylegroundMaskRenderer")?.RenderWith(level, true, true);
+                    new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName)?.RenderWith(level, true, true);
                 });
 
                 cursor.Index += 4;
 
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
-                    new DynData<Level>(level).Get<StylegroundMaskRenderer>("StylegroundMaskRenderer")?.RenderWith(level, true, false);
+                    new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName)?.RenderWith(level, true, false);
                 });
             }
         }
