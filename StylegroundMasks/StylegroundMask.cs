@@ -17,7 +17,6 @@ using Celeste.Mod.MaxHelpingHand.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [Tracked]
-    [CustomEntity("SJ2021/StylegroundMask")]
     public class StylegroundMask : Mask {
         private static Type MaxHelpingHand_Effects_HeatWaveNoColorGrade = typeof(SidewaysJumpThru).Assembly.GetType("Celeste.Mod.MaxHelpingHand.Effects.HeatWaveNoColorGrade");
 

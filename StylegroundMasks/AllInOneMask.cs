@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
-    [CustomEntity("SJ2021/AllInOneMask")]
     public class AllInOneMask : Mask {
         private List<Entity> masks;
 
