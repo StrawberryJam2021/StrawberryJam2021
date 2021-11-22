@@ -14,12 +14,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Celeste.Mod.MaxHelpingHand.Entities;
+using Celeste.Mod.MaxHelpingHand.Effects;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [Tracked]
     public class StylegroundMask : Mask {
-        private static Type MaxHelpingHand_Effects_HeatWaveNoColorGrade = typeof(SidewaysJumpThru).Assembly.GetType("Celeste.Mod.MaxHelpingHand.Effects.HeatWaveNoColorGrade");
-
         public static Dictionary<string, VirtualRenderTarget> BgBuffers = new Dictionary<string, VirtualRenderTarget>();
         public static Dictionary<string, VirtualRenderTarget> FgBuffers = new Dictionary<string, VirtualRenderTarget>();
         public string[] RenderTags = new string[] { };
@@ -66,7 +65,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
             HeatWave heatWave;
             if ((heatWave = (scene as Level).Foreground.GetEach<HeatWave>().FirstOrDefault(current => RenderTags.Any(tag => GetTags(current).Contains($"stylemask_{tag}")) &&
-                (current.GetType() != MaxHelpingHand_Effects_HeatWaveNoColorGrade))) != null && !Foreground) {
+                (current.GetType() != typeof(HeatWaveNoColorGrade)))) != null && !Foreground) {
 
                 scene.Add(coreModeGrading = new ColorGradeMask(Position, Width, Height) {
                     Fade = Fade, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
