@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [Tracked]
+    [CustomEntity("SJ2021/BloomMask")]
     public class BloomMask : Mask {
 
         private static VirtualRenderTarget BloomBuffer;

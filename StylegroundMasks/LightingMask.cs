@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [Tracked]
+    [CustomEntity("SJ2021/LightingMask")]
     public class LightingMask : Mask {
         private static List<VirtualRenderTarget> FadeBuffers = new List<VirtualRenderTarget>();
 
