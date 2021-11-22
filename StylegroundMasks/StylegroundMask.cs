@@ -32,6 +32,8 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         private ColorGradeMask coreModeGrading;
 
+        public static readonly string DynDataRendererName = "SJ21_StylegroundMaskRenderer";
+
         public StylegroundMask(Vector2 position, float width, float height)
             : base(position, width, height) {
 
@@ -127,7 +129,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
             if (isFromLoader) {
                 var renderer = new StylegroundMaskRenderer();
-                new DynData<Level>(self).Set("StylegroundMaskRenderer", renderer);
+                new DynData<Level>(self).Set(DynDataRendererName, renderer);
                 self.Add(renderer);
             }
         }
@@ -191,10 +193,10 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchLdfld<Level>("Background"),
                 instr => instr.MatchLdarg(0),
                 instr => instr.MatchCallvirt<Renderer>("Render"))) {
-                Logger.Log("FlushelineCollab/StylegroundMask", $"Adding background styleground mask render call at {cursor.Index} in IL for Level.Render");
+                Logger.Log("SJ2021/StylegroundMask", $"Adding background styleground mask render call at {cursor.Index} in IL for Level.Render");
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
-                    new DynData<Level>(level).Get<StylegroundMaskRenderer>("StylegroundMaskRenderer")?.RenderWith(level, false);
+                    new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName)?.RenderWith(level, false);
                 });
             }
 
@@ -205,17 +207,17 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchLdfld<Level>("Foreground"),
                 instr => instr.MatchLdarg(0),
                 instr => instr.MatchCallvirt<Renderer>("Render"))) {
-                Logger.Log("FlushelineCollab/StylegroundMask", $"Adding foreground styleground mask render behind call at {cursor.Index} in IL for Level.Render");
+                Logger.Log("SJ2021/StylegroundMask", $"Adding foreground styleground mask render behind call at {cursor.Index} in IL for Level.Render");
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
-                    new DynData<Level>(level).Get<StylegroundMaskRenderer>("StylegroundMaskRenderer")?.RenderWith(level, true, true);
+                    new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName)?.RenderWith(level, true, true);
                 });
 
                 cursor.Index += 4;
 
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
-                    new DynData<Level>(level).Get<StylegroundMaskRenderer>("StylegroundMaskRenderer")?.RenderWith(level, true, false);
+                    new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName)?.RenderWith(level, true, false);
                 });
             }
         }
@@ -233,7 +235,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
                 ILLabel breakLabel = null;
                 if (cursor.TryGotoPrev(MoveType.After, instr => instr.MatchBrfalse(out breakLabel))) {
-                    Logger.Log("FlushelineCollab/StylegroundMask", $"Masking heat wave displacement rendering at {cursor.Index} in IL for DisplacementRenderer.BeforeRender");
+                    Logger.Log("SJ2021/StylegroundMask", $"Masking heat wave displacement rendering at {cursor.Index} in IL for DisplacementRenderer.BeforeRender");
 
                     cursor.Emit(OpCodes.Ldarg, levelArg);
                     cursor.Emit(OpCodes.Isinst, typeof(Level));
