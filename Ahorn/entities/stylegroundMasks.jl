@@ -26,11 +26,11 @@ using ..Ahorn, Maple
     lightingFrom::Number=-1.0, lightingTo::Number=-1.0, addBaseLight::Bool=true)
 
 const placements = Ahorn.PlacementDict(
-    "~ Styleground Mask (Strawberry Jam 2021 Lobbies)" => Ahorn.EntityPlacement(StylegroundMask, "rectangle"),
-    "~ Color Grade Mask (Strawberry Jam 2021 Lobbies)" => Ahorn.EntityPlacement(ColorGradeMask, "rectangle"),
-    "~ Lighting Mask (Strawberry Jam 2021 Lobbies)" => Ahorn.EntityPlacement(LightingMask, "rectangle"),
-    "~ Bloom Mask (Strawberry Jam 2021 Lobbies)" => Ahorn.EntityPlacement(BloomMask, "rectangle"),
-    "~ All In One Mask (Strawberry Jam 2021 Lobbies)" => Ahorn.EntityPlacement(AllInOneMask, "rectangle"),
+    "Styleground Mask (Strawberry Jam 2021)" => Ahorn.EntityPlacement(StylegroundMask, "rectangle"),
+    "Color Grade Mask (Strawberry Jam 2021)" => Ahorn.EntityPlacement(ColorGradeMask, "rectangle"),
+    "Lighting Mask (Strawberry Jam 2021)" => Ahorn.EntityPlacement(LightingMask, "rectangle"),
+    "Bloom Mask (Strawberry Jam 2021)" => Ahorn.EntityPlacement(BloomMask, "rectangle"),
+    "All In One Mask (Strawberry Jam 2021)" => Ahorn.EntityPlacement(AllInOneMask, "rectangle"),
 )
 
 const maskColors = Dict{Type, Tuple{Number, Number, Number}}(
