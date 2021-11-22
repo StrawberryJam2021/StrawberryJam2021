@@ -1,7 +1,4 @@
-﻿using Celeste;
-using Celeste.Mod;
-using Celeste.Mod.Entities;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
 using Monocle;
@@ -10,10 +7,6 @@ using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Celeste.Mod.MaxHelpingHand.Entities;
 using Celeste.Mod.MaxHelpingHand.Effects;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
