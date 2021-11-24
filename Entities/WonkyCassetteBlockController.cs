@@ -79,7 +79,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             isLevelMusic = AreaData.Areas[SceneAs<Level>().Session.Area.ID].CassetteSong == "-";
 
-            if (!isLevelMusic)
+            if (isLevelMusic)
+                sfx = Audio.CurrentMusicEventInstance;
+            else
                 snapshot = Audio.CreateSnapshot("snapshot:/music_mains_mute");
 
             StrawberryJam2021Session session = StrawberryJam2021Module.Session;
@@ -165,7 +167,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 session.MusicBeatTimer -= beatIncrement;
 
-                sfx.setParameterValue(param, (session.MusicWonkyBeatIndex * beatLength / 16) + 1);
+                sfx?.setParameterValue(param, (session.MusicWonkyBeatIndex * beatLength / 16) + 1);
 
                 // Doing this here because it would go to the next beat with a sixteenth note offset at start
                 session.MusicWonkyBeatIndex = (session.MusicWonkyBeatIndex + 1) % maxBeats;
@@ -185,6 +187,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (isLevelMusic)
                 sfx = Audio.CurrentMusicEventInstance;
+
             if (!isLevelMusic && sfx == null) {
                 sfx = Audio.CreateInstance(AreaData.Areas[SceneAs<Level>().Session.Area.ID].CassetteSong);
                 Audio.Play("event:/game/general/cassette_block_switch_2");

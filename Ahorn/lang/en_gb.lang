@@ -2,6 +2,7 @@
 placements.entities.SJ2021/DashSequenceController.tooltips.dashCode=The code the player needs to input. Should be in the form of "U,DR,L", with commas separating each direction. When writing diagonals, write them with vertical first, then horizontal, with no space. * is also a valid input, meaning you can dash any direction for it to work.
 placements.entities.SJ2021/DashSequenceController.tooltips.flagLabel=The starting label of the flags that will get activated. Every time a dash is successfully inputted, a flag with this label + "-#" will be set to true (e.g. "test" followed by a successful dash will set "test-1" to true).
 placements.entities.SJ2021/DashSequenceController.tooltips.flagOnFailure=Flag that will get set to true if the sequence has started, but fails partway through.
+placements.entities.SJ2021/DashSequenceController.tooltips.index=This sequence's index, used by the UI entity to correctly display dash sequences in order.
 
 # Sharded Refill
 placements.entities.SJ2021/RefillShard.tooltips.collectAmount=The amount of shards needed for collection. (0 for all)
@@ -152,8 +153,10 @@ placements.entities.SJ2021/SpeedPreservePuffer.tooltips.right=Determines the fac
 placements.entities.SJ2021/SpeedPreservePuffer.tooltips.static=Whether the puffer idly floats around or stays in a fixed position.
 
 # Strawberry Jam Jar
-placements.entities.SJ2021/StrawberryJamJar.tooltips.map=The jar will be filled up when the map that has this ID is completed.\nThis is the same ID as the one the Chapter Panel Trigger from Collab Utils uses.
+placements.entities.SJ2021/StrawberryJamJar.tooltips.map=The SID of the map this jam jar pedestal should teleport to.\nThe jar will be filled up when that map is completed.
 placements.entities.SJ2021/StrawberryJamJar.tooltips.sprite=The sprite this jar will use.
+placements.entities.SJ2021/StrawberryJamJar.tooltips.returnToLobbyMode=Determines how "Return to Lobby" will behave after entering this map.\n- SetReturnToHere: the Return to Lobby button will return the player to the nearest spawn point in the current map.\n- RemoveReturn: the Return to Lobby button will disappear from the pause menu.\n- DoNotChangeReturn: the current Return to Lobby button will not be changed.
+placements.entities.SJ2021/StrawberryJamJar.tooltips.allowSaving=If selected, the player will be allowed to save and return to the lobby in the map this trigger teleports to, by selecting "Save" when returning to lobby. Not compatible with maps that have checkpoints.
 
 # Horizontal Template Gate
 placements.entities.SJ2021/HorizontalTempleGate.tooltips.flag=Session flag used by this gate. If the type is flagActive, the door will open/close when the flag is set.
@@ -171,6 +174,8 @@ placements.entities.SJ2021/ToggleSwapBlock.tooltips.constantSpeed=If checked, th
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customIndicatorPath=Path to a folder containing textures named "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", and "done", which are displayed depending on the direction the block moves next, in place of the default indicators.  Built-in examples include "objects/StrawberryJam2021/toggleIndicator/plain/" (default), "objects/StrawberryJam2021/toggleIndicator/negative/", "objects/StrawberryJam2021/toggleIndicator/value/", "objects/StrawberryJam2021/toggleIndicator/sticker/".
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.disableTracks=Disables the tracks that appear along the path of the block.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.allowDashSliding=Allow player to slide on top of the block while dashing, instead of being fixed in place.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStartAudio=Custom audio to play when the block starts moving.  If blank, vanilla swap block sound is used.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStopAudio=Custom audio to play when the block stops moving.  If blank, vanilla swap block sound is used.
 
 # Wonky Cassette Block
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.onAtBeats=A list of integers (separated by a comma) corresponding to the beats on which this block should activate, being deactivated on all other beats not included in this list.\nExample: 1, 2, 4
@@ -231,3 +236,31 @@ placements.entities.SJ2021/EntityDespawner.tooltips.invert=If checked, this enti
 
 # Pocket Umbrella Trigger
 placements.entities.SJ2021/PocketUmbrellaTrigger.tooltips.musicParam=(Optional) The music parameter to be turned on when gliding with the umbrella.
+
+# Pellet Emitter (Up)
+placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+
+# Pellet Emitter (Down)
+placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+
+# Pellet Emitter (Left)
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+
+# Pellet Emitter (Right)
+placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.

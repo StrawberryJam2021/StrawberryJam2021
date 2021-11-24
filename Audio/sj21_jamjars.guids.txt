@@ -1,0 +1,6 @@
+{d0cdcc68-d28b-49b6-8502-3de03714d387} event:/sj21_jamjar-red
+{14168b5d-b2da-4e16-8df4-377ebdb99b84} event:/sj21_jamjar-yellow
+{a956d7f4-5f71-4432-8d61-c2c511e2940a} event:/sj21_jamjar-orange
+{f467f48f-9734-4fca-ab2c-37f7c86bf61b} event:/sj21_jamjar-blue
+{be8e5928-5915-4b5b-9637-dffb60e32688} event:/sj21_jamjar-purple
+{98af646e-ac41-43e2-8db4-40d5063b43ad} bank:/sj21_jamjars
