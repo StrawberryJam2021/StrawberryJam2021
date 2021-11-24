@@ -117,6 +117,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void AddDecalToGroup(GroupedParallaxDecal group, DecalData dd, Rectangle roomBounds) {
             Image i = new(GFX.Game["decals/" + dd.Texture.Substring(0, dd.Texture.Length - 4)]);
             i.Position = dd.Position + new Vector2(roomBounds.X, roomBounds.Y) - group.Position;
+            i.Scale = dd.Scale;
             i.CenterOrigin();
             group.Add(i);
         }
