@@ -22,13 +22,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/ZeroGBarrier")]
     [Tracked]
     public class ZeroGBarrier : SeekerBarrier {
-
         #region Hooks
         private static int softlockFrames = 0;
-        private static int slipCount = 0;
 
         public static void Load() {
             On.Celeste.Player.Update += Player_Update;
+            On.Celeste.Player.ClimbHop += Player_ClimbHop;
+        }
+        public static void Unload() {
+            On.Celeste.Player.Update -= Player_Update;
             On.Celeste.Player.ClimbHop += Player_ClimbHop;
         }
 
@@ -41,11 +43,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 self.Position -= Vector2.UnitY * i;
             }
             orig(self);
-        }
-
-        public static void Unload() {
-            On.Celeste.Player.Update -= Player_Update;
-            On.Celeste.Player.ClimbHop += Player_ClimbHop;
         }
 
         private static void Player_Update(On.Celeste.Player.orig_Update orig, Player self) {
@@ -66,7 +63,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
         }
-        
         #endregion
 
         /// <summary>

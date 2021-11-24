@@ -43,7 +43,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             IL.Celeste.Level.Begin -= Level_Begin;
         }
 
-
         private static void Level_Begin(ILContext il) {
             ILCursor cursor = new ILCursor(il);
             if(cursor.TryGotoNext(instr=>instr.MatchLdarg(0), instr => instr.MatchCall<Scene>("Begin"))) {
@@ -75,6 +74,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             orig.Invoke(self, position, spriteMode);
             DarkMatterPlayerState = self.StateMachine.AddState(DarkMatterUpdate, DarkMatterCoroutine, DarkMatterBegin, DarkMatterEnd);
         }
+
         //DarkMatter Behavior. Copied from TwigHelper/JackalCollabHelper but cleaned up significantly.
         public static IEnumerator DarkMatterCoroutine(Player player) {
             yield return 0.1f; // wait 6 frames, this should be ample time for the player, and if the game is frozen this should not increase
@@ -109,7 +109,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             //I should probably optimize this check but that's fine.
             if (!player.CollideCheck<DarkMatter>())
                 return Player.StNormal;
-            
             Vector2 normalSpeed = Vector2.Normalize(player.Speed); //Normalize externally because memory to code efficiency balance
             if (player.CollideCheck<Solid>()) {
                 for(int i = 0; i < 3; i++)
@@ -125,7 +124,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Input.Rumble(RumbleStrength.Climb, RumbleLength.Short);
             return DarkMatterPlayerState;
         }
-
     }
 
     [Tracked]
@@ -136,17 +134,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public const string Flag = "disable_lightning";
 
         public float Fade;
-
+        
         private bool disappearing;
-
+        
         private float toggleOffset;
-
+        
         public int VisualWidth;
-
+        
         public int VisualHeight;
-
+        
         public DarkMatterRenderer renderer;
-
+        
         public EntityID id;
 
         public DarkMatter(Vector2 position, int width, int height, EntityID id)

@@ -32,9 +32,6 @@ function ColorFix(v::String, alpha::Float64=1.0)
 	w = ""
 	if length(v) == 8
 		v = SubString(v, 2)
-		if(length(v) < 6) 
-			return (1.0, 1.0, 1.0, 1.0)
-		end
 	end
     temp = Ahorn.argb32ToRGBATuple(parse(Int, v, base=16))[1:3] ./ 255
     color = (temp[1], temp[2], temp[3], alpha)
@@ -51,13 +48,7 @@ Ahorn.nodeLimits(entity::CustomLightningEdge) = 0, 1
 
 function Ahorn.resizable(entity::CustomLightningEdge)
 	dir = get(entity.data, "direction", "Up")
-	if dir == "Right" || dir == "Left"
-		return (false, true)
-	elseif dir == "Up" || dir == "Down"
-		return (true, false)
-	else
-		return (false, false)
-	end
+	return ((dir == "Up" || dir == "Down"), (dir == "Right" || dir == "Left"))
 end
 
 function Ahorn.selection(entity::CustomLightningEdge)
@@ -78,25 +69,25 @@ end
 
 function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CustomLightningEdge)
 	x, y = Ahorn.position(entity)
-	t = get(entity.data, "direction", "Up")
+	direction = get(entity.data, "direction", "Up")
 	colors = [get(entity.data, "color1", "fcf579"), get(entity.data, "color2", "8cf7e2")]
 	nodes = get(entity.data, "nodes", ())
 	if isempty(nodes)
-		if t == "Up"
+		if direction == "Up"
 			len = entity.data["width"]
 			nodes = [
 				[(x, y-1), (x+len, y-1)],
 				[(x, y+1), (x+len, y+1)]
 			]
 			Ahorn.drawArrow(ctx, x+len/2, y-1, x+len/2, y-8, headLength=4)
-		elseif t == "Down"
+		elseif direction == "Down"
 			len = entity.data["width"]
 			nodes = [
 				[(x, y+1), (x+len, y+1)],
 				[(x, y-1), (x+len, y-1)]
 			]
 			Ahorn.drawArrow(ctx, x+len/2, y+1, x+len/2, y+8, headLength=4)
-		elseif t == "Right"
+		elseif direction == "Right"
 			len = entity.data["height"]
 			nodes = [
 				[(x+1, y), (x+1, y+len)],
@@ -115,8 +106,8 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CustomLightningE
 		Ahorn.drawLines(ctx, nodes[2], ColorFix(colors[2], 0.5))
 	else
 		nx, ny = Int.(nodes[1])
-		Ahorn.drawLines(ctx, [(x,y-1), (nx, ny-1)], ColorFix(colors[1], 0.5))
-		Ahorn.drawLines(ctx, [(x,y+1), (nx, ny+1)], ColorFix(colors[2], 0.5))
+		Ahorn.drawLines(ctx, [(x, y-1), (nx, ny-1)], ColorFix(colors[1], 0.5))
+		Ahorn.drawLines(ctx, [(x, y+1), (nx, ny+1)], ColorFix(colors[2], 0.5))
 	end
 end
 end
