@@ -334,3 +334,9 @@ placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletCount=The number of
 placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
 placements.entities.SJ2021/PelletEmitterRight.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
 placements.entities.SJ2021/PelletEmitterRight.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+
+# Auto-Skip Dialog Cutscene Trigger (Everest)
+placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.onlyOnce=Whether the dialogue should only trigger once.
+placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.dialogId=The dialog ID to use for the dialogue.\nIn this dialogue, use {trigger 0} to start auto-skipping dialogue, and {trigger 1} to stop auto-skipping.
+placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.endLevel=Whether finishing the dialog triggers the level to end.
+placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.deathCount=Determines the exact amount of deaths required to activate dialog trigger. Will always trigger if set to -1.
