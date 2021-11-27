@@ -17,8 +17,8 @@ Ahorn.selection(entity::DarkMatter) = Ahorn.getEntityRectangle(entity)
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::DarkMatter, room::Maple.Room)
     width = Int(get(entity.data, "width", 32))
     height = Int(get(entity.data, "height", 32))
-    realEdgeColor = (172.0,41.0,242.0, 255.0) ./ 255
-    realCenterColor = (136.0,1.0,208.0,255.0) ./ 255
+    realEdgeColor = (172.0, 41.0, 242.0, 255.0) ./ 255
+    realCenterColor = (136.0, 1.0, 208.0, 255.0) ./ 255
     Ahorn.drawRectangle(ctx, 0, 0, width, height, realCenterColor, realEdgeColor)
 end
 
