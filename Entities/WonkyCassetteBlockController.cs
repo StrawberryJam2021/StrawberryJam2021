@@ -30,11 +30,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private EventInstance sfx;
         private EventInstance snapshot;
 
+        private bool transitioningIn = false;
+
         public WonkyCassetteBlockController(EntityData data, Vector2 offset)
             : this(data.Position + offset, data.Int("bpm"), data.Int("bars"), data.Attr("timeSignature"), data.Attr("sixteenthNoteParam", "sixteenth_note"), data.Float("cassetteOffset"), data.Int("boostFrames", 1), data.Attr("disableFlag")) { }
 
         public WonkyCassetteBlockController(Vector2 position, int bpm, int bars, string timeSignature, string param, float cassetteOffset, int boostFrames, string disableFlag)
             : base(position) {
+            Tag = Tags.FrozenUpdate | Tags.TransitionUpdate;
+
+            Add(new TransitionListener() {
+                OnInBegin = () => transitioningIn = true,
+                OnInEnd = () => transitioningIn = false,
+            });
+
             this.bpm = bpm;
             this.bars = bars;
             this.param = param;
@@ -184,6 +193,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
+
+            if (transitioningIn)
+                return;
 
             if (isLevelMusic)
                 sfx = Audio.CurrentMusicEventInstance;
