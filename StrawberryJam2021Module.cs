@@ -43,7 +43,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             TripleBoostFlower.Load();
             ResettingRefill.Load();
             HorizontalTempleGate.Load();
-            ToggleSwapBlock.Load();
             WonkyCassetteBlock.Load();
             WonkyCassetteBlockController.Load();
             SpeedPreservePuffer.Load();
@@ -59,6 +58,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DashSequenceDisplay.Load();
             GroupedParallaxDecal.Load();
             ExpiringDashRefill.Load();
+            DashCoroutineLoader.Load();
         }
 
         public override void Unload() {
@@ -79,7 +79,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             TripleBoostFlower.Unload();
             ResettingRefill.Unload();
             HorizontalTempleGate.Unload();
-            ToggleSwapBlock.Unload();
             WonkyCassetteBlock.Unload();
             WonkyCassetteBlockController.Unload();
             SpeedPreservePuffer.Unload();
@@ -94,6 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DashSequenceDisplay.Unload();
             GroupedParallaxDecal.Unload();
             ExpiringDashRefill.Unload();
+            DashCoroutineLoader.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
