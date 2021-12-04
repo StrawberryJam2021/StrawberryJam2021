@@ -23,6 +23,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, string moveSpec, Color color, string textureDir)
             : base(position, id, width, height, index, 1.0f) {
+            Tag = Tags.FrozenUpdate | Tags.TransitionUpdate;
+
             OnAtBeats = Regex.Split(moveSpec, @",\s*").Select(int.Parse).Select(i => i - 1).ToArray();
 
             cassetteBlockData = new DynData<CassetteBlock>(this);
