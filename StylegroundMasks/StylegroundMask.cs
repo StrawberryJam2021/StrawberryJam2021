@@ -26,6 +26,8 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         private ColorGradeMask coreModeGrading;
 
+        public static readonly string TagPrefix = "sjstylemask_";
+
         public static readonly string DynDataRendererName = "SJ21_StylegroundMaskRenderer";
 
         public StylegroundMask(Vector2 position, float width, float height)
@@ -59,7 +61,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             }
 
             HeatWave heatWave;
-            if ((heatWave = (scene as Level).Foreground.GetEach<HeatWave>().FirstOrDefault(current => RenderTags.Any(tag => GetTags(current).Contains($"stylemask_{tag}")) &&
+            if ((heatWave = (scene as Level).Foreground.GetEach<HeatWave>().FirstOrDefault(current => RenderTags.Any(tag => GetTags(current).Contains(TagPrefix + tag)) &&
                 (current.GetType() != typeof(HeatWaveNoColorGrade)))) != null && !Foreground) {
 
                 scene.Add(coreModeGrading = new ColorGradeMask(Position, Width, Height) {
@@ -102,7 +104,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
         }
 
         private static void HeatWave_Update(On.Celeste.HeatWave.orig_Update orig, HeatWave self, Scene scene) {
-            if (GetTags(self).Any(tag => tag.StartsWith("stylemask_"))) {
+            if (GetTags(self).Any(tag => tag.StartsWith(TagPrefix))) {
                 var levelData = new DynData<Level>(scene as Level);
                 var lastColorGrade = levelData.Get<string>("lastColorGrade");
                 var colorGradeEase = levelData.Get<float>("colorGradeEase");
@@ -149,8 +151,8 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             foreach (var backdrop in self.Backdrops) {
                 lastVisible[backdrop] = backdrop.Visible;
                 foreach (var tag in GetTags(backdrop)) {
-                    if (tag.StartsWith("stylemask_")) {
-                        var key = tag.Substring(10);
+                    if (tag.StartsWith(TagPrefix)) {
+                        var key = tag.Substring(TagPrefix.Length);
                         if (!bufferDict.ContainsKey(key))
                             bufferDict.Add(key, VirtualContent.CreateRenderTarget(tag, 320, 180));
                         renderedKeys.Add(key);
@@ -237,11 +239,11 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                         var baseRendering = true;
                         foreach (var heatWave in level.Foreground.GetEach<HeatWave>()) {
                             var tags = GetTags(heatWave);
-                            if (tags.Any(tag => tag.StartsWith("stylemask_"))) {
+                            if (tags.Any(tag => tag.StartsWith(TagPrefix))) {
                                 baseRendering = tags.Contains("nomaskhide");
                                 if (new DynData<HeatWave>(heatWave).Get<float>("heat") > 0f) {
                                     foreach (StylegroundMask mask in level.Tracker.GetEntities<StylegroundMask>()) {
-                                        if (mask.RenderTags.Any(tag => GetTags(heatWave).Contains($"stylemask_{tag}"))) {
+                                        if (mask.RenderTags.Any(tag => GetTags(heatWave).Contains(TagPrefix + tag))) {
                                             foreach (var slice in mask.GetMaskSlices()) {
                                                 Draw.Rect(slice.Position.X, slice.Position.Y, slice.Source.Width, slice.Source.Height, new Color(0.5f, 0.5f, 0.1f, 1f));
                                             }
@@ -271,7 +273,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             foreach (var backdrop in renderer.Backdrops) {
                 var tags = GetTags(backdrop);
 
-                var foundTag = tags.Any(s => (string.IsNullOrEmpty(tag) && s.StartsWith("stylemask_")) || (!string.IsNullOrEmpty(tag) && s == $"stylemask_{tag}"));
+                bool foundTag = tags.Contains(TagPrefix + (tag ?? string.Empty));
 
                 if (string.IsNullOrEmpty(tag))
                     foundTag = !foundTag || tags.Contains("nomaskhide");
