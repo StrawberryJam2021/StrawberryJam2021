@@ -106,7 +106,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		private Vector2 Direction = Vector2.Zero;
 		private bool stopped = false;
 		private readonly string customTexturePath;
-		private Level Level => (Level) Scene;
 
 		private readonly bool useIndicators;
 		private readonly string indicatorPath;
@@ -125,7 +124,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		private Vector2 lerpVector;
 
 		public ToggleSwapBlock(EntityData data, Vector2 offset) : base(data.Position + offset, data.Width, data.Height, false) {
-			Depth = -9999;
+			Depth = Depths.FGTerrain + 1;
 			nodes = new Vector2[data.Nodes.Length + 1];
 			nodes[0] = Position;
 			for (int i = 0; i < data.Nodes.Length; i++) {
@@ -173,13 +172,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 				Vector2 radius = new Vector2(Width, Height) / 2f;
 				if (nodes.Length != 2) {
 					for (int i = 0; i < laserCount; i++) {
-						Level.Add(lasers[i] = Engine.Pooler.Create<ToggleBlockLaser>().Init(nodes[i] + radius, nodes[GetNextNode(i)] + radius));
+						SceneAs<Level>().Add(lasers[i] = Engine.Pooler.Create<ToggleBlockLaser>().Init(nodes[i] + radius, nodes[GetNextNode(i)] + radius));
 					}
 				} else {
-					Level.Add(lasers[0] = Engine.Pooler.Create<ToggleBlockLaser>().Init(nodes[0] + radius, nodes[1] + radius));
+					SceneAs<Level>().Add(lasers[0] = Engine.Pooler.Create<ToggleBlockLaser>().Init(nodes[0] + radius, nodes[1] + radius));
 				}
 				for (int j = 0; j < nodes.Length; j++) {
-					Level.Add(nodeTextures[j] = Engine.Pooler.Create<ToggleBlockNode>().Init(nodes[j] + radius));
+					SceneAs<Level>().Add(nodeTextures[j] = Engine.Pooler.Create<ToggleBlockNode>().Init(nodes[j] + radius));
 				}
 			}
 			UpdateNextNode();
@@ -225,7 +224,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 					MoveTo(Vector2.Lerp(startPosition, targetPosition, lerp), lerpVector);
 				} else {
 					lerp = 0f;
-					(Scene as Level).Displacement.AddBurst(Center, 0.2f, 0f, 16f, 1f, null, null);
+					SceneAs<Level>().Displacement.AddBurst(Center, 0.2f, 0f, 16f, 1f, null, null);
 					moving = false;
 					//middleRed.Play("idle", false, false);
 					Audio.Stop(moveSfx, true);
