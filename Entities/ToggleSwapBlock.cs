@@ -17,7 +17,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 		#region DashCoroutine Hook
 
-
 		private static IDetour hook_Player_DashCoroutine;
 
 		public static void Load() {
@@ -57,20 +56,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 		private static bool CheckForNewToggleSwapBlocks(Player player) {
 			if (!(player.DashDir.X != 0f && Input.GrabCheck))
-				return false; // We wanna get rid of this case because it's the initial case that we dont wanna worry about.
-			ToggleSwapBlock ntsb = player.CollideFirst<ToggleSwapBlock>(player.Position + Vector2.UnitX * Math.Sign(player.DashDir.X)); //Same thing as the SwapBlock but with NewToggleSwapBlock
-			return ntsb != null && !ntsb.allowDashSliding && Math.Sign(ntsb.Direction.X) == Math.Sign(player.DashDir.X); //if this is true then brtrue will pass it back to the inside of the if statement
+				return false;
+			ToggleSwapBlock block = player.CollideFirst<ToggleSwapBlock>(player.Position + Vector2.UnitX * Math.Sign(player.DashDir.X));
+			return block != null && !block.allowDashSliding && Math.Sign(block.Direction.X) == Math.Sign(player.DashDir.X);
 		}
 
-		//Important detail! Since swapCancel's X and Y values are 1 and 0 only we can do this. Normally we wouldn't be allowed to do this.
 		private static Vector2 ModifyDashSpeedWithSwapBlock(Vector2 orig, Player player) {
 			Vector2 swapCancel = orig;
-			foreach (ToggleSwapBlock entity in player.Scene.Tracker.GetEntities<ToggleSwapBlock>()) {
-				if (entity != null && !entity.allowDashSliding && entity.moving && entity.GetPlayerRider() == player) {
-					if (player.DashDir.X != 0f && Math.Sign(entity.Direction.X) == Math.Sign(player.DashDir.X)) {
+			foreach (ToggleSwapBlock block in player.Scene.Tracker.GetEntities<ToggleSwapBlock>()) {
+				if (block != null && !block.allowDashSliding && block.moving && block.GetPlayerRider() == player) {
+					if (player.DashDir.X != 0f && Math.Sign(block.Direction.X) == Math.Sign(player.DashDir.X)) {
 						player.Speed.X = (swapCancel.X = 0f);
 					}
-					if (player.DashDir.Y != 0f && Math.Sign(entity.Direction.Y) == Math.Sign(player.DashDir.Y)) {
+					if (player.DashDir.Y != 0f && Math.Sign(block.Direction.Y) == Math.Sign(player.DashDir.Y)) {
 						player.Speed.Y = (swapCancel.Y = 0f);
 					}
 				}
