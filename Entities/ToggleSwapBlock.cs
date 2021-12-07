@@ -1,17 +1,90 @@
 ﻿using Celeste.Mod.Entities;
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
 using Monocle;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
+using MonoMod.Utils;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 	[Tracked]
 	[CustomEntity("SJ2021/ToggleSwapBlock")]
 	public class ToggleSwapBlock : Solid {
+
+		#region DashCoroutine Hook
+
+
+		private static IDetour hook_Player_DashCoroutine;
+
+		public static void Load() {
+			MethodInfo m = typeof(Player).GetMethod("DashCoroutine", BindingFlags.NonPublic | BindingFlags.Instance).GetStateMachineTarget();
+			hook_Player_DashCoroutine = new ILHook(m, ModDashSpeed);
+		}
+
+		public static void Unload() {
+			hook_Player_DashCoroutine?.Dispose();
+			hook_Player_DashCoroutine = null;
+		}
+
+		private static void ModDashSpeed(ILContext il) {
+			ILCursor cursor = new ILCursor(il);
+			int playerIndex = 1;
+			ILLabel VanillaTarget = null;
+			if (cursor.TryGotoNext(MoveType.After,
+				instr => instr.MatchBneUn(out VanillaTarget),
+				instr => instr.MatchLdloc(out playerIndex),
+				instr => instr.MatchLdfld<Player>("StateMachine"),
+				instr => instr.MatchLdcI4(1))) {
+				if (VanillaTarget != null) {
+					cursor.GotoPrev(MoveType.After, instr => instr.MatchBneUn(out ILLabel _));
+					ILLabel OurTarget = cursor.MarkLabel();
+					cursor.GotoLabel(VanillaTarget, MoveType.AfterLabel);
+					ILCursor cursor2 = cursor.Clone();
+					if (cursor2.TryGotoNext(MoveType.After, instr => instr.MatchCall<Vector2>("get_One")) && cursor2.TryGotoNext(instr => instr.OpCode == OpCodes.Stfld)) {
+						cursor.Emit(OpCodes.Ldloc, playerIndex);
+						cursor.EmitDelegate<Func<Player, bool>>(CheckForNewToggleSwapBlocks);
+						cursor.Emit(OpCodes.Brtrue, OurTarget);
+						cursor2.Emit(OpCodes.Ldloc, playerIndex);
+						cursor2.EmitDelegate<Func<Vector2, Player, Vector2>>(ModifyDashSpeedWithSwapBlock);
+					}
+				}
+			}
+		}
+
+		private static bool CheckForNewToggleSwapBlocks(Player player) {
+			if (!(player.DashDir.X != 0f && Input.GrabCheck))
+				return false; // We wanna get rid of this case because it's the initial case that we dont wanna worry about.
+			ToggleSwapBlock ntsb = player.CollideFirst<ToggleSwapBlock>(player.Position + Vector2.UnitX * Math.Sign(player.DashDir.X)); //Same thing as the SwapBlock but with NewToggleSwapBlock
+			return ntsb != null && !ntsb.allowDashSliding && Math.Sign(ntsb.Direction.X) == Math.Sign(player.DashDir.X); //if this is true then brtrue will pass it back to the inside of the if statement
+		}
+
+		//Important detail! Since swapCancel's X and Y values are 1 and 0 only we can do this. Normally we wouldn't be allowed to do this.
+		private static Vector2 ModifyDashSpeedWithSwapBlock(Vector2 orig, Player player) {
+			Vector2 swapCancel = orig;
+			foreach (ToggleSwapBlock entity in player.Scene.Tracker.GetEntities<ToggleSwapBlock>()) {
+				if (entity != null && !entity.allowDashSliding && entity.moving && entity.GetPlayerRider() == player) {
+					if (player.DashDir.X != 0f && Math.Sign(entity.Direction.X) == Math.Sign(player.DashDir.X)) {
+						player.Speed.X = (swapCancel.X = 0f);
+					}
+					if (player.DashDir.Y != 0f && Math.Sign(entity.Direction.Y) == Math.Sign(player.DashDir.Y)) {
+						player.Speed.Y = (swapCancel.Y = 0f);
+					}
+				}
+			}
+			return swapCancel;
+		}
+
+		#endregion
+
+		#region ToggleSwapBlock Class Members
+
 		private const int STAY = 8, DONE = 9;
 		private static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
-		private static readonly string defaultIndicatorPath = "objects/StrawberryJam2021/toggleIndicator/plain/";
+		private static readonly string defaultIndicatorPath = "objects/StrawberryJam2021/toggleSwapBlock/indicator/plain/";
 		private static readonly string defaultStartAudio = "event:/game/05_mirror_temple/swapblock_move";
 		private static readonly string defaultStopAudio = "event:/game/05_mirror_temple/swapblock_move_end";
 		private DashListener dashListener;
@@ -20,27 +93,27 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		private Color onColor = Color.MediumPurple;
 		private Color endColor = new Color(0.65f, 0.4f, 0.4f);
 		private ToggleBlockLaser[] lasers;
-		private int laserCount;
+		private readonly int laserCount;
 		//private Sprite middleRed;
 		private float lerp;
 		private MTexture[,] nineSliceBlock;
 		private Vector2[] nodes;
 		private ToggleBlockNode[] nodeTextures;
 		private int nodeIndex = 0;
-		public bool moving = false;
+		private bool moving = false;
 		private float travelSpeed = 5f;
-		private bool oscillate = false;
+		private readonly bool oscillate = false;
 		private bool returning = false;
-		private bool stopAtEnd = false;
-		public Vector2 Direction = Vector2.Zero;
+		private readonly bool stopAtEnd = false;
+		private Vector2 Direction = Vector2.Zero;
 		private bool stopped = false;
-		private string customTexturePath;
-		private Level level => (Level) Scene;
+		private readonly string customTexturePath;
+		private Level Level => (Level) Scene;
 
 		private readonly bool useIndicators;
-		public readonly string indicatorPath;
-		public MTexture indicatorTexture;
-		public readonly bool allowDashSliding;
+		private readonly string indicatorPath;
+		private MTexture indicatorTexture;
+		private readonly bool allowDashSliding;
 		private readonly bool disableTracks;
 		private readonly bool isConstant;
 		private readonly float constantSpeed;
@@ -79,7 +152,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 			Add(dashListener = new DashListener());
 			Add(new LightOcclude(0.2f));
 			dashListener.OnDash = OnPlayerDashed;
-			MTexture val3 = GFX.Game[(customTexturePath.Length <= 0) ? "objects/canyon/toggleblock/block1" : customTexturePath];
+			MTexture val3 = GFX.Game[(customTexturePath.Length <= 0) ? "objects/StrawberryJam2021/toggleSwapBlock/block1" : customTexturePath];
 			nineSliceBlock = new MTexture[3, 3];
 			for (int j = 0; j < 3; j++) {
 				for (int k = 0; k < 3; k++) {
@@ -102,13 +175,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 				Vector2 radius = new Vector2(Width, Height) / 2f;
 				if (nodes.Length != 2) {
 					for (int i = 0; i < laserCount; i++) {
-						level.Add(lasers[i] = Engine.Pooler.Create<ToggleBlockLaser>().Init(nodes[i] + radius, nodes[GetNextNode(i)] + radius));
+						Level.Add(lasers[i] = Engine.Pooler.Create<ToggleBlockLaser>().Init(nodes[i] + radius, nodes[GetNextNode(i)] + radius));
 					}
 				} else {
-					level.Add(lasers[0] = Engine.Pooler.Create<ToggleBlockLaser>().Init(nodes[0] + radius, nodes[1] + radius));
+					Level.Add(lasers[0] = Engine.Pooler.Create<ToggleBlockLaser>().Init(nodes[0] + radius, nodes[1] + radius));
 				}
 				for (int j = 0; j < nodes.Length; j++) {
-					level.Add(nodeTextures[j] = Engine.Pooler.Create<ToggleBlockNode>().Init(nodes[j] + radius));
+					Level.Add(nodeTextures[j] = Engine.Pooler.Create<ToggleBlockNode>().Init(nodes[j] + radius));
 				}
 			}
 			UpdateNextNode();
@@ -297,5 +370,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 				indicatorTexture.DrawCentered(pos + Center - Position);
 			}
 		}
-	}
+
+        #endregion
+    }
 }

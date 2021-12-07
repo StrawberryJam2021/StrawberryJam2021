@@ -16,8 +16,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		private float positionOffset = 0f;
 
 		public ToggleBlockNode() : base() {
-			nodeTexture = GFX.Game["objects/canyon/toggleblock/node"];
-			nodeCrystalTexture = GFX.Game["objects/canyon/toggleblock/nodeCrystal"];
+			nodeTexture = GFX.Game["objects/StrawberryJam2021/toggleSwapBlock/node"];
+			nodeCrystalTexture = GFX.Game["objects/StrawberryJam2021/toggleSwapBlock/nodeCrystal"];
 			base.Depth = 8999;
 			base.Add(sine = new SineWave(0.6f, 0f));
 		}
