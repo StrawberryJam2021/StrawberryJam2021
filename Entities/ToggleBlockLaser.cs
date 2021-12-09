@@ -26,7 +26,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		public ToggleBlockLaser() : base() {
 			fade = new VertexPositionColor[24];
 			laserSprite = GFX.Game["objects/StrawberryJam2021/toggleSwapBlock/laser"];
-			Depth = 8999;
+			Depth = Depths.BGDecals - 1;
 			timer = Calc.NextFloat(Calc.Random);
 		}
 
