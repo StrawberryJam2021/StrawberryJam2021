@@ -340,3 +340,11 @@ placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.onlyOnce=Wheth
 placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.dialogId=The dialog ID to use for the dialogue.\nIn this dialogue, use {trigger 0} to start auto-skipping dialogue, and {trigger 1} to stop auto-skipping.
 placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.endLevel=Whether finishing the dialog triggers the level to end.
 placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.deathCount=Determines the exact amount of deaths required to activate dialog trigger. Will always trigger if set to -1.
+
+# Jelly Glow Controller
+placements.entities.SJ2021/JellyGlowController.tooltips.lightColor=The colour to use for the jelly lights, as a hex representation.  Defaults to white (FFFFFF).
+placements.entities.SJ2021/JellyGlowController.tooltips.lightAlpha=The opacity of the light, ranging from 0 (invisible) to 1 (opaque).  Defaults to 1.
+placements.entities.SJ2021/JellyGlowController.tooltips.lightStartFade=The distance from the entity's position at which the light should begin to fade in.  Defaults to 24.
+placements.entities.SJ2021/JellyGlowController.tooltips.lightEndFade=The distance from the entity's position at which the light should begin to fade out.  Defaults to 48.
+placements.entities.SJ2021/JellyGlowController.tooltips.lightOffsetX=The X offset from the entity's position at which to place the light.  Defaults to 0 (the top centre of the hitbox).
+placements.entities.SJ2021/JellyGlowController.tooltips.lightOffsetY=The Y offset from the entity's position at which to place the light.  Defaults to -10 (the top centre of the hitbox).
