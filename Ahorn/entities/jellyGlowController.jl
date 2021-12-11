@@ -8,7 +8,8 @@ using ..Ahorn, Maple
     lightAlpha::Real=1.0,
     lightStartFade::Integer=24,
     lightEndFade::Integer=48,
-    lightOffsetX::Integer=0, lightOffsetY::Integer=-10
+    lightOffsetX::Integer=0,
+    lightOffsetY::Integer=-10
 )
 
 const placements = Ahorn.PlacementDict(

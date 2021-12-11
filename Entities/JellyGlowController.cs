@@ -16,9 +16,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             : base(data.Position + offset) {
             _lightColor = data.HexColor("lightColor", Color.White);
             _lightAlpha = data.Float("lightAlpha", 1f);
-            _lightStartFade = data.Int("lightStartFade", 32);
-            _lightEndFade = data.Int("lightEndFade", 64);
-            _lightOffset = new Vector2(data.Int("lightOffsetX"), data.Int("lightOffsetY"));
+            _lightStartFade = data.Int("lightStartFade", 24);
+            _lightEndFade = data.Int("lightEndFade", 48);
+            _lightOffset = new Vector2(data.Int("lightOffsetX"), data.Int("lightOffsetY", -10));
         }
 
         public override void Added(Scene scene) {
