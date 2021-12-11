@@ -45,9 +45,9 @@ function Ahorn.selection(entity::ToggleBlock)
     return res
 end
 
-defaultFrame = "objects/canyon/toggleblock/block1"
-midResource = "objects/canyon/toggleblock/middleRed00"
-defaultIndicatorPath = "objects/StrawberryJam2021/toggleIndicator/plain/"
+defaultFrame = "objects/StrawberryJam2021/toggleSwapBlock/block1"
+midResource = "objects/StrawberryJam2021/toggleSwapBlock/middleRed00"
+defaultIndicatorPath = "objects/StrawberryJam2021/toggleSwapBlock/indicator/plain/"
 paths = ["right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done"]
 STAY, DONE = 9, 10
 
