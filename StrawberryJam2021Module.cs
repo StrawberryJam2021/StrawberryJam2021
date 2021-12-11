@@ -21,7 +21,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
         public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
         private SpriteBank _CustomEntitySpriteBank;
 
-
         public StrawberryJam2021Module() {
             Instance = this;
         }
@@ -55,6 +54,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DirectionalBooster.Load();
             HintController.Load();
             RainDensityTrigger.Load();
+            ZeroGBarrier.Load();
+            DarkMatterHooks.Load();
             MaskHooks.Load();
             MaskedOutline.Load();
             DashSequenceDisplay.Load();
@@ -92,6 +93,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             DirectionalBooster.Unload();
             HintController.Unload();
             RainDensityTrigger.Unload();
+            ZeroGBarrier.Unload();
+            DarkMatterHooks.Unload();
             MaskHooks.Unload();
             DashSequenceDisplay.Unload();
             GroupedParallaxDecal.Unload();
@@ -115,6 +118,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             Paintbrush.LoadParticles();
             PelletEmitter.PelletShot.LoadParticles();
             NodedCloud.LoadParticles();
+            DarkMatterHooks.LoadContent(firstLoad);
+            Utilities.LoadContent();
             MaskedOutline.LoadTexture();
             BeeFireball.LoadContent();
         }

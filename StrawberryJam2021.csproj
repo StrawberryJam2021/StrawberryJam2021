@@ -54,6 +54,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Cutscenes\" />
+  </ItemGroup>
+
   <Choose>
     <When Condition="'$(CelesteType)' == 'FNA'">
       <ItemGroup>
