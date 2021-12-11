@@ -240,7 +240,7 @@
         <Justify x="0.5" y="0.5"/>
         <Anim id="blue" path="blue/impact" delay="0.1" frames="0-11" />
         <Anim id="pink" path="pink/impact" delay="0.1" frames="0-11" />
-        <Anim id="blue_air" path="blue/impactAir" delay="0.1" frames="0-11" />
-        <Anim id="pink_air" path="pink/impactAir" delay="0.1" frames="0-11" />
+        <Anim id="blue_air" path="blue/impactAir" delay="0.1" frames="0-6" />
+        <Anim id="pink_air" path="pink/impactAir" delay="0.1" frames="0-6" />
     </pelletImpact>
 </Sprites>
