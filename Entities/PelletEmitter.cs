@@ -130,14 +130,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             public static void LoadParticles() {
                 P_BlueTrail = new ParticleType {
+                    Source = GFX.Game["particles/blob"],
                     Color = CassetteListener.ColorFromCassetteIndex(0),
                     Color2 = Calc.HexToColor("7550e8"),
-                    ColorMode = ParticleType.ColorModes.Blink,
+                    ColorMode = ParticleType.ColorModes.Fade,
                     FadeMode = ParticleType.FadeModes.Late,
-                    Size = 1f,
-                    SizeRange = 0f,
-                    LifeMin = 0.3f,
-                    LifeMax = 0.8f,
+                    Size = 0.7f,
+                    SizeRange = 0.25f,
+                    ScaleOut = true,
+                    LifeMin = 0.2f,
+                    LifeMax = 0.4f,
                     SpeedMin = 5f,
                     SpeedMax = 25f,
                     DirectionRange = 0.5f,

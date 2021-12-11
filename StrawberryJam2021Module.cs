@@ -1,5 +1,6 @@
 using Celeste.Mod.StrawberryJam2021.Entities;
 using Celeste.Mod.StrawberryJam2021.Triggers;
+using Celeste.Mod.StrawberryJam2021.StylegroundMasks;
 using Monocle;
 using System;
 
@@ -42,7 +43,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             TripleBoostFlower.Load();
             ResettingRefill.Load();
             HorizontalTempleGate.Load();
-            ToggleSwapBlock.Load();
             WonkyCassetteBlock.Load();
             WonkyCassetteBlockController.Load();
             SpeedPreservePuffer.Load();
@@ -56,10 +56,12 @@ namespace Celeste.Mod.StrawberryJam2021 {
             RainDensityTrigger.Load();
             ZeroGBarrier.Load();
             DarkMatterHooks.Load();
+            MaskHooks.Load();
             MaskedOutline.Load();
             DashSequenceDisplay.Load();
             GroupedParallaxDecal.Load();
             ExpiringDashRefill.Load();
+            ToggleSwapBlock.Load();
         }
 
         public override void Unload() {
@@ -80,7 +82,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             TripleBoostFlower.Unload();
             ResettingRefill.Unload();
             HorizontalTempleGate.Unload();
-            ToggleSwapBlock.Unload();
             WonkyCassetteBlock.Unload();
             WonkyCassetteBlockController.Unload();
             SpeedPreservePuffer.Unload();
@@ -94,9 +95,11 @@ namespace Celeste.Mod.StrawberryJam2021 {
             RainDensityTrigger.Unload();
             ZeroGBarrier.Unload();
             DarkMatterHooks.Unload();
+            MaskHooks.Unload();
             DashSequenceDisplay.Unload();
             GroupedParallaxDecal.Unload();
             ExpiringDashRefill.Unload();
+            ToggleSwapBlock.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
