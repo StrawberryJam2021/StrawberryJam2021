@@ -20,21 +20,24 @@ for i in directions
     )
 end
 
-function ColorFix(v::String, alpha::Float64=1.0)
-    if length(strip(v)) == 0
-        return (1.0, 1.0, 1.0, 1.0)
+function ColorFix(str::String, alpha::Float64=1.0)
+    if length(strip(str)) == 0
+        return (1.0, 1.0, 1.0, alpha)
     end
-    if v in keys(Ahorn.XNAColors.colors)
-        w = get(Ahorn.XNAColors.colors, v, (1.0, 1.0, 1.0, 1.0))
-        return (w[1], w[2], w[3], alpha)
+    if haskey(Ahorn.XNAColors.colors, str)
+        col = get(Ahorn.XNAColors.colors, str, (1.0, 1.0, 1.0, 1.0))
+        return (col[1], col[2], col[3], alpha)
     end
-    w = ""
-    if length(v) == 8
-        v = SubString(v, 2)
+    if length(str) == 8
+        str = str[2..length(str)]
     end
-    temp = Ahorn.argb32ToRGBATuple(parse(Int, v, base=16))[1:3] ./ 255
-    color = (temp[1], temp[2], temp[3], alpha)
-    return color
+    temp = tryparse(Int, str, base=16)
+    if temp === nothing 
+        return (1.0, 1.0, 1.0, alpha)
+    else
+        col = Ahorn.argb32ToRGBATuple()[1:3] ./ 255
+        return (col[1], col[2], col[3], alpha)
+    end
 end
 
 Ahorn.editingOptions(entity::CustomLightningEdge) = Dict{String, Any}(
