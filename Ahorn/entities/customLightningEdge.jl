@@ -29,13 +29,13 @@ function ColorFix(str::String, alpha::Float64=1.0)
         return (col[1], col[2], col[3], alpha)
     end
     if length(str) == 8
-        str = str[2..length(str)]
+        str = str[2:length(str)]
     end
     temp = tryparse(Int, str, base=16)
-    if temp === nothing 
+    if temp === nothing || temp == () # weird technicality and this was suggested by internet. No idea but it works.
         return (1.0, 1.0, 1.0, alpha)
     else
-        col = Ahorn.argb32ToRGBATuple()[1:3] ./ 255
+        col = Ahorn.argb32ToRGBATuple(temp)[1:3] ./ 255.0
         return (col[1], col[2], col[3], alpha)
     end
 end
@@ -59,7 +59,7 @@ function Ahorn.selection(entity::CustomLightningEdge)
     if isempty(nodes)
         dir = get(entity.data, "direction", "Up")
         if dir == "Right" || dir == "Left"
-            return Ahorn.Rectangle(x - 2, y, 4, get(entity.data, "height", 8))
+            return Ahorn.Rectangle(x-2, y, 4, get(entity.data, "height", 8))
         else
             return Ahorn.Rectangle(x, y-2, get(entity.data, "width", 8), 4)
         end
@@ -112,4 +112,5 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::CustomLightningE
         Ahorn.drawLines(ctx, [(x, y+1), (nx, ny+1)], ColorFix(colors[2], 0.5))
     end
 end
+
 end
