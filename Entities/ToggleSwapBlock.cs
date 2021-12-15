@@ -156,9 +156,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 					nineSliceBlock[j, k] = val3.GetSubtexture(new Rectangle(j * 8, k * 8, 8, 8));
 				}
 			}
-			laserCount = (oscillate || stopAtEnd || nodes.Length <= 2) ? nodes.Length - 1 : nodes.Length;
-			lasers = new ToggleBlockLaser[laserCount];
-			nodeTextures = new ToggleBlockNode[nodes.Length];
+			if (!disableTracks) {
+				laserCount = (oscillate || stopAtEnd || nodes.Length <= 2) ? nodes.Length - 1 : nodes.Length;
+				lasers = new ToggleBlockLaser[laserCount];
+				nodeTextures = new ToggleBlockNode[nodes.Length];
+			}
 		}
 
 		private string GetDefaultIfEmpty(EntityData data, string attrName, string defaultAttr) {
@@ -324,15 +326,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 		public override void Render() {
 			int num = (oscillate || nodeIndex != nodes.Length - 1) ? ((!oscillate) ? (nodeIndex + 1) : ((nodeIndex == nodes.Length - 1) ? (nodeIndex - 1) : ((nodeIndex == 0) ? 1 : (nodeIndex + ((!returning) ? 1 : (-1)))))) : 0;
-			for (int i = 0; i < nodes.Length; i++) {
-				if (stopAtEnd && i == nodes.Length - 1) {
-					nodeTextures[i].color = endColor;
-				} else if (stopAtEnd && (i == 0 || (oscillate && i == nodes.Length - 2))) {
-					nodeTextures[i].color = offColor;
-				} else if (moving || stopped) {
-					nodeTextures[i].color = offColor;
-				} else {
-					nodeTextures[i].color = ((num == i) ? onColor : offColor);
+			if (!disableTracks) {
+				for (int i = 0; i < nodes.Length; i++) {
+					if (stopAtEnd && i == nodes.Length - 1) {
+						nodeTextures[i].color = endColor;
+					} else if (stopAtEnd && (i == 0 || (oscillate && i == nodes.Length - 2))) {
+						nodeTextures[i].color = offColor;
+					} else if (moving || stopped) {
+						nodeTextures[i].color = offColor;
+					} else {
+						nodeTextures[i].color = ((num == i) ? onColor : offColor);
+					}
 				}
 			}
 			DrawBlockStyle(Position + Shake, Width, Height, nineSliceBlock, null, Color.White);
