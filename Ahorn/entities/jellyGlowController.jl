@@ -9,7 +9,8 @@ using ..Ahorn, Maple
     lightStartFade::Integer=24,
     lightEndFade::Integer=48,
     lightOffsetX::Integer=0,
-    lightOffsetY::Integer=-10
+    lightOffsetY::Integer=-10,
+    targetEntityType::String=""
 )
 
 const placements = Ahorn.PlacementDict(
@@ -22,7 +23,8 @@ Ahorn.editingOrder(entity::JellyGlowController) = String[
     "x", "y", "width", "height",
     "lightColor", "lightAlpha",
     "lightStartFade", "lightEndFade",
-    "lightOffsetX", "lightOffsetY"
+    "lightOffsetX", "lightOffsetY",
+    "targetEntityType"
 ]
 
 const sprite = "objects/StrawberryJam2021/jellyGlowController/icon"
