@@ -273,7 +273,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             foreach (var backdrop in renderer.Backdrops) {
                 var tags = GetTags(backdrop);
 
-                bool foundTag = tags.Contains(TagPrefix + (tag ?? string.Empty));
+                bool foundTag = string.IsNullOrEmpty(tag) ? tags.Any(s => s.StartsWith(TagPrefix)) : tags.Contains(TagPrefix + tag);
 
                 if (string.IsNullOrEmpty(tag))
                     foundTag = !foundTag || tags.Contains("nomaskhide");
