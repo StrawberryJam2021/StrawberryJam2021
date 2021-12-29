@@ -348,3 +348,4 @@ placements.entities.SJ2021/JellyGlowController.tooltips.lightStartFade=The dista
 placements.entities.SJ2021/JellyGlowController.tooltips.lightEndFade=The distance from the entity's position at which the light should begin to fade out.  Defaults to 48.
 placements.entities.SJ2021/JellyGlowController.tooltips.lightOffsetX=The X offset from the entity's position at which to place the light.  Defaults to 0 (the top centre of the hitbox).
 placements.entities.SJ2021/JellyGlowController.tooltips.lightOffsetY=The Y offset from the entity's position at which to place the light.  Defaults to -10 (the top centre of the hitbox).
+placements.entities.SJ2021/JellyGlowController.tooltips.targetEntityType=The entity class (without namespace) to affect.  Defaults to empty string, which matches Glider and all subclasses.
