@@ -3,6 +3,7 @@ using Celeste.Mod.StrawberryJam2021.Triggers;
 using Celeste.Mod.StrawberryJam2021.StylegroundMasks;
 using Monocle;
 using System;
+using Celeste.Mod.StrawberryJam2021.Effects;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
@@ -62,6 +63,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             GroupedParallaxDecal.Load();
             ExpiringDashRefill.Load();
             ToggleSwapBlock.Load();
+
+            Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
         }
 
         public override void Unload() {
@@ -100,6 +103,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             GroupedParallaxDecal.Unload();
             ExpiringDashRefill.Unload();
             ToggleSwapBlock.Unload();
+
+            Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -122,6 +127,13 @@ namespace Celeste.Mod.StrawberryJam2021 {
             Utilities.LoadContent();
             MaskedOutline.LoadTexture();
             BeeFireball.LoadContent();
+        }
+
+        private Backdrop onLoadBackdrop(MapData map, BinaryPacker.Element child, BinaryPacker.Element above) {
+            if (child.Name.Equals("SJ2021/IrregularGodray", StringComparison.OrdinalIgnoreCase)) {
+                return new HexagonalGodray(child.Attr("color"), child.Attr("fadetocolor"), child.AttrInt("numgodrays"));
+            }
+            return null;
         }
 
         // Temporary code from vivhelper
