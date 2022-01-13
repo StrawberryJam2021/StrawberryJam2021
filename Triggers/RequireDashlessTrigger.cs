@@ -12,7 +12,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         public string[] EntityNames;
 
         public RequireDashlessTrigger(EntityData data, Vector2 offset) : base(data, offset) {
-            EntityNames = data.Attr("entityNames", "").Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            EntityNames = data.Attr("entityNames", "").Split(separators, StringSplitOptions.RemoveEmptyEntries)
+                .Select(str => str.Trim())
+                .ToArray();
         }
 
         public override void Added(Scene scene) {
