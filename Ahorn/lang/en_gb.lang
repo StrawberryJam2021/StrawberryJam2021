@@ -225,6 +225,9 @@ placements.entities.SJ2021/AirTimeMusicController.tooltips.musicParam=The music 
 placements.triggers.SJ2021/RainDensityTrigger.tooltips.density=The target rain density, expressed as a number between 0 and 1.\n0 = No rain, 1 = Full rain.
 placements.triggers.SJ2021/RainDensityTrigger.tooltips.duration=The time (in seconds) spent transitioning to the target rain density.
 
+# Require Dashless Trigger
+placements.triggers.SJ2021/RequireDashlessTrigger.tooltips.entityNames=The class names of the entities to remove if the player has dashed as a comma-separated list.
+
 # Expiring Dash Refill
 placements.entities.SJ2021/ExpiringDashRefill.tooltips.dashExpirationTime=The amount of time given before the dash is revoked if not used.
 placements.entities.SJ2021/ExpiringDashRefill.tooltips.hairFlashThreshold=The threshold ratio that determines when the warning flash begins. (0 - 1)
