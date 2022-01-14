@@ -173,7 +173,7 @@ placements.entities.SJ2021/ToggleSwapBlock.tooltips.directionIndicator=If checke
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.constantSpeed=If checked, the velocity of the block will be the same each time it moves, and not scale with the distance between nodes. Furthermore, "Travel Speed" will be interpretted as a multiplier, with 1.0 corresponding to vanilla swap block speed.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customIndicatorPath=Only used if "Direction Indicator" is checked. Path to a folder containing textures named "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", and "done", which are displayed depending on the direction the block moves next, in place of the default indicators. Built-in examples include "objects/StrawberryJam2021/toggleSwapBlock/indicator/plain/" (default), "objects/StrawberryJam2021/toggleSwapBlock/indicator/negative/", "objects/StrawberryJam2021/toggleSwapBlock/indicator/value/", "objects/StrawberryJam2021/toggleSwapBlock/indicator/sticker/".
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.disableTracks=Disables the tracks that appear along the path of the block.
-placements.entities.SJ2021/ToggleSwapBlock.tooltips.allowDashSliding=When unchecked, the behavior is the same as vanilla swap blocks: if the player is on top of the block or grabbing the side and dashes in the horizontal direction of the block's movement, they remain fixed in place on the block. When checked, the behavior is the same as Frost Helper ToggleSwapBlocks, and the player slides along the block instead. 
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.allowDashSliding=When unchecked, the behavior is the same as vanilla swap blocks: if the player is on top of the block or grabbing the side and dashes in the horizontal direction of the block's movement, they remain fixed in place on the block. When checked, the behavior is the same as Frost Helper ToggleSwapBlocks, and the player slides along the block instead.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStartAudio=Custom audio to play when the block starts moving. If blank, vanilla swap block sound is used.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStopAudio=Custom audio to play when the block stops moving. If blank, vanilla swap block sound is used.
 
@@ -341,11 +341,18 @@ placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.dialogId=The d
 placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.endLevel=Whether finishing the dialog triggers the level to end.
 placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.deathCount=Determines the exact amount of deaths required to activate dialog trigger. Will always trigger if set to -1.
 
-# Jelly Glow Controller
-placements.entities.SJ2021/JellyGlowController.tooltips.lightColor=The colour to use for the jelly lights, as a hex representation.  Defaults to white (FFFFFF).
-placements.entities.SJ2021/JellyGlowController.tooltips.lightAlpha=The opacity of the light, ranging from 0 (invisible) to 1 (opaque).  Defaults to 1.
-placements.entities.SJ2021/JellyGlowController.tooltips.lightStartFade=The distance from the entity's position at which the light should begin to fade in.  Defaults to 24.
-placements.entities.SJ2021/JellyGlowController.tooltips.lightEndFade=The distance from the entity's position at which the light should begin to fade out.  Defaults to 48.
-placements.entities.SJ2021/JellyGlowController.tooltips.lightOffsetX=The X offset from the entity's position at which to place the light.  Defaults to 0 (the top centre of the hitbox).
-placements.entities.SJ2021/JellyGlowController.tooltips.lightOffsetY=The Y offset from the entity's position at which to place the light.  Defaults to -10 (the top centre of the hitbox).
-placements.entities.SJ2021/JellyGlowController.tooltips.targetEntityType=The entity class (without namespace) to affect.  Defaults to empty string, which matches Glider and all subclasses.
+# Glow Controller
+placements.entities.SJ2021/GlowController.tooltips.lightWhitelist=A comma-separated list of fully qualified entity class names to apply VertexLights to.  Defaults to empty string.
+placements.entities.SJ2021/GlowController.tooltips.lightBlacklist=A comma-separated list of fully qualified entity class names to remove VertexLights from.  Defaults to empty string.
+placements.entities.SJ2021/GlowController.tooltips.lightColor=The colour to use for the lights, as a hex representation.  Defaults to white (FFFFFF).
+placements.entities.SJ2021/GlowController.tooltips.lightAlpha=The opacity of the light, ranging from 0 (invisible) to 1 (opaque).  Defaults to 1.
+placements.entities.SJ2021/GlowController.tooltips.lightStartFade=The distance from the entity's position at which the light should begin to fade in.  Defaults to 24.
+placements.entities.SJ2021/GlowController.tooltips.lightEndFade=The distance from the entity's position at which the light should begin to fade out.  Defaults to 48.
+placements.entities.SJ2021/GlowController.tooltips.lightOffsetX=The X offset from the entity's position at which to place the VertexLight.  Defaults to 0.
+placements.entities.SJ2021/GlowController.tooltips.lightOffsetY=The Y offset from the entity's position at which to place the VertexLight.  Defaults to 0.
+placements.entities.SJ2021/GlowController.tooltips.bloomWhitelist=A comma-separated list of fully qualified entity class names to apply BloomPoints to.  Defaults to empty string.
+placements.entities.SJ2021/GlowController.tooltips.bloomBlacklist=A comma-separated list of fully qualified entity class names to remove BloomPoints and CustomBlooms from.  Defaults to empty string.
+placements.entities.SJ2021/GlowController.tooltips.bloomAlpha=The opacity of the bloom, ranging from 0 (invisible) to 1 (opaque).  Defaults to 1.
+placements.entities.SJ2021/GlowController.tooltips.bloomRadius=The radius of the bloom in pixels.  Defaults to 8.
+placements.entities.SJ2021/GlowController.tooltips.bloomOffsetX=The X offset from the entity's position at which to place the BloomPoint.  Defaults to 0.
+placements.entities.SJ2021/GlowController.tooltips.bloomOffsetY=The Y offset from the entity's position at which to place the BloomPoint.  Defaults to 0.
