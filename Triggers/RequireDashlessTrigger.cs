@@ -24,8 +24,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
             if (level.Session.Dashes != 0 || !level.Session.StartedFromBeginning) {
                 foreach (Entity entity in scene.Entities) {
-                    if (entity.CollideCheck(this)) {
-                        if (Enumerable.Contains(EntityNames, entity.GetType().FullName) || Enumerable.Contains(EntityNames, entity.GetType().Name)) {
+                    if (CollideCheck(entity)) {
+                        if (EntityNames.Contains(entity.GetType().FullName) || EntityNames.Contains(entity.GetType().Name)) {
                             scene.Remove(entity);
                         }
                     }
