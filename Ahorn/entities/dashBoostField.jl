@@ -2,37 +2,20 @@ module SJ2021DashBoostField
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/DashBoostField" DashBoostField(x::Integer, y::Integer, mode::String="Blue",
-    dashSpeedMultiplier::Number=1.7, timeRateMultiplier::Number=0.65, radius::Number=1.5)
-BlueDashBoostField(x::Integer, y::Integer) = DashBoostField(x, y, "Blue")
-RedDashBoostField(x::Integer, y::Integer) = DashBoostField(x, y, "Red")
-
-const modes = String["Blue", "Red"]
+@mapdef Entity "SJ2021/DashBoostField" DashBoostField(x::Integer, y::Integer, preserveDash::Bool=true,
+     color::String="ffffff", dashSpeedMultiplier::Number=1.7, timeRateMultiplier::Number=0.65,
+     radius::Number=1.5)
+RefillDashBoostField(x::Integer, y::Integer) = DashBoostField(x, y, true)
+UseDashBoostField(x::Integer, y::Integer) = DashBoostField(x, y, false)
 
 const placements = Ahorn.PlacementDict(
     # blame Archire for this name
-    "Nyom Buble (Blue) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
-        BlueDashBoostField
+    "Nyom Buble (Use Dash) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
+        UseDashBoostField
     ),
-    "Nyom Buble (Red) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
-        RedDashBoostField
+    "Nyom Buble (Preserve Dash) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
+        RefillDashBoostField
     )
-)
-
-spriteBlue = "objects/StrawberryJam2021/dashBoostField/blue"
-spriteRed = "objects/StrawberryJam2021/dashBoostField/red"
-
-function getSprite(entity::DashBoostField)
-    mode = get(entity.data, "mode", "Blue")
-    if mode == "Blue"
-        return spriteBlue
-    elseif mode == "Red"
-        return spriteRed
-    end
-end
-
-Ahorn.editingOptions(entity::DashBoostField) = Dict{String, Any}(
-    "mode" => modes
 )
 
 function Ahorn.selection(entity::DashBoostField)
@@ -42,18 +25,15 @@ function Ahorn.selection(entity::DashBoostField)
 end
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::DashBoostField, room::Maple.Room)
-    sprite = getSprite(entity)
+    sprite = "objects/StrawberryJam2021/dashBoostField/white"
+    color = Ahorn.argb32ToRGBATuple(parse(Int, "ff" * get(entity.data, "color", "ffffff"), base=16)) ./ 255
 
-    Ahorn.drawSprite(ctx, sprite, 0, 0)
+    Ahorn.drawSprite(ctx, sprite, 0, 0, tint=color)
 
     radius = get(entity.data, "radius", 1.5) * 8
-    mode = get(entity.data, "mode", "Blue")
-    if mode == "Blue"
-        color = (0.1, 0.3, 1.0, 0.6)
-    elseif mode == "Red"
-        color = (1.0, 0.2, 0.2, 0.6)
-    end
-    Ahorn.drawCircle(ctx, 0, 0, radius, color)
+    circleColor = (color[1], color[2], color[3], 0.6)
+
+    Ahorn.drawCircle(ctx, 0, 0, radius, circleColor)
 end
 
 end
