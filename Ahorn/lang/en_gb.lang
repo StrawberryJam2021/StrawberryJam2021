@@ -241,6 +241,10 @@ placements.entities.SJ2021/EntityDespawner.tooltips.invert=If checked, this enti
 # Pocket Umbrella Trigger
 placements.entities.SJ2021/PocketUmbrellaTrigger.tooltips.musicParam=(Optional) The music parameter to be turned on when gliding with the umbrella.
 
+# Change Theme Trigger
+placements.triggers.SJ2021/ChangeThemeTrigger.tooltips.enable=Whether the theme is enabled when entering this zone.
+placements.triggers.SJ2021/ChangeThemeTrigger.tooltips.toggle=If set, "Enable" will be ignored and theme will alternate when entering this zone.
+
 # Styleground Mask
 placements.entities.SJ2021/StylegroundMask.tooltips.scrollX=Parallax scrolling of the mask along the X axis.
 placements.entities.SJ2021/StylegroundMask.tooltips.scrollY=Parallax scrolling of the mask along the Y axis.
