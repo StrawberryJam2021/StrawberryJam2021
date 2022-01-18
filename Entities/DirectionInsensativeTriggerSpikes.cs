@@ -144,13 +144,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public DirectionInsenativeTimedTriggerSpikes(Vector2 position, Vector2 offset, int size, Directions direction, string overrideType, float Delay, bool waitForPlayer, bool grouped, bool rainbow)
             : base(position + offset) {
-            if (grouped && !CommunalHelperModule.MaxHelpingHandLoaded) {
-                throw new Exception("Grouped Timed Trigger Spikes attempted to load without Max's Helping Hand as a dependency.");
-            }
-
-            if (rainbow && !CommunalHelperModule.VivHelperLoaded) {
-                throw new Exception("Rainbow Timed Trigger Spikes attempted to load without Viv's Helper as a dependency.");
-            }
+            
 
             this.size = size;
             this.direction = direction;
