@@ -15,6 +15,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static Vector2[] BoosterDots, RefillDots, DoubleRefillDots;
         private static MTexture dot_texture;
+        private static Color SingleColor, DoubleColor;
 
         private bool Controller;
         private EntityData data;
@@ -31,6 +32,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             BoosterDots = DotsFromOffsets(new int[][] { new int[] { 9, 8, 7, 5, 3, 1 }, new int[] { 2, 4, 6, 8, 9, 9 } });
             RefillDots = DotsFromOffsets(new int[][] { new int[] { 5, 3, 1 }, new int[] { 1, 3, 5 } });
             DoubleRefillDots = DotsFromOffsets(new int[][] { new int[] { 3, 4, 4, 2, 1 }, new int[] { 1, 2, 3, 5, 6 } });
+            SingleColor = Calc.HexToColor("2ad257");
+            DoubleColor = Calc.HexToColor("d47df9");
         }
 
         public static void LoadTexture() {
@@ -110,12 +113,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 case OutlineType.Refill:
                     dot_positions.AddRange(RefillDots);
                     RefillSine = parent.Get<SineWave>();
-                    color = Color.DarkGreen;
+                    color = SingleColor;
                     break;
                 case OutlineType.DoubleRefill:
                     dot_positions.AddRange(DoubleRefillDots);
                     RefillSine = parent.Get<SineWave>();
-                    color = Color.DarkMagenta;
+                    color = DoubleColor;
                     break;
             }
         }
