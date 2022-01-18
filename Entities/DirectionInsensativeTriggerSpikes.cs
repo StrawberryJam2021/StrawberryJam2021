@@ -110,7 +110,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         [MethodImpl(MethodImplOptions.NoInlining)] // No in-lining, method implemented by IL hook
         public static Color GetHue(Scene scene, Vector2 position) {
             Console.Error.Write("NoInlining");
-            throw new NoInliningException();
+            throw new Exception();
         }
 
         private const float RetractTime = 6f;
