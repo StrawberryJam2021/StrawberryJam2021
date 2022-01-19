@@ -25,8 +25,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             });
         }
 
-        public override void Added(Scene scene) {
-            base.Added(scene);
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
 
             foreach (Entity entity in scene.Entities) {
                 if (CollideCheck(entity)) {
