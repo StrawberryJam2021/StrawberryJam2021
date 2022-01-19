@@ -360,3 +360,30 @@ placements.entities.SJ2021/GlowController.tooltips.bloomAlpha=The opacity of the
 placements.entities.SJ2021/GlowController.tooltips.bloomRadius=The radius of the bloom in pixels.  Defaults to 8.
 placements.entities.SJ2021/GlowController.tooltips.bloomOffsetX=The X offset from the entity's position at which to place the BloomPoint.  Defaults to 0.
 placements.entities.SJ2021/GlowController.tooltips.bloomOffsetY=The Y offset from the entity's position at which to place the BloomPoint.  Defaults to 0.
+
+# Direction Insensative Timed Trigger Spikes
+# -- Timed Trigger Spikes --
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesUp.names.Grouped=Grouping
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesLeft.names.Grouped=Grouping
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesDown.names.Grouped=Grouping
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesRight.names.Grouped=Grouping
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesUp.names.type=Texture
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesLeft.names.type=Texture
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesDown.names.type=Texture
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesRight.names.type=Texture
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesUp.tooltips.Delay=The delay, in seconds, before the spikes come up, after triggering.\nSpikes take 0.0667 seconds to come up (4 frames).
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesUp.tooltips.WaitForPlayer=Setting this to true will make the spike only come up after the player\nleaves the spike area. Useful for when you need to return to a space in a time limit.
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesUp.tooltips.Grouped=Setting this to "Grouped" will trigger all spikes in the line if any spike in\nthe line is triggered.
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesUp.tooltips.type=The texture that the trigger spikes will use. Can be customized the same way as a\nnormal spike, but cannot be animated.
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesLeft.tooltips.Delay=The delay, in seconds, before the spikes come up, after triggering.\nSpikes take 0.0667 seconds to come up (4 frames).
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesLeft.tooltips.WaitForPlayer=Setting this to true will make the spike only come up after the player\nleaves the spike area. Useful for when you need to return to a space in a time limit.
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesLeft.tooltips.Grouped=Setting this to "Grouped" will trigger all spikes in the line if any spike in\nthe line is triggered.
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesLeft.tooltips.type=The texture that the trigger spikes will use. Can be customized the same way as a\nnormal spike, but cannot be animated.
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesDown.tooltips.Delay=The delay, in seconds, before the spikes come up, after triggering.\nSpikes take 0.0667 seconds to come up (4 frames).
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesDown.tooltips.WaitForPlayer=Setting this to true will make the spike only come up after the player\nleaves the spike area. Useful for when you need to return to a space in a time limit.
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesDown.tooltips.Grouped=Setting this to "Grouped" will trigger all spikes in the line if any spike in\nthe line is triggered.
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesDown.tooltips.type=The texture that the trigger spikes will use. Can be customized the same way as a\nnormal spike, but cannot be animated.
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesRight.tooltips.Delay=The delay, in seconds, before the spikes come up, after triggering.\nSpikes take 0.0667 seconds to come up (4 frames).
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesRight.tooltips.WaitForPlayer=Setting this to true will make the spike only come up after the player\nleaves the spike area. Useful for when you need to return to a space in a time limit.
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesRight.tooltips.Grouped=Setting this to "Grouped" will trigger all spikes in the line if any spike in\nthe line is triggered.
+placements.entities.SJ2021/DirectionInsensativeTimedTriggerSpikesRight.tooltips.type=The texture that the trigger spikes will use. Can be customized the same way as a\nnormal spike, but cannot be animated.
