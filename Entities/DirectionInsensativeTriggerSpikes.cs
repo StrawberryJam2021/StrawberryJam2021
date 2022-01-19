@@ -266,8 +266,37 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (maxIndex >= 0 && minIndex < spikes.Length) {
                 minIndex = Math.Max(minIndex, 0);
                 maxIndex = Math.Min(maxIndex, spikes.Length - 1);
-                for (int i = minIndex; i <= maxIndex && !spikes[i].OnPlayer(player, outwards); i++) {
+
+                //attempt to breakout early if player dies
+                bool breakout = false;
+                for (int i = minIndex; i <= maxIndex; i++) {
+                    
+                    switch (direction) {
+                        case Directions.Up:
+                            if (player.Speed.Y >= 0f || !spikes[i].Triggered) {
+                                breakout = !spikes[i].OnPlayer(player, outwards);
+                            }
+                            break;
+                        case Directions.Down:
+                            if (player.Speed.Y <= 0f || !spikes[i].Triggered) {
+                                breakout = !spikes[i].OnPlayer(player, outwards);
+                            }
+                            break;
+                        case Directions.Left:
+                            if (player.Speed.X >= 0f || !spikes[i].Triggered) {
+                                breakout = !spikes[i].OnPlayer(player, outwards);
+                            }
+                            break;
+                        case Directions.Right:
+                            if (player.Speed.X <= 0f || !spikes[i].Triggered) {
+                                breakout = !spikes[i].OnPlayer(player, outwards);
+                            }
+                            break;
+                    }
+                    if (breakout)
+                        break;
                 }
+                
             }
         }
 
