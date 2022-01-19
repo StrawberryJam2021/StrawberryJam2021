@@ -100,6 +100,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             GroupedParallaxDecal.Unload();
             ExpiringDashRefill.Unload();
             ToggleSwapBlock.Unload();
+            DirectionInsenativeTimedTriggerSpikes.Unload();
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -122,6 +123,13 @@ namespace Celeste.Mod.StrawberryJam2021 {
             Utilities.LoadContent();
             MaskedOutline.LoadTexture();
             BeeFireball.LoadContent();
+        }
+
+        public override void Initialize() {
+            // Because of `Celeste.Tags.Initialize` of all things
+            // We create a static CrystalStaticSpinner which needs to access Tags.TransitionUpdate
+            // Which wouldn't be loaded in time for EverestModule.Load
+            DirectionInsenativeTimedTriggerSpikes.LoadDelayed();
         }
 
         // Temporary code from vivhelper

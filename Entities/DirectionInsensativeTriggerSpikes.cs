@@ -14,10 +14,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
     [CustomEntity(new string[]
     {
-        "CommunalHelper/DirectionInsenativeTimedTriggerSpikesUp = LoadUp",
-        "CommunalHelper/DirectionInsenativeTimedTriggerSpikesDown = LoadDown",
-        "CommunalHelper/DirectionInsenativeTimedTriggerSpikesLeft = LoadLeft",
-        "CommunalHelper/DirectionInsenativeTimedTriggerSpikesRight = LoadRight"
+        "SJ2021/DirectionInsensativeTimedTriggerSpikesUp = LoadUp",
+        "SJ2021/DirectionInsensativeTimedTriggerSpikesDown = LoadDown",
+        "SJ2021/DirectionInsensativeTimedTriggerSpikesLeft = LoadLeft",
+        "SJ2021/DirectionInsensativeTimedTriggerSpikesRight = LoadRight"
     })]
     public class DirectionInsenativeTimedTriggerSpikes : Entity {
 
@@ -140,11 +140,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public DirectionInsenativeTimedTriggerSpikes(EntityData data, Vector2 offset, Directions dir)
             : this(data.Position, offset, GetSize(data, dir), dir, data.Attr("type", "default"), data.Float("Delay", 0.4f), data.Bool("WaitForPlayer", false), data.Bool("Grouped", false), data.Bool("Rainbow", false)) {
+            Logger.Log("[Info]", "DirectionInsenativeTimedTriggerSpikes(EntityData data, Vector2 offset, Directions dir)");
         }
 
         public DirectionInsenativeTimedTriggerSpikes(Vector2 position, Vector2 offset, int size, Directions direction, string overrideType, float Delay, bool waitForPlayer, bool grouped, bool rainbow)
             : base(position + offset) {
-            
+            Logger.Log("[Info]", "DirectionInsenativeTimedTriggerSpikes(Vector2 position, Vector2 offset, int size, Directions direction, string overrideType, float Delay, bool waitForPlayer, bool grouped, bool rainbow)");
 
             this.size = size;
             this.direction = direction;
@@ -190,6 +191,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Added(Scene scene) {
+            Logger.Log("[Info]", "Added");
+
+
             base.Added(scene);
 
             AreaData areaData = AreaData.Get(scene);
@@ -271,28 +275,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             minIndex = maxIndex = -1;
             switch (direction) {
                 case Directions.Up:
-                    if (player.Speed.Y >= 0f) {
+                    //if (player.Speed.Y >= 0f) {
                         minIndex = (int) ((player.Left - Left) / 8f);
                         maxIndex = (int) ((player.Right - Left) / 8f);
-                    }
+                    //}
                     break;
                 case Directions.Down:
-                    if (player.Speed.Y <= 0f) {
+                    //if (player.Speed.Y <= 0f) {
                         minIndex = (int) ((player.Left - Left) / 8f);
                         maxIndex = (int) ((player.Right - Left) / 8f);
-                    }
+                    //}
                     break;
                 case Directions.Left:
-                    if (player.Speed.X >= 0f) {
+                    //if (player.Speed.X >= 0f) {
                         minIndex = (int) ((player.Top - Top) / 8f);
                         maxIndex = (int) ((player.Bottom - Top) / 8f);
-                    }
+                    //}
                     break;
                 case Directions.Right:
-                    if (player.Speed.X <= 0f) {
+                    //if (player.Speed.X <= 0f) {
                         minIndex = (int) ((player.Top - Top) / 8f);
                         maxIndex = (int) ((player.Bottom - Top) / 8f);
-                    }
+                    //}
                     break;
             }
         }
