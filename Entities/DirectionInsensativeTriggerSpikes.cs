@@ -305,26 +305,26 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             switch (direction) {
                 case Directions.Up:
                     //if (player.Speed.Y >= 0f) {
-                        minIndex = (int) ((player.Left - Left) / 8f);
-                        maxIndex = (int) ((player.Right - Left) / 8f);
+                    minIndex = (int) ((player.Left - Left) / 8f);
+                    maxIndex = (int) ((player.Right - Left) / 8f);
                     //}
                     break;
                 case Directions.Down:
                     //if (player.Speed.Y <= 0f) {
-                        minIndex = (int) ((player.Left - Left) / 8f);
-                        maxIndex = (int) ((player.Right - Left) / 8f);
+                    minIndex = (int) ((player.Left - Left) / 8f);
+                    maxIndex = (int) ((player.Right - Left) / 8f);
                     //}
                     break;
                 case Directions.Left:
                     //if (player.Speed.X >= 0f) {
-                        minIndex = (int) ((player.Top - Top) / 8f);
-                        maxIndex = (int) ((player.Bottom - Top) / 8f);
+                    minIndex = (int) ((player.Top - Top) / 8f);
+                    maxIndex = (int) ((player.Bottom - Top) / 8f);
                     //}
                     break;
                 case Directions.Right:
                     //if (player.Speed.X <= 0f) {
-                        minIndex = (int) ((player.Top - Top) / 8f);
-                        maxIndex = (int) ((player.Bottom - Top) / 8f);
+                    minIndex = (int) ((player.Top - Top) / 8f);
+                    maxIndex = (int) ((player.Bottom - Top) / 8f);
                     //}
                     break;
             }
