@@ -7,7 +7,7 @@
     - Name: CavernHelper
       Version: 1.3.3
     - Name: MaxHelpingHand
-      Version: 1.13.4
+      Version: 1.16.19
     - Name: ExtendedVariantMode
       Version: 0.19.15
     - Name: FactoryHelper
@@ -16,7 +16,7 @@
       Version: 1.1.0
     - Name: VortexHelper
       Version: 1.1.0
-    - Name: CanyonHelper
-      Version: 1.1.3
     - Name: AdventureHelper
       Version: 1.5.1
+    - Name: CollabUtils2
+      Version: 1.5.12

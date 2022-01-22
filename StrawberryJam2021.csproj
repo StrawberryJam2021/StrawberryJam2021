@@ -36,6 +36,10 @@
       <HintPath>lib-stripped\CavernHelper.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="CollabUtils2">
+      <HintPath>lib-stripped\CollabUtils2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="ExtendedVariantMode">
       <HintPath>lib-stripped\ExtendedVariantMode.dll</HintPath>
       <Private>false</Private>
@@ -48,6 +52,10 @@
       <HintPath>lib-stripped\ExtendedVariantMode.dll</HintPath>
       <Private>false</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Cutscenes\" />
   </ItemGroup>
 
   <Choose>

@@ -25,11 +25,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private MTexture displace;
         private Sprite displacementMask;
         private float displaceEase = 1;
+
         public static void Load() {
             On.Celeste.Player.NormalBegin += allowTeleport;
             On.Celeste.Player.DashBegin += killPlayer;
             On.Celeste.Player.BoostCoroutine += increaseDelay;
             On.Celeste.Booster.AppearParticles += wormholeAppearParticles;
+            On.Celeste.Booster.PlayerReleased += resetUseTimer;
         }
 
         public static void Unload() {
@@ -37,6 +39,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Player.DashBegin -= killPlayer;
             On.Celeste.Player.BoostCoroutine -= increaseDelay;
             On.Celeste.Booster.AppearParticles -= wormholeAppearParticles;
+            On.Celeste.Booster.PlayerReleased -= resetUseTimer;
         }
 
         public static void LoadParticles() {
@@ -83,18 +86,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             displacementMask.Stop();
             displacementMask.Visible = false;
             color = Calc.HexToColor("7800bd");
+            self.Get<Sprite>("sprite").Color = color;
             self["particleType"] = P_WBurst;
             displace = GFX.Game["util/StrawberryJam2021/wormhole_disp"];
             Add(displaceHook = new DisplacementRenderHook(BlackHoleDisplacement));
-            
         }
+
         private void BlackHoleDisplacement() {
             if (!self.Get<Sprite>("sprite").Visible) {
                 displaceEase -= 8 * Engine.RawDeltaTime;
             }
             displaceEase = Calc.Clamp(displaceEase, 0, 1);
-            displace.Draw(Position, displace.Center, Color.White * displaceEase, 0.4f);
-            displacementMask.GetFrame(sprite.CurrentAnimationID, sprite.CurrentAnimationFrame).Draw(Position - new Vector2(16), Vector2.Zero, displaceColor*displaceEase);
+            displace.Draw(Position, displace.Center, Color.White * displaceEase, 0.2f);
+            displacementMask.GetFrame(sprite.CurrentAnimationID, sprite.CurrentAnimationFrame).Draw(Position - new Vector2(16), Vector2.Zero, displaceColor * displaceEase);
         }
 
         public override void Awake(Scene scene) {
@@ -105,7 +109,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public IEnumerator TeleportCoroutine(Player player) {
             WormholeBooster nearest = FindNearestBooster();
             if (nearest == null) {
-                RemoveSelf();
                 yield break;
             }
             SceneAs<Level>().Add(new WBTrailManager(Position, nearest.Position));
@@ -122,11 +125,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            if (self.Get<float>("respawnTimer") > 0.2f) {
-                self.Set("respawnTimer", 0.1f);
+            if (self.Get<float>("respawnTimer") > 0f) {
+                self.Set("respawnTimer", 0f);
+                base.Respawn();
             }
             self.Get<Sprite>("sprite").Color = color;
-            if (SceneAs<Level>().Tracker.CountEntities<Entities.WormholeBooster>() == 1 && !TeleportingDNI) {
+            if (SceneAs<Level>().Tracker.CountEntities<WormholeBooster>() == 1 && !TeleportingDNI) {
                 TeleDeath = true;
             }
             if (TeleDeath) {
@@ -135,7 +139,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void onWormholeActivate(Player player) {
-            if (TeleportingDNI)
+            if (TeleportingDNI || self.Get<float>("cannotUseTimer") > 0f)
                 return;
             else {
                 TeleportingDNI = true;
@@ -151,7 +155,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             WormholeBooster leader = null;
             foreach (WormholeBooster booster in SceneAs<Level>().Tracker.GetEntities<WormholeBooster>()) {
                 DynData<Booster> boost = new DynData<Booster>(booster);
-                if (booster != this && booster.Collidable && !booster.BoostingPlayer && boost.Get<float>("respawnTimer") <= 0f) {
+                if (booster != this && booster.Collidable && !booster.BoostingPlayer) {
                     if (leader == null || (booster.Position - Position).Length() < (leader.Position - Position).Length()) {
                         leader = booster;
                     }
@@ -179,7 +183,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (booster != null) {
                 TeleportingDNI = true;
             }
-            if (TeleDeath && booster != null && self != null) {
+            if (TeleDeath && booster != null && self != null && self.CurrentBooster != null) {
                 self.Visible = false;
                 self.StateMachine.State = 11;
                 self.DummyGravity = false;
@@ -199,9 +203,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     TeleDeath = false;
                     TeleportingDNI = false;
                     Audio.Play("event:/char/badeline/disappear", self.Position);
-                    self.StateMachine.State = 0;
-                    self.Die(Vector2.Zero);
                     if (self != null) {
+                        self.StateMachine.State = 0;
+                        self.Die(Vector2.Zero);
                         self.Visible = true;
                         new DynData<Booster>(self.CurrentBooster).Get<Entity>("outline").RemoveSelf();
                         self.CurrentBooster.RemoveSelf();
@@ -222,6 +226,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             } else {
                 orig(self);
+            }
+        }
+
+        private static void resetUseTimer(On.Celeste.Booster.orig_PlayerReleased orig, Booster self) {
+            orig(self);
+            if (self is WormholeBooster) {
+                new DynData<Booster>(self).Set("cannotUseTimer", 0.25f);
             }
         }
 

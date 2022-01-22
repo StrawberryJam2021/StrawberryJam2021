@@ -147,11 +147,13 @@
     <roseGlider path="objects/StrawberryJam2021/roseGlider/" start="idle_3">
         <Anim id="idle_3" path="3charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_3:9,idle_gust_3:1"/>
         <Anim id="idle_gust_3" path="3charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_3:9,idle_gust_3:1"/>
+        <Anim id="boost_3" path="3charge/boost" delay="0.1" frames="0-5" goto="idle_2:9,idle_gust_2:1"/>
         <Anim id="idle_2" path="2charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_2:9,idle_gust_2:1"/>
         <Anim id="idle_gust_2" path="2charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_2:9,idle_gust_2:1"/>
+        <Anim id="boost_2" path="2charge/boost" delay="0.1" frames="0-5" goto="idle_1:9,idle_gust_1:1"/>
         <Anim id="idle_1" path="1charge/fly" delay="0.1" frames="3-7,6-4" goto="idle_1:9,idle_gust_1:1"/>
         <Anim id="idle_gust_1" path="1charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_1:9,idle_gust_1:1"/>
-        <Anim id="death" path="death" delay="0.1" />
+        <Anim id="boost_1" path="1charge/boost" delay="0.1" frames="0-7"/>
     </roseGlider>
 
     <!--Strawberry Jam Jars-->
@@ -163,6 +165,20 @@
         <Loop id="full" path="jarfull_idle" delay="0.1"/>
     </jamJar_trailer>
 
+    <jamJar_beginner path="objects/StrawberryJam2021/jamJar/beginner/" start="empty">
+        <Justify x="0.5" y="1"/>
+        <Loop id="empty" path="jarempty_idle" delay="0.1"/>
+        <Anim id="before_fill" path="jarempty_idle" delay="0.1" frames="8-15" goto="fill"/>
+        <Anim id="fill" path="jarfill_" delay="0.1" goto="full"/>
+        <Anim id="full" path="jarfull_idle" delay="0.1" goto="full:9,fullB:1"/>
+        <Anim id="fullB" path="idle_b/jartilt_" delay="0.1" goto="full:9,fullB:1"/>
+    </jamJar_beginner>
+
+    <jamJar_intermediate copy="jamJar_beginner" path="objects/StrawberryJam2021/jamJar/intermediate/"/>
+    <jamJar_advanced copy="jamJar_beginner" path="objects/StrawberryJam2021/jamJar/advanced/"/>
+    <jamJar_expert copy="jamJar_beginner" path="objects/StrawberryJam2021/jamJar/expert/"/>
+    <jamJar_grandmaster copy="jamJar_beginner" path="objects/StrawberryJam2021/jamJar/grandmaster/"/>
+
     <!--Resizable Dash Switch lightning effect-->
     <bigSwitch_lightning path="objects/StrawberryJam2021/bigDashSwitch/" start="hit">
         <Justify x="0.5" y="0.5"/>
@@ -171,7 +187,7 @@
 
     <!--Pocket Umbrella-->
     <pocketUmbrella path="objects/StrawberryJam2021/pocketUmbrella/" start="held">
-		<Justify x="0.5" y="0.58"/>
+        <Justify x="0.5" y="0.58"/>
         <Anim id="spawn" path="spawn" delay="0.06" goto="held"/>
         <Loop id="held" path="held" delay="0.1"/>
         <Anim id="fall" path="fall" delay="0.06" goto="fallLoop"/>
@@ -226,7 +242,32 @@
         <Justify x="0.5" y="0.5"/>
         <Anim id="blue" path="blue/impact" delay="0.1" frames="0-11" />
         <Anim id="pink" path="pink/impact" delay="0.1" frames="0-11" />
-        <Anim id="blue_air" path="blue/impactAir" delay="0.1" frames="0-11" />
-        <Anim id="pink_air" path="pink/impactAir" delay="0.1" frames="0-11" />
+        <Anim id="blue_air" path="blue/impactAir" delay="0.1" frames="0-6" />
+        <Anim id="pink_air" path="pink/impactAir" delay="0.1" frames="0-6" />
     </pelletImpact>
+	
+    <!--Crystal Bomb Badeline Boss-->
+    <crystalBombBadelineBoss path="objects/StrawberryJam2021/crystalBombBadelineBoss/" start="idle">
+        <Justify x="0.5" y=".64" />
+        <Loop id="idle" path="boss" delay="0.06" frames="0-23"/>
+    
+        <Loop id="scaredIdle" path="scared" delay="0.06" frames="0-19"/>
+        <Anim id="scaredTransition" path="scared" delay="0.1" frames="20-29" goto="calm"/>
+        <Loop id="calm" path="scared" delay="0.06" frames="30"/>
+        <Anim id="lookUp" path="scared" delay="0.08" frames="30-30" goto="lookingUp"/>
+        <Loop id="lookingUp" path="scared" delay="0.08" frames="35"/>
+    
+        <Anim id="attack1Begin" path="boss" delay="0.06" frames="24-29" goto="attack1Loop"/>
+        <Anim id="attack1Loop" path="boss" delay="0.06" frames="30-36" goto="attack1Loop"/>
+        <Anim id="attack1Recoil" path="boss" delay="0.06" frames="40-45" goto="idle"/>
+
+        <Anim id="attack2Begin" path="charge" delay="0.06" frames="0-17" goto="attack2Aim"/>
+        <Anim id="attack2Aim" path="charge" delay="0.06" frames="18-28" goto="attack2Aim"/>
+        <Anim id="attack2Lock" path="charge" delay="0.06" frames="29-39" goto="attack2Lock"/>
+        <Anim id="attack2Recoil" path="charge" delay="0.06" frames="40-45" goto="idle"/>
+   
+        <Anim id="getHit" path="hit" delay="0.06" frames="0-9" goto="star"/>
+        <Loop id="star" path="hit" delay="0.06" frames="10-15"/>
+        <Anim id="recoverHit" path="hit" delay="0.06" frames="16-19" goto="idle"/>
+    </crystalBombBadelineBoss>
 </Sprites>

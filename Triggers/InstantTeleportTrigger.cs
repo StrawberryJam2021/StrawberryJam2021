@@ -48,7 +48,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private Color flashColor;
         private float delay;
         private int legacyCamera;
-        private bool legacyBerry;
         private bool resetDashes;
 
         //new stuff
