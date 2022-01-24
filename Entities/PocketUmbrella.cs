@@ -6,7 +6,7 @@ using System.Collections;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     class PocketUmbrella : Actor {
         private float staminaCost;
-        private Sprite sprite;
+        private Sprite sprite, sweat;
 
         public bool destroyed = false, spawning = true;
         public Holdable Hold;
@@ -39,6 +39,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(sprite = StrawberryJam2021Module.SpriteBank.Create("pocketUmbrella"));
             sprite.Visible = false;
             Collider = new Hitbox(8, 10, -4, -10);
+
+            Add(sweat = StrawberryJam2021Module.SpriteBank.Create("pocketUmbrellaSweat"));
+            sweat.Visible = false;
+            sweat.CenterOrigin();
+            sweat.Play("sweat");
+            sweat.Position.Y = -2; // adjustment to make it line up with maddies head. *should* work with custom sprites too, unless they have a wack offset
 
             Add(Hold = new Holdable(0.3f));
             Hold.SlowFall = true;
@@ -146,9 +152,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 sprite.Scale.Y = Calc.Approach(sprite.Scale.Y, Vector2.One.Y, Engine.DeltaTime * 2f);
                 sprite.Scale.X = Calc.Approach(sprite.Scale.X, Math.Sign(sprite.Scale.X) * Vector2.One.X, Engine.DeltaTime * 2f);
 
+                sweat.Visible = false;
                 if (Hold.IsHeld) {
-                    if (!climbUpdate)
+                    if (!climbUpdate) {
                         Hold.Holder.Stamina -= staminaCost * Engine.DeltaTime;
+                        if (!Hold.Holder.OnGround(1)) {
+                            sweat.Visible = true;
+                        }
+                    }
                     if (Hold.Holder.Stamina <= 0) {
                         Hold.Holder.Drop();
                     }

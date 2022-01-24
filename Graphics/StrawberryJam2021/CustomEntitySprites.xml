@@ -195,7 +195,12 @@
         <Anim id="death" path="spawn" delay="0.06" frames="3-0"/>
     </pocketUmbrella>
 
-    <!--Directional Booster-->
+    <!--Pocket Umbrella Sweat-->
+    <pocketUmbrellaSweat path="objects/StrawberryJam2021/pocketUmbrella/" start="sweat">
+        <Loop id="sweat" path="umbrella_sweat" delay="0.06"/>
+    </pocketUmbrellaSweat>
+
+  <!--Directional Booster-->
     <directionalBooster path="objects/StrawberryJam2021/boosterDirectional/" start="loop">
         <Justify x="0.5" y="0.5"/>
         <Anim id="appear" path="boosterHunny" delay="0.08" frames="26-34" goto="loop"/>
