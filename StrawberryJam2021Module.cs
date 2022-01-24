@@ -3,6 +3,7 @@ using Celeste.Mod.StrawberryJam2021.Triggers;
 using Celeste.Mod.StrawberryJam2021.StylegroundMasks;
 using Monocle;
 using System;
+using Celeste.Mod.Helpers;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
@@ -122,6 +123,16 @@ namespace Celeste.Mod.StrawberryJam2021 {
             Utilities.LoadContent();
             MaskedOutline.LoadTexture();
             BeeFireball.LoadContent();
+        }
+
+        //This occurs after all mods get initialized.
+        public override void Initialize() {
+            base.Initialize();
+            //In theory this won't be a problem because it requires CrystallineHelper for the StrawberryJam collab anyways
+            try {
+                CrystallineHelperTimeFreezeMusicController.crystallineHelper_TimeCrystal_stopStage =
+                       FakeAssembly.GetFakeEntryAssembly().GetType("vitmod.TimeCrystal").GetField("stopStage", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            } catch { }
         }
 
         // Temporary code from vivhelper
