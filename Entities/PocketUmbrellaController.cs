@@ -121,7 +121,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (Enabled && player.Dead == false) {
                 if (shouldGrabWall(player)) {
                     player.StateMachine.State = Player.StClimb;
-                } else if (grabCheck()) {
+                } else if (Input.GrabCheck) {
                     if (player.Holding == null && exclusiveGrabCollide(player)) {
                         if (trySpawnJelly(out PocketUmbrella umbrella, player)) {
                             Scene.Add(umbrella);
@@ -166,7 +166,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             foreach (PocketUmbrellaController controller in Engine.Scene.Tracker.GetEntities<PocketUmbrellaController>()) {
                 if (controller.Enabled && player.Dead == false && player.StateMachine.State != Player.StDash && !Input.Dash.Check) {
-                    if (controller.grabCheck()) {
+                    if (Input.GrabCheck) {
                         if (player.Holding == null && controller.exclusiveGrabCollide(player)) {
                             if (controller.trySpawnJelly(out PocketUmbrella umbrella, player)) {
                                 controller.Scene.Add(umbrella);
@@ -175,12 +175,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                 }
             }
-        }
-
-        private bool grabCheck() {
-            bool pressed = Input.Grab.Pressed;
-            Input.Grab.ConsumePress();
-            return pressed;
         }
 
         private bool trySpawnJelly(out PocketUmbrella umbrella, Player player) {
