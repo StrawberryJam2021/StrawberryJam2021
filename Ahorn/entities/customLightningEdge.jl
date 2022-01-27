@@ -32,7 +32,7 @@ function ColorFix(str::String, alpha::Float64=1.0)
         str = str[2:length(str)]
     end
     temp = tryparse(Int, str, base=16)
-    if temp === nothing || temp == () # weird technicality and this was suggested by internet. No idea but it works.
+    if temp === nothing
         return (1.0, 1.0, 1.0, alpha)
     else
         col = Ahorn.argb32ToRGBATuple(temp)[1:3] ./ 255.0
