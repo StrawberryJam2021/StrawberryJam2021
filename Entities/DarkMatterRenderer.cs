@@ -15,6 +15,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class DarkMatterRenderer : Entity {
 
         public static VirtualRenderTarget DarkMatterLightning;
+        public static VirtualRenderTarget BlurTempBuffer;
         
         private class Bolt {
 
@@ -113,7 +114,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             public void Render() {
                 if (flash > 0f && !Settings.Instance.DisableFlashes) {
-                    Draw.Rect(0f, 0f, width, height, Color.White * flash * 0.15f * scale);
+                    Draw.Rect(0f, 0f, width, height, Color.Black * flash * 0.65f * scale);
                 }
                 if (visible) {
                     for (int i = 0; i < nodes.Count; i += 2) {
@@ -200,7 +201,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Tag = (int) Tags.Global | (int) Tags.TransitionUpdate;
             base.Depth = -1000100;
             colorsLerped = new Color[2];
-            Add(new CustomBloom(OnRenderBloom));
             Add(new BeforeRenderHook(OnBeforeRender));
             Add(AmbientSfx = new SoundSource());
             AmbientSfx.DisposeOnTransition = false;
@@ -309,11 +309,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (list.Count <= 0) {
                 return;
             }
-            Level obj = base.Scene as Level;
-            _ = obj.TileBounds.Left;
-            _ = obj.TileBounds.Top;
-            _ = obj.TileBounds.Right;
-            _ = obj.TileBounds.Bottom;
             Point[] array = new Point[4]
             {
             new Point(0, -1),
@@ -365,32 +360,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return tiles[tx - levelTileBounds.X, ty - levelTileBounds.Y];
         }
 
-        private void OnRenderBloom() {
-            Camera camera = (base.Scene as Level).Camera;
-            new Rectangle((int) camera.Left, (int) camera.Top, (int) (camera.Right - camera.Left), (int) (camera.Bottom - camera.Top));
-            Color color = Color.White * (0.25f + Fade * 0.75f);
-            foreach (Edge edge in edges) {
-                if (edge.Visible) {
-                    Draw.Line(edge.Parent.Position + edge.A, edge.Parent.Position + edge.B, color, 4f);
-                }
-            }
-            foreach (DarkMatter item in list) {
-                if (item.Visible) {
-                    Draw.Rect(item.X, item.Y, item.VisualWidth, item.VisualHeight, color);
-                }
-            }
-            if (Fade > 0f) {
-                Level level = base.Scene as Level;
-                Draw.Rect(level.Camera.X, level.Camera.Y, 320f, 180f, Color.White * Fade);
-            }
-        }
-
         private void OnBeforeRender() {
             if (list.Count <= 0) {
                 return;
             }
             Engine.Graphics.GraphicsDevice.SetRenderTarget(DarkMatterLightning);
-            Engine.Graphics.GraphicsDevice.Clear(Color.Lerp(Calc.HexToColor("f7b262") * 0.1f, Color.White, Fade));
+            Engine.Graphics.GraphicsDevice.Clear(Color.Lerp(Calc.HexToColor("470076") * 0.125f, Color.Black, Fade));
             Draw.SpriteBatch.Begin();
             foreach (Bolt bolt in bolts) {
                 bolt.Render();
@@ -404,16 +379,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             Camera camera = (base.Scene as Level).Camera;
             new Rectangle((int) camera.Left, (int) camera.Top, (int) (camera.Right - camera.Left), (int) (camera.Bottom - camera.Top));
+            //Acts as a "color filter"
+            
             foreach (DarkMatter item in list) {
                 if (item.Visible) {
-                    Draw.SpriteBatch.Draw((RenderTarget2D) DarkMatterLightning, item.Position, new Rectangle((int) item.X, (int) item.Y, item.VisualWidth, item.VisualHeight), Color.White);
+                    Draw.SpriteBatch.Draw(DarkMatterLightning, item.Position, new Rectangle((int) item.X, (int) item.Y, item.VisualWidth, item.VisualHeight), Color.White);
                 }
             }
             if (edges.Count <= 0 || !DrawEdges) {
                 return;
             }
             for (int i = 0; i < colorsLerped.Length; i++) {
-                colorsLerped[i] = Color.Lerp(colorSets[mode][i], Color.White, Fade);
+                colorsLerped[i] = Color.Lerp(colorSets[mode][i], Color.White, 4 * Fade);
             }
             int index = 0;
             uint seed = leapSeed;
