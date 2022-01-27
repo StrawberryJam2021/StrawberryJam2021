@@ -142,10 +142,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         //Particles are renderer from the StrawberryJamDarkMatterRenderer, operating on the List of rectangles.
         public const string Flag = "disable_lightning";
 
-        public float Fade;
-        
-        private bool disappearing;
-        
         private float toggleOffset;
         
         public int VisualWidth;
@@ -205,7 +201,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void OnPlayer(Player player) {
             if (renderer.mode == DarkMatterRenderer.Mode.Kill) {
-                if (!disappearing && !SaveData.Instance.Assists.Invincible) {
+                if (!SaveData.Instance.Assists.Invincible) {
                     int num = Math.Sign(player.X - base.X);
                     if (num == 0) {
                         num = -1;

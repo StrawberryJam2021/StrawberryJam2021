@@ -201,7 +201,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Tag = (int) Tags.Global | (int) Tags.TransitionUpdate;
             base.Depth = -1000100;
             colorsLerped = new Color[2];
-            //Add(new CustomBloom(OnRenderBloom));
             Add(new BeforeRenderHook(OnBeforeRender));
             Add(AmbientSfx = new SoundSource());
             AmbientSfx.DisposeOnTransition = false;
@@ -359,26 +358,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool Inside(int tx, int ty) {
             return tiles[tx - levelTileBounds.X, ty - levelTileBounds.Y];
-        }
-
-        private void OnRenderBloom() {
-            Camera camera = (base.Scene as Level).Camera;
-            new Rectangle((int) camera.Left, (int) camera.Top, (int) (camera.Right - camera.Left), (int) (camera.Bottom - camera.Top));
-            Color color = Color.White * (0.25f + Fade * 0.75f);
-            foreach (Edge edge in edges) {
-                if (edge.Visible) {
-                    Draw.Line(edge.Parent.Position + edge.A, edge.Parent.Position + edge.B, color, 4f);
-                }
-            }
-            foreach (DarkMatter item in list) {
-                if (item.Visible) {
-                    Draw.Rect(item.X, item.Y, item.VisualWidth, item.VisualHeight, color);
-                }
-            }
-            if (Fade > 0f) {
-                Level level = base.Scene as Level;
-                Draw.Rect(level.Camera.X, level.Camera.Y, 320f, 180f, Color.White * Fade);
-            }
         }
 
         private void OnBeforeRender() {
