@@ -19,7 +19,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(
                 ExtendedVariantsModule.Variant.JumpCount,
                 1,
-                false, false, false
+                false, false, false, true
             );
 
             session.Inventory.Dashes = 1;

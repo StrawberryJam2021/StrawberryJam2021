@@ -92,7 +92,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 case "StrawberryJam2021/3-Advanced/Citrea":
                     // Dark Mode alternate
                     SetLighting(level, enabled ? 0.7f : 0f);
-                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(ExtendedVariantsModule.Variant.BackgroundBrightness, enabled ? 3 : 10, revertOnLeave: false, isFade: false, revertOnDeath: false);
+                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(ExtendedVariantsModule.Variant.BackgroundBrightness, enabled ? 3 : 10, revertOnLeave: false, isFade: false, revertOnDeath: false, legacy: true);
                     break;
                 case "StrawberryJam2021/4-Expert/Skunkynator":
                     // Low-Detail Mode alternate
@@ -104,7 +104,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     // Dark Mode alternate
                     level.Session.SetFlag("lightmode", !enabled);
                     SetLighting(level, enabled ? 0.25f : 0f);
-                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(ExtendedVariantsModule.Variant.BackgroundBrightness, enabled ? 8 : 10, revertOnLeave: false, isFade: false, revertOnDeath: false);
+                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(ExtendedVariantsModule.Variant.BackgroundBrightness, enabled ? 8 : 10, revertOnLeave: false, isFade: false, revertOnDeath: false, legacy: true);
                     break;
             } 
         }
