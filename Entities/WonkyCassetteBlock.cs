@@ -40,6 +40,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static readonly MethodInfo m_CassetteBlock_CreateImage = typeof(CassetteBlock).GetMethod("CreateImage", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly FieldInfo _groupField = typeof(CassetteBlock).GetField("group", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo _sideField = typeof(CassetteBlock).GetField("side", BindingFlags.NonPublic | BindingFlags.Instance);
 
         private static void NewFindInGroup(On.Celeste.CassetteBlock.orig_FindInGroup orig, CassetteBlock self, CassetteBlock block) {
             if (self is not WonkyCassetteBlock) {
@@ -87,6 +88,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     boostFrames -= 1;
                 }
             }
+        }
+
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
+
+            // Remove the box side, as transparency makes it look very weird
+            // This needs to be delayed to the end of the frame, otherwise RemoveSelf does nothing here
+            scene.OnEndOfFrame += () => (_sideField.GetValue(this) as Entity).RemoveSelf();
         }
 
         private static bool NewCheckForSame(On.Celeste.CassetteBlock.orig_CheckForSame origCheckForSame, CassetteBlock self, float x, float y) {
