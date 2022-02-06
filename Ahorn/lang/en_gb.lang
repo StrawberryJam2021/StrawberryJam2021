@@ -364,3 +364,9 @@ placements.entities.SJ2021/GlowController.tooltips.bloomAlpha=The opacity of the
 placements.entities.SJ2021/GlowController.tooltips.bloomRadius=The radius of the bloom in pixels.  Defaults to 8.
 placements.entities.SJ2021/GlowController.tooltips.bloomOffsetX=The X offset from the entity's position at which to place the BloomPoint.  Defaults to 0.
 placements.entities.SJ2021/GlowController.tooltips.bloomOffsetY=The Y offset from the entity's position at which to place the BloomPoint.  Defaults to 0.
+
+# Flag Floaty Space Block
+placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.tiletype=The tileset to use when rendering the block.
+placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.disableSpawnOffset=Whether or not the entity should spawn without the random offset.
+placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.flag=The name of the flag that will activate the block.
+placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.moveTime=The time in seconds for the block to move to a new position.
