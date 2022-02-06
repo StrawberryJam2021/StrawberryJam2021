@@ -2,23 +2,9 @@
 using Monocle;
 using System;
 using System.Collections.Generic;
-using static Celeste.Mod.StrawberryJam2021.Entities.DashBoostField;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class DashBoostFieldParticleRenderer : Component {
-        private static readonly Dictionary<Modes, Color[]> colors = new() {
-            [Modes.Blue] = new[] {
-                Calc.HexToColor("4040ff"),
-                Calc.HexToColor("8080ff"),
-                Calc.HexToColor("b0b0ff"),
-            },
-            [Modes.Red] = new[] {
-                Calc.HexToColor("ff4040"),
-                Calc.HexToColor("ff8080"),
-                Calc.HexToColor("ffb0b0"),
-            }
-        };
-
         private const float density = 0.02f;
 
         private List<Particle> particles = new List<Particle>();
@@ -77,9 +63,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             public float Alpha;
 
             private DashBoostFieldParticleRenderer parent;
+            private Color[] colors;
 
             public Particle(DashBoostFieldParticleRenderer parent) {
                 this.parent = parent;
+                colors = new Color[] {
+                    Color.Lerp(parent.BoostField.Color, Color.White, 0.25f),
+                    Color.Lerp(parent.BoostField.Color, Color.White, 0.50f),
+                    Color.Lerp(parent.BoostField.Color, Color.White, 0.75f),
+                };
                 Reset(Calc.Random.NextFloat());
             }
 
@@ -94,7 +86,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     offset = new Vector2(offsetX, offsetY);
                 } while (Vector2.Distance(Vector2.Zero, offset) > parent.ParticlePositionRadius);
                 Position = parent.BoostField.Center + offset;
-                Color = Calc.Random.Choose(colors[parent.BoostField.Mode]);
+                Color = Calc.Random.Choose(colors);
                 float speed = Calc.Random.Range(4f, 8f);
                 Velocity = Calc.AngleToVector(Calc.Random.NextAngle(), speed);
                 Duration = Calc.Random.Range(0.6f, 1.5f);

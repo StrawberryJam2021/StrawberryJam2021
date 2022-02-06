@@ -4,6 +4,7 @@ using Celeste.Mod.StrawberryJam2021.StylegroundMasks;
 using Monocle;
 using System;
 using Celeste.Mod.StrawberryJam2021.Effects;
+using Celeste.Mod.Helpers;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
@@ -134,6 +135,16 @@ namespace Celeste.Mod.StrawberryJam2021 {
                 return new HexagonalGodray(child.Attr("color"), child.Attr("fadeColor"), child.AttrInt("numberOfRays"), child.AttrFloat("speedX"), child.AttrFloat("speedY"), child.AttrFloat("rotation"), child.AttrFloat("rotationRandomness"));
             }
             return null;
+		}
+		
+        //This occurs after all mods get initialized.
+        public override void Initialize() {
+            base.Initialize();
+            //In theory this won't be a problem because it requires CrystallineHelper for the StrawberryJam collab anyways
+            try {
+                CrystallineHelperTimeFreezeMusicController.crystallineHelper_TimeCrystal_stopStage =
+                       FakeAssembly.GetFakeEntryAssembly().GetType("vitmod.TimeCrystal").GetField("stopStage", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            } catch { }
         }
 
         // Temporary code from vivhelper

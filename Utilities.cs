@@ -22,7 +22,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             }
         }
 
-        public static Dictionary<string, Color> ColorHelper = new Dictionary<string, Color>(); //Optimized for Caching
+        public static Dictionary<string, Color> ColorHelper = new Dictionary<string, Color>(); //Optimized with Caching
         private static FieldInfo StateMachine_begins = typeof(StateMachine).GetField("begins", BindingFlags.Instance | BindingFlags.NonPublic);
         private static FieldInfo StateMachine_updates = typeof(StateMachine).GetField("updates", BindingFlags.Instance | BindingFlags.NonPublic);
         private static FieldInfo StateMachine_ends = typeof(StateMachine).GetField("ends", BindingFlags.Instance | BindingFlags.NonPublic);
