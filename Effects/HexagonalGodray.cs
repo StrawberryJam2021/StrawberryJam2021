@@ -27,14 +27,23 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
 
             public int length;
 
-            public void Reset(float rotationOffset, float minRotation, float maxRotation) {
+            public Vector2[] points;
+
+            public void Reset(float minRotation, float maxRotation) {
                 Percent = 0f;
                 X = Calc.Random.NextFloat(384f);
                 Y = Calc.Random.NextFloat(244f);
                 Duration = 4f + Calc.Random.NextFloat() * 8f;
-                float randRotate = minRotation + Calc.Random.NextFloat() * maxRotation;
-                angle = (float) (Math.PI / 180F * (rotationOffset + randRotate));
+                float randRotate = minRotation - maxRotation + (Calc.Random.NextFloat() * maxRotation) * 2;
+                angle = (float) (Math.PI / 180F * (randRotate));
                 length = Calc.Random.Next(15, 22);
+
+                if (points == null)
+                    points = new Vector2[3];
+
+                points[0] = new((float) Math.Cos(angle), (float) Math.Sin(angle));
+                points[1] = new((float) Math.Cos(angle + Math.PI / 3), (float) Math.Sin(angle + Math.PI / 3));
+                points[2] = new((float) Math.Cos(angle + 2 * Math.PI / 3), (float) Math.Sin(angle + 2 * Math.PI / 3));
             }
         }
 
@@ -53,24 +62,27 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
 
         public float speedX;
         public float speedY;
-        private float rotationOffset;
         private float minRotation;
         private float maxRotation;
 
-        public HexagonalGodray(string color, string fadeToColor, int numRays, float speedx, float speedy, float rotationOffset, float minRotation, float maxRotation) {
+        public HexagonalGodray(string color, string fadeToColor, int numRays, float speedx, float speedy, float minRotation, float maxRotation) {
             vertices = new VertexPositionColor[12 * numRays];
+
+            if (string.IsNullOrEmpty(fadeToColor)) { //we could add an exception case for optimization.
+                fadeToColor = color;
+            }
             rayColor = Calc.HexToColor(color) * 0.5f;
             fadeColor = Calc.HexToColor(fadeToColor) * 0.5f;
             UseSpritebatch = false;
             speedX = speedx;
             speedY = speedy;
-            this.rotationOffset = rotationOffset;
+
             this.minRotation = minRotation;
-            this.maxRotation = maxRotation;
+            this.maxRotation = Math.Max(0, maxRotation);
 
             for (int i = 0; i < rays.Length; i++) {
                 rays[i] = new();
-                rays[i].Reset(rotationOffset, minRotation, maxRotation);
+                rays[i].Reset(minRotation, maxRotation);
                 rays[i].Percent = Calc.Random.NextFloat();
             }
         }
@@ -89,7 +101,7 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
             int num = 0;
             for (int i = 0; i < rays.Length; i++) {
                 if (rays[i].Percent >= 1f) {
-                    rays[i].Reset(rotationOffset, minRotation, maxRotation);
+                    rays[i].Reset(minRotation, maxRotation);
                 }
                 rays[i].Percent += Engine.DeltaTime / rays[i].Duration;
 
@@ -109,11 +121,11 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
                         color *= 0.25f + 0.75f * (num4 / 64f);
                     }
                 }
-                
-                //angles of the vertecies of the hexagon
-                Vector2 v0 = new((float) Math.Cos(angle), (float) Math.Sin(angle));
-                Vector2 v1 = new((float) Math.Cos(angle + Math.PI / 3), (float) Math.Sin(angle + Math.PI / 3));
-                Vector2 v2 = new((float) Math.Cos(angle + 2 * Math.PI / 3), (float) Math.Sin(angle + 2 * Math.PI / 3));
+
+                //points of the vertecies of the hexagon
+                Vector2 v0 = rays[i].points[0];
+                Vector2 v1 = rays[i].points[0];
+                Vector2 v2 = rays[i].points[0];
 
                 VertexPositionColor vertexPositionColor = new VertexPositionColor(new Vector3(vector3 + v0 * length, 0f), color);
                 VertexPositionColor vertexPositionColor2 = new VertexPositionColor(new Vector3(vector3 + v1 * length, 0f), color);

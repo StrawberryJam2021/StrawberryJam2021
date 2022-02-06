@@ -130,8 +130,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
         }
 
         private Backdrop onLoadBackdrop(MapData map, BinaryPacker.Element child, BinaryPacker.Element above) {
-            if (child.Name.Equals("SJ2021/IrregularGodray", StringComparison.OrdinalIgnoreCase)) {
-                return new HexagonalGodray(child.Attr("color"), child.Attr("fadetocolor"), child.AttrInt("numgodrays"), child.AttrFloat("speedx"), child.AttrFloat("speedy"), child.AttrFloat("rotationOffset"), child.AttrFloat("minRotationRandomness"), child.AttrFloat("maxRotationRandomness"));
+            if (child.Name.Equals("SJ2021/HexagonalGodray", StringComparison.OrdinalIgnoreCase)) {
+                return new HexagonalGodray(child.Attr("color"), child.Attr("fadeColor"), child.AttrInt("numberOfRays"), child.AttrFloat("speedX"), child.AttrFloat("speedY"), child.AttrFloat("rotation"), child.AttrFloat("rotationRandomness"));
             }
             return null;
         }
