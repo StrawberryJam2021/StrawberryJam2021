@@ -95,6 +95,7 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
             if (!Visible) {
                 return;
             }
+            Logger.Log("Hexagonal Godray", "Logging");
             Player entity = level.Tracker.GetEntity<Player>();
             Vector2 vector = Calc.AngleToVector(-1.67079639f, 1f); //probably supposed to be -pi/2. but isn't that isn't that just <0,-1>?
             Vector2 vector2 = new Vector2(0f - vector.Y, vector.X);
@@ -124,8 +125,8 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
 
                 //points of the vertecies of the hexagon
                 Vector2 v0 = rays[i].points[0];
-                Vector2 v1 = rays[i].points[0];
-                Vector2 v2 = rays[i].points[0];
+                Vector2 v1 = rays[i].points[1];
+                Vector2 v2 = rays[i].points[2];
 
                 VertexPositionColor vertexPositionColor = new VertexPositionColor(new Vector3(vector3 + v0 * length, 0f), color);
                 VertexPositionColor vertexPositionColor2 = new VertexPositionColor(new Vector3(vector3 + v1 * length, 0f), color);
