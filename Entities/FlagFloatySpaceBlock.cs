@@ -1,14 +1,15 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using MonoMod.Utils;
 using Monocle;
 using System;
 using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    // a near vanilla FloatySpaceBlock copy-paste
+    // Basically vanilla copy-paste, with a flag-toggled position changer
     [CustomEntity("SJ2021/FlagFloatySpaceBlock")]
     [Tracked]
-    public class FlagFloatySpaceBlocks : Solid {
+    public class FlagFloatySpaceBlock : Solid {
         private TileGrid tiles;
         private char tileType;
         private string flag;
@@ -26,9 +27,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2 dashDirection;
 
         private bool awake;
-
-        private FlagFloatySpaceBlocks master;
-        private List<FlagFloatySpaceBlocks> group;
+        private FlagFloatySpaceBlock master;
+        private List<FlagFloatySpaceBlock> group;
         private List<JumpThru> jumpthrus;
         private Dictionary<Platform, Vector2> moves;
         private Point groupBoundsMin;
@@ -44,7 +44,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             private set;
         }
 
-        public FlagFloatySpaceBlocks(EntityData data, Vector2 offset)
+        public FlagFloatySpaceBlock(EntityData data, Vector2 offset)
             : base(data.Position + offset, data.Width, data.Height, safe: true) {
             node = data.Nodes[0] + offset;
             startPosition = Position;
@@ -69,14 +69,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!HasGroup) {
                 MasterOfGroup = true;
                 moves = new Dictionary<Platform, Vector2>();
-                group = new List<FlagFloatySpaceBlocks>();
+                group = new List<FlagFloatySpaceBlock>();
                 jumpthrus = new List<JumpThru>();
                 groupBoundsMin = new Point((int) base.X, (int) base.Y);
                 groupBoundsMax = new Point((int) base.Right, (int) base.Bottom);
                 addToGroupAndFindChildren(this);
                 Rectangle rectangle = new Rectangle(groupBoundsMin.X / 8, groupBoundsMin.Y / 8, (groupBoundsMax.X - groupBoundsMin.X) / 8 + 1, (groupBoundsMax.Y - groupBoundsMin.Y) / 8 + 1);
                 VirtualMap<char> tilemap = new VirtualMap<char>(rectangle.Width, rectangle.Height, '0');
-                foreach (FlagFloatySpaceBlocks block in group) {
+                foreach (FlagFloatySpaceBlock block in group) {
                     int startX = (int) (block.X / 8f) - rectangle.X;
                     int startY = (int) (block.Y / 8f) - rectangle.Y;
                     int widthTiles = (int) (block.Width / 8f);
@@ -95,35 +95,34 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 tiles.Position = new Vector2(groupBoundsMin.X - X, groupBoundsMin.Y - Y);
                 Add(tiles);
 
-                floatTween = Tween.Create(Tween.TweenMode.Persist, Ease.CubeIn, moveTime);
+                floatTween = Tween.Create(Tween.TweenMode.Persist, Ease.QuadOut, moveTime);
                 floatTween.OnUpdate = delegate (Tween t)
                 {
                     if (moves is null) {
                         return;
                     }
-                    Vector2 end = activated ? node : startPosition;
+                    Vector2 sineOffset = Vector2.UnitY * (float) Math.Sin(sineWave) * 4f;
+                    Vector2 end = activated ? node + sineOffset : startPosition;
                     Vector2 target = Vector2.Lerp(tweenStartPosition, end, t.Eased);
                     Vector2 diff = target - Position;
                     foreach (JumpThru jp in jumpthrus) {
-                        jp.MoveToX(jp.X + diff.X);
-                        jp.MoveToY(jp.Y + diff.Y);
+                        jp.MoveTo(jp.Position + diff);
                     }
-                    foreach (FlagFloatySpaceBlocks block in group) {
-                        block.MoveToX(block.X + diff.X);
-                        block.MoveToY(block.Y + diff.Y);
+                    foreach (FlagFloatySpaceBlock block in group) {
+                        block.MoveTo(block.Position + diff);
                     }
                 };
                 floatTween.OnComplete = delegate (Tween t) {
                     if (moves is null) {
                         return;
                     }
+                    Vector2 sineOffset = Vector2.UnitY * (float) Math.Sin(sineWave) * 4f;
                     foreach (JumpThru jp in jumpthrus) {
-                        moves[jp] = jp.Position;
+                        moves[jp] = jp.Position - sineOffset;
                     }
-                    foreach (FlagFloatySpaceBlocks block in group) {
-                        moves[block] = block.Position;
+                    foreach (FlagFloatySpaceBlock block in group) {
+                        moves[block] = block.Position - sineOffset;
                     }
-                    sineWave = 0f;
                     yLerp = 0f;
                 };
                 Add(floatTween);
@@ -151,30 +150,31 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void tryToInitPosition() {
             if (MasterOfGroup) {
-                foreach (FlagFloatySpaceBlocks item in group) {
+                foreach (FlagFloatySpaceBlock item in group) {
                     if (!item.awake) {
                         return;
                     }
                 }
-                Console.WriteLine("activated: {0}, position: {1}, node: {2}", activated, Position, node);
                 if (activated) {
                     Vector2 diff = node - startPosition;
                     foreach (JumpThru jp in jumpthrus) {
                         jp.Position += diff;
                         moves[jp] = jp.Position;
                     }
-                    foreach (FlagFloatySpaceBlocks block in group) {
+                    foreach (FlagFloatySpaceBlock block in group) {
                         block.Position += diff;
                         moves[block] = block.Position;
                     }
                     moveToTarget();
                 }
-            } else {
+            }
+            else {
                 master.tryToInitPosition();
             }
+
         }
 
-        private void addToGroupAndFindChildren(FlagFloatySpaceBlocks from) {
+        private void addToGroupAndFindChildren(FlagFloatySpaceBlock from) {
             if (from.X < groupBoundsMin.X) {
                 groupBoundsMin.X = (int) from.X;
             }
@@ -204,7 +204,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     addJumpThru(jumpthru);
                 }
             }
-            foreach (FlagFloatySpaceBlocks block in Scene.Tracker.GetEntities<FlagFloatySpaceBlocks>()) {
+            foreach (FlagFloatySpaceBlock block in Scene.Tracker.GetEntities<FlagFloatySpaceBlock>()) {
                 if (!block.HasGroup && block.tileType == tileType && (Scene.CollideCheck(new Rectangle((int) from.X - 1, (int) from.Y, (int) from.Width + 2, (int) from.Height), block)
                     || Scene.CollideCheck(new Rectangle((int) from.X, (int) from.Y - 1, (int) from.Width, (int) from.Height + 2), block))) {
 
@@ -217,7 +217,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             jp.OnDashCollide = onDash;
             jumpthrus.Add(jp);
             moves.Add(jp, jp.Position);
-            foreach (FlagFloatySpaceBlocks block in Scene.Tracker.GetEntities<FlagFloatySpaceBlocks>()) {
+            foreach (FlagFloatySpaceBlock block in Scene.Tracker.GetEntities<FlagFloatySpaceBlock>()) {
                 if (!block.HasGroup && block.tileType == tileType && Scene.CollideCheck(new Rectangle((int) jp.X - 1, (int) jp.Y, (int) jp.Width + 2, (int) jp.Height), block)) {
                     addToGroupAndFindChildren(block);
                 }
@@ -251,7 +251,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
 
                 bool blockHasPlayerOnIt = false;
-                foreach (FlagFloatySpaceBlocks block in group) {
+                foreach (FlagFloatySpaceBlock block in group) {
                     if (block.HasPlayerRider()) {
                         blockHasPlayerOnIt = true;
                         break;
