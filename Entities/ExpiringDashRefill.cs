@@ -13,15 +13,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         // Config stuff
         private readonly float dashExpirationTime;
-        private readonly float hairFlashTime;
+        private static readonly float hairFlashTime = 0.2f;
 
         // Tracking
-        private double timeUntilDashExpire = 0;
+        private static double timeUntilDashExpire = 0;
 
         public ExpiringDashRefill(EntityData data, Vector2 offset)
             : base(data.Position + offset, false, data.Bool("oneUse")) {
             dashExpirationTime = Calc.Max(data.Float("dashExpirationTime"), 0.01f);
-            hairFlashTime = dashExpirationTime * Calc.Clamp(data.Float("hairFlashThreshold"), 0f, 1f);
+            //hairFlashTime = dashExpirationTime * Calc.Clamp(data.Float("hairFlashThreshold"), 0f, 1f);
 
             Remove(Components.Get<PlayerCollider>());
             Add(new PlayerCollider(OnPlayer));
@@ -42,10 +42,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             respawnTimer.SetValue(this, 2.5f);
         }
 
-        private bool flash;
+        private static bool flash;
 
         public static void Load() {
             On.Celeste.Player.UpdateHair += UpdateHair;
+            On.Celeste.Player.Update += update;
         }
         public static void Unload() {
             On.Celeste.Player.UpdateHair -= UpdateHair;
@@ -53,12 +54,41 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void UpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player player, bool applyGravity) {
             if (player.Scene.Tracker.GetEntity<ExpiringDashRefill>() is ExpiringDashRefill refill) {
-                if (refill.flash) {
+                if (flash) {
                     player.OverrideHairColor = Player.UsedHairColor;
                 }
             }
 
             orig.Invoke(player, applyGravity);
+        }
+
+        public static void update(On.Celeste.Player.orig_Update orig, Player self) {
+
+            orig.Invoke(self);
+
+            self.OverrideHairColor = null;
+
+            if (self.Dashes == 0)
+                return;
+
+            if (timeUntilDashExpire <= 0)
+                return;
+
+            timeUntilDashExpire -= Engine.DeltaTime;
+
+            if (timeUntilDashExpire <= 0) {
+                // Remove given dash
+                self.Dashes = 0;
+                flash = false;
+
+                return;
+            }
+
+            if (timeUntilDashExpire <= hairFlashTime) {
+                // Flash hair
+                if (self.Scene.OnInterval(0.05f))
+                    flash = !flash;
+            }
         }
 
         public override void Update() {
@@ -98,6 +128,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // Make sure the player can't carry their dash out the room and keep it.
             player.Dashes = 0;
+
 
             // Make sure hair colour overrides are removed, in case player leaves while the hair is flashing blue.
             player.OverrideHairColor = null;
