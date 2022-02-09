@@ -13,15 +13,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         // Config stuff
         private readonly float dashExpirationTime;
-        private static readonly float hairFlashTime = 0.2f;
+        private readonly float hairFlashTime = 0.2f;
 
         // Tracking
         private static double timeUntilDashExpire = 0;
+        private static float currentHairFlashThreshold = 0.2f;
 
         public ExpiringDashRefill(EntityData data, Vector2 offset)
             : base(data.Position + offset, false, data.Bool("oneUse")) {
             dashExpirationTime = Calc.Max(data.Float("dashExpirationTime"), 0.01f);
-            //hairFlashTime = dashExpirationTime * Calc.Clamp(data.Float("hairFlashThreshold"), 0f, 1f);
+            hairFlashTime = dashExpirationTime * Calc.Clamp(data.Float("hairFlashThreshold"), 0f, 1f);
 
             Remove(Components.Get<PlayerCollider>());
             Add(new PlayerCollider(OnPlayer));
@@ -31,6 +32,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // Unconditionally add the dash, bypassing inventory limits
             player.Dashes = 1;
             timeUntilDashExpire = dashExpirationTime;
+            currentHairFlashThreshold = hairFlashTime;
 
             // Everything after this line is roundabout ways of doing the same things Refill does
             Audio.Play("event:/game/general/diamond_touch");
@@ -91,7 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
 
-            if (timeUntilDashExpire <= hairFlashTime) {
+            if (timeUntilDashExpire <= currentHairFlashThreshold) {
                 // Flash hair
                 if (self.Scene.OnInterval(0.05f))
                     flash = !flash;
