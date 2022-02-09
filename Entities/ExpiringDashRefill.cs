@@ -46,24 +46,31 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void Load() {
             On.Celeste.Player.UpdateHair += UpdateHair;
-            On.Celeste.Player.Update += update;
+            On.Celeste.Player.Update += Update;
+            On.Celeste.Player.Die += OnPlayerDeath;
         }
         public static void Unload() {
             On.Celeste.Player.UpdateHair -= UpdateHair;
+            On.Celeste.Player.Update -= Update;
+            On.Celeste.Player.Die -= OnPlayerDeath;
         }
 
         public static void UpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player player, bool applyGravity) {
-            if (player.Scene.Tracker.GetEntity<ExpiringDashRefill>() is ExpiringDashRefill refill) {
-                if (flash) {
-                    player.OverrideHairColor = Player.UsedHairColor;
-                }
-            }
+            player.OverrideHairColor = flash ? Player.UsedHairColor : null;
 
             orig.Invoke(player, applyGravity);
         }
 
-        public static void update(On.Celeste.Player.orig_Update orig, Player self) {
+        public static PlayerDeadBody OnPlayerDeath(On.Celeste.Player.orig_Die orig, Player player, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats) {
 
+            flash = false;
+            timeUntilDashExpire = 0;
+            player.Dashes = 0;
+
+            return orig.Invoke(player, direction, evenIfInvincible, registerDeathInStats);
+        }
+
+        public static void Update(On.Celeste.Player.orig_Update orig, Player self) {
             orig.Invoke(self);
 
             self.OverrideHairColor = null;
@@ -87,37 +94,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (timeUntilDashExpire <= hairFlashTime) {
                 // Flash hair
                 if (self.Scene.OnInterval(0.05f))
-                    flash = !flash;
-            }
-        }
-
-        public override void Update() {
-            base.Update();
-
-            if (Scene.Tracker.GetEntity<Player>() is not Player player)
-                return;
-
-            player.OverrideHairColor = null;
-
-            if (player.Dashes == 0)
-                return;
-
-            if (timeUntilDashExpire <= 0)
-                return;
-
-            timeUntilDashExpire -= Engine.DeltaTime;
-
-            if (timeUntilDashExpire <= 0) {
-                // Remove given dash
-                player.Dashes -= 1;
-                flash = false;
-
-                return;
-            }
-
-            if (timeUntilDashExpire <= hairFlashTime) {
-                // Flash hair
-                if (Scene.OnInterval(0.05f))
                     flash = !flash;
             }
         }
