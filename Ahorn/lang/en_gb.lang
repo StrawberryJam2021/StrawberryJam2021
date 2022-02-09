@@ -349,18 +349,9 @@ placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.dialogId=The d
 placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.endLevel=Whether finishing the dialog triggers the level to end.
 placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.deathCount=Determines the exact amount of deaths required to activate dialog trigger. Will always trigger if set to -1.
 
-# Jelly Glow Controller
-placements.entities.SJ2021/JellyGlowController.tooltips.lightColor=The colour to use for the jelly lights, as a hex representation.  Defaults to white (FFFFFF).
-placements.entities.SJ2021/JellyGlowController.tooltips.lightAlpha=The opacity of the light, ranging from 0 (invisible) to 1 (opaque).  Defaults to 1.
-placements.entities.SJ2021/JellyGlowController.tooltips.lightStartFade=The distance from the entity's position at which the light should begin to fade in.  Defaults to 24.
-placements.entities.SJ2021/JellyGlowController.tooltips.lightEndFade=The distance from the entity's position at which the light should begin to fade out.  Defaults to 48.
-placements.entities.SJ2021/JellyGlowController.tooltips.lightOffsetX=The X offset from the entity's position at which to place the light.  Defaults to 0 (the top centre of the hitbox).
-placements.entities.SJ2021/JellyGlowController.tooltips.lightOffsetY=The Y offset from the entity's position at which to place the light.  Defaults to -10 (the top centre of the hitbox).
-placements.entities.SJ2021/JellyGlowController.tooltips.targetEntityType=The entity class (without namespace) to affect.  Defaults to empty string, which matches Glider and all subclasses.
-
 # Hexagonal Godrays
-placements.effects.SJ2021/HexagonalGodray.tooltips.color=The color the godrays should start as, as a hex (example: FFFFFF).
-placements.effects.SJ2021/HexagonalGodray.tooltips.fadeColor=The color godrays should end as, as a hex (example: FFFFFF). Keep blank to have a solid color.
+placements.effects.SJ2021/HexagonalGodray.tooltips.color=The colour the godrays should start as, as a hex (example: FFFFFF).
+placements.effects.SJ2021/HexagonalGodray.tooltips.fadeColor=The colour godrays should end as, as a hex (example: FFFFFF). Keep blank to have a solid colour.
 placements.effects.SJ2021/HexagonalGodray.tooltips.numberOfRays=The number of godrays that will attempted to be rendered simultaneously.
 placements.effects.SJ2021/HexagonalGodray.tooltips.speedX=The speed (as a decimal) at which godrays should travel horizontally.
 placements.effects.SJ2021/HexagonalGodray.tooltips.speedY=The speed (as a decimal) at which godrays should travel vertically.
