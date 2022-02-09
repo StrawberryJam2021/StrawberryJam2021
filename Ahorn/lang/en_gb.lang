@@ -359,8 +359,8 @@ placements.entities.SJ2021/JellyGlowController.tooltips.lightOffsetY=The Y offse
 placements.entities.SJ2021/JellyGlowController.tooltips.targetEntityType=The entity class (without namespace) to affect.  Defaults to empty string, which matches Glider and all subclasses.
 
 # Hexagonal Godrays
-placements.effects.SJ2021/HexagonalGodray.tooltips.color=The colour the godrays should start as, as a hex (example: FFFFFF).
-placements.effects.SJ2021/HexagonalGodray.tooltips.fadeColor=The colour godrays should end as, as a hex (example: FFFFFF). Keep blank to have a solid color.
+placements.effects.SJ2021/HexagonalGodray.tooltips.color=The color the godrays should start as, as a hex (example: FFFFFF).
+placements.effects.SJ2021/HexagonalGodray.tooltips.fadeColor=The color godrays should end as, as a hex (example: FFFFFF). Keep blank to have a solid color.
 placements.effects.SJ2021/HexagonalGodray.tooltips.numberOfRays=The number of godrays that will attempted to be rendered simultaneously.
 placements.effects.SJ2021/HexagonalGodray.tooltips.speedX=The speed (as a decimal) at which godrays should travel horizontally.
 placements.effects.SJ2021/HexagonalGodray.tooltips.speedY=The speed (as a decimal) at which godrays should travel vertically.

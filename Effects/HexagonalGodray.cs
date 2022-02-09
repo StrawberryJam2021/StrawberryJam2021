@@ -96,7 +96,6 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
             if (!Visible) {
                 return;
             }
-            Logger.Log("Hexagonal Godray", "Logging");
             Player entity = level.Tracker.GetEntity<Player>();
             Vector2 vector = Calc.AngleToVector(-1.67079639f, 1f); //probably supposed to be -pi/2. but isn't that isn't that just <0,-1>?
             Vector2 vector2 = new Vector2(0f - vector.Y, vector.X);
