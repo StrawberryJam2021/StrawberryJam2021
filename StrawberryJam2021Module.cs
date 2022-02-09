@@ -3,6 +3,7 @@ using Celeste.Mod.StrawberryJam2021.Triggers;
 using Celeste.Mod.StrawberryJam2021.StylegroundMasks;
 using Monocle;
 using System;
+using Celeste.Mod.StrawberryJam2021.Effects;
 using Celeste.Mod.Helpers;
 
 namespace Celeste.Mod.StrawberryJam2021 {
@@ -63,6 +64,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             GroupedParallaxDecal.Load();
             ExpiringDashRefill.Load();
             ToggleSwapBlock.Load();
+
+            Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
         }
 
         public override void Unload() {
@@ -101,6 +104,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             GroupedParallaxDecal.Unload();
             ExpiringDashRefill.Unload();
             ToggleSwapBlock.Unload();
+
+            Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -125,6 +130,13 @@ namespace Celeste.Mod.StrawberryJam2021 {
             BeeFireball.LoadContent();
         }
 
+        private Backdrop onLoadBackdrop(MapData map, BinaryPacker.Element child, BinaryPacker.Element above) {
+            if (child.Name.Equals("SJ2021/HexagonalGodray", StringComparison.OrdinalIgnoreCase)) {
+                return new HexagonalGodray(child.Attr("color"), child.Attr("fadeColor"), child.AttrInt("numberOfRays"), child.AttrFloat("speedX"), child.AttrFloat("speedY"), child.AttrFloat("rotation"), child.AttrFloat("rotationRandomness"));
+            }
+            return null;
+		}
+		
         //This occurs after all mods get initialized.
         public override void Initialize() {
             base.Initialize();

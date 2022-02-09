@@ -349,6 +349,15 @@ placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.dialogId=The d
 placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.endLevel=Whether finishing the dialog triggers the level to end.
 placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.deathCount=Determines the exact amount of deaths required to activate dialog trigger. Will always trigger if set to -1.
 
+# Hexagonal Godrays
+placements.effects.SJ2021/HexagonalGodray.tooltips.color=The colour the godrays should start as, as a hex (example: FFFFFF).
+placements.effects.SJ2021/HexagonalGodray.tooltips.fadeColor=The colour godrays should end as, as a hex (example: FFFFFF). Keep blank to have a solid colour.
+placements.effects.SJ2021/HexagonalGodray.tooltips.numberOfRays=The number of godrays that will attempted to be rendered simultaneously.
+placements.effects.SJ2021/HexagonalGodray.tooltips.speedX=The speed (as a decimal) at which godrays should travel horizontally.
+placements.effects.SJ2021/HexagonalGodray.tooltips.speedY=The speed (as a decimal) at which godrays should travel vertically.
+placements.effects.SJ2021/HexagonalGodray.tooltips.rotation=How much to rotate each hexagon by, in degrees.
+placements.effects.SJ2021/HexagonalGodray.tooltips.rotationRandomness=Adds a random amount to the rotation of each godray in degrees to each hexagon between -randomness and +randomness. Set to 0 to not add randomness to rotations.
+
 # Glow Controller
 placements.entities.SJ2021/GlowController.tooltips.lightWhitelist=A comma-separated list of fully qualified entity class names to apply VertexLights to.  Defaults to empty string.
 placements.entities.SJ2021/GlowController.tooltips.lightBlacklist=A comma-separated list of fully qualified entity class names to remove VertexLights from.  Defaults to empty string.
