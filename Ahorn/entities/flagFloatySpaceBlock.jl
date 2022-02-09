@@ -57,12 +57,10 @@ function Ahorn.renderSelectedAbs(ctx::Ahorn.Cairo.CairoContext, entity::FlagFloa
     width = Int(get(entity.data, "width", 8))
     height = Int(get(entity.data, "height", 8))
 
+    entityNode = FlagFloatySpaceBlock(stopX, stopY, width, height, entity.data["tiletype"])
+
     Ahorn.drawTileEntity(ctx, room, entity)
-    entity.data["x"] = stopX
-    entity.data["y"] = stopY
-    Ahorn.drawTileEntity(ctx, room, entity)
-    entity.data["x"] = startX
-    entity.data["y"] = startY
+    Ahorn.drawTileEntity(ctx, room, entityNode)
     Ahorn.drawArrow(ctx, startX + width / 2, startY + height / 2, stopX + width / 2, stopY + height / 2, Ahorn.colors.selection_selected_fc, headLength=6)
 end
 

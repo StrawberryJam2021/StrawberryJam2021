@@ -98,9 +98,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 floatTween = Tween.Create(Tween.TweenMode.Persist, Ease.QuadOut, moveTime);
                 floatTween.OnUpdate = delegate (Tween t)
                 {
-                    if (moves is null) {
-                        return;
-                    }
                     Vector2 sineOffset = Vector2.UnitY * (float) Math.Sin(sineWave) * 4f;
                     Vector2 end = activated ? node + sineOffset : startPosition;
                     Vector2 target = Vector2.Lerp(tweenStartPosition, end, t.Eased);
@@ -165,6 +162,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         block.Position += diff;
                         moves[block] = block.Position;
                     }
+                    MoveStaticMovers(diff);
                     moveToTarget();
                 }
             }
