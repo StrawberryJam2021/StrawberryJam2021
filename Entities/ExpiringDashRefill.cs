@@ -80,6 +80,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (timeUntilDashExpire <= 0) {
                 // Remove given dash
                 player.Dashes -= 1;
+                flash = false;
 
                 return;
             }
