@@ -14,7 +14,7 @@ const DEFAULT_COLOR = "FF2626"
 # defaults to fullbright red as a matter of convenience
 const DEFAULT_COLOR_CHANNEL = "FF0000"
 
-const styles = ["Simple", "Rounded"]
+const styles = ["Simple", "Rounded", "Large"]
 
 @mapdef Entity "SJ2021/LaserEmitterUp" LaserEmitterUp(
     x::Integer, y::Integer,
