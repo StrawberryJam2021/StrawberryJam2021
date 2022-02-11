@@ -21,7 +21,8 @@ const styles = ["Simple", "Rounded", "Large"]
     color::String=DEFAULT_COLOR, alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
     killPlayer::Bool=true, collideWithSolids::Bool=true,
     disableLasers::Bool=false, triggerZipMovers::Bool=false, colorChannel::String=DEFAULT_COLOR_CHANNEL,
-    style::String=DEFAULT_STYLE
+    style::String=DEFAULT_STYLE, leniency::Integer=1, beamAboveEmitter::Bool=false,
+    emitterColliderWidth::Real=14, emitterColliderHeight::Real=6, emitSparks::Bool=true
 )
 
 @mapdef Entity "SJ2021/LaserEmitterDown" LaserEmitterDown(
@@ -29,7 +30,8 @@ const styles = ["Simple", "Rounded", "Large"]
     color::String=DEFAULT_COLOR, alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
     killPlayer::Bool=true, collideWithSolids::Bool=true,
     disableLasers::Bool=false, triggerZipMovers::Bool=false, colorChannel::String=DEFAULT_COLOR_CHANNEL,
-    style::String=DEFAULT_STYLE
+    style::String=DEFAULT_STYLE, leniency::Integer=1, beamAboveEmitter::Bool=false,
+    emitterColliderWidth::Real=14, emitterColliderHeight::Real=6, emitSparks::Bool=true
 )
 
 @mapdef Entity "SJ2021/LaserEmitterLeft" LaserEmitterLeft(
@@ -37,7 +39,8 @@ const styles = ["Simple", "Rounded", "Large"]
     color::String=DEFAULT_COLOR, alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
     killPlayer::Bool=true, collideWithSolids::Bool=true,
     disableLasers::Bool=false, triggerZipMovers::Bool=false, colorChannel::String=DEFAULT_COLOR_CHANNEL,
-    style::String=DEFAULT_STYLE
+    style::String=DEFAULT_STYLE, leniency::Integer=1, beamAboveEmitter::Bool=false,
+    emitterColliderWidth::Real=14, emitterColliderHeight::Real=6, emitSparks::Bool=true
 )
 
 @mapdef Entity "SJ2021/LaserEmitterRight" LaserEmitterRight(
@@ -45,7 +48,8 @@ const styles = ["Simple", "Rounded", "Large"]
     color::String=DEFAULT_COLOR, alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
     killPlayer::Bool=true, collideWithSolids::Bool=true,
     disableLasers::Bool=false, triggerZipMovers::Bool=false, colorChannel::String=DEFAULT_COLOR_CHANNEL,
-    style::String=DEFAULT_STYLE
+    style::String=DEFAULT_STYLE, leniency::Integer=1, beamAboveEmitter::Bool=false,
+    emitterColliderWidth::Real=14, emitterColliderHeight::Real=6, emitSparks::Bool=true
 )
 
 const laserEmitterUnion = Union{LaserEmitterUp, LaserEmitterDown, LaserEmitterLeft, LaserEmitterRight}

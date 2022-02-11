@@ -161,6 +161,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// </remarks>
         public bool TriggerZipMovers { get; }
 
+        public int Leniency { get; }
+        public bool BeamAboveEmitter { get; }
+        public float EmitterColliderWidth { get; }
+        public float EmitterColliderHeight { get; }
+        public bool EmitSparks { get; }
+
         #endregion
 
         #region Private Fields
@@ -212,11 +218,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Thickness = Math.Max(data.Float("thickness", 6f), 0f);
             TriggerZipMovers = data.Bool("triggerZipMovers");
 
+            // these properties have separate defaults based on laser style, to provide backward compatibility
+            Leniency = data.Int("leniency", Style == EmitterStyle.Large ? 1 : 0);
+            BeamAboveEmitter = data.Bool("beamAboveEmitter", Style == EmitterStyle.Large);
+            EmitterColliderWidth = data.Float("emitterColliderWidth", Style == EmitterStyle.Large ? 14 : 0);
+            EmitterColliderHeight = data.Float("emitterColliderHeight", Style == EmitterStyle.Large ? 6 : 0);
+            EmitSparks = data.Bool("emitSparks", Style == EmitterStyle.Large);
+
             Add(new PlayerCollider(onPlayerCollide),
                 new LaserColliderComponent {
                     CollideWithSolids = CollideWithSolids,
-                    Thickness = Thickness,
-                    Offset = Style == EmitterStyle.Large ? Orientation.Normal() * 6 : Vector2.Zero,
+                    Thickness = Thickness - Leniency * 2,
+                    Offset = Orientation.Normal() * EmitterColliderHeight,
                 },
                 new SineWave(flickerFrequency) {OnUpdate = v => sineValue = v},
                 new LedgeBlocker(_ => KillPlayer)
@@ -229,21 +242,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 emitterSprite.Play("simple");
                 emitterSprite.Rotation = Orientation.Angle();
                 Add(emitterSprite);
-
-                Collider = laserCollider.Collider;
             } else if (Style == EmitterStyle.Large) {
-
-                var hitbox = new Hitbox(Orientation.Vertical() ? 14 : 6, Orientation.Vertical() ? 6 : 14);
-                if (Orientation == Orientations.Up) {
-                    hitbox.BottomCenter = Vector2.Zero;
-                } else if (Orientation == Orientations.Down) {
-                    hitbox.TopCenter = Vector2.Zero;
-                } else if (Orientation == Orientations.Left) {
-                    hitbox.CenterRight = Vector2.Zero;
-                } else {
-                    hitbox.CenterLeft = Vector2.Zero;
-                }
-
                 emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
                 emitterSprite.Play("large_base");
                 emitterSprite.Rotation = Orientation.Angle();
@@ -254,8 +253,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 tintSprite.Color = Color;
                 tintSprite.Rotation = Orientation.Angle();
                 Add(tintSprite);
-
-                Collider = new ColliderList(laserCollider.Collider, hitbox);
             } else if (Style == EmitterStyle.Rounded) {
                 emitterSprite = StrawberryJam2021Module.SpriteBank.Create("laserEmitter");
                 emitterSprite.Play("rounded_base");
@@ -267,7 +264,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 tintSprite.Color = Color;
                 tintSprite.Rotation = Orientation.Angle();
                 Add(tintSprite);
+            }
 
+            if (EmitterColliderWidth > 0 && EmitterColliderHeight > 0) {
+                var hitbox = new Hitbox(Orientation.Vertical() ? EmitterColliderWidth : EmitterColliderHeight, Orientation.Vertical() ? EmitterColliderHeight : EmitterColliderWidth);
+                if (Orientation == Orientations.Up) {
+                    hitbox.BottomCenter = Vector2.Zero;
+                } else if (Orientation == Orientations.Down) {
+                    hitbox.TopCenter = Vector2.Zero;
+                } else if (Orientation == Orientations.Left) {
+                    hitbox.CenterRight = Vector2.Zero;
+                } else {
+                    hitbox.CenterLeft = Vector2.Zero;
+                }
+
+                Collider = new ColliderList(laserCollider.Collider, hitbox);
+            } else {
                 Collider = laserCollider.Collider;
             }
 
@@ -278,8 +290,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
-            // "large" style should render the emitter before the beam
-            if (Style == EmitterStyle.Large) {
+            if (BeamAboveEmitter) {
                 base.Render();
             }
 
@@ -288,8 +299,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 float alphaMultiplier = 1f - (sineValue + 1f) * 0.5f * beamFlickerRange;
                 var color = Color * Alpha * (Flicker ? alphaMultiplier : 1f);
                 var collider = laserCollider.Collider;
+                var bounds = collider.Bounds;
 
-                Draw.Rect(collider.Bounds, color);
+                if (Leniency != 0) {
+                    if (Orientation.Horizontal()) {
+                        bounds.Height += Leniency * 2;
+                        bounds.Y -= Leniency;
+                    } else {
+                        bounds.Width += Leniency * 2;
+                        bounds.X -= Leniency;
+                    }
+                }
+
+                Draw.Rect(bounds, color);
 
                 Vector2 source = laserCollider.Offset;
                 Vector2 target = Orientation switch {
@@ -297,12 +319,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Orientations.Down => Collider.BottomCenter,
                     Orientations.Left => Collider.CenterLeft,
                     Orientations.Right => Collider.CenterRight,
-                    _ => Vector2.Zero
+                    _ => Vector2.Zero,
                 };
 
                 float lineThickness = Orientation == Orientations.Left || Orientation == Orientations.Right
-                    ? collider.Height / 3f
-                    : collider.Width / 3f;
+                    ? bounds.Height / 3f
+                    : bounds.Width / 3f;
 
                 Draw.Line(X + source.X, Y + source.Y, X + target.X, Y + target.Y, color, lineThickness);
             }
@@ -320,8 +342,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 tintSprite.Color = color;
             }
 
-            // non-"large" styles should render the emitter after the beam
-            if (Style != EmitterStyle.Large) {
+            if (!BeamAboveEmitter) {
                 base.Render();
             }
         }
@@ -330,7 +351,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         {
             base.Update();
 
-            if (Style == EmitterStyle.Large && Collidable && Scene.OnInterval(0.1f) && !laserCollider.CollidedWithScreenBounds) {
+            if (EmitSparks && Collidable && Scene.OnInterval(0.1f) && !laserCollider.CollidedWithScreenBounds) {
                 var laserHitbox = laserCollider.Collider;
                 float angle = Orientation.Angle() + (float)Math.PI / 2f;
                 var startX = Orientation switch {
