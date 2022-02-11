@@ -16,6 +16,20 @@ const DEFAULT_COLOR_CHANNEL = "FF0000"
 
 const styles = ["Simple", "Rounded", "Large"]
 
+const sprites = Dict{String, String}(
+    "Simple" => "objects/StrawberryJam2021/laserEmitter/simple00",
+    "Rounded" => "objects/StrawberryJam2021/laserEmitter/rounded_base00",
+    "Large" => "objects/StrawberryJam2021/laserEmitter/large_base00",
+)
+
+const rounded_tint = "objects/StrawberryJam2021/laserEmitter/rounded_tint00"
+
+const offsets = Dict{String, Array{Tuple{Integer, Integer}}}(
+    "Simple" => [(0, 0), (0, 0), (0, 16), (0, 16)],
+    "Rounded" => [(0, 0), (0, 0), (0, 18), (0, 18)],
+    "Large" => [(0, 0), (0, 0), (-8, 24), (8, 24)]
+)
+
 @mapdef Entity "SJ2021/LaserEmitterUp" LaserEmitterUp(
     x::Integer, y::Integer,
     color::String=DEFAULT_COLOR, alpha::Real=DEFAULT_ALPHA, thickness::Real=DEFAULT_THICKNESS, flicker::Bool=true,
@@ -89,13 +103,25 @@ function Ahorn.selection(entity::LaserEmitterRight)
     return Ahorn.Rectangle(x, y - 7, 8, 14)
 end
 
-simple_sprite = "objects/StrawberryJam2021/laserEmitter/simple00"
-
 Ahorn.editingOptions(entity::laserEmitterUnion) = Dict{String, Any}( "style" => styles )
 
-Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::LaserEmitterUp, room::Maple.Room) = Ahorn.drawSprite(ctx, simple_sprite, 0, 0, jx=0.5, jy=1, rot=0)
-Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::LaserEmitterDown, room::Maple.Room) = Ahorn.drawSprite(ctx, simple_sprite, 16, 16, jx=0.5, jy=1, rot=pi)
-Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::LaserEmitterLeft, room::Maple.Room) = Ahorn.drawSprite(ctx, simple_sprite, 0, 16, jx=0.5, jy=1, rot=-pi/2)
-Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::LaserEmitterRight, room::Maple.Room) = Ahorn.drawSprite(ctx, simple_sprite, 16, 0, jx=0.5, jy=1, rot=pi/2)
+function renderSprite(ctx::Ahorn.Cairo.CairoContext, entity::laserEmitterUnion, dir::Integer, sx::Real, sy::Real, rot::Real)
+    style = get(entity.data, "style", "Simple")
+    sprite = sprites[style]
+    offset = offsets[style][dir]
+    Ahorn.drawSprite(ctx, sprite, offset[1], offset[2], jx=0.5, jy=1, sx=sx, sy=sy, rot=rot)
+
+    if style == "Rounded"
+        tintcolor = parseColor(get(entity.data, "color", DEFAULT_COLOR))
+        Ahorn.drawSprite(ctx, rounded_tint, offset[1], offset[2], jx=0.5, jy=1, sx=sx, sy=sy, rot=rot, tint=tintcolor)
+    end
+end
+
+parseColor(hex::String) = Ahorn.argb32ToRGBATuple(parse(Int, hex, base=16))[1:4] ./ 255
+
+Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::LaserEmitterUp, room::Maple.Room) = renderSprite(ctx, entity, 1, 1, 1, 0)
+Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::LaserEmitterDown, room::Maple.Room) = renderSprite(ctx, entity, 2, 1, -1, 0)
+Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::LaserEmitterLeft, room::Maple.Room) = renderSprite(ctx, entity, 3, 1, 1, -pi/2)
+Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::LaserEmitterRight, room::Maple.Room) = renderSprite(ctx, entity, 4, -1, 1, -pi/2)
 
 end
