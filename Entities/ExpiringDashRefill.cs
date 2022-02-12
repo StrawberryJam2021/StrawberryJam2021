@@ -13,7 +13,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         // Config stuff
         private readonly float dashExpirationTime;
-        private readonly float hairFlashTime = 0.2f;
+        private readonly float hairFlashTime;
 
         // Tracking
         private static double timeUntilDashExpire = 0;
@@ -106,7 +106,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // Make sure the player can't carry their dash out the room and keep it.
             player.Dashes = 0;
-
 
             // Make sure hair colour overrides are removed, in case player leaves while the hair is flashing blue.
             player.OverrideHairColor = null;
