@@ -65,9 +65,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static PlayerDeadBody OnPlayerDeath(On.Celeste.Player.orig_Die orig, Player player, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats) {
 
-            flash = false;
-            timeUntilDashExpire = 0;
-            player.Dashes = 0;
+            if (evenIfInvincible || !SaveData.Instance.Assists.Invincible) {
+                flash = false;
+                timeUntilDashExpire = 0;
+                player.Dashes = 0;
+            }
 
             return orig.Invoke(player, direction, evenIfInvincible, registerDeathInStats);
         }
