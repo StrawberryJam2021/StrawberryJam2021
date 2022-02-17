@@ -84,7 +84,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static IEnumerator PlayerBoostCoroutineHook(On.Celeste.Player.orig_BoostCoroutine orig, Player self) {
             if (self.CurrentBooster is WormholeBooster booster) {
                 yield return 0.45f;
-                self.StateMachine.State = 2;
+                self.StateMachine.State = Player.StDash;
             } else {
                 IEnumerator original = orig(self);
                 while (original.MoveNext()) {
@@ -99,10 +99,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (CanTeleport && booster.delayTimer <= 0f) {
                     if (TeleDeath) {
                         booster.Add(new Coroutine(booster.KillCoroutine(self)));
-                        result = 11;
+                        result = Player.StDummy;
                     } else {
                         booster.Add(new Coroutine(booster.TeleportCoroutine(self)));
-                        result = 0;
+                        result = Player.StNormal;
                     }
                 }
             }
@@ -201,7 +201,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Audio.Play("event:/char/badeline/disappear", player.Position);
 
-            player.StateMachine.State = 0;
+            player.StateMachine.State = Player.StNormal;
             player.Die(Vector2.Zero);
             player.Visible = true;
             RemoveSelf();
@@ -223,7 +223,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (this == booster) {
                     continue;
                 }
-                float currDistance = (booster.Position - Position).Length();
+                float currDistance = (booster.Position - Position).LengthSquared();
                 if (currDistance < shortestDistance) {
                     closest = booster;
                     shortestDistance = currDistance;
