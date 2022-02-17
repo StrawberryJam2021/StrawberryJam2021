@@ -76,6 +76,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void BoosterPlayerReleasedHook(On.Celeste.Booster.orig_PlayerReleased orig, Booster self) {
             orig(self);
             CanTeleport = true;
+            if (self is WormholeBooster wb) {
+                wb.delayTimer = DelayTime;
+            }
         }
 
         private static IEnumerator PlayerBoostCoroutineHook(On.Celeste.Player.orig_BoostCoroutine orig, Player self) {
@@ -99,7 +102,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         result = 11;
                     } else {
                         booster.Add(new Coroutine(booster.TeleportCoroutine(self)));
-                        booster.delayTimer = DelayTime;
                         result = 0;
                     }
                 }
@@ -174,12 +176,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Tag |= Tags.FrozenUpdate;
             level.Frozen = true;
             Vector2 target = level.GetFullCameraTargetAt(player, player.Position);
-            Vector2 current = level.Camera.Position;
-            for (float p = 0; p < 1f; p += Engine.DeltaTime / 0.1f) {
-                level.Camera.Position = Vector2.Lerp(current, target, Ease.CubeOut(p));
+            while (Vector2.Distance(level.Camera.Position, target) > Engine.ViewWidth / 8) {
+                Vector2 current = level.Camera.Position;
+                level.Camera.Position = current + (target - current) * (1f - (float) Math.Pow((double) (0.01f / 1f), (double) Engine.DeltaTime));
                 yield return null;
             }
-            level.Camera.Position = target;
             level.Frozen = false;
             RemoveSelf();
         }
