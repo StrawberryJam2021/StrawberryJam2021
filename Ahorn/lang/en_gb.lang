@@ -30,6 +30,11 @@ placements.entities.SJ2021/LaserEmitterUp.tooltips.collideWithSolids=Whether or 
 placements.entities.SJ2021/LaserEmitterUp.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same colour channel.
 placements.entities.SJ2021/LaserEmitterUp.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same colour channel.
 placements.entities.SJ2021/LaserEmitterUp.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser colour.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.leniency=Shrinks the collider hitbox by this many pixels either side. Defaults to 1.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.beamAboveEmitter=Whether or not the beam should be rendered above the emitter sprite.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.emitterColliderWidth=The width of the emitter if it were pointing up or down. Defaults to 14.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.emitterColliderHeight=The height of the emitter if it were pointing up or down. Defaults to 6.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.emitSparks=Whether the laser should emit sparks if it collides with a solid. Defaults to true.
 
 # Laser Emitter (Down)
 placements.entities.SJ2021/LaserEmitterDown.tooltips.color=Colour of the laser emitted.
@@ -42,6 +47,11 @@ placements.entities.SJ2021/LaserEmitterDown.tooltips.collideWithSolids=Whether o
 placements.entities.SJ2021/LaserEmitterDown.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same colour channel.
 placements.entities.SJ2021/LaserEmitterDown.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same colour channel.
 placements.entities.SJ2021/LaserEmitterDown.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser colour.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.leniency=Shrinks the collider hitbox by this many pixels either side. Defaults to 1.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.beamAboveEmitter=Whether or not the beam should be rendered above the emitter sprite.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.emitterColliderWidth=The width of the emitter if it were pointing up or down. Defaults to 14.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.emitterColliderHeight=The height of the emitter if it were pointing up or down. Defaults to 6.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.emitSparks=Whether the laser should emit sparks if it collides with a solid. Defaults to true.
 
 # Laser Emitter (Left)
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.color=Colour of the laser emitted.
@@ -54,6 +64,11 @@ placements.entities.SJ2021/LaserEmitterLeft.tooltips.collideWithSolids=Whether o
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same colour channel.
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same colour channel.
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser colour.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.leniency=Shrinks the collider hitbox by this many pixels either side. Defaults to 1.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.beamAboveEmitter=Whether or not the beam should be rendered above the emitter sprite.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.emitterColliderWidth=The width of the emitter if it were pointing up or down. Defaults to 14.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.emitterColliderHeight=The height of the emitter if it were pointing up or down. Defaults to 6.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.emitSparks=Whether the laser should emit sparks if it collides with a solid. Defaults to true.
 
 # Laser Emitter (Right)
 placements.entities.SJ2021/LaserEmitterRight.tooltips.color=Colour of the laser emitted.
@@ -66,6 +81,11 @@ placements.entities.SJ2021/LaserEmitterRight.tooltips.collideWithSolids=Whether 
 placements.entities.SJ2021/LaserEmitterRight.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same colour channel.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same colour channel.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser colour.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.leniency=Shrinks the collider hitbox by this many pixels either side. Defaults to 1.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.beamAboveEmitter=Whether or not the beam should be rendered above the emitter sprite.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.emitterColliderWidth=The width of the emitter if it were pointing up or down. Defaults to 14.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.emitterColliderHeight=The height of the emitter if it were pointing up or down. Defaults to 6.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.emitSparks=Whether the laser should emit sparks if it collides with a solid. Defaults to true.
 
 # Paintbrush (Up)
 placements.entities.SJ2021/PaintbrushUp.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.

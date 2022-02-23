@@ -124,6 +124,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             Paintbrush.LoadParticles();
             PelletEmitter.PelletShot.LoadParticles();
             NodedCloud.LoadParticles();
+            LaserEmitter.LoadParticles();
             DarkMatterHooks.LoadContent(firstLoad);
             Utilities.LoadContent();
             MaskedOutline.LoadTexture();
@@ -136,7 +137,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             }
             return null;
 		}
-		
+
         //This occurs after all mods get initialized.
         public override void Initialize() {
             base.Initialize();
