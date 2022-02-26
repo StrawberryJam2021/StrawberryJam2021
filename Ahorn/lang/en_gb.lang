@@ -249,6 +249,9 @@ placements.triggers.SJ2021/RainDensityTrigger.tooltips.duration=The time (in sec
 # Require Dashless Trigger
 placements.triggers.SJ2021/RequireDashlessTrigger.tooltips.entityNames=The class names of the entities to remove if the player has dashed as a comma-separated list.
 
+# Set Metadata Trigger
+placements.triggers.SJ2021/SetMetadataTrigger.tooltips.theoInBooster=Whether player is allowed to hold crystal Theo while in a booster or not.
+
 # Expiring Dash Refill
 placements.entities.SJ2021/ExpiringDashRefill.tooltips.dashExpirationTime=The amount of time given before the dash is revoked if not used.
 placements.entities.SJ2021/ExpiringDashRefill.tooltips.hairFlashThreshold=The threshold ratio that determines when the warning flash begins. (0 - 1)
@@ -399,3 +402,8 @@ placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.tiletype=The tileset to
 placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.disableSpawnOffset=Whether or not the entity should spawn without the random offset.
 placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.flag=The name of the flag that will activate the block.
 placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.moveTime=The time in seconds for the block to move to a new position.
+
+# Core Toggle No Flash
+placements.entities.SJ2021/CoreToggleNoFlash.tooltips.onlyIce=Whether the switch can only turn the core mode to ice.
+placements.entities.SJ2021/CoreToggleNoFlash.tooltips.onlyFire=Whether the switch can only turn the core mode to fire.
+placements.entities.SJ2021/CoreToggleNoFlash.tooltips.persistent=Whether the core mode persists after death instead of resetting to initial room entry state.
