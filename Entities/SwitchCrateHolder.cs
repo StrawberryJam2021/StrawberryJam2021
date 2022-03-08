@@ -163,7 +163,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void Hit(SwitchCrate Crate, Vector2 direction) {
-            if (pressed || !(direction == pressDirection)) {
+            if (pressed) {
                 return;
             }
             Crate.Use();
