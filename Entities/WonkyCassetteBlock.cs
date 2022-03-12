@@ -15,13 +15,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public readonly int[] OnAtBeats;
 
+        private readonly int OverrideBoostFrames;
         public int boostFrames = 0;
 
         private DynData<CassetteBlock> cassetteBlockData;
 
         private string textureDir;
 
-        public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, string moveSpec, Color color, string textureDir)
+        public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, string moveSpec, Color color, string textureDir, int overrideBoostFrames)
             : base(position, id, width, height, index, 1.0f) {
             Tag = Tags.FrozenUpdate | Tags.TransitionUpdate;
 
@@ -31,10 +32,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             cassetteBlockData["color"] = color;
 
             this.textureDir = textureDir;
+
+            if (overrideBoostFrames < 0)
+                throw new ArgumentException($"Boost Frames must be 0 or greater, but is set to {overrideBoostFrames}.");
+
+            OverrideBoostFrames = overrideBoostFrames;
         }
 
         public WonkyCassetteBlock(EntityData data, Vector2 offset, EntityID id)
-            : this(data.Position + offset, id, data.Width, data.Height, data.Int("index"), data.Attr("onAtBeats"), data.HexColor("color"), data.Attr("textureDirectory", "objects/cassetteblock").TrimEnd('/')) { }
+            : this(data.Position + offset, id, data.Width, data.Height, data.Int("index"), data.Attr("onAtBeats"), data.HexColor("color"), data.Attr("textureDirectory", "objects/cassetteblock").TrimEnd('/'), data.Int("boostFrames", 0)) { }
 
         // We need to reimplement some of our parent's methods because they refer directly to CassetteBlock when fetching entities
 
@@ -73,9 +79,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (Activated && Collidable) {
                 if (activating) {
                     // Block has activated, Cassette boost is possible this frame
-                    WonkyCassetteBlockController controller = this.Scene.Tracker.GetEntity<WonkyCassetteBlockController>();
-                    if (controller != null) {
-                        boostFrames = controller.ExtraBoostFrames;
+                    if (OverrideBoostFrames > 0) {
+                        boostFrames = OverrideBoostFrames;
+                    } else {
+                        WonkyCassetteBlockController controller = this.Scene.Tracker.GetEntity<WonkyCassetteBlockController>();
+                        if (controller != null) {
+                            boostFrames = controller.ExtraBoostFrames;
+                        }
                     }
 
                 } else if (boostFrames > 0) {
