@@ -14,6 +14,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class WonkyCassetteBlock : CassetteBlock {
 
         public readonly int[] OnAtBeats;
+        public readonly int ControllerIndex;
 
         private readonly int OverrideBoostFrames;
         public int boostFrames = 0;
@@ -22,7 +23,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private string textureDir;
 
-        public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, string moveSpec, Color color, string textureDir, int overrideBoostFrames)
+        public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, string moveSpec, Color color, string textureDir, int overrideBoostFrames, int controllerIndex)
             : base(position, id, width, height, index, 1.0f) {
             Tag = Tags.FrozenUpdate | Tags.TransitionUpdate;
 
@@ -37,10 +38,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 throw new ArgumentException($"Boost Frames must be 0 or greater, but is set to {overrideBoostFrames}.");
 
             OverrideBoostFrames = overrideBoostFrames;
+
+            if (controllerIndex < 0)
+                throw new ArgumentException($"Controller Index must be 0 or greater, but is set to {controllerIndex}.");
+
+            ControllerIndex = controllerIndex;
         }
 
         public WonkyCassetteBlock(EntityData data, Vector2 offset, EntityID id)
-            : this(data.Position + offset, id, data.Width, data.Height, data.Int("index"), data.Attr("onAtBeats"), data.HexColor("color"), data.Attr("textureDirectory", "objects/cassetteblock").TrimEnd('/'), data.Int("boostFrames", 0)) { }
+            : this(data.Position + offset, id, data.Width, data.Height, data.Int("index"), data.Attr("onAtBeats"), data.HexColor("color"), data.Attr("textureDirectory", "objects/cassetteblock").TrimEnd('/'), data.Int("boostFrames", 0), data.Int("controllerIndex", 0)) { }
 
         // We need to reimplement some of our parent's methods because they refer directly to CassetteBlock when fetching entities
 
@@ -61,6 +67,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             foreach (WonkyCassetteBlock entity in self.Scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>()) {
                 if (entity != self && entity != block && entity.Index == self.Index &&
+                    entity.ControllerIndex == selfCast.ControllerIndex &&
                     (entity.CollideRect(new Rectangle((int) block.X - 1, (int) block.Y, (int) block.Width + 2, (int) block.Height))
                         || entity.CollideRect(new Rectangle((int) block.X, (int) block.Y - 1, (int) block.Width, (int) block.Height + 2))) &&
                     !group.Contains(entity) && entity.OnAtBeats.SequenceEqual(selfCast.OnAtBeats)) {
@@ -117,6 +124,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return self.Scene.Tracker.GetEntities<WonkyCassetteBlock>()
                 .Cast<WonkyCassetteBlock>()
                 .Any(entity => entity.Index == self.Index
+                               && entity.ControllerIndex == selfCast.ControllerIndex
                                && entity.Collider.Collide(new Rectangle((int) x, (int) y, 8, 8))
                                && entity.OnAtBeats.SequenceEqual(selfCast.OnAtBeats));
         }

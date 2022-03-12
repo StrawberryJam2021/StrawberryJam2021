@@ -12,10 +12,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class WonkyCassetteBlockController : Entity {
 
         // Music stuff
-        private readonly int bpm;
-        private readonly int bars;  
-        private readonly int barLength; // The top number in the time signature
-        private readonly int beatLength; // The bottom number in the time signature
+        public readonly int bpm;
+        public readonly int bars;
+        public readonly int barLength; // The top number in the time signature
+        public readonly int beatLength; // The bottom number in the time signature
         private readonly float cassetteOffset;
         private readonly string param;
 
@@ -77,6 +77,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 wonkyBlock.Activated = false;
             }
 
+            var minorControllers = scene.Tracker.GetEntities<WonkyMinorCassetteBlockController>();
+
+            foreach (WonkyMinorCassetteBlockController minorController in minorControllers) {
+                minorController.Reset(scene, session);
+            }
+
             session.CassetteBlocksDisabled = true;
         }
 
@@ -115,6 +121,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (session.CassetteBlocksLastParameter != param) {
                 DisableAndReset(scene, session);
                 session.CassetteBlocksLastParameter = param;
+            }
+
+            // Make sure minor controllers are set up after the main one
+            foreach (WonkyMinorCassetteBlockController minorController in Scene.Tracker.GetEntities<WonkyMinorCassetteBlockController>()) {
+                minorController.MinorAwake(scene, session, this);
             }
         }
 
@@ -159,6 +170,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 bool beatIncrementsNext = (nextBeatIndex / (float) (16 / beatLength)) % 1 == 0; // will the next beatIndex be the start of a new beat
 
                 foreach (WonkyCassetteBlock wonkyBlock in wonkyBlocks) {
+                    if (wonkyBlock.ControllerIndex != 0)
+                        continue;
+
                     wonkyBlock.Activated = wonkyBlock.OnAtBeats.Contains(beatInBar);
 
                     if (wonkyBlock.OnAtBeats.Contains(nextBeatInBar) != wonkyBlock.Activated && beatIncrementsNext) {
@@ -180,6 +194,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 // Doing this here because it would go to the next beat with a sixteenth note offset at start
                 session.MusicWonkyBeatIndex = (session.MusicWonkyBeatIndex + 1) % maxBeats;
+            }
+
+            // Make sure minor controllers are set up after the main one
+            foreach (WonkyMinorCassetteBlockController minorController in Scene.Tracker.GetEntities<WonkyMinorCassetteBlockController>()) {
+                minorController.AdvanceMusic(time, scene);
             }
         }
 
@@ -223,9 +242,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             orig(self, playerIntro, isFromLoader);
 
             StrawberryJam2021Session session = StrawberryJam2021Module.Session;
+            WonkyCassetteBlockController mainController = self.Tracker.GetEntity<WonkyCassetteBlockController>();
+            var minorControllers = self.Tracker.GetEntities<WonkyMinorCassetteBlockController>();
+
             foreach (WonkyCassetteBlock wonkyBlock in self.Tracker.GetEntities<WonkyCassetteBlock>()) {
-                WonkyCassetteBlockController controller = self.Tracker.GetEntity<WonkyCassetteBlockController>();
-                wonkyBlock.SetActivatedSilently(controller != null && !session.CassetteBlocksDisabled && wonkyBlock.OnAtBeats.Contains(session.CassetteWonkyBeatIndex / (16 / controller.beatLength) % controller.barLength));
+                if (wonkyBlock.ControllerIndex == 0) {
+                    wonkyBlock.SetActivatedSilently(mainController != null && !session.CassetteBlocksDisabled && wonkyBlock.OnAtBeats.Contains(session.CassetteWonkyBeatIndex / (16 / mainController.beatLength) % mainController.barLength));
+                } else {
+                    foreach (WonkyMinorCassetteBlockController minorController in minorControllers) {
+                        if (wonkyBlock.ControllerIndex == minorController.ControllerIndex) {
+                            wonkyBlock.SetActivatedSilently(minorController != null && !session.CassetteBlocksDisabled && wonkyBlock.OnAtBeats.Contains(minorController.CassetteWonkyBeatIndex / (16 / minorController.beatLength) % minorController.barLength));
+                        }
+                    }
+                }
             }
         }
 
