@@ -80,7 +80,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             var minorControllers = scene.Tracker.GetEntities<WonkyMinorCassetteBlockController>();
 
             foreach (WonkyMinorCassetteBlockController minorController in minorControllers) {
-                minorController.Reset(session, this);
+                minorController.Reset(session);
             }
 
             session.CassetteBlocksDisabled = true;
@@ -181,12 +181,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         wonkyBlock.WillToggle();
                     }
                 }
-                
+
                 // Doing this here because it would go to the next beat with a sixteenth note offset at start
                 session.CassetteWonkyBeatIndex = (session.CassetteWonkyBeatIndex + 1) % maxBeats;
-                
-                // Synchronize minor controllers every start of a bar
-                if (beatInBar == 0) {
+
+                // Synchronize minor controllers right before the start of a bar
+                if (nextBeatInBar == 0 && beatInBar != 0) {
                     synchronizeMinorControllers = true;
                 }
             }

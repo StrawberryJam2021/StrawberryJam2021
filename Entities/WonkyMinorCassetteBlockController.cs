@@ -20,6 +20,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public float CassetteBeatTimer;
 
         private float beatIncrement;
+        private float beatDelta;
         private int maxBeats;
 
         public WonkyMinorCassetteBlockController(EntityData data, Vector2 offset)
@@ -42,18 +43,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         // Reset cassette position to start of a bar
-        public void Reset(StrawberryJam2021Session session, WonkyCassetteBlockController mainController) {
+        public void Reset(StrawberryJam2021Session session) {
             this.CassetteWonkyBeatIndex = 0;
             // Timer has to be offset by the beat increment delta to account for different start of the next bar
             // This is because the index is the index of the next played note, not the current one
-            this.CassetteBeatTimer = this.beatIncrement - mainController.beatIncrement + session.CassetteBeatTimer;
+            this.CassetteBeatTimer = beatDelta + session.CassetteBeatTimer;
         }
 
         // Synchronize cassette position to start of a bar
         // Next tick will activate the first beat
         public void Synchronize(float time, StrawberryJam2021Session session) {
             this.CassetteWonkyBeatIndex = 0;
-            this.CassetteBeatTimer = session.CassetteBeatTimer + this.beatIncrement - time;
+            this.CassetteBeatTimer = beatDelta + (session.CassetteBeatTimer - time);
         }
 
         // Called by main controller
@@ -85,7 +86,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // Timer has to be offset by the beat increment delta to account for different start of the next bar 
             // This is because the index is the index of the next played note, not the current one
-            float beatDelta = this.beatIncrement - mainController.beatIncrement;
+            beatDelta = this.beatIncrement - mainController.beatIncrement;
 
             this.CassetteBeatTimer = (accurateBeatIndex - this.CassetteWonkyBeatIndex) * this.beatIncrement + beatDelta - mainController.cassetteOffset;
         }
