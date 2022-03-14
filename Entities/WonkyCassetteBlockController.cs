@@ -16,15 +16,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public readonly int bars;
         public readonly int barLength; // The top number in the time signature
         public readonly int beatLength; // The bottom number in the time signature
-        private readonly float cassetteOffset;
+        public readonly float cassetteOffset;
         private readonly string param;
 
         public readonly int ExtraBoostFrames;
 
         private readonly string DisableFlag;
 
-        private float beatIncrement;
-        private int maxBeats;
+        public float beatIncrement;
+        public int maxBeats;
 
         private bool isLevelMusic;
         private EventInstance sfx;
@@ -80,7 +80,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             var minorControllers = scene.Tracker.GetEntities<WonkyMinorCassetteBlockController>();
 
             foreach (WonkyMinorCassetteBlockController minorController in minorControllers) {
-                minorController.Reset(scene, session);
+                minorController.Reset(session, this);
             }
 
             session.CassetteBlocksDisabled = true;
@@ -157,6 +157,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             session.CassetteBeatTimer += time;
 
+            bool synchronizeMinorControllers = false;
+
             if (session.CassetteBeatTimer >= beatIncrement) {
 
                 session.CassetteBeatTimer -= beatIncrement;
@@ -182,6 +184,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 
                 // Doing this here because it would go to the next beat with a sixteenth note offset at start
                 session.CassetteWonkyBeatIndex = (session.CassetteWonkyBeatIndex + 1) % maxBeats;
+                
+                // Synchronize minor controllers every start of a bar
+                if (beatInBar == 0) {
+                    synchronizeMinorControllers = true;
+                }
             }
 
             session.MusicBeatTimer += time;
@@ -198,6 +205,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // Make sure minor controllers are set up after the main one
             foreach (WonkyMinorCassetteBlockController minorController in Scene.Tracker.GetEntities<WonkyMinorCassetteBlockController>()) {
+                if (synchronizeMinorControllers) {
+                    minorController.Synchronize(time, session);
+                }
+
                 minorController.AdvanceMusic(time, scene);
             }
         }

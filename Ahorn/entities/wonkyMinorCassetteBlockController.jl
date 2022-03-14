@@ -6,7 +6,7 @@ using ..Ahorn, Maple
     x::Integer,
     y::Integer,
     timeSignature::String="4/4",
-    controllerIndex::Integer=0,
+    controllerIndex::Integer=1,
 )
 
 const placements = Ahorn.PlacementDict(

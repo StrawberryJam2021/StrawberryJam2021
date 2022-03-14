@@ -41,15 +41,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             ControllerIndex = controllerIndex;
         }
 
-        public void Reset(Scene scene, StrawberryJam2021Session session) {
+        // Reset cassette position to start of a bar
+        public void Reset(StrawberryJam2021Session session, WonkyCassetteBlockController mainController) {
             this.CassetteWonkyBeatIndex = 0;
-            this.CassetteBeatTimer = session.CassetteBeatTimer;
+            // Timer has to be offset by the beat increment delta to account for different start of the next bar
+            // This is because the index is the index of the next played note, not the current one
+            this.CassetteBeatTimer = this.beatIncrement - mainController.beatIncrement + session.CassetteBeatTimer;
+        }
+
+        // Synchronize cassette position to start of a bar
+        // Next tick will activate the first beat
+        public void Synchronize(float time, StrawberryJam2021Session session) {
+            this.CassetteWonkyBeatIndex = 0;
+            this.CassetteBeatTimer = session.CassetteBeatTimer + this.beatIncrement - time;
         }
 
         // Called by main controller
         public void MinorAwake(Scene scene, StrawberryJam2021Session session, WonkyCassetteBlockController mainController) {
-            base.Awake(scene);
-
             if (beatLength != mainController.beatLength)
                 throw new ArgumentException($"Minor and main controller time signature denominator don't match. Main is {mainController.beatLength}, minor is {beatLength}");
 
@@ -67,14 +75,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             maxBeats = 16 * barLength / beatLength;
 
             // Synchronize the beat indices.
-            // Progress is given within a single bar
-            float barProgress = session.CassetteWonkyBeatIndex / (mainController.barLength * 16 / (float) mainController.beatLength) % 1;
-            float accurateBeatIndex = barProgress * this.barLength;
+            // Progress towards the next beat
+            float timerProgress = session.MusicBeatTimer / mainController.beatIncrement;
+            // Progress in the current bar
+            float barProgress = ((session.CassetteWonkyBeatIndex + timerProgress) / (mainController.barLength * 16 / (float) mainController.beatLength)) % 1;
+            float accurateBeatIndex = barProgress * this.maxBeats;
 
             this.CassetteWonkyBeatIndex = (int) accurateBeatIndex;
 
-            // This might cause the cassette block state to be wrong on frame 1, but it will resolve itself afterwards
-            this.CassetteBeatTimer = (accurateBeatIndex - this.CassetteWonkyBeatIndex) * beatIncrement + session.CassetteBeatTimer;
+            // Timer has to be offset by the beat increment delta to account for different start of the next bar 
+            // This is because the index is the index of the next played note, not the current one
+            float beatDelta = this.beatIncrement - mainController.beatIncrement;
+
+            this.CassetteBeatTimer = (accurateBeatIndex - this.CassetteWonkyBeatIndex) * this.beatIncrement + beatDelta - mainController.cassetteOffset;
         }
 
         // Called by main controller
