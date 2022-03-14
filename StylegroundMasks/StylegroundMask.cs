@@ -61,8 +61,8 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             }
 
             HeatWave heatWave;
-            if ((heatWave = (scene as Level).Foreground.GetEach<HeatWave>().FirstOrDefault(current => RenderTags.Any(tag => GetTags(current).Contains(TagPrefix + tag)) &&
-                (current.GetType() != typeof(HeatWaveNoColorGrade)))) != null && !Foreground) {
+            if (!Foreground && (heatWave = (scene as Level).Foreground.GetEach<HeatWave>().FirstOrDefault(current => RenderTags.Any(tag => current.Tags.Contains(TagPrefix + tag)) &&
+                (current.GetType() != typeof(HeatWaveNoColorGrade)))) != null) {
 
                 scene.Add(coreModeGrading = new ColorGradeMask(Position, Width, Height) {
                     Fade = Fade, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
@@ -76,8 +76,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             if (EntityRenderer) {
                 var bufferDict = Foreground ? FgBuffers : BgBuffers;
                 foreach (var tag in RenderTags) {
-                    if (bufferDict.ContainsKey(tag)) {
-                        var buffer = bufferDict[tag];
+                    if (bufferDict.TryGetValue(tag, out var buffer)) {
                         foreach (var slice in GetMaskSlices()) {
                             Draw.SpriteBatch.Draw(buffer, slice.Position, slice.Source, Color.White * slice.GetValue(AlphaFrom, AlphaTo));
                         }
@@ -104,7 +103,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
         }
 
         private static void HeatWave_Update(On.Celeste.HeatWave.orig_Update orig, HeatWave self, Scene scene) {
-            if (GetTags(self).Any(tag => tag.StartsWith(TagPrefix))) {
+            if (self.Tags.Any(tag => tag.StartsWith(TagPrefix))) {
                 var levelData = new DynData<Level>(scene as Level);
                 var lastColorGrade = levelData.Get<string>("lastColorGrade");
                 var colorGradeEase = levelData.Get<float>("colorGradeEase");
@@ -131,12 +130,10 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
         }
 
         private static void BackdropRenderer_Render(On.Celeste.BackdropRenderer.orig_Render orig, BackdropRenderer self, Scene scene) {
-            if (!(scene is Level level)) {
+            if (scene is not Level level) {
                 orig(self, scene);
                 return;
             }
-
-            var levelData = new DynData<Level>(level);
 
             if (self != level.Background && self != level.Foreground) {
                 orig(self, scene);
@@ -150,7 +147,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
             foreach (var backdrop in self.Backdrops) {
                 lastVisible[backdrop] = backdrop.Visible;
-                foreach (var tag in GetTags(backdrop)) {
+                foreach (var tag in backdrop.Tags) {
                     if (tag.StartsWith(TagPrefix)) {
                         var key = tag.Substring(TagPrefix.Length);
                         if (!bufferDict.ContainsKey(key))
@@ -159,7 +156,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     }
                 }
             }
-            foreach (var i in bufferDict.Keys.Where((key) => !renderedKeys.Contains(key)).ToArray()) {
+            foreach (var i in bufferDict.Keys.Where((key) => !renderedKeys.Contains(key))) {
                 bufferDict[i].Dispose();
                 bufferDict.Remove(i);
             }
@@ -238,12 +235,12 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     cursor.EmitDelegate<Func<Level, bool>>(level => {
                         var baseRendering = true;
                         foreach (var heatWave in level.Foreground.GetEach<HeatWave>()) {
-                            var tags = GetTags(heatWave);
+                            var tags = heatWave.Tags;
                             if (tags.Any(tag => tag.StartsWith(TagPrefix))) {
                                 baseRendering = tags.Contains("nomaskhide");
                                 if (new DynData<HeatWave>(heatWave).Get<float>("heat") > 0f) {
                                     foreach (StylegroundMask mask in level.Tracker.GetEntities<StylegroundMask>()) {
-                                        if (mask.RenderTags.Any(tag => GetTags(heatWave).Contains(TagPrefix + tag))) {
+                                        if (mask.RenderTags.Any(tag => heatWave.Tags.Contains(TagPrefix + tag))) {
                                             foreach (var slice in mask.GetMaskSlices()) {
                                                 Draw.Rect(slice.Position.X, slice.Position.Y, slice.Source.Width, slice.Source.Height, new Color(0.5f, 0.5f, 0.1f, 1f));
                                             }
@@ -259,29 +256,18 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             }
         }
 
-        private static HashSet<string> GetTags(Backdrop backdrop) {
-            var tags = new HashSet<string>();
-            foreach (var fulltag in backdrop.Tags) {
-                string[] taglist = fulltag.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var tag in taglist)
-                    tags.Add(tag);
-            }
-            return tags;
-        }
-
         private static void EnableTag(BackdropRenderer renderer, string tag, Dictionary<Backdrop, bool> lastVisible) {
-            foreach (var backdrop in renderer.Backdrops) {
-                var tags = GetTags(backdrop);
+            string prefixedTag = TagPrefix + tag; // avoid allocating inside of the loop
 
-                bool foundTag = string.IsNullOrEmpty(tag) ? tags.Any(s => s.StartsWith(TagPrefix)) : tags.Contains(TagPrefix + tag);
+            foreach (var backdrop in renderer.Backdrops) {
+                var tags = backdrop.Tags;
+
+                bool foundTag = string.IsNullOrEmpty(tag) ? tags.Any(s => s.StartsWith(TagPrefix)) : tags.Contains(prefixedTag);
 
                 if (string.IsNullOrEmpty(tag))
                     foundTag = !foundTag || tags.Contains("nomaskhide");
 
-                if (foundTag && lastVisible[backdrop])
-                    backdrop.Visible = true;
-                else
-                    backdrop.Visible = false;
+                backdrop.Visible = foundTag && lastVisible[backdrop];
             }
         }
 
@@ -300,11 +286,11 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 if (bufferDict.Count == 0)
                     return;
                 var level = scene as Level;
-                var masks = scene.Tracker.GetEntities<StylegroundMask>().OfType<StylegroundMask>()
+                var masks = scene.Tracker.GetEntities<StylegroundMask>().Cast<StylegroundMask>()
                     .Where(mask => !mask.EntityRenderer && (!Foreground || mask.BehindForeground == Behind) && mask.IsVisible());
                 var fadeMasks = masks.Where(mask => mask.Fade == FadeType.Custom);
                 var batchMasks = masks.Where(mask => mask.Fade != FadeType.Custom);
-                if (fadeMasks.Count() > 0) {
+                if (fadeMasks.Any()) {
                     var targets = Engine.Graphics.GraphicsDevice.GetRenderTargets();
 
                     Draw.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, level.Camera.Matrix);
@@ -316,8 +302,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
                         Engine.Graphics.GraphicsDevice.BlendState = Mask.DestinationAlphaBlend;
                         foreach (var tag in mask.RenderTags) {
-                            if (bufferDict.ContainsKey(tag)) {
-                                var buffer = bufferDict[tag];
+                            if (bufferDict.TryGetValue(tag, out var buffer)) {
                                 foreach (var slice in mask.GetMaskSlices())
                                     Draw.SpriteBatch.Draw(buffer, slice.Position, slice.Source, Color.White);
                             }
@@ -329,12 +314,11 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     }
                     Draw.SpriteBatch.End();
                 }
-                if (batchMasks.Count() > 0) {
+                if (batchMasks.Any()) {
                     Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, level.Camera.Matrix);
                     foreach (var mask in batchMasks) {
                         foreach (var tag in mask.RenderTags) {
-                            if (bufferDict.ContainsKey(tag)) {
-                                var buffer = bufferDict[tag];
+                            if (bufferDict.TryGetValue(tag, out var buffer)) {
                                 foreach (var slice in mask.GetMaskSlices()) {
                                     Draw.SpriteBatch.Draw(buffer, slice.Position, slice.Source, Color.White * slice.GetValue(mask.AlphaFrom, mask.AlphaTo));
                                 }
