@@ -91,8 +91,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     break;
                 case "StrawberryJam2021/3-Advanced/Citrea":
                     // Dark Mode alternate
-                    SetLighting(level, enabled ? 0.7f : 0f);
-                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(ExtendedVariantsModule.Variant.BackgroundBrightness, enabled ? 3 : 10, revertOnLeave: false, isFade: false, revertOnDeath: false, legacy: true);
+                    level.SnapColorGrade(enabled ? "SJ2021/LordCitrea/Citrea-Invert" : "max480/extendedvariants/greyscale");
                     break;
                 case "StrawberryJam2021/4-Expert/Skunkynator":
                     // Low-Detail Mode alternate
