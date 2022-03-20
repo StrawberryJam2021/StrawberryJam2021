@@ -203,6 +203,7 @@ placements.entities.SJ2021/WonkyCassetteBlock.tooltips.onAtBeats=A list of integ
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.color=The hexadecimal colour code of this block (without the hash # symbol).
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.textureDirectory=The path to the folder containing two textures for this block, starting from Graphics/Atlases/Gameplay/. In order for this to work, the specified folder must containing two image files named "solid.png" and "pressed.png", each corresponding to the texture of the block when activated and deactivated respectively. Preferably without the "/" symbol at the end.
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.boostFrames=The number of frames after activation that a cassette boost is possible for. Must be at least 1 to be active. If set to 0 (default), will use boost frame count from the controller.
+placements.entities.SJ2021/WonkyCassetteBlock.tooltips.controllerIndex=The index of the controller that controls this cassette block. Must be 0 or greater. 0 refers to the main controller.
 
 # Wonky Cassette Block Controller
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.bpm=The tempo of the cassette loop event in this room.
@@ -212,6 +213,10 @@ placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.sixteenthNotePa
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.cassetteOffset=The constant offset in seconds that the cassette blocks will lag behind the music progress.\nPositive numbers will make the cassette blocks trigger later.
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.boostFrames=The number of frames after activation that a cassette boost is possible for. Must be at least 1. Cassette blocks with their own boost frame count set will not be affected.
 placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.disableFlag=The flag that deactivates all cassette blocks in the room. Leave empty if you don't want to use it.
+
+# Wonky Minor Cassette Block Controller
+placements.entities.SJ2021/WonkyMinorCassetteBlockController.tooltips.timeSignature=The time signature of this cassette loop event, written in this form: x/y.\nATTENTION: this should always be a multiple of 1/16, since Cassette Blocks always work in 16th notes.\nExample: 5/4.\nDenominator must be equal to main controller's denominator.
+placements.entities.SJ2021/WonkyMinorCassetteBlockController.tooltips.controllerIndex=The index of this controller. Used to determine which cassette blocks are controlled by this. Must be 1 or greater.
 
 # Skateboard Trigger
 placements.triggers.SJ2021/SkateboardTrigger.tooltips.mode=Whether entering the trigger will enable, disable, or toggle the skateboard.

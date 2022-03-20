@@ -10,6 +10,7 @@ using ..Ahorn, Maple
     color::String="FFFFFF",
     textureDirectory::String="objects/cassetteblock",
     boostFrames::Integer=0,
+    controllerIndex::Integer=0,
 )
 
 const placements = Ahorn.PlacementDict(
