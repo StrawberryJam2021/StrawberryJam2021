@@ -156,7 +156,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     }
                 }
             }
-            foreach (var i in bufferDict.Keys.Where((key) => !renderedKeys.Contains(key))) {
+            foreach (var i in bufferDict.Keys.Where((key) => !renderedKeys.Contains(key)).ToList()) {
                 bufferDict[i].Dispose();
                 bufferDict.Remove(i);
             }
