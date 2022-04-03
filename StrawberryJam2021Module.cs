@@ -65,6 +65,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ExpiringDashRefill.Load();
             ToggleSwapBlock.Load();
             CoreToggleNoFlash.Load();
+            ShowHitboxTrigger.Load();
 
             Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
         }
@@ -106,6 +107,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ExpiringDashRefill.Unload();
             ToggleSwapBlock.Unload();
             CoreToggleNoFlash.Unload();
+            ShowHitboxTrigger.Unload();
 
             Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
         }
