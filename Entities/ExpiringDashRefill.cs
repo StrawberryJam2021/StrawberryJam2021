@@ -1,6 +1,7 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System;
 using System.Collections;
 using System.Reflection;
 
@@ -50,11 +51,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Player.UpdateHair += UpdateHair;
             On.Celeste.Player.Update += Update;
             On.Celeste.Player.Die += OnPlayerDeath;
+            On.Celeste.Player.OnTransition += OnTransition;
         }
         public static void Unload() {
             On.Celeste.Player.UpdateHair -= UpdateHair;
             On.Celeste.Player.Update -= Update;
             On.Celeste.Player.Die -= OnPlayerDeath;
+            On.Celeste.Player.OnTransition -= OnTransition;
         }
 
         public static void UpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player player, bool applyGravity) {
@@ -64,7 +67,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public static PlayerDeadBody OnPlayerDeath(On.Celeste.Player.orig_Die orig, Player player, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats) {
-
             if (evenIfInvincible || !SaveData.Instance.Assists.Invincible) {
                 flash = false;
                 timeUntilDashExpire = 0;
@@ -72,6 +74,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             return orig.Invoke(player, direction, evenIfInvincible, registerDeathInStats);
+        }
+
+        public static void OnTransition(On.Celeste.Player.orig_OnTransition orig, Player player) {
+            orig.Invoke(player);
+
+            // Make sure the player can't carry their dash out the room and keep it.
+            player.Dashes = 0;
+
+            // Make sure hair colour overrides are removed, in case player leaves while the hair is flashing blue.
+            player.OverrideHairColor = null;
         }
 
         public static void Update(On.Celeste.Player.orig_Update orig, Player self) {
@@ -100,19 +112,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (self.Scene.OnInterval(0.05f))
                     flash = !flash;
             }
-        }
-
-        public override void Removed(Scene scene) {
-            if (scene.Tracker.GetEntity<Player>() is not Player player)
-                return;
-
-            // Make sure the player can't carry their dash out the room and keep it.
-            player.Dashes = 0;
-
-            // Make sure hair colour overrides are removed, in case player leaves while the hair is flashing blue.
-            player.OverrideHairColor = null;
-
-            base.Removed(scene);
         }
     }
 }
