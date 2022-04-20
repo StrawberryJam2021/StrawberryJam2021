@@ -10,7 +10,7 @@ using System.Linq;
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/ShowHitboxTrigger")]
     [Tracked]
-    class ShowHitboxTrigger : Trigger {
+    public class ShowHitboxTrigger : Trigger {
 
         public static readonly HashSet<string> EnabledTypeNames = new HashSet<string>();
 
