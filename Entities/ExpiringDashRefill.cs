@@ -1,7 +1,6 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using System;
 using System.Collections;
 using System.Reflection;
 
@@ -77,13 +76,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public static void OnTransition(On.Celeste.Player.orig_OnTransition orig, Player player) {
+            // We first remove the expiring dash if the player still has one
+            if (timeUntilDashExpire > 0) {
+                player.Dashes = 0;
+
+                player.OverrideHairColor = null;
+
+                timeUntilDashExpire = 0;
+            }
+
+            // We invoke this after, just to make sure the default recharge behavior still applies if applicable.
             orig.Invoke(player);
-
-            // Make sure the player can't carry their dash out the room and keep it.
-            player.Dashes = 0;
-
-            // Make sure hair colour overrides are removed, in case player leaves while the hair is flashing blue.
-            player.OverrideHairColor = null;
         }
 
         public static void Update(On.Celeste.Player.orig_Update orig, Player self) {
