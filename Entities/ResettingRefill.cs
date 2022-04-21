@@ -3,8 +3,6 @@ using ExtendedVariants.Module;
 using ExtendedVariants.Variants;
 using Microsoft.Xna.Framework;
 using Monocle;
-using On.Celeste.Pico8;
-using System;
 using System.Collections;
 using System.Linq;
 using System.Reflection;

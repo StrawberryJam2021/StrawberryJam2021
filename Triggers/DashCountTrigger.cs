@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
-using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
 

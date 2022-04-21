@@ -1,5 +1,4 @@
 ﻿using System;
-using Celeste;
 using Celeste.Mod.Entities;
 using System.Collections;
 using Microsoft.Xna.Framework;
@@ -7,7 +6,6 @@ using Monocle;
 using System.Collections.Generic;
 using MonoMod.Utils;
 using MonoMod.Cil;
-using Celeste.Mod;
 using Mono.Cecil.Cil;
 using System.Reflection;
 

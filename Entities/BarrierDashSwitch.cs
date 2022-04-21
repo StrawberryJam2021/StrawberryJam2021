@@ -6,7 +6,6 @@ using MonoMod.Cil;
 using MonoMod.Utils;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/BarrierDashSwitch")]

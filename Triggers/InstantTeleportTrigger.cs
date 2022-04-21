@@ -1,16 +1,10 @@
-﻿using Celeste;
-using Celeste.Mod.Entities;
-using FMOD;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {

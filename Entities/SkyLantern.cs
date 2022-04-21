@@ -6,7 +6,6 @@ using System.Collections;
 using MonoMod.Utils;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
-using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/AntiGravJelly")]

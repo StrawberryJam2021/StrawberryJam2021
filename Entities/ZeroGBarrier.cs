@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Monocle;
 using Microsoft.Xna.Framework;
 using Celeste.Mod.Entities;
 using MonoMod.Cil;
-using MonoMod.Utils;
-using MonoMod.RuntimeDetour;
 using Celeste.Mod.StrawberryJam2021.Triggers;
-using System.Collections;
 using Mono.Cecil.Cil;
-using MonoMod;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <summary>

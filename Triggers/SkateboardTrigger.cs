@@ -5,7 +5,6 @@ using Monocle;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using System.Reflection;
-using On.Celeste;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
 

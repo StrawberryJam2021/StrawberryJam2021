@@ -1,6 +1,5 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
 
@@ -41,7 +40,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             //bound the components to their respective max for accurate angles
             targetSpeed = ClampLiftBoost(targetSpeed);
             targetSpeedFlagged = ClampLiftBoost(targetSpeedFlagged);
-            
+
             angle = dir;
             angleFlagged = dirFlagged;
 
@@ -50,7 +49,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             endColor = Calc.HexToColor(endC);
             speedColor = CalculateGradient(spd);
             speedColorFlagged = CalculateGradient(spdFlagged);
-            
+
             arrowTexture = GetArrowTexture(angle);
             arrowTextureFlagged = GetArrowTexture(angleFlagged);
             flashTexture = GetArrowTextureFlash(angle);
@@ -130,7 +129,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             LiftSpeed = isFlagged ? targetSpeedFlagged : targetSpeed;
             base.MoveVExact(move);
         }
-        
+
         public override void Render() {
             Draw.Rect(Position, Width, Height, Color.Black);
 

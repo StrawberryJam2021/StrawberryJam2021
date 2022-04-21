@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using Celeste.Mod.Entities;
-using IL.Celeste;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
-using MonoMod.Utils;
 using Monocle;
 using MonoMod.Cil;
 

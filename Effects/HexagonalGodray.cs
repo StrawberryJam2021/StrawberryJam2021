@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 // Adapted from Celeste.Godrays, most base code taken from said file
-using Celeste;
-using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
-using MonoMod.Utils;
 
 namespace Celeste.Mod.StrawberryJam2021.Effects {
     public class HexagonalGodray : Backdrop {

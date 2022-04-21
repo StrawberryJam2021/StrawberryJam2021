@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Monocle;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using FourWayDirection = Celeste.Mod.StrawberryJam2021.Entities.ZeroGBarrier.FourWayDirection;
 using Celeste.Mod.Entities;
 
