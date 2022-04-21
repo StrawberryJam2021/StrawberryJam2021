@@ -189,12 +189,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (Left < level.Bounds.Left) {
                     Left = level.Bounds.Left;
                     onCollideH(new CollisionData {
-                        Direction = -Vector2.UnitX
+                        Direction = -Vector2.UnitX,
                     });
                 } else if (Right > level.Bounds.Right) {
                     Right = level.Bounds.Right;
                     onCollideH(new CollisionData {
-                        Direction = Vector2.UnitX
+                        Direction = Vector2.UnitX,
                     });
                 }
 
@@ -246,7 +246,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     RotationMode = ParticleType.RotationModes.Random,
                     SpinMin = 0,
                     SpinMax = (float) Math.PI,
-                    Size = 1f
+                    Size = 1f,
                 };
             }
         }

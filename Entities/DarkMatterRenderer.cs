@@ -156,7 +156,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public enum Mode {
             Kill = 0,
-            Zoomies = 1
+            Zoomies = 1,
         }
 
         private List<DarkMatter> list = new List<DarkMatter>();
@@ -314,7 +314,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             new Point(0, -1),
             new Point(0, 1),
             new Point(-1, 0),
-            new Point(1, 0)
+            new Point(1, 0),
             };
             foreach (DarkMatter item in list) {
                 for (int i = (int) item.X / 8; (float) i < item.Right / 8f; i++) {

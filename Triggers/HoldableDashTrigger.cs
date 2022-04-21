@@ -20,7 +20,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             EnableOnStay,
             DisableOnStay,
             EnableToggle,
-            DisableToggle
+            DisableToggle,
         }
 
         public override void OnEnter(Player player) {

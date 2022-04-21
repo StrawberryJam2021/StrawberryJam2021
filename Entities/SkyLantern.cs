@@ -101,13 +101,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Source = GFX.Game["particles/rect"],
                     Size = 0.5f,
                     SizeRange = 0.2f,
-                    RotationMode = ParticleType.RotationModes.Random
+                    RotationMode = ParticleType.RotationModes.Random,
                 };
             if (particleGlide == null)
                 particleGlide = new ParticleType(particleGlideDown) {
                     Acceleration = Vector2.UnitY * -10f,
                     SpeedMin = 50f,
-                    SpeedMax = 60f
+                    SpeedMax = 60f,
                 };
             if (particlePlatform == null)
                 particlePlatform = new ParticleType {
@@ -118,7 +118,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     LifeMin = 0.6f,
                     LifeMax = 1.4f,
                     FadeMode = ParticleType.FadeModes.Late,
-                    Size = 1f
+                    Size = 1f,
                 };
             if (particleGlow == null)
                 particleGlow = new ParticleType {
@@ -131,7 +131,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     FadeMode = ParticleType.FadeModes.Late,
                     Color = Calc.HexToColor("daa600"),
                     Color2 = Calc.HexToColor("da8200"),
-                    ColorMode = ParticleType.ColorModes.Blink
+                    ColorMode = ParticleType.ColorModes.Blink,
                 };
             if (particleExpand == null)
                 particleExpand = new ParticleType(particleGlow) {
@@ -140,7 +140,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     SpeedMultiplier = 0.2f,
                     LifeMin = 0.6f,
                     LifeMax = 1.2f,
-                    DirectionRange = 3 / 4 * (float) Math.PI
+                    DirectionRange = 3 / 4 * (float) Math.PI,
                 };
         }
 

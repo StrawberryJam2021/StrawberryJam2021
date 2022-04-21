@@ -77,7 +77,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 OrientableEntity.Orientations.Down => level.Bounds.Bottom - orientableEntity.Position.Y - Offset.Y,
                 OrientableEntity.Orientations.Left => orientableEntity.Position.X + Offset.X - level.Bounds.Left,
                 OrientableEntity.Orientations.Right => level.Bounds.Right - orientableEntity.Position.X - Offset.X,
-                _ => 0
+                _ => 0,
             };
 
             int low = 0, safety = 1000;

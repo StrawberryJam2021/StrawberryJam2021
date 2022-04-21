@@ -33,7 +33,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             Sides.Right => CollideCheckOutside(s, Position + Vector2.UnitX * 2),
                             _ => false,
                         }
-                )
+                ),
                 });
             }
             Sides side = (Sides) ds_side.GetValue(this);
@@ -94,7 +94,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Sides.Down => Sides.Up,
                 Sides.Left => Sides.Right,
                 Sides.Right => Sides.Left,
-                _ => throw new Exception("Unknown FlagDashSwitch direction!")
+                _ => throw new Exception("Unknown FlagDashSwitch direction!"),
             };
 
         private static TempleGate DashSwitch_GetGate(On.Celeste.DashSwitch.orig_GetGate orig, DashSwitch self) {
@@ -146,7 +146,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Sides.Up => p.Top = Bottom + (offset * Math.Sign(Bottom)),
                 Sides.Left => p.Left = Right + (offset * Math.Sign(Right)),
                 Sides.Right => p.Right = Left + (offset * Math.Sign(Left)),
-                _ => 0
+                _ => 0,
             };
     }
 }

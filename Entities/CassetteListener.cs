@@ -169,7 +169,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             1 => Calc.HexToColor("f049be"),
             2 => Calc.HexToColor("fcdc3a"),
             3 => Calc.HexToColor("38e04e"),
-            _ => Color.White
+            _ => Color.White,
         };
 
         public struct CassetteTick {

@@ -61,7 +61,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(new TransitionListener {
                 OnInBegin = () => Active = particleRenderer.Active = false,
                 OnInEnd = () => Active = particleRenderer.Active = true,
-                OnOutBegin = () => Active = particleRenderer.Active = false
+                OnOutBegin = () => Active = particleRenderer.Active = false,
             });
         }
 

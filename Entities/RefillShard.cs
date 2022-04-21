@@ -55,7 +55,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Collider = new Hitbox(18f, 18f, -9f, -9f);
                     attached = platform;
                     start = Position - platform.Position;
-                }
+                },
             });
 
             p_shatter = two ? Refill.P_ShatterTwo : Refill.P_Shatter;

@@ -56,7 +56,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     EntityRenderer = EntityRenderer,
                     BehindForeground = BehindForeground,
                     AlphaFrom = AlphaFrom,
-                    AlphaTo = AlphaTo
+                    AlphaTo = AlphaTo,
                 });
             }
 

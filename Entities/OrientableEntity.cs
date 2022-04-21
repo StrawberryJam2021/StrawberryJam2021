@@ -68,7 +68,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             OrientableEntity.Orientations.Down => Vector2.UnitY,
             OrientableEntity.Orientations.Left => -Vector2.UnitX,
             OrientableEntity.Orientations.Right => Vector2.UnitX,
-            _ => Vector2.Zero
+            _ => Vector2.Zero,
         };
 
         public static float Angle(this OrientableEntity.Orientations orientation) => orientation switch {
@@ -76,7 +76,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             OrientableEntity.Orientations.Down => (float) Math.PI,
             OrientableEntity.Orientations.Left => (float) -Math.PI / 2f,
             OrientableEntity.Orientations.Right => (float) Math.PI / 2f,
-            _ => 0f
+            _ => 0f,
         };
 
         public static Vector2 Normal(this OrientableEntity.Orientations orientation) => orientation switch {
@@ -84,7 +84,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             OrientableEntity.Orientations.Down => Vector2.UnitY,
             OrientableEntity.Orientations.Left => -Vector2.UnitX,
             OrientableEntity.Orientations.Right => Vector2.UnitX,
-            _ => Vector2.Zero
+            _ => Vector2.Zero,
         };
 
         public static float LengthOfHitbox(this OrientableEntity.Orientations orientation, Hitbox hitbox) =>
@@ -93,7 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 OrientableEntity.Orientations.Down => hitbox.Height,
                 OrientableEntity.Orientations.Left => hitbox.Width,
                 OrientableEntity.Orientations.Right => hitbox.Width,
-                _ => 0f
+                _ => 0f,
             };
 
         public static float ThicknessOfHitbox(this OrientableEntity.Orientations orientation, Hitbox hitbox) =>
@@ -102,7 +102,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 OrientableEntity.Orientations.Down => hitbox.Width,
                 OrientableEntity.Orientations.Left => hitbox.Height,
                 OrientableEntity.Orientations.Right => hitbox.Height,
-                _ => 0f
+                _ => 0f,
             };
 
         public static Vector2 OriginOfHitbox(this OrientableEntity.Orientations orientation, Hitbox hitbox) =>
@@ -111,7 +111,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 OrientableEntity.Orientations.Down => hitbox.TopCenter,
                 OrientableEntity.Orientations.Left => hitbox.CenterRight,
                 OrientableEntity.Orientations.Right => hitbox.CenterLeft,
-                _ => Vector2.Zero
+                _ => Vector2.Zero,
             };
 
         public static bool Horizontal(this OrientableEntity.Orientations orientation) =>

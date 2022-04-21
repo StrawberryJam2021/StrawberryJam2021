@@ -41,10 +41,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void LoadParticles() {
             P_Spawn = new ParticleType(P_FragileCloud) {
-                Color = Calc.HexToColor("ff9ae0")
+                Color = Calc.HexToColor("ff9ae0"),
             };
             P_Ghost = new ParticleType(P_FragileCloud) {
-                Color = Calc.HexToColor("00000062")
+                Color = Calc.HexToColor("00000062"),
             };
         }
 

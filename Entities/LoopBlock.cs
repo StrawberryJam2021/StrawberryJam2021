@@ -54,7 +54,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.color = color;
 
             particleType = new ParticleType(Cloud.P_Cloud) {
-                Color = color
+                Color = color,
             };
 
             OnDashCollide = OnDashed;

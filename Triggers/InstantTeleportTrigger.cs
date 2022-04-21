@@ -26,7 +26,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             None,
             Lightning,
             GlitchEffect,
-            ColorFlash
+            ColorFlash,
         }
         public Level level;
         public string[] flags;

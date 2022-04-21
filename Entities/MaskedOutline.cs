@@ -10,7 +10,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private enum OutlineType {
             Booster,
             Refill,
-            DoubleRefill
+            DoubleRefill,
         }
 
         private static Vector2[] BoosterDots, RefillDots, DoubleRefillDots;

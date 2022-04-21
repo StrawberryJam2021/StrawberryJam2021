@@ -73,8 +73,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Values = new Dictionary<string, object> {
                     { "map", map },
                     { "returnToLobbyMode", returnToLobbyMode },
-                    { "allowSaving", allowSaving }
-                }
+                    { "allowSaving", allowSaving },
+                },
             }, Vector2.Zero));
         }
 

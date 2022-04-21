@@ -16,7 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static void LoadContent() {
             P_Noop = new ParticleType(P_FireTrail) {
                 Color = Color.White * 0f,
-                Color2 = Color.White * 0f
+                Color2 = Color.White * 0f,
             };
         }
 

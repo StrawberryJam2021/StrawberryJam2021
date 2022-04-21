@@ -19,7 +19,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             ColorDestinationBlend = Blend.InverseSourceAlpha,
             AlphaSourceBlend = Blend.Zero,
             AlphaDestinationBlend = Blend.One,
-            AlphaBlendFunction = BlendFunction.Add
+            AlphaBlendFunction = BlendFunction.Add,
         };
 
         public Decal Decal;

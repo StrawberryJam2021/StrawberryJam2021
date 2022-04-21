@@ -91,7 +91,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         public enum TriggerMode {
             Enable,
             Disable,
-            Toggle
+            Toggle,
         }
         private TriggerMode triggerMode;
 
@@ -107,7 +107,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 TriggerMode.Disable => false,
                 TriggerMode.Toggle => !StrawberryJam2021Module.Session.SkateboardEnabled,
 
-                _ => StrawberryJam2021Module.Session.SkateboardEnabled
+                _ => StrawberryJam2021Module.Session.SkateboardEnabled,
 
             };
         }

@@ -12,7 +12,7 @@ public class UFO : Actor {
         Wait,
         Fling,
         Move,
-        Leaving
+        Leaving,
     }
 
     public static readonly Vector2 FlingSpeed = new Vector2(380f, -100f);

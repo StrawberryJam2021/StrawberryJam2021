@@ -125,7 +125,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Acceleration = Vector2.Zero,
             };
 
-            pinkImpactParticle = new ParticleType(blueImpactParticle) {Color2 = Calc.HexToColor("ef73bf"),};
+            pinkImpactParticle = new ParticleType(blueImpactParticle) {Color2 = Calc.HexToColor("ef73bf") };
         }
 
         private void setAnimationSpeed(string key, float totalRunTime) {
@@ -265,7 +265,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                                 }
                                 break;
                         }
-                    }
+                    },
                 },
                 new PlayerCollider(onPlayerCollide),
                 new LedgeBlocker(_ => KillPlayer),
@@ -316,7 +316,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return new[] {
                     new LaserColliderComponent {
                         CollideWithSolids = CollideWithSolids, Thickness = beamThickness, Offset = offset + beamOffset,
-                    }
+                    },
                 };
             }
 

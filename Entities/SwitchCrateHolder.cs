@@ -13,7 +13,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Up,
             Down,
             Left,
-            Right
+            Right,
         }
 
         public static ParticleType P_PressA = DashSwitch.P_PressA;

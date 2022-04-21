@@ -22,7 +22,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             ColorBlendFunction = BlendFunction.Add,
             AlphaSourceBlend = Blend.One,
             AlphaDestinationBlend = Blend.One,
-            AlphaBlendFunction = BlendFunction.ReverseSubtract
+            AlphaBlendFunction = BlendFunction.ReverseSubtract,
         };
 
         public static BlendState InvertAlpha = new BlendState {
@@ -31,7 +31,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             ColorBlendFunction = BlendFunction.Add,
             AlphaSourceBlend = Blend.One,
             AlphaDestinationBlend = Blend.One,
-            AlphaBlendFunction = BlendFunction.Subtract
+            AlphaBlendFunction = BlendFunction.Subtract,
         };
 
         public static BlendState DestinationTransparencySubtractAlpha = new BlendState {
@@ -40,7 +40,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             ColorBlendFunction = BlendFunction.ReverseSubtract,
             AlphaSourceBlend = Blend.Zero,
             AlphaDestinationBlend = Blend.One,
-            AlphaBlendFunction = BlendFunction.Add
+            AlphaBlendFunction = BlendFunction.Add,
         };
 
         public float LightingFrom;

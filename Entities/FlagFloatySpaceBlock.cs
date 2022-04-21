@@ -90,7 +90,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 tiles = GFX.FGAutotiler.GenerateMap(tilemap, new Autotiler.Behaviour {
                     EdgesExtend = false,
                     EdgesIgnoreOutOfLevel = false,
-                    PaddingIgnoreOutOfLevel = false
+                    PaddingIgnoreOutOfLevel = false,
                 }).TileGrid;
                 tiles.Position = new Vector2(groupBoundsMin.X - X, groupBoundsMin.Y - Y);
                 Add(tiles);

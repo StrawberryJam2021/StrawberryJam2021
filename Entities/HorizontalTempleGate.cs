@@ -18,13 +18,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public enum Types {
             NearestSwitch,
             TouchSwitches,
-            FlagActive
+            FlagActive,
         }
         //for context, this is implemented to allow the gate to open to the right, to the left or from the center of the gate's position. The center direction applies both the left and right door's hitboxes and sprites, modified to halve their extended distance from their respective side.
         public enum OpenDirections {
             Left,
             Right,
-            Center
+            Center,
         }
         private static readonly FieldInfo GetPrivateRiders = typeof(Solid).GetField("riders", BindingFlags.NonPublic | BindingFlags.Static);
         private static HashSet<Actor> riders => (HashSet<Actor>)GetPrivateRiders.GetValue(null);
@@ -153,7 +153,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             this.colliders = new Hitbox[]{
                 new Hitbox(targetX, 8f, 0, 0),
-                new Hitbox(48f - targetX, 8f, targetX, 0)
+                new Hitbox(48f - targetX, 8f, targetX, 0),
             };
             if(OpenDirection != OpenDirections.Right) {
                 ((ColliderList) Collider).Add(colliders[0]);

@@ -21,7 +21,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 .ToArray();
 
             Add(new DashListener {
-                OnDash = OnDash
+                OnDash = OnDash,
             });
         }
 

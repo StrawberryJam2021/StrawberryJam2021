@@ -125,13 +125,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 SpeedMin = 70f,
                 SpeedMax = 100f,
                 SpeedMultiplier = 1f,
-                Acceleration = new Vector2(0f, 10f)
+                Acceleration = new Vector2(0f, 10f),
             };
             P_WBurst = new ParticleType(P_Burst) {
-                Color = Calc.HexToColor("7800bd")
+                Color = Calc.HexToColor("7800bd"),
             };
             P_WAppear = new ParticleType(P_Appear) {
-                Color = Calc.HexToColor("8100C1")
+                Color = Calc.HexToColor("8100C1"),
             };
         }
 

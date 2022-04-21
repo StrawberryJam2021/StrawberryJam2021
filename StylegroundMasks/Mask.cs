@@ -19,7 +19,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             ColorDestinationBlend = Blend.InverseSourceAlpha,
             AlphaSourceBlend = Blend.Zero,
             AlphaDestinationBlend = Blend.One,
-            AlphaBlendFunction = BlendFunction.Add
+            AlphaBlendFunction = BlendFunction.Add,
         };
 
         public static BlendState DestinationAlphaSourceColorBlend = new BlendState {
@@ -28,7 +28,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             ColorBlendFunction = BlendFunction.Add,
             AlphaSourceBlend = Blend.Zero,
             AlphaDestinationBlend = Blend.One,
-            AlphaBlendFunction = BlendFunction.Add
+            AlphaBlendFunction = BlendFunction.Add,
         };
 
 
@@ -38,7 +38,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             RightToLeft,
             TopToBottom,
             BottomToTop,
-            Custom
+            Custom,
         }
 
         public FadeType Fade { get; set; }

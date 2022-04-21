@@ -53,7 +53,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static Sides SwitchSide(Sides side) => side switch {
             Sides.Left => Sides.Right,
             Sides.Right => Sides.Left,
-            _ => Sides.Right
+            _ => Sides.Right,
         };
 
         public static void Load() {

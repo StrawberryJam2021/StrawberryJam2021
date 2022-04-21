@@ -35,7 +35,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Sides.Up => Calc.HalfCircle,
             Sides.Right => -Calc.QuarterCircle,
             Sides.Left => Calc.QuarterCircle,
-            _ => throw new InvalidOperationException("Dash switch direction is invalid.")
+            _ => throw new InvalidOperationException("Dash switch direction is invalid."),
         };
 
         #endregion
@@ -118,7 +118,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Sides.Down => Sides.Up,
             Sides.Left => Sides.Right,
             Sides.Right => Sides.Left,
-            _ => throw new InvalidOperationException("Dash switch direction is invalid.")
+            _ => throw new InvalidOperationException("Dash switch direction is invalid."),
         };
 
         private static int GetWidth(EntityData data) {
@@ -128,7 +128,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Sides.Down => data.Width,
                 Sides.Left => data.Height,
                 Sides.Right => data.Height,
-                _ => throw new InvalidOperationException("Dash switch direction is invalid.")
+                _ => throw new InvalidOperationException("Dash switch direction is invalid."),
             };
         }
 
@@ -383,7 +383,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 LifeMax = 0.9f,
                 Direction = Calc.QuarterCircle,
                 DirectionRange = Calc.EighthCircle / 1.5f,
-                SpeedMultiplier = 0.2f
+                SpeedMultiplier = 0.2f,
             };
             P_Shatter = new ParticleType {
                 Source = GFX.Game["particles/triangle"],
@@ -401,7 +401,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 RotationMode = ParticleType.RotationModes.Random,
                 SpinMin = -Calc.QuarterCircle,
                 SpinMax = 4.712389f,
-                SpinFlippedChance = true
+                SpinFlippedChance = true,
             };
         }
 
@@ -413,7 +413,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             -Vector2.UnitX,
             Vector2.UnitX,
             -Vector2.UnitY,
-            Vector2.UnitY
+            Vector2.UnitY,
         };
 
         public static void DrawOnlyOutlineCentered(this MTexture mTexture, Vector2 position, float rotation) {

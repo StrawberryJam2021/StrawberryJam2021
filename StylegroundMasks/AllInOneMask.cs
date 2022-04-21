@@ -31,7 +31,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     AlphaFrom = styleAlphaFrom,
                     AlphaTo = styleAlphaTo,
                     EntityRenderer = entityRenderer,
-                    BehindForeground = styleBehindFg
+                    BehindForeground = styleBehindFg,
                 });
             }
 
@@ -41,7 +41,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 masks.Add(new ColorGradeMask(Position, Width, Height) {
                     Fade = Fade, FadeMask = FadeMask, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
                     ColorGradeFrom = colorGradeFrom,
-                    ColorGradeTo = colorGradeTo
+                    ColorGradeTo = colorGradeTo,
                 });
             }
 
@@ -55,7 +55,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     BaseFrom = bloomBaseFrom,
                     BaseTo = bloomBaseTo,
                     StrengthFrom = bloomStrengthFrom,
-                    StrengthTo = bloomStrengthTo
+                    StrengthTo = bloomStrengthTo,
                 });
             }
 
@@ -67,7 +67,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     Fade = Fade, FadeMask = FadeMask, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
                     LightingFrom = lightingFrom,
                     LightingTo = lightingTo,
-                    AddBase = addBaseLighting
+                    AddBase = addBaseLighting,
                 });
             }
         }
