@@ -30,7 +30,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private EventInstance sfx;
         private EventInstance snapshot;
 
-        private bool transitioningIn = false;
+        private bool transitioningIn;
 
         public WonkyCassetteBlockController(EntityData data, Vector2 offset)
             : this(data.Position + offset, data.Int("bpm"), data.Int("bars"), data.Attr("timeSignature"), data.Attr("sixteenthNoteParam", "sixteenth_note"), data.Float("cassetteOffset"), data.Int("boostFrames", 1), data.Attr("disableFlag")) { }

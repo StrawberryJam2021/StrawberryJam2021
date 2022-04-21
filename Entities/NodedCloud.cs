@@ -17,7 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Image ghost;
         private float GhostAlphaOffset { get => 1 + 0.2f * (float) Math.Sin(timer * 4); }
 
-        private int nextNode = 0;
+        private int nextNode;
         private float moveTime;
         private float fadeInProgress;
 

@@ -16,7 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public float[] riseSpeeds { get; private set; } // downhold, upwind + uphold, uphold, upwind, neutral
 
-        private bool bubble, destroyed = false;
+        private bool bubble, destroyed;
         private float highFrictionTimer, noGravityTimer, downThrowMultiplier, diagThrowXMultiplier, diagThrowYMultiplier, gravity, lastDroppedTime;
         private Vector2 speed, startPosition, prevLiftSpeed;
         private Collision onCollideH, onCollideV;

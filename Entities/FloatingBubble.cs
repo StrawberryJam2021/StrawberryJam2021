@@ -12,7 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float springCooldownTimer;
         private Sprite sprite;
 
-        private bool broken = false;
+        private bool broken;
         private static MethodInfo SpringBounceAnimate = typeof(Spring).GetMethod("BounceAnimate", BindingFlags.NonPublic | BindingFlags.Instance);
         private static Hook FlagTouchSwitchCtorHook;
         private static ConstructorInfo FlagTouchSwitchCtorInfo = typeof(FlagTouchSwitch).GetConstructor(new Type[] { typeof(EntityData), typeof(Vector2) });

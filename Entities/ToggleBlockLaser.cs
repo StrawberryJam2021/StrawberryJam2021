@@ -21,7 +21,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 		private float timer;
 
-		private float sineTimer = 0f;
+		private float sineTimer;
 
 		public ToggleBlockLaser() : base() {
 			fade = new VertexPositionColor[24];

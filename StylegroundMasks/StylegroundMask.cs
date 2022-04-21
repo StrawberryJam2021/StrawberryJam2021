@@ -17,9 +17,9 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
         public static Dictionary<string, VirtualRenderTarget> BgBuffers = new Dictionary<string, VirtualRenderTarget>();
         public static Dictionary<string, VirtualRenderTarget> FgBuffers = new Dictionary<string, VirtualRenderTarget>();
         public string[] RenderTags = new string[] { };
-        public bool Foreground = false;
-        public bool EntityRenderer = false;
-        public bool BehindForeground = false;
+        public bool Foreground;
+        public bool EntityRenderer;
+        public bool BehindForeground;
         
         public float AlphaFrom;
         public float AlphaTo;

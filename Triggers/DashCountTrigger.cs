@@ -11,12 +11,12 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [Tracked]
     public class DashCountTrigger : Trigger {
         //the static ones are the active settings, and the non-static ones are the settings of the trigger
-        private static bool IsInCurrentMap = false;
+        private static bool IsInCurrentMap;
         private static int NormalDashAmount = 1;
-        private static bool ResetOnDeath = false;
+        private static bool ResetOnDeath;
         int NormalDashAmountSetting = 1;
         int NumberOfDashesSetting = 1;
-        bool ResetOnDeathSetting = false;
+        bool ResetOnDeathSetting;
 
         public DashCountTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             NumberOfDashesSetting = data.Int("NumberOfDashes",1);

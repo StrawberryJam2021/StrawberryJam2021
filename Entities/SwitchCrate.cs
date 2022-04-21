@@ -54,15 +54,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         Sprite sprite;
 
-        bool IsHeld = false;
+        bool IsHeld;
 
-        bool DepleteOnJumpThru = false;
+        bool DepleteOnJumpThru;
 
         private bool KillMaddyOnExplosion;
 
         bool IsFirstFrame = true;
 
-        bool HasStarted = false;
+        bool HasStarted;
 
         public SwitchCrate(EntityData data, Vector2 offset, EntityID id)
             : base(data.Position + offset) {

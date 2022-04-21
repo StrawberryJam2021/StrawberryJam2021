@@ -13,7 +13,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 		private SineWave sine;
 
-		private float positionOffset = 0f;
+		private float positionOffset;
 
 		public ToggleBlockNode() : base() {
 			nodeTexture = GFX.Game["objects/StrawberryJam2021/toggleSwapBlock/node"];

@@ -12,7 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float xPeriod, xPhase, yPeriod, yPhase;
         private bool xLinear, yLinear;
 
-        private float TimeSinceAwake = 0;
+        private float TimeSinceAwake;
 
         public SineDustSpinner(EntityData data, Vector2 offset) : base(data, offset) {
             Collider = new Circle(6, 0, 0);

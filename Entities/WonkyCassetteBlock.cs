@@ -17,7 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public readonly int ControllerIndex;
 
         private readonly int OverrideBoostFrames;
-        public int boostFrames = 0;
+        public int boostFrames;
 
         private DynData<CassetteBlock> cassetteBlockData;
 

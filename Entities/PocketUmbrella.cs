@@ -8,7 +8,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float staminaCost;
         private Sprite sprite, sweat;
 
-        public bool destroyed = false, spawning = true;
+        public bool destroyed, spawning = true;
         public Holdable Hold;
         private Level level;
         private SoundSource fallingSfx;

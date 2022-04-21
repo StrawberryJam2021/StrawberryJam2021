@@ -25,7 +25,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class ZeroGBarrier : SeekerBarrier {
 
         #region Hooks
-        private static int softlockFrames = 0;
+        private static int softlockFrames;
 
         public static void Load() {
             On.Celeste.Player.Update += Player_Update;

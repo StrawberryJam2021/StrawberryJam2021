@@ -97,14 +97,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		private MTexture[,] nineSliceBlock;
 		private Vector2[] nodes;
 		private ToggleBlockNode[] nodeTextures;
-		private int nodeIndex = 0;
-		private bool moving = false;
+		private int nodeIndex;
+		private bool moving;
 		private float travelSpeed = 5f;
-		private readonly bool oscillate = false;
-		private bool returning = false;
-		private readonly bool stopAtEnd = false;
+		private readonly bool oscillate;
+		private bool returning;
+		private readonly bool stopAtEnd;
 		private Vector2 Direction = Vector2.Zero;
-		private bool stopped = false;
+		private bool stopped;
 		private readonly string customTexturePath;
 
 		private readonly bool useIndicators;

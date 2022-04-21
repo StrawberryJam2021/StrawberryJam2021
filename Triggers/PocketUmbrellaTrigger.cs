@@ -6,7 +6,7 @@ using Monocle;
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/PocketUmbrellaTrigger")]
     class PocketUmbrellaTrigger : Trigger {
-        private bool Enable = true, revertOnLeave = false, prevVal;
+        private bool Enable = true, revertOnLeave, prevVal;
         private float staminaCost, prevCost, cooldown, prevCooldown;
 
         private string musicParam;

@@ -16,7 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly float hairFlashTime;
 
         // Tracking
-        private static double timeUntilDashExpire = 0;
+        private static double timeUntilDashExpire;
         private static float currentHairFlashThreshold = 0.2f;
 
         public ExpiringDashRefill(EntityData data, Vector2 offset)

@@ -43,7 +43,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         public bool onExit;
         public bool differentSide;
 
-        private bool triggered = false;
+        private bool triggered;
         private float timeSlowDown;
         private Color flashColor;
         private float delay;

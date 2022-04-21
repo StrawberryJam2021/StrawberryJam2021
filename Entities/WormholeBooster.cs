@@ -22,7 +22,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Sprite displacementMask;
         private float displaceEase = 1;
         private const float DelayTime = 0.3f;
-        private float delayTimer = 0f;
+        private float delayTimer;
 
         public WormholeBooster(EntityData data, Vector2 offset) : this(data.Position + offset) {
         }
