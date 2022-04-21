@@ -39,7 +39,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             : base(position) {
             Tag = Tags.FrozenUpdate | Tags.TransitionUpdate;
 
-            Add(new TransitionListener() {
+            Add(new TransitionListener {
                 OnInBegin = () => transitioningIn = true,
                 OnInEnd = () => transitioningIn = false,
             });
@@ -70,7 +70,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             session.CassetteBeatTimer = session.MusicBeatTimer - cassetteOffset;
             session.CassetteWonkyBeatIndex = 0;
-            
+
             var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>();
 
             foreach (WonkyCassetteBlock wonkyBlock in wonkyBlocks) {

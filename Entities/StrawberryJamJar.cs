@@ -65,12 +65,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Added(scene);
 
             // spawn a chapter panel trigger from Collab Utils that will take care of the actual teleporting.
-            scene.Add(new ChapterPanelTrigger(new EntityData() {
+            scene.Add(new ChapterPanelTrigger(new EntityData {
                 Position = Position - new Vector2(24f, 32f),
                 Width = 48,
                 Height = 32,
                 Nodes = new Vector2[] { Position - new Vector2(0, 32) },
-                Values = new Dictionary<string, object>() {
+                Values = new Dictionary<string, object> {
                     { "map", map },
                     { "returnToLobbyMode", returnToLobbyMode },
                     { "allowSaving", allowSaving }

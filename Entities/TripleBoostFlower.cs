@@ -234,7 +234,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void initializeParticles() {
             if (boostParticles == null) {
-                boostParticles = new ParticleType() {
+                boostParticles = new ParticleType {
                     Source = GFX.Game["particles/petal"],
                     Color = Calc.HexToColor("E63244"),
                     DirectionRange = 1/4 * (float) Math.PI,
