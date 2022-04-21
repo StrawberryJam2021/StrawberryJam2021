@@ -7,7 +7,7 @@ using System.Collections;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked]
     [CustomEntity("SJ2021/WormholeBooster")]
-    class WormholeBooster : Booster {
+    public class WormholeBooster : Booster {
         private DynData<Booster> data;
         public Sprite sprite;
         public static bool TeleDeath;
@@ -195,7 +195,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (Input.DashPressed) {
                     sprite.Scale = Vector2.Zero;
                     break;
-                } 
+                }
                 yield return null;
             }
 

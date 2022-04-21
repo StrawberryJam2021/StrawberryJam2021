@@ -6,7 +6,7 @@ using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/MaskedOutline")]
-    class MaskedOutline : Entity {
+    public class MaskedOutline : Entity {
         private enum OutlineType {
             Booster,
             Refill,

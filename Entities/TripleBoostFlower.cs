@@ -13,7 +13,7 @@ using Mono.Cecil.Cil;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/TripleBoostFlower")]
-    class TripleBoostFlower : Actor {
+    public class TripleBoostFlower : Actor {
 
         private int charges, lastFacing;
         private float boostCooldown, boostDelay, boostSpeed, boostDuration, boostDurationMax, boostThreshold, gravity, highFrictionTimer, noGravityTimer;
@@ -72,7 +72,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hold.OnPickup = new Action(onPickup);
             hold.OnRelease = new Action<Vector2>(onRelease);
             hold.OnHitSpring = new Func<Spring, bool>(onHitSpring);
-            
+
         }
 
         public static void Load() {

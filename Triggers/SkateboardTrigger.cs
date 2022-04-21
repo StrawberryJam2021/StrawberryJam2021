@@ -11,7 +11,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
     [CustomEntity("SJ2021/SkateboardTrigger")]
     [Tracked]
-    class SkateboardTrigger : Trigger {
+    public class SkateboardTrigger : Trigger {
         #region static
         private static Vector2 PlayerSpriteOffset = new Vector2(0, -3);
         private static MTexture SkateboardSprite;
@@ -71,7 +71,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             }
         }
 
-        static void PlayerHair_Render(On.Celeste.PlayerHair.orig_Render orig, PlayerHair self) {
+        private static void PlayerHair_Render(On.Celeste.PlayerHair.orig_Render orig, PlayerHair self) {
             if (StrawberryJam2021Module.Session.SkateboardEnabled) {
                 for (int i = 0; i < self.Nodes.Count; i++) {
                     self.Nodes[i] += PlayerSpriteOffset;
@@ -87,7 +87,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         #endregion
 
         #region instance
-        enum TriggerMode {
+
+        public enum TriggerMode {
             Enable,
             Disable,
             Toggle

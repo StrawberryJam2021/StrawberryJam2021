@@ -8,7 +8,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
     /// "Self-updater" is probably an overstatement, since this effectively just adds an extra "update source" to the Everest mod updater.
     /// The rest of updating is handled by Everest itself.
     /// </summary>
-    static class SelfUpdater {
+    public static class SelfUpdater {
         public static void Load() {
             On.Celeste.Mod.Helpers.ModUpdaterHelper.DownloadModUpdateList += onDownloadModUpdateList;
         }

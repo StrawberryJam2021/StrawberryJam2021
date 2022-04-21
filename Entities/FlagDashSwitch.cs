@@ -6,7 +6,7 @@ using Celeste.Mod.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/FlagDashSwitch")]
-    class FlagDashSwitch : DashSwitch {
+    public class FlagDashSwitch : DashSwitch {
 
         private string flag;
         private bool persistent, target;

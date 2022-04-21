@@ -5,7 +5,7 @@ using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/GrabTempleGate")]
-    class GrabTempleGate : Solid {
+    public class GrabTempleGate : Solid {
 
         private const float switchTimeDelay = 0.2f;
         private int closedHeight;

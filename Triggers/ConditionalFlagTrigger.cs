@@ -13,7 +13,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
     [CustomEntity("SJ2021/ConditionalFlagTrigger")]
     [Tracked]
-    class ConditionalFlagTrigger : Trigger {
+    public class ConditionalFlagTrigger : Trigger {
         private string flag; //the flag to set when the trigger is set
         private string controllerFlag; //the flag that enables these triggers
         private bool priorState; //the prior state

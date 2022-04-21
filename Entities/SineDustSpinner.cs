@@ -5,7 +5,7 @@ using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/SineDustSpinner")]
-    class SineDustSpinner : DustStaticSpinner {
+    public class SineDustSpinner : DustStaticSpinner {
         private readonly Vector2 origPos;
         private Vector2 lastPos;
         private float xAmplitude, yAmplitude;

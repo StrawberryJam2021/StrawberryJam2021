@@ -9,7 +9,7 @@ using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/FlagBreakerBox")]
-    class FlagBreakerBox : Solid {
+    public class FlagBreakerBox : Solid {
         private Sprite sprite;
         private SineWave sine;
         private Vector2 start;
@@ -32,7 +32,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private bool spikesUp;
         private bool spikesDown;
 
-        public FlagBreakerBox(Vector2 position, bool flipX) 
+        public FlagBreakerBox(Vector2 position, bool flipX)
             : base(position, 32f, 32f, true){
             health = 2;
             musicProgress = -1;
@@ -64,7 +64,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             OnDashCollide = new DashCollision(Dashed);
         }
 
-        public FlagBreakerBox(EntityData e, Vector2 levelOffset) 
+        public FlagBreakerBox(EntityData e, Vector2 levelOffset)
             : this(e.Position + levelOffset, e.Bool("flipX", false)) {
             flag = e.Attr("flag");
             music = e.Attr("music", null);
@@ -94,7 +94,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (dir == -Vector2.UnitY && spikesDown)
                     return DashCollisionResults.NormalCollision;
             }
-            
+
             SceneAs<Level>().DirectionalShake(dir, 0.3f);
             sprite.Scale = new Vector2(1f + Math.Abs(dir.Y) * 0.4f - Math.Abs(dir.X) * 0.4f, 1f + Math.Abs(dir.X) * 0.4f - Math.Abs(dir.Y) * 0.4f);
             health--;
@@ -105,7 +105,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 shaker.On = true;
                 bounceDir = dir;
                 bounce.Start();
-                smashParticles = true;          
+                smashParticles = true;
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
             } else {
                 if (firstHitSfx != null)

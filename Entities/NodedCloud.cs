@@ -7,7 +7,7 @@ using MonoMod.Utils;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/NodedCloud")]
-    class NodedCloud : Cloud {
+    public class NodedCloud : Cloud {
         private static ParticleType P_Spawn, P_Ghost;
         private static byte BaseGhostOpacity = 0x62; // (0.385 * 255)
 
@@ -93,7 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private IEnumerator ghostFadeInRoutine() {
             yield return moveTime / 2;
-            
+
             while (fadeInProgress < 1) {
                 fadeInProgress += Engine.DeltaTime * 2f * moveTime;
                 if (nextNode + 1 <= nodes.Length) {

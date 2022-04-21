@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/SetMetadataTrigger")]
-    class SetMetadataTrigger : Trigger {
+    public class SetMetadataTrigger : Trigger {
 
         private bool theoInBooster;
 

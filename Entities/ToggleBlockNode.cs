@@ -4,7 +4,7 @@ using Monocle;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 	[Pooled]
 	[Tracked(false)]
-	internal class ToggleBlockNode : Entity {
+    public class ToggleBlockNode : Entity {
 		private MTexture nodeTexture;
 
 		private MTexture nodeCrystalTexture;

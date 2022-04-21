@@ -10,7 +10,7 @@ using Monocle;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 
     [CustomEntity("SJ2021/PinkCloudyFlower")]
-    class PinkCloudyFlower : Glider {
+    public class PinkCloudyFlower : Glider {
         private JumpThru platform;
         private Vector2 carryOffset;
         private Holdable hold;

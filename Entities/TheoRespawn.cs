@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/TheoRespawn")]
     [Tracked]
-    class TheoRespawn : Entity {
+    public class TheoRespawn : Entity {
 
         public string flag;
 
@@ -33,7 +33,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Awake(scene);
 
             Level level = SceneAs<Level>();
-           
+
             float thisDist = Vector2.Distance(Position, level.Session.RespawnPoint.Value);
 
             foreach(TheoRespawn respawn in scene.Tracker.GetEntities<TheoRespawn>()) {

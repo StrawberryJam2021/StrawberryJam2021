@@ -9,7 +9,7 @@ using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/UpsidedownSpring")]
-    class UpsidedownSpring : Spring {
+    public class UpsidedownSpring : Spring {
 
         public readonly float strength, xAxisFriction;
         private StaticMover staticMover;

@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/AntiGravJelly")]
-    class SkyLantern : Actor {
+    public class SkyLantern : Actor {
 
         public bool canBoostUp { get; private set; }
 
@@ -590,7 +590,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void CollideHandlerV(CollisionData data) {
             if (Math.Abs(speed.Y) > 8) {
                 sprite.Scale = new Vector2(1.2f, 0.8f);
-                Audio.Play(SFX.game_10_glider_land, Position); 
+                Audio.Play(SFX.game_10_glider_land, Position);
             }
             if (speed.Y > 0) {
                 speed.Y *= -0.5f;

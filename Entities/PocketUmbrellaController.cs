@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/PocketUmbrellaController")]
     [Tracked(false)]
-    class PocketUmbrellaController : Entity {
+    public class PocketUmbrellaController : Entity {
 
         private Vector2 spawnOffset;
         private float holdDelay;

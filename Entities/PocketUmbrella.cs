@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    class PocketUmbrella : Actor {
+    public class PocketUmbrella : Actor {
         private float staminaCost;
         private Sprite sprite, sweat;
 
@@ -16,7 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private string musicParam;
 
-        static ParticleType P_Glow, P_Glide, P_GlideUp, P_Expand;
+        private static ParticleType P_Glow, P_Glide, P_GlideUp, P_Expand;
 
         public static void LoadParticles() {
             P_Glow = new ParticleType(Glider.P_Glow);

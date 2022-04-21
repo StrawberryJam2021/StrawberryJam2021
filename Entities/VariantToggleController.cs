@@ -10,17 +10,17 @@ using ExtendedVariants.Module;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/VariantToggleController")]
-    class VariantToggleController : Entity {
+    public class VariantToggleController : Entity {
         private string flag; //the flag that controls the variants
         private bool isFlagged; //last flag state
         private bool defaultValue;
         private Dictionary<ExtendedVariantsModule.Variant, int> variantValues;
 
-        public VariantToggleController(EntityData data, Vector2 offset) 
+        public VariantToggleController(EntityData data, Vector2 offset)
             : this(data.Position + offset, data.Attr("flag"), data.Attr("variantList"), data.Bool("defaultValue", true)) {
         }
 
-        public VariantToggleController(Vector2 position, string flagName, string variantList, bool defValue) 
+        public VariantToggleController(Vector2 position, string flagName, string variantList, bool defValue)
             : base(position) {
             flag = flagName;
             defaultValue = defValue;
@@ -45,7 +45,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 foreach (KeyValuePair<ExtendedVariantsModule.Variant, int> variant in variantValues) {
                     ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, variant.Value, false, false, false, true);
                 }
-            } 
+            }
             else {
                 foreach (KeyValuePair<ExtendedVariantsModule.Variant, int> variant in variantValues) {
                     object defaultValue = ExtendedVariants.ExtendedVariantTriggerManager.GetDefaultValueForVariant(variant.Key);

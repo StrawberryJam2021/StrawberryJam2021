@@ -6,7 +6,7 @@ using System;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 	[Pooled]
 	[Tracked(false)]
-	internal class ToggleBlockLaser : Entity {
+    public class ToggleBlockLaser : Entity {
 		private VertexPositionColor[] fade;
 
 		private MTexture laserSprite;

@@ -5,7 +5,7 @@ using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/LoopBlock")]
-    class LoopBlock : Solid {
+    public class LoopBlock : Solid {
 
         // The third dimension is to store the same tiles with different details and variations.
         private static readonly MTexture[,,] outerEdges = new MTexture[3, 3, 3];
@@ -39,7 +39,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private const float sideBoostSpeed = 310f; // decided by mapper
 
-        public LoopBlock(EntityData data, Vector2 offset) 
+        public LoopBlock(EntityData data, Vector2 offset)
             : this(data.Position + offset, data.Width, data.Height, data.Int("edgeThickness", 1), data.HexColor("color")) { }
 
         public LoopBlock(Vector2 position, int width, int height, int edgeThickness, Color color)
@@ -147,7 +147,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 // We'll rescale spikes here instead, and it won't be done in Update.
                 // Because of the Celeste.Freeze call in Player.ExplodeLaunch,
                 // they would remain unscaled during the freeze time, which looked a bit weird.
-                RescaleSpikes(); 
+                RescaleSpikes();
                 player.ExplodeLaunch(new Vector2(Center.X, player.Center.Y), false, true);
 
                 player.Speed.X = -sideBoostSpeed * dir.X;

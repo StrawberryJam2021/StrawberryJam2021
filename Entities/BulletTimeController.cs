@@ -5,7 +5,7 @@ using Monocle;
 
 [CustomEntity("SJ2021/BTController")]
 public class BTController : Entity {
-    float timerate = 1;
+    private float timerate = 1;
 
     public BTController(EntityData data, Vector2 offset) : base(data.Position + offset) {
         timerate = data.Float("speed");

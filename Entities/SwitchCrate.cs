@@ -38,9 +38,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private float swatTimer;
 
-        float TimeToExplode;
+        private float TimeToExplode;
 
-        bool IsMounted = false;
+        private bool IsMounted = false;
 
         private EntityID id;
 
@@ -50,19 +50,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static Type ConveyorType;
 
-        static Type FloorBoosterType;
+        private static Type FloorBoosterType;
 
-        Sprite sprite;
+        private Sprite sprite;
 
-        bool IsHeld;
+        private bool IsHeld;
 
-        bool DepleteOnJumpThru;
+        private bool DepleteOnJumpThru;
 
         private bool KillMaddyOnExplosion;
 
-        bool IsFirstFrame = true;
+        private bool IsFirstFrame = true;
 
-        bool HasStarted;
+        private bool HasStarted;
 
         public SwitchCrate(EntityData data, Vector2 offset, EntityID id)
             : base(data.Position + offset) {
@@ -122,7 +122,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Awake(scene);
             player = base.Scene.Tracker.GetEntity<Player>();
         }
-        void Restartanim() {
+        private void Restartanim() {
             sprite.Play("idle", true);
         }
 

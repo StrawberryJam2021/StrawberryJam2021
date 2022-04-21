@@ -8,7 +8,7 @@ using Celeste.Mod.Entities;
 
 [CustomEntity("SJ2021/UFO")]
 public class UFO : Actor {
-    private enum States {
+    public enum States {
         Wait,
         Fling,
         Move,
@@ -35,15 +35,15 @@ public class UFO : Actor {
 
     public List<Vector2[]> NodeSegments;
 
-    Player player;
+    private Player player;
 
     private Wiggler bounceWiggler;
 
     private Vector2 hitSpeed;
 
-    float RaySizeX = 13f;
+    private float RaySizeX = 13f;
 
-    float RaySizeY = 60f;
+    private float RaySizeY = 60f;
 
     public static System.Reflection.MethodInfo SpringBounce;
 
@@ -124,7 +124,7 @@ public class UFO : Actor {
     public override void Update() {
         base.Update();
         switch (state) {
-            case States.Wait: 
+            case States.Wait:
                 Player entity = base.Scene.Tracker.GetEntity<Player>();
                 if (entity != null && entity.X - base.X >= 100f) {
                     Skip();
@@ -200,11 +200,11 @@ public class UFO : Actor {
                     break;
             }
             SpringBounce.Invoke(CollidingSpring, null);
-            
+
         }
     }
 
-    bool CheckIfInRay(Vector2 EntityPosition, float EntityBottom, float EntityTop, bool IsJelly, Glider CollidingGlider) {
+    private bool CheckIfInRay(Vector2 EntityPosition, float EntityBottom, float EntityTop, bool IsJelly, Glider CollidingGlider) {
         if(EntityPosition.X >= Position.X - RaySizeX && EntityPosition.X <= Position.X + RaySizeX && EntityTop < Position.Y + RaySizeY + 12 && EntityBottom > Top + 5f && state == States.Wait) {
             if (!IsJelly) {
                 return true;

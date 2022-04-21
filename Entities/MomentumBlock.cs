@@ -8,9 +8,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
     [CustomEntity("SJ2021/MomentumBlock")]
     public class MomentumBlock : Solid {
-        const float MAX_SPEED = 282; //internally the player has a max lift boost in each direction
-        const float MAX_SPEED_X = 250; 
-        const float MAX_SPEED_Y = -130;
+        private const float MAX_SPEED = 282; //internally the player has a max lift boost in each direction
+        private const float MAX_SPEED_X = 250;
+        private const float MAX_SPEED_Y = -130;
         private Vector2 targetSpeed, targetSpeedFlagged;
         private Color speedColor, speedColorFlagged;
         private float angle, angleFlagged;
