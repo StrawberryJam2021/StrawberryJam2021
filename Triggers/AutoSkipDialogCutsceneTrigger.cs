@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Entities;
+using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
 using System.Collections;
 
-namespace Celeste.Mod.Entities {
+namespace Celeste.Mod.StrawberryJam2021.Triggers {
     // Near copy-paste of Everest's Dialog Cutscene Trigger, that allows to start auto-skipping messages
     // (skipping them without pressing Confirm) with {trigger 0} and stop auto-skipping with {trigger 1}.
     [CustomEntity("SJ2021/AutoSkipDialogCutsceneTrigger")]
