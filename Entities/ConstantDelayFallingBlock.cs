@@ -6,7 +6,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked]
     [CustomEntity("SJ2021/ConstantDelayFallingBlockController")]
     public class ConstantDelayFallingBlockController : Entity {
-        public ConstantDelayFallingBlockController(EntityData data, Vector2 offset) : base() { }
+        public ConstantDelayFallingBlockController(EntityData data, Vector2 offset) { }
 
         public static void Load() {
             On.Celeste.FallingBlock.PlayerWaitCheck += On_FallingBlock_PlayerWaitCheck;

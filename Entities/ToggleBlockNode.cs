@@ -15,7 +15,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 		private float positionOffset;
 
-		public ToggleBlockNode() : base() {
+		public ToggleBlockNode() {
 			nodeTexture = GFX.Game["objects/StrawberryJam2021/toggleSwapBlock/node"];
 			nodeCrystalTexture = GFX.Game["objects/StrawberryJam2021/toggleSwapBlock/nodeCrystal"];
 			Depth = Depths.BGDecals - 1;
