@@ -4,7 +4,11 @@ using Monocle;
 using System.Collections;
 using System.Reflection;
 
+
 namespace Celeste.Mod.StrawberryJam2021.Entities {
+    // At the moment this entity is heavily based around these assumption :
+    // 1. that the player will have the prologue inventory
+    // 2. that they can only hold 1 expiring dash at any given time
     [Tracked]
     [CustomEntity("SJ2021/ExpiringDashRefill")]
     public class ExpiringDashRefill : Refill {
@@ -15,9 +19,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly float dashExpirationTime;
         private readonly float hairFlashTime;
 
-        // Tracking
-        private static double timeUntilDashExpire = 0;
-        private static float currentHairFlashThreshold = 0.2f;
+        private static StrawberryJam2021Session session => StrawberryJam2021Module.Session;
 
         public ExpiringDashRefill(EntityData data, Vector2 offset)
             : base(data.Position + offset, false, data.Bool("oneUse")) {
@@ -31,8 +33,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void OnPlayer(Player player) {
             // Unconditionally add the dash, bypassing inventory limits
             player.Dashes = 1;
-            timeUntilDashExpire = dashExpirationTime;
-            currentHairFlashThreshold = hairFlashTime;
+            session.ExpiringDashRemainingTime = dashExpirationTime;
+            session.ExpiringDashFlashThreshold = hairFlashTime;
 
             // Everything after this line is roundabout ways of doing the same things Refill does
             Audio.Play("event:/game/general/diamond_touch");
@@ -68,7 +70,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static PlayerDeadBody OnPlayerDeath(On.Celeste.Player.orig_Die orig, Player player, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats) {
             if (evenIfInvincible || !SaveData.Instance.Assists.Invincible) {
                 flash = false;
-                timeUntilDashExpire = 0;
+                session.ExpiringDashRemainingTime = 0;
                 player.Dashes = 0;
             }
 
@@ -77,12 +79,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void OnTransition(On.Celeste.Player.orig_OnTransition orig, Player player) {
             // We first remove the expiring dash if the player still has one
-            if (timeUntilDashExpire > 0) {
+            if (session.ExpiringDashRemainingTime > 0) {
                 player.Dashes = 0;
 
                 player.OverrideHairColor = null;
 
-                timeUntilDashExpire = 0;
+                session.ExpiringDashRemainingTime = 0;
             }
 
             // We invoke this after, just to make sure the default recharge behavior still applies if applicable.
@@ -97,12 +99,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (self.Dashes == 0)
                 return;
 
-            if (timeUntilDashExpire <= 0)
+            if (session.ExpiringDashRemainingTime <= 0)
                 return;
 
-            timeUntilDashExpire -= Engine.DeltaTime;
+            session.ExpiringDashRemainingTime -= Engine.DeltaTime;
 
-            if (timeUntilDashExpire <= 0) {
+            if (session.ExpiringDashRemainingTime <= 0) {
                 // Remove given dash
                 self.Dashes = 0;
                 flash = false;
@@ -110,7 +112,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
 
-            if (timeUntilDashExpire <= currentHairFlashThreshold) {
+            if (session.ExpiringDashRemainingTime <= session.ExpiringDashFlashThreshold) {
                 // Flash hair
                 if (self.Scene.OnInterval(0.05f))
                     flash = !flash;
