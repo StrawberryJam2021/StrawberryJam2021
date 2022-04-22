@@ -25,7 +25,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     OnEnable = onEnable ,
                     OnAttach = delegate (Platform p) { Depth = p.Depth + 1; },
                     OnShake = onShake,
-                    SolidChecker = (s) =>
+                    SolidChecker = s =>
                         (Sides) ds_side.GetValue(this) switch {
                             Sides.Down => CollideCheckOutside(s, Position + Vector2.UnitY * 4),
                             Sides.Up => CollideCheckOutside(s, Position - Vector2.UnitY * 4),

@@ -113,7 +113,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         maxDist = Math.Max(dist, maxDist);
 
                         var tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeInOut, dist / 200f, true);
-                        tween.OnUpdate = (t) => shard.Position = Vector2.Lerp(startPos, targetPos, t.Eased);
+                        tween.OnUpdate = t => shard.Position = Vector2.Lerp(startPos, targetPos, t.Eased);
                         shard.Add(tween);
                     }
 

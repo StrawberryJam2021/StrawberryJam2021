@@ -33,8 +33,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             sprite.Position = sprite.Position + Vector2.UnitY * 7;
             sprite.Rotation = (float) Math.PI;
             Collider = new Hitbox(16f, 6f, -8f, 7f);
-            staticMover.SolidChecker = (Solid solid) => CollideCheck(solid, position - Vector2.UnitY);
-            staticMover.JumpThruChecker = (JumpThru jt) => { return false; };
+            staticMover.SolidChecker = solid => CollideCheck(solid, position - Vector2.UnitY);
+            staticMover.JumpThruChecker = _ => false;
         }
 
         public UpsidedownSpring(EntityData data, Vector2 offset) : this(data.Position + offset, data.Float("strength", 1), data.Float("xAxisFriction", 0.5f)) {

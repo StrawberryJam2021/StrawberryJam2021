@@ -190,7 +190,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public IEnumerator DestroyAnimationRoutine() {
             sprite.Play("death", true);
             Depth = Depths.Player + 1;
-            sprite.OnFinish = (_) => {
+            sprite.OnFinish = _ => {
                 sprite.Visible = false;
             };
             Vector2 offset = Vector2.Zero;

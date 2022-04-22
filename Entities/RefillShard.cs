@@ -69,7 +69,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Add(flash = new Sprite(GFX.Game, "objects/StrawberryJam2021/refillShard/flash"));
             flash.Add("flash", "", 0.05f);
-            flash.OnFinish = (_) => flash.Visible = false;
+            flash.OnFinish = _ => flash.Visible = false;
             flash.CenterOrigin();
 
             Add(outlineSprite = new Sprite(GFX.Game, $"objects/StrawberryJam2021/refillShard/outline"));

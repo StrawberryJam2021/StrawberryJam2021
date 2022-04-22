@@ -156,7 +156,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     }
                 }
             }
-            foreach (var i in bufferDict.Keys.Where((key) => !renderedKeys.Contains(key)).ToList()) {
+            foreach (var i in bufferDict.Keys.Where(key => !renderedKeys.Contains(key)).ToList()) {
                 bufferDict[i].Dispose();
                 bufferDict.Remove(i);
             }
@@ -188,7 +188,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchCallvirt<Renderer>("Render"))) {
                 Logger.Log("SJ2021/StylegroundMask", $"Adding background styleground mask render call at {cursor.Index} in IL for Level.Render");
                 cursor.Emit(OpCodes.Ldarg_0);
-                cursor.EmitDelegate<Action<Level>>((level) => {
+                cursor.EmitDelegate<Action<Level>>(level => {
                     new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName)?.RenderWith(level, false);
                 });
             }
@@ -202,14 +202,14 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchCallvirt<Renderer>("Render"))) {
                 Logger.Log("SJ2021/StylegroundMask", $"Adding foreground styleground mask render behind call at {cursor.Index} in IL for Level.Render");
                 cursor.Emit(OpCodes.Ldarg_0);
-                cursor.EmitDelegate<Action<Level>>((level) => {
+                cursor.EmitDelegate<Action<Level>>(level => {
                     new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName)?.RenderWith(level, true, true);
                 });
 
                 cursor.Index += 4;
 
                 cursor.Emit(OpCodes.Ldarg_0);
-                cursor.EmitDelegate<Action<Level>>((level) => {
+                cursor.EmitDelegate<Action<Level>>(level => {
                     new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName)?.RenderWith(level, true, false);
                 });
             }

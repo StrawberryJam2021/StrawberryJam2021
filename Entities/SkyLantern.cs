@@ -62,7 +62,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hold.SlowRun = false;
             hold.OnPickup = PickupHandler;
             hold.OnRelease = ReleaseHandler;
-            hold.SpeedGetter = () => { return speed; };
+            hold.SpeedGetter = () => speed;
             hold.OnHitSpring = SpringHandler;
             Add(platformSine = new SineWave(0.3f, 0));
             platformSine.Randomize();
@@ -156,14 +156,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             DynData<Player> dyndata_player = new DynData<Player>(self);
 
             Func<float> get_self_gliderBoosterTimer = () => { return dyndata_player.Get<float>("gliderBoostTimer"); };
-            Action<float> set_self_gliderBoosterTimer = (x) => dyndata_player.Set("gliderBoostTimer", x);
+            Action<float> set_self_gliderBoosterTimer = x => dyndata_player.Set("gliderBoostTimer", x);
 
             Vector2 self_gliderBoostDir = new DynData<Player>(self).Get<Vector2>("gliderBoostDir");
 
             Func<float> get_self_varJumpTimer = () => { return dyndata_player.Get<float>("varJumpTimer"); };
-            Action<float> set_self_varJumpTimer = (x) => dyndata_player.Set("varJumpTimer", x);
+            Action<float> set_self_varJumpTimer = x => dyndata_player.Set("varJumpTimer", x);
 
-            Action<Vector2> set_self_carryOffset = (x) => dyndata_player.Set("carryOffset", x);
+            Action<Vector2> set_self_carryOffset = x => dyndata_player.Set("carryOffset", x);
 
             bool self_onGround = dyndata_player.Get<bool>("onGround");
             bool self_holdCannotDuck = dyndata_player.Get<bool>("holdCannotDuck");

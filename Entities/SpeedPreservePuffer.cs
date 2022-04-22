@@ -70,7 +70,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Logger.Log("SJ2021/SpeedPreservePuffer", $"Injecting call to add player speed to puffer explosion at {cursor.Index} in IL for Puffer.Explode");
 
                 cursor.Emit(OpCodes.Ldarg_0);
-                cursor.EmitDelegate<Action<Puffer>>((self) => {
+                cursor.EmitDelegate<Action<Puffer>>(self => {
                     if (self is SpeedPreservePuffer) {
                         Player player = Engine.Scene.Tracker.GetEntity<Player>();
                         player.Speed.X += Math.Abs(storedSpeed) * Math.Sign(player.Speed.X);

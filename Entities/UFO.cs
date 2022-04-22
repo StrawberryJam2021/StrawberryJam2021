@@ -78,7 +78,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     list.RemoveAt(num);
                 }
             }
-            list.Sort((UFO a, UFO b) => Math.Sign(a.X - b.X));
+            list.Sort((a, b) => Math.Sign(a.X - b.X));
             if (list[0] == this) {
                 for (int i = 1; i < list.Count; i++) {
                     NodeSegments.Add(list[i].NodeSegments[0]);
