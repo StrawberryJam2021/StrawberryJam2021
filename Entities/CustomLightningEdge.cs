@@ -44,7 +44,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
                 _end = _offset;
             }
-            _electricityColors = new Color[] { Utilities.HexOrNameToColor(data.Attr("color1", "fcf579")), Utilities.HexOrNameToColor(data.Attr("color2", "8cf7e2")) };
+            _electricityColors = new[] { Utilities.HexOrNameToColor(data.Attr("color1", "fcf579")), Utilities.HexOrNameToColor(data.Attr("color2", "8cf7e2")) };
             interval = Math.Max(data.Float("interval", 0.05f), 0.016f);
             
         }

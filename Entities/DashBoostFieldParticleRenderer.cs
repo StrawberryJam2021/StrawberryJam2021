@@ -67,7 +67,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             public Particle(DashBoostFieldParticleRenderer parent) {
                 this.parent = parent;
-                colors = new Color[] {
+                colors = new[] {
                     Color.Lerp(parent.BoostField.Color, Color.White, 0.25f),
                     Color.Lerp(parent.BoostField.Color, Color.White, 0.50f),
                     Color.Lerp(parent.BoostField.Color, Color.White, 0.75f),

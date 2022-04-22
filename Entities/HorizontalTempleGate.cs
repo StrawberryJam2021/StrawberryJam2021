@@ -149,7 +149,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     break;
             }
 
-            colliders = new Hitbox[]{
+            colliders = new[]{
                 new Hitbox(targetX, 8f, 0, 0),
                 new Hitbox(48f - targetX, 8f, targetX, 0),
             };

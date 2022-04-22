@@ -68,7 +68,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Position = Position - new Vector2(24f, 32f),
                 Width = 48,
                 Height = 32,
-                Nodes = new Vector2[] { Position - new Vector2(0, 32) },
+                Nodes = new[] { Position - new Vector2(0, 32) },
                 Values = new Dictionary<string, object> {
                     { "map", map },
                     { "returnToLobbyMode", returnToLobbyMode },

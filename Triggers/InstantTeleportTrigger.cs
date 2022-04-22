@@ -56,9 +56,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         {
             newRoom = data.Attr("WarpRoom", currentRoom).Trim();
             newPos = new Vector2(data.Float("newPosX", -1f), data.Float("newPosY", -1f));
-            cameraOffset = new float[] { data.Float("CameraOffsetX", 0f), data.Float("CameraOffsetY", 0f) };
+            cameraOffset = new[] { data.Float("CameraOffsetX", 0f), data.Float("CameraOffsetY", 0f) };
             velMod = data.Bool("VelocityModifier", false);
-            vel = new float[] { data.Float("ExitVelocityX", velMod ? 1 : 0), data.Float("ExitVelocityY", velMod ? 1 : 0) };
+            vel = new[] { data.Float("ExitVelocityX", velMod ? 1 : 0), data.Float("ExitVelocityY", velMod ? 1 : 0) };
             vel2 = data.Float("ExitVelocityS", -1);
             rotMod = data.Bool("RotationType", false);
             rot = 0 - ((float)Math.PI * data.Float("RotationActor", 0) / 180);
@@ -221,7 +221,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         public static bool MatchDashState(int state) {
-            return new int[] { 2, 5}.Contains(state);
+            return new[] { 2, 5}.Contains(state);
         }
 
         private void Teleport(Player player)

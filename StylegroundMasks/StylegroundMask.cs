@@ -38,7 +38,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         public StylegroundMask(EntityData data, Vector2 offset) : base(data, offset) {
             Depth = 2000000;
-            RenderTags = data.Attr("tag").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            RenderTags = data.Attr("tag").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             EntityRenderer = data.Bool("entityRenderer");
             BehindForeground = data.Bool("behindFg");
             AlphaFrom = data.Float("alphaFrom", 0f);

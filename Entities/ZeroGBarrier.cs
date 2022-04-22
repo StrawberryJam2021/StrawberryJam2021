@@ -83,8 +83,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// </summary>
         public enum FourWayDirection { Right = 0, Up = 1, Left = 2, Down = 3 }
 
-        public static float[] speeds = new float[3] { 12f, 20f, 40f };
-        internal static Vector2[] directionSet = new Vector2[4] { new Vector2(-1, 0), Vector2.UnitY, Vector2.UnitX, new Vector2(0, -1) };
+        public static float[] speeds = { 12f, 20f, 40f };
+        internal static Vector2[] directionSet = { new Vector2(-1, 0), Vector2.UnitY, Vector2.UnitX, new Vector2(0, -1) };
 
         public EntityData data;
         public Vector2 offset;

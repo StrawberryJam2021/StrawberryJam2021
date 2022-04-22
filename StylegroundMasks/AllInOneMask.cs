@@ -23,7 +23,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             if (!string.IsNullOrEmpty(stylemaskTag)) {
                 masks.Add(new StylegroundMask(Position, width, height) {
                     Fade = Fade, FadeMask = FadeMask, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
-                    RenderTags = stylemaskTag.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries),
+                    RenderTags = stylemaskTag.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries),
                     AlphaFrom = styleAlphaFrom,
                     AlphaTo = styleAlphaTo,
                     EntityRenderer = entityRenderer,
