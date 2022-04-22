@@ -31,8 +31,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             xLinear = data.Bool("xLinear", false);
             yLinear = data.Bool("yLinear", false);
-            xAmplitude = data.Width / 2;
-            yAmplitude = data.Height / 2;
+            xAmplitude = data.Width / 2f;
+            yAmplitude = data.Height / 2f;
 
             origPos = Position + Vector2.UnitX * data.Width / 2 + Vector2.UnitY * data.Height / 2;
             Vector2 p = origPos

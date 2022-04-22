@@ -113,7 +113,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Acceleration = Vector2.UnitY * -60f,
                     SpeedMin = 5f,
                     SpeedMax = 20f,
-                    Direction = 1 / 2 * (float) Math.PI,
+                    Direction = 1 / 2f * (float) Math.PI,
                     LifeMin = 0.6f,
                     LifeMax = 1.4f,
                     FadeMode = ParticleType.FadeModes.Late,
@@ -139,7 +139,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     SpeedMultiplier = 0.2f,
                     LifeMin = 0.6f,
                     LifeMax = 1.2f,
-                    DirectionRange = 3 / 4 * (float) Math.PI,
+                    DirectionRange = 3 / 4f * (float) Math.PI,
                 };
         }
 
@@ -439,7 +439,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!sprite.CurrentAnimationID.Equals("fall") && !sprite.CurrentAnimationID.Equals("fallLoop")) {
                 sprite.Play("fall", false, false);
                 sprite.Scale = new Vector2(1.5f, 0.6f);
-                level.Particles.Emit(particleExpand, 16, Center + (Vector2.UnitY * -12f).Rotate(sprite.Rotation), new Vector2(8f, 3f), -1 / 2 * (float) Math.PI + sprite.Rotation);
+                level.Particles.Emit(particleExpand, 16, Center + (Vector2.UnitY * -12f).Rotate(sprite.Rotation), new Vector2(8f, 3f), -1 / 2f * (float) Math.PI + sprite.Rotation);
                 if (hold.IsHeld) {
                     Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
                 }

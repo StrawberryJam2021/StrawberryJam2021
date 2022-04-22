@@ -141,7 +141,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             MTexture currentTextureFlash = isFlagged ? flashTextureFlagged : flashTexture;
 
             //draw the colored rectangle below the arrow texture
-            Draw.Rect(Center.X - currentTexture.Width / 2, Center.Y - currentTexture.Height / 2, currentTexture.Width, currentTexture.Height, isFlagged ? speedColorFlagged : speedColor);
+            Draw.Rect(Center.X - currentTexture.Width / 2f, Center.Y - currentTexture.Height / 2f, currentTexture.Width, currentTexture.Height, isFlagged ? speedColorFlagged : speedColor);
             currentTexture.DrawCentered(Center);
 
             if (flashTimer > 0f)

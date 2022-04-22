@@ -234,7 +234,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 boostParticles = new ParticleType {
                     Source = GFX.Game["particles/petal"],
                     Color = Calc.HexToColor("E63244"),
-                    DirectionRange = 1/4 * (float) Math.PI,
+                    DirectionRange = 1/4f * (float) Math.PI,
                     FadeMode = ParticleType.FadeModes.Late,
                     LifeMin = 1f,
                     LifeMax = 1.5f,
