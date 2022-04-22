@@ -45,8 +45,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             else {
                 foreach (KeyValuePair<ExtendedVariantsModule.Variant, int> variant in variantValues) {
-                    object defaultValue = ExtendedVariants.ExtendedVariantTriggerManager.GetDefaultValueForVariant(variant.Key);
-                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, defaultValue, false, false, false, false);
+                    object value = ExtendedVariants.ExtendedVariantTriggerManager.GetDefaultValueForVariant(variant.Key);
+                    ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, value, false, false, false, false);
                 }
             }
         }

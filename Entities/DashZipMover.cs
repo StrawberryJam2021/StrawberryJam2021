@@ -221,7 +221,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 int prevOffset = offset;
                 for (int y = 4; y <= Width - 4f; y += 8) {
                     int index = (int) (Mod((angle + (offset * percent * (float) Math.PI * 4f)) / ((float) Math.PI / 2f), 1f) * count);
-                    
+
                     MTexture innerCog = innerCogs[index];
                     Rectangle rectangle = new Rectangle(0, 0, innerCog.Width, innerCog.Height);
                     Vector2 zero = Vector2.Zero;
@@ -247,7 +247,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     innerCog = innerCog.GetSubtexture(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, temp);
                     Vector2 pos = Center + ((Position + new Vector2(y, x) + zero) - Center) * scale;
                     innerCog.DrawCentered(pos, Color.White * ((offset < 0) ? 0.5f : 1f), scale);
-                    
+
                     offset = -offset;
                     angle += (float) Math.PI / 3f;
                 }
@@ -336,7 +336,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private IEnumerator Sequence() {
-            Vector2 start = Position;
+            Vector2 startPosition = Position;
 
             while (true) {
                 if (!triggered) {
@@ -359,7 +359,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     yield return null;
                     at2 = Calc.Approach(at2, 1f, 2f * Engine.DeltaTime);
                     percent = Ease.SineIn(at2);
-                    Vector2 vector = Vector2.Lerp(start, target, percent);
+                    Vector2 vector = Vector2.Lerp(startPosition, target, percent);
                     ScrapeParticlesCheck(vector);
                     if (Scene.OnInterval(0.1f)) {
                         pathRenderer.CreateSparks();
@@ -377,8 +377,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 StopPlayerRunIntoAnimation = false;
                 streetlight.SetAnimationFrame(1);
                 triggered = false;
-                target = start;
-                start = Position;
+                target = startPosition;
+                startPosition = Position;
                 sfx.Stop();
             }
         }

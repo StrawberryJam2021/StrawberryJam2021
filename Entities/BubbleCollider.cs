@@ -11,12 +11,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public bool Check(FloatingBubble bubble) {
-            Collider collider = Entity.Collider;
-            if (this.collider != null) {
-                Entity.Collider = this.collider;
+            Collider previous = Entity.Collider;
+            if (collider != null) {
+                Entity.Collider = collider;
             }
             bool result = bubble.CollideCheck(Entity);
-            Entity.Collider = collider;
+            Entity.Collider = previous;
             return result;
         }
 

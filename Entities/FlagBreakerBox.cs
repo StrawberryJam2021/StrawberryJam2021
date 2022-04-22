@@ -36,10 +36,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             start = Position;
 
             if (GFX.SpriteBank.Has("flagBreakerBox"))
-                this.sprite = GFX.SpriteBank.Create("flagBreakerBox");
+                sprite = GFX.SpriteBank.Create("flagBreakerBox");
             else
-                this.sprite = GFX.SpriteBank.Create("breakerBox");
-            Sprite sprite = this.sprite;
+                sprite = GFX.SpriteBank.Create("breakerBox");
+
             sprite.OnLastFrame = (Action<string>) Delegate.Combine(sprite.OnLastFrame, new Action<string>(delegate (string anim) {
                 if (anim == "break") {
                     Visible = false;

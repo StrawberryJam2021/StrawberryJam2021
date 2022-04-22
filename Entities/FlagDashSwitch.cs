@@ -9,7 +9,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class FlagDashSwitch : DashSwitch {
 
         private string flag;
-        private bool persistent, target;
+        private bool persistent, flagTargetValue;
         private static FieldInfo ds_pressed, ds_pressDirection, ds_side, ds_pressedTarget, ds_startY;
 
         private Vector2 spriteOffset;
@@ -17,7 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public FlagDashSwitch(EntityData data, Vector2 offset, EntityID id) : base(data.Position + offset, chooseFacing(data.Enum<Sides>("orientation")), data.Bool("persistent", false), false, id, data.Attr("sprite", "default")) {
             persistent = data.Bool("persistent", false);
-            target = data.Bool("flagTargetValue", true);
+            flagTargetValue = data.Bool("flagTargetValue", true);
             flag = data.Attr("flag");
             if (data.Bool("attach", false)) {
                 Add(mover = new StaticMover {
@@ -56,7 +56,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Added(Scene scene) {
             base.Added(scene);
-            if (SceneAs<Level>().Session.GetFlag(flag) == target) {
+            if (SceneAs<Level>().Session.GetFlag(flag) == flagTargetValue) {
                 if (!persistent) {
                     SceneAs<Level>().Session.SetFlag(flag, false);
                 } else {
@@ -99,7 +99,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static TempleGate DashSwitch_GetGate(On.Celeste.DashSwitch.orig_GetGate orig, DashSwitch self) {
             if (self is FlagDashSwitch fds) {
-                fds.SceneAs<Level>().Session.SetFlag(fds.flag, fds.target);
+                fds.SceneAs<Level>().Session.SetFlag(fds.flag, fds.flagTargetValue);
                 return null;
             }
             return orig(self);

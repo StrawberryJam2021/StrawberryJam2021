@@ -131,16 +131,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private IEnumerator ChangingDashCodeRoutine() {
             while (true) {
                 doNotRemove = false;
-                while (this.nextCode?.Value == currentCodeArrows)
+                while (nextCode?.Value == currentCodeArrows)
                     yield return null;
-                KeyValuePair<int, MTexture[]> nextCode = this.nextCode ?? default;
+                var nextPair = nextCode ?? default;
 
                 int count = -1;
-                if (nextCode.Value != null) {
-                    count = nextCode.Value.Length;
+                if (nextPair.Value != null) {
+                    count = nextPair.Value.Length;
                     // don't swap code when the arrows are the same (but the references to the arrays aren't)
-                    if (currentCodeArrows != null && nextCode.Value.SequenceEqual(currentCodeArrows)) {
-                        currentCodeArrows = nextCode.Value;
+                    if (currentCodeArrows != null && nextPair.Value.SequenceEqual(currentCodeArrows)) {
+                        currentCodeArrows = nextPair.Value;
                         continue;
                     }
                 } else if (currentCodeArrows != null)
@@ -157,17 +157,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     lengthLerp = 0f;
                     lengthTarget = count;
                     changedLength = true;
-                    yield return nextCode.Value == null ? 1f : 0.3f;
+                    yield return nextPair.Value == null ? 1f : 0.3f;
                 }
 
-                if (nextCode.Value != null) {
+                if (nextPair.Value != null) {
                     if (!changedLength) {
                         lengthPrev = lengthTarget;
                         lengthLerp = 0f;
                         lengthTarget = count;
                     }
-                    Index = nextCode.Key;
-                    currentCodeArrows = nextCode.Value;
+                    Index = nextPair.Key;
+                    currentCodeArrows = nextPair.Value;
                     currentCodeArrowsAnim = new float[count];
                     codePosition = 0;
 

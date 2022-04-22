@@ -10,8 +10,8 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
         private List<Entity> masks;
 
         public AllInOneMask(EntityData data, Vector2 offset) : base(data, offset) {
-            float Width = data.Width;
-            float Height = data.Height;
+            float width = data.Width;
+            float height = data.Height;
 
             masks = new List<Entity>();
 
@@ -21,7 +21,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             bool entityRenderer = data.Bool("entityRenderer");
             bool styleBehindFg = data.Bool("styleBehindFg", true);
             if (!string.IsNullOrEmpty(stylemaskTag)) {
-                masks.Add(new StylegroundMask(Position, Width, Height) {
+                masks.Add(new StylegroundMask(Position, width, height) {
                     Fade = Fade, FadeMask = FadeMask, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
                     RenderTags = stylemaskTag.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries),
                     AlphaFrom = styleAlphaFrom,
@@ -34,7 +34,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             string colorGradeFrom = data.Attr("colorGradeFrom", "(current)");
             string colorGradeTo = data.Attr("colorGradeTo", "(current)");
             if (colorGradeFrom != "(current)" || colorGradeTo != "(current)") {
-                masks.Add(new ColorGradeMask(Position, Width, Height) {
+                masks.Add(new ColorGradeMask(Position, width, height) {
                     Fade = Fade, FadeMask = FadeMask, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
                     ColorGradeFrom = colorGradeFrom,
                     ColorGradeTo = colorGradeTo,
@@ -46,7 +46,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             float bloomStrengthFrom = data.Float("bloomStrengthFrom", -1f);
             float bloomStrengthTo = data.Float("bloomStrengthTo", -1f);
             if (bloomBaseFrom >= 0f || bloomBaseTo >= 0f || bloomStrengthFrom >= 0f || bloomStrengthTo >= 0f) {
-                masks.Add(new BloomMask(Position, Width, Height) {
+                masks.Add(new BloomMask(Position, width, height) {
                     Fade = Fade, FadeMask = FadeMask, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
                     BaseFrom = bloomBaseFrom,
                     BaseTo = bloomBaseTo,
@@ -59,7 +59,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             float lightingTo = data.Float("lightingTo", -1f);
             bool addBaseLighting = data.Bool("addBaseLight", true);
             if (lightingFrom >= 0f || lightingTo >= 0f) {
-                masks.Add(new LightingMask(Position, Width, Height) {
+                masks.Add(new LightingMask(Position, width, height) {
                     Fade = Fade, FadeMask = FadeMask, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
                     LightingFrom = lightingFrom,
                     LightingTo = lightingTo,

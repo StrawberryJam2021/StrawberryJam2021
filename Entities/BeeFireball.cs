@@ -67,8 +67,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Added(Scene scene) {
             base_Added(scene);
 
-            DynData<FireBall> selfData = new DynData<FireBall>(this);
-
             selfData["iceMode"] = false;
             selfData["speedMult"] = 1;
             if (index == 0) {
