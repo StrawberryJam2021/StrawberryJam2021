@@ -111,9 +111,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             self.OverrideHairColor = null;
 
-            // If touching the ground would've replenished the dash if the ExpiringDash wasn't there
-            // Remove the timer
-            if (self.OnGround() && self.Dashes <= self.MaxDashes)
+            // If touching the ground would've replenished the dash if the ExpiringDash wasn't there, remove the timer
+            if (!self.Inventory.NoRefills && self.OnGround() && self.Dashes <= self.MaxDashes)
                 session.ExpiringDashRemainingTime = 0;
 
             if (session.ExpiringDashRemainingTime <= 0)
