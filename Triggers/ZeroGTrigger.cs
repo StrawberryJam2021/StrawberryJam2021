@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using FourWayDirection = Celeste.Mod.StrawberryJam2021.Entities.ZeroGBarrier.FourWayDirection;
 using Celeste.Mod.Entities;
+using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/ZeroGTrigger = Load")]
     public class ZeroGTrigger : Trigger {
 
-        public static void Load(Level level, LevelData levelData, Vector2 offset, EntityData entityData) => new ZeroGTrigger(entityData, offset);
+        public static Entity Load(Level level, LevelData levelData, Vector2 offset, EntityData entityData) => new ZeroGTrigger(entityData, offset);
 
         public FourWayDirection direction;
         public int OnlyOnJustRespawn; // 0 = used for barrier only, 1 = turn off always, 2 = turn on always

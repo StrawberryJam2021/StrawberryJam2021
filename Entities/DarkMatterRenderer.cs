@@ -12,7 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static VirtualRenderTarget DarkMatterLightning;
         public static VirtualRenderTarget BlurTempBuffer;
-        
+
         private class Bolt {
 
             private DarkMatterRenderer Parent;
@@ -374,9 +374,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
             Camera camera = (Scene as Level).Camera;
-            new Rectangle((int) camera.Left, (int) camera.Top, (int) (camera.Right - camera.Left), (int) (camera.Bottom - camera.Top));
             //Acts as a "color filter"
-            
+
             foreach (DarkMatter item in list) {
                 if (item.Visible) {
                     Draw.SpriteBatch.Draw(DarkMatterLightning, item.Position, new Rectangle((int) item.X, (int) item.Y, item.VisualWidth, item.VisualHeight), Color.White);
