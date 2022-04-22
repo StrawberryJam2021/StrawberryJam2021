@@ -119,7 +119,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
-            player = base.Scene.Tracker.GetEntity<Player>();
+            player = Scene.Tracker.GetEntity<Player>();
         }
         private void Restartanim() {
             sprite.Play("idle", true);
@@ -182,7 +182,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     previousPosition = ExactPosition;
                     MoveH(Speed.X * Engine.DeltaTime, onCollideH);
                     MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
-                    if (base.Center.X > (float) Level.Bounds.Right) {
+                    if (Center.X > (float) Level.Bounds.Right) {
                         MoveH(32f * Engine.DeltaTime);
                         if (Left - 8f > (float) Level.Bounds.Right) {
                             RemoveSelf();
@@ -356,7 +356,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 dead = true;
                 Remove(Hold);
                 Audio.Play("event:/char/madeline/death", Position);
-                Add(new DeathEffect(Color.Gray, base.Center - Position));
+                Add(new DeathEffect(Color.Gray, Center - Position));
                 sprite.Visible = false;
                 Depth = -1000000;
                 AllowPushing = false;

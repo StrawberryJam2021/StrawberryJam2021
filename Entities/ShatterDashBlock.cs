@@ -28,7 +28,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float shakeTime;
 
         public ShatterDashBlock(EntityData data, Vector2 offset, EntityID id) : base(data.Position + offset, data.Width, data.Height, true) {
-            base.Depth = Depths.FakeWalls + 1;
+            Depth = Depths.FakeWalls + 1;
             this.id = id;
             permanent = data.Bool("permanent");
             width = data.Width;
@@ -53,13 +53,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Level level = SceneAs<Level>();
                 Rectangle tileBounds = level.Session.MapData.TileBounds;
                 VirtualMap<char> solidsData = level.SolidsData;
-                int x = (int) (base.X / 8f) - tileBounds.Left;
-                int y = (int) (base.Y / 8f) - tileBounds.Top;
-                int tilesX = (int) base.Width / 8;
-                int tilesY = (int) base.Height / 8;
+                int x = (int) (X / 8f) - tileBounds.Left;
+                int y = (int) (Y / 8f) - tileBounds.Top;
+                int tilesX = (int) Width / 8;
+                int tilesY = (int) Height / 8;
                 tileGrid = GFX.FGAutotiler.GenerateOverlay(tileType, x, y, tilesX, tilesY, solidsData).TileGrid;
                 Add(new EffectCutout());
-                base.Depth = -10501;
+                Depth = -10501;
             }
             Add(tileGrid);
             Add(new TileInterceptor(tileGrid, highPriority: true));
@@ -82,9 +82,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Audio.Play(SFX.game_gen_wallbreak_stone, Position);
                 }
             }
-            for (int i = 0; (float) i < base.Width / 8f; i++) {
-                for (int j = 0; (float) j < base.Height / 8f; j++) {
-                    base.Scene.Add(Engine.Pooler.Create<Debris>().Init(Position + new Vector2(4 + i * 8, 4 + j * 8), tileType, playDebrisSound).BlastFrom(player.Center));
+            for (int i = 0; (float) i < Width / 8f; i++) {
+                for (int j = 0; (float) j < Height / 8f; j++) {
+                    Scene.Add(Engine.Pooler.Create<Debris>().Init(Position + new Vector2(4 + i * 8, 4 + j * 8), tileType, playDebrisSound).BlastFrom(player.Center));
                 }
             }
 

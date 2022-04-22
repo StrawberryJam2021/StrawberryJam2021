@@ -321,7 +321,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             ILCursor cursor = new ILCursor(il);
             // basic technique here copied from max's helping hand lol
             // move to the start of where we want to skip
-            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchStfld<Entity>(nameof(Entity.Position)))) {
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchStfld<Entity>(nameof(Position)))) {
                 // create another cursor and move to the end of where we want to skip
                 ILCursor cursorAfterParticles = cursor.Clone();
                 // go to the second call of this method

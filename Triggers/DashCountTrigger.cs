@@ -112,7 +112,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             ResetOnDeath = false;
         }
 
-        private static void modPlayerRespawn(On.Celeste.Level.orig_LoadLevel orig, global::Celeste.Level level, global::Celeste.Player.IntroTypes playerIntro, bool isFromLoader) {
+        private static void modPlayerRespawn(On.Celeste.Level.orig_LoadLevel orig, Level level, Player.IntroTypes playerIntro, bool isFromLoader) {
             orig(level, playerIntro, isFromLoader);
             if (ResetOnDeath && IsInCurrentMap && playerIntro == Player.IntroTypes.Respawn) {
                 Player player = level.Tracker.GetEntity<Player>();

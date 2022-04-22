@@ -50,11 +50,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.alwaysFlag = alwaysFlag;
             Add(sprite = BatteriesModule.SpriteBank.Create("battery_switch"));
             if (side == Sides.Up || side == Sides.Down) {
-                base.Collider.Width = 16f;
-                base.Collider.Height = 8f;
+                Collider.Width = 16f;
+                Collider.Height = 8f;
             } else {
-                base.Collider.Width = 8f;
-                base.Collider.Height = 16f;
+                Collider.Width = 8f;
+                Collider.Height = 16f;
             }
             switch (side) {
                 case Sides.Up:
@@ -114,11 +114,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
             Level level = SceneAs<Level>();
-            if (!base.Scene.OnInterval(0.3f)) {
+            if (!Scene.OnInterval(0.3f)) {
                 return;
             }
             if (pressed) {
-                level.ParticlesFG.Emit(P_PressA, 1, base.Collider.AbsolutePosition + base.Collider.Center, pressDirection.Perpendicular() * 6f, (pressDirection * -1f).Angle());
+                level.ParticlesFG.Emit(P_PressA, 1, Collider.AbsolutePosition + Collider.Center, pressDirection.Perpendicular() * 6f, (pressDirection * -1f).Angle());
                 return;
             }
         }
@@ -126,37 +126,37 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void LitState() {
             switch (side) {
                 case Sides.Up:
-                    base.Collider.Width = 16f;
-                    base.Collider.Height = 12f;
-                    base.Collider.Position.Y -= 4f;
+                    Collider.Width = 16f;
+                    Collider.Height = 12f;
+                    Collider.Position.Y -= 4f;
                     break;
                 case Sides.Down:
-                    base.Collider.Width = 16f;
-                    base.Collider.Height = 12f;
+                    Collider.Width = 16f;
+                    Collider.Height = 12f;
                     break;
                 case Sides.Left:
-                    base.Collider.Width = 12f;
-                    base.Collider.Height = 16f;
-                    base.Collider.Position.X -= 4f;
+                    Collider.Width = 12f;
+                    Collider.Height = 16f;
+                    Collider.Position.X -= 4f;
                     break;
                 case Sides.Right:
-                    base.Collider.Width = 12f;
-                    base.Collider.Height = 16f;
+                    Collider.Width = 12f;
+                    Collider.Height = 16f;
                     break;
             }
             Vector2 offset = Vector2.Zero;
             switch (side) {
                 case Sides.Down:
-                    offset = base.Collider.BottomCenter + new Vector2(0f, 1f);
+                    offset = Collider.BottomCenter + new Vector2(0f, 1f);
                     break;
                 case Sides.Up:
-                    offset = base.Collider.TopCenter + new Vector2(0f, -1f);
+                    offset = Collider.TopCenter + new Vector2(0f, -1f);
                     break;
                 case Sides.Right:
-                    offset = base.Collider.CenterRight + new Vector2(1f, 0f);
+                    offset = Collider.CenterRight + new Vector2(1f, 0f);
                     break;
                 case Sides.Left:
-                    offset = base.Collider.CenterLeft + new Vector2(-1f, 0f);
+                    offset = Collider.CenterLeft + new Vector2(-1f, 0f);
                     break;
             }
             Add(new VertexLight(offset, Color.Aqua, 1f, 12, 24));
@@ -173,14 +173,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Audio.Play("event:/game/05_mirror_temple/button_activate", Position);
             sprite.Play("insert");
             pressed = true;
-            Player player = base.Scene.Tracker.GetEntity<Player>();
-            if (player != null && base.Collider.Collide(player)) {
+            Player player = Scene.Tracker.GetEntity<Player>();
+            if (player != null && Collider.Collide(player)) {
                 player.Position += -5f * pressDirection;
             }
-            SceneAs<Level>().ParticlesFG.Emit(P_PressA, 10, base.Collider.AbsolutePosition + base.Collider.Center, direction.Perpendicular() * 6f, (pressDirection * -1f).Angle());
-            SceneAs<Level>().ParticlesFG.Emit(P_PressB, 4, base.Collider.AbsolutePosition + base.Collider.Center, direction.Perpendicular() * 6f, (pressDirection * -1f).Angle());
+            SceneAs<Level>().ParticlesFG.Emit(P_PressA, 10, Collider.AbsolutePosition + Collider.Center, direction.Perpendicular() * 6f, (pressDirection * -1f).Angle());
+            SceneAs<Level>().ParticlesFG.Emit(P_PressB, 4, Collider.AbsolutePosition + Collider.Center, direction.Perpendicular() * 6f, (pressDirection * -1f).Angle());
             if (allGates) {
-                foreach (BatteryGate entity in base.Scene.Tracker.GetEntities<BatteryGate>()) {
+                foreach (BatteryGate entity in Scene.Tracker.GetEntities<BatteryGate>()) {
                     if (entity.entityID.Level == id.Level) {
                         entity.SwitchOpen();
                     }
@@ -203,7 +203,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private List<BatteryGate> GetGate() {
-            List<Entity> entities = base.Scene.Tracker.GetEntities<BatteryGate>();
+            List<Entity> entities = Scene.Tracker.GetEntities<BatteryGate>();
             List<BatteryGate> batteryGates = new List<BatteryGate>();
             float num = 0f;
             foreach (BatteryGate item2 in entities) {

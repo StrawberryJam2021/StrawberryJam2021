@@ -12,7 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Sprite sprite;
         private Wiggler wiggler;
 
-        public UpsidedownSpring(Vector2 position, float strength, float xAxisFriction) : base(position, Spring.Orientations.Floor, false) {
+        public UpsidedownSpring(Vector2 position, float strength, float xAxisFriction) : base(position, Orientations.Floor, false) {
 
             this.strength = strength;
             this.xAxisFriction = xAxisFriction;

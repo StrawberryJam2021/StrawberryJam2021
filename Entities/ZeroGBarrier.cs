@@ -10,7 +10,7 @@ using Mono.Cecil.Cil;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <summary>
     /// This implements the Extended Variants Gravity 0, Air Friction -1, and validates a Session variable that works with hooks to say:
-    /// if the player is on a ceiling with 0g and 
+    /// if the player is on a ceiling with 0g and
     /// is ducking, or, doesn't have a dash or a wall to the left or right of them, it will teleport them back to the previous Spawnpoint.
     /// </summary>
     [CustomEntity("SJ2021/ZeroGBarrier")]
@@ -97,9 +97,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.offset = offset;
             direction = data.Enum<FourWayDirection>("direction", FourWayDirection.Right);
             particles = new List<Vector2>();
-            region = new Vector2(base.Width - 1f, base.Height - 1f);
-            for (int i = 0; (float) i < base.Width * base.Height / 16f; i++) {
-                particles.Add(new Vector2(Calc.Random.NextFloat(base.Width - 1f), Calc.Random.NextFloat(base.Height - 1f)));
+            region = new Vector2(Width - 1f, Height - 1f);
+            for (int i = 0; (float) i < Width * Height / 16f; i++) {
+                particles.Add(new Vector2(Calc.Random.NextFloat(Width - 1f), Calc.Random.NextFloat(Height - 1f)));
             }
 
         }
@@ -108,7 +108,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Awake(scene);
             scene.Add(new ZeroGTrigger(data, offset, direction));
         }
-        
+
 
         public override void Update() {
             base.Update();
@@ -126,7 +126,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Draw.Pixel.Draw(Position + particle, Vector2.Zero, color);
             }
             if (Flashing) {
-                Draw.Rect(base.Collider, Color.White * Flash * 0.5f);
+                Draw.Rect(Collider, Color.White * Flash * 0.5f);
             }
         }
 

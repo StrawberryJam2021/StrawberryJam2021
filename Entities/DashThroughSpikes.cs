@@ -95,7 +95,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         break;
                 }
 
-                base.Add(image);
+                Add(image);
             }
         }
 

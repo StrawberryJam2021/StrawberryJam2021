@@ -89,7 +89,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     if (OverrideBoostFrames > 0) {
                         boostFrames = OverrideBoostFrames;
                     } else {
-                        WonkyCassetteBlockController controller = this.Scene.Tracker.GetEntity<WonkyCassetteBlockController>();
+                        WonkyCassetteBlockController controller = Scene.Tracker.GetEntity<WonkyCassetteBlockController>();
                         if (controller != null) {
                             boostFrames = controller.ExtraBoostFrames;
                         }
@@ -97,7 +97,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 } else if (boostFrames > 0) {
                     // Provide an extra boost for the duration of the extra boost frames
-                    this.LiftSpeed.Y = -1 / Engine.DeltaTime;
+                    LiftSpeed.Y = -1 / Engine.DeltaTime;
 
                     // Update lift of riders
                     MoveVExact(0);

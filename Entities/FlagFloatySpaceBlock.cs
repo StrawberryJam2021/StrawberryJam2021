@@ -70,8 +70,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 moves = new Dictionary<Platform, Vector2>();
                 group = new List<FlagFloatySpaceBlock>();
                 jumpthrus = new List<JumpThru>();
-                groupBoundsMin = new Point((int) base.X, (int) base.Y);
-                groupBoundsMax = new Point((int) base.Right, (int) base.Bottom);
+                groupBoundsMin = new Point((int) X, (int) Y);
+                groupBoundsMax = new Point((int) Right, (int) Bottom);
                 addToGroupAndFindChildren(this);
                 Rectangle rectangle = new Rectangle(groupBoundsMin.X / 8, groupBoundsMin.Y / 8, (groupBoundsMax.X - groupBoundsMin.X) / 8 + 1, (groupBoundsMax.Y - groupBoundsMin.Y) / 8 + 1);
                 VirtualMap<char> tilemap = new VirtualMap<char>(rectangle.Width, rectangle.Height, '0');

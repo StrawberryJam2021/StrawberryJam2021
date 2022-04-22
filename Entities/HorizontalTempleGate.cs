@@ -74,7 +74,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     cursor.EmitDelegate<Action<DashSwitch>>(self => {
                         var data = new DynData<DashSwitch>(self);
                         foreach (HorizontalTempleGate entity in self.Scene.Tracker.GetEntities<HorizontalTempleGate>()) {
-                            if (entity.Type == HorizontalTempleGate.Types.NearestSwitch && entity.LevelID == data.Get<EntityID>("id").Level) {
+                            if (entity.Type == Types.NearestSwitch && entity.LevelID == data.Get<EntityID>("id").Level) {
                                 entity.SwitchOpen();
                             }
                         }
@@ -93,7 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     HorizontalTempleGate hTempleGate = null;
                     float dist = 0f;
                     foreach (HorizontalTempleGate item in entities) {
-                        if (item.Type == HorizontalTempleGate.Types.NearestSwitch && !item.ClaimedByASwitch && item.LevelID == data.Get<EntityID>("id").Level) {
+                        if (item.Type == Types.NearestSwitch && !item.ClaimedByASwitch && item.LevelID == data.Get<EntityID>("id").Level) {
                             float currentDist = Vector2.DistanceSquared(self.Position, item.Position);
                             if (hTempleGate == null || currentDist < dist) {
                                 hTempleGate = item;
@@ -149,7 +149,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     break;
             }
 
-            this.colliders = new Hitbox[]{
+            colliders = new Hitbox[]{
                 new Hitbox(targetX, 8f, 0, 0),
                 new Hitbox(48f - targetX, 8f, targetX, 0),
             };
@@ -160,7 +160,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 ((ColliderList) Collider).Add(colliders[1]);
             }
 
-            this.sprites = new Sprite[2];
+            sprites = new Sprite[2];
             Add(sprites[0] = StrawberryJam2021Module.SpriteBank.Create("horizontalTempleGateLeft"));
             Add(sprites[1] = StrawberryJam2021Module.SpriteBank.Create("horizontalTempleGateRight"));
         }
@@ -170,21 +170,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (Inverted) {
                 // Init gate as open
-                this.drawWidth = Math.Max(OpenWidth, MinEdgeSpace);
+                drawWidth = Math.Max(OpenWidth, MinEdgeSpace);
                 SetWidth((int) OpenWidth);
-                this.open = true;
+                open = true;
             } else {
                 // init gate as closed
-                this.drawWidth = 48f * this.moveSpeedMultiplier;
-                SetWidth((int) this.drawWidth);
-                this.open = false;
+                drawWidth = 48f * moveSpeedMultiplier;
+                SetWidth((int) drawWidth);
+                open = false;
             }
 
             if (Type == Types.TouchSwitches) {
                 Add(new Coroutine(CheckTouchSwitches(), false));
             }
             else if (Type == Types.FlagActive) {
-                Add(new Coroutine(CheckFlag(this.Flag), false));
+                Add(new Coroutine(CheckFlag(Flag), false));
             }
         }
 
@@ -214,7 +214,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             foreach(Sprite s in sprites) {
                 s.Play("open");
             }
-            this.open = true;
+            open = true;
         }
 
         public void Close() {
@@ -227,7 +227,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 s.Play("hit");
             }
 
-            this.open = false;
+            open = false;
         }
 
         private IEnumerator PerformChange(bool shake = true) {
@@ -256,14 +256,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private IEnumerator CheckFlag(string flag) {
             Level level = Scene as Level;
-            while ((this.open == level.Session.GetFlag(flag)) != this.Inverted) {
+            while ((open == level.Session.GetFlag(flag)) != Inverted) {
                 yield return null;
             }
             yield return PerformChange();
         }
 
         private void SetWidth(int width) {
-            this.targetWidth = width;
+            targetWidth = width;
             float x = X;
             float oldWidth = 0f;
             if (OpenDirection != OpenDirections.Right) {
@@ -307,8 +307,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // Drop the player down if they are at a particular height
             // the player gets stuck in the door without this
             if (player != null && CollideCheck(player, Position) &&
-                    (player.Top - this.Bottom) <= -6 && (player.Top - this.Bottom) > -12) {
-                player.NaiveMove((this.Bottom-player.Top) * Vector2.UnitY);
+                    (player.Top - Bottom) <= -6 && (player.Top - Bottom) > -12) {
+                player.NaiveMove((Bottom-player.Top) * Vector2.UnitY);
             }
 
             foreach (Actor entity in Scene.Tracker.GetEntities<Actor>()) {
@@ -318,10 +318,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     int move = (entity.CenterX > (left + right) / 2) ? -width : width;
                     if (!entity.TreatNaive && CollideCheck(entity, Position)) {
                         // yeah i kinda gave up here and just decided to hard center the entity
-                        entity.CenterX = this.CenterX - 1f;
+                        entity.CenterX = CenterX - 1f;
                         entity.MoveHExact(1, entity.SquishCallback, this);
                     } else if (riders.Contains(entity)) {
-                        entity.CenterX = this.CenterX - 1f;
+                        entity.CenterX = CenterX - 1f;
                         if (entity.TreatNaive) {
                             entity.NaiveMove(Vector2.UnitX);
                         } else {

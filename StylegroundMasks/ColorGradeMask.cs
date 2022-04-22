@@ -103,7 +103,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
                             mask.DrawFadeMask();
 
-                            Engine.Graphics.GraphicsDevice.BlendState = Mask.DestinationAlphaBlend;
+                            Engine.Graphics.GraphicsDevice.BlendState = DestinationAlphaBlend;
                             foreach (var slice in mask.GetMaskSlices())
                                 Draw.SpriteBatch.Draw(GameplayBuffers.Level, slice.Position, slice.Source, Color.White);
 

@@ -150,12 +150,12 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 Vector2 prevTopRight = player.TopRight - player.Speed; //TopLeft, TopRight, BottomLeft, BottomRight
                 Vector2 prevBottomLeft = player.BottomLeft - player.Speed;
                 // Check if the segment prevLoc -> curLoc crosses any of the boundaries
-                sides[0] *= (this.Left > prevTopRight.X && this.Left <= player.TopRight.X) ? 1 : 0;
-                sides[1] *= (this.Right < prevBottomLeft.X && this.Right >= player.BottomLeft.X) ? 1 : 0;
-                sides[2] *= (this.Top > prevBottomLeft.Y && this.Top <= player.BottomLeft.Y) ? 1 : 0;
-                sides[3] *= (this.Bottom < prevTopRight.Y && this.Bottom >= player.TopRight.Y) ? 1 : 0;
+                sides[0] *= (Left > prevTopRight.X && Left <= player.TopRight.X) ? 1 : 0;
+                sides[1] *= (Right < prevBottomLeft.X && Right >= player.BottomLeft.X) ? 1 : 0;
+                sides[2] *= (Top > prevBottomLeft.Y && Top <= player.BottomLeft.Y) ? 1 : 0;
+                sides[3] *= (Bottom < prevTopRight.Y && Bottom >= player.TopRight.Y) ? 1 : 0;
                 int maxValue = sides.Max();
-                this.direction = Array.IndexOf(sides, maxValue);
+                direction = Array.IndexOf(sides, maxValue);
             }
             else
             {
@@ -184,13 +184,13 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     Vector2 prevTopRight = player.TopRight - player.Speed; //TopLeft, TopRight, BottomLeft, BottomRight
                     Vector2 prevBottomLeft = player.BottomLeft - player.Speed;
                     // Check if the segment prevLoc -> curLoc crosses any of the boundaries
-                    sides[0] *= (this.Left < prevTopRight.X && this.Left >= player.TopRight.X) ? 1 : 0;
-                    sides[1] *= (this.Right > prevBottomLeft.X && this.Right <= player.BottomLeft.X) ? 1 : 0;
-                    sides[2] *= (this.Top < prevBottomLeft.Y && this.Top >= player.BottomLeft.Y) ? 1 : 0;
-                    sides[3] *= (this.Bottom > prevTopRight.Y && this.Bottom <= player.TopRight.Y) ? 1 : 0;
+                    sides[0] *= (Left < prevTopRight.X && Left >= player.TopRight.X) ? 1 : 0;
+                    sides[1] *= (Right > prevBottomLeft.X && Right <= player.BottomLeft.X) ? 1 : 0;
+                    sides[2] *= (Top < prevBottomLeft.Y && Top >= player.BottomLeft.Y) ? 1 : 0;
+                    sides[3] *= (Bottom > prevTopRight.Y && Bottom <= player.TopRight.Y) ? 1 : 0;
                     int maxValue = sides.Max();
                     int exitDirection = Array.IndexOf(sides, maxValue);
-                    trigger = exitDirection != this.direction;
+                    trigger = exitDirection != direction;
                 }
                 if (trigger)
                 {

@@ -18,7 +18,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         // And be placed in the center of the room
         public GroupedParallaxDecal(DecalData dd, bool isFG, Rectangle roomBounds) : base(new Vector2(roomBounds.X + roomBounds.Width / 2, roomBounds.Y + roomBounds.Height / 2))  {
             string path = dd.Texture.Substring(0, dd.Texture.Length - 4).Trim();
-            DecalInfo dInfo = DecalRegistry.RegisteredDecals[path]; //all decals in a group should have the same properties, so we can just load the details for the first one.
+            DecalInfo dInfo = RegisteredDecals[path]; //all decals in a group should have the same properties, so we can just load the details for the first one.
             Depth = isFG ? Depths.FGDecals : Depths.BGDecals; //Set this here incase there is no Depth value in the DecalRegistry
 
             //there's two relevant attributes to parallaxing: depth and parallax amount
@@ -37,7 +37,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Render() {
             //adapted from Celeste.Decal.Render()
             Vector2 position = Position;
-            Vector2 vector = (base.Scene as Level).Camera.Position + new Vector2(160f, 90f); //magic numbers explicitly taken from original parallaxing code in Celeste.Decal
+            Vector2 vector = (Scene as Level).Camera.Position + new Vector2(160f, 90f); //magic numbers explicitly taken from original parallaxing code in Celeste.Decal
             Vector2 vector2 = (Position - vector) * parallaxAmount;
             Position += vector2;
             base.Render();

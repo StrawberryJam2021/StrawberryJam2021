@@ -194,8 +194,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public SoundSource AmbientSfx;
 
         public DarkMatterRenderer() {
-            base.Tag = (int) Tags.Global | (int) Tags.TransitionUpdate;
-            base.Depth = -1000100;
+            Tag = (int) Tags.Global | (int) Tags.TransitionUpdate;
+            Depth = -1000100;
             colorsLerped = new Color[2];
             Add(new BeforeRenderHook(OnBeforeRender));
             Add(AmbientSfx = new SoundSource());
@@ -228,7 +228,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public void Track(DarkMatter block) {
             list.Add(block);
             if (tiles == null) {
-                levelTileBounds = (base.Scene as Level).TileBounds;
+                levelTileBounds = (Scene as Level).TileBounds;
                 tiles = new VirtualMap<bool>(levelTileBounds.Width, levelTileBounds.Height, emptyValue: false);
             }
             for (int i = (int) block.X / 8; i < ((int) block.X + block.VisualWidth) / 8; i++) {
@@ -266,13 +266,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             foreach (Bolt bolt in bolts) {
-                bolt.Update(base.Scene);
+                bolt.Update(Scene);
             }
             if (UpdateSeeds) {
-                if (base.Scene.OnInterval(0.1f)) {
+                if (Scene.OnInterval(0.1f)) {
                     edgeSeed = (uint) Calc.Random.Next();
                 }
-                if (base.Scene.OnInterval(0.7f)) {
+                if (Scene.OnInterval(0.7f)) {
                     leapSeed = (uint) Calc.Random.Next();
                 }
             }
@@ -286,14 +286,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void ToggleEdges(bool immediate = false) {
-            Camera camera = (base.Scene as Level).Camera;
+            Camera camera = (Scene as Level).Camera;
             Rectangle view = new Rectangle((int) camera.Left - 4, (int) camera.Top - 4, (int) (camera.Right - camera.Left) + 8, (int) (camera.Bottom - camera.Top) + 8);
             for (int i = 0; i < edges.Count; i++) {
                 if (immediate) {
                     edges[i].Visible = edges[i].InView(ref view);
-                } else if (!edges[i].Visible && base.Scene.OnInterval(0.05f, (float) i * 0.01f) && edges[i].InView(ref view)) {
+                } else if (!edges[i].Visible && Scene.OnInterval(0.05f, (float) i * 0.01f) && edges[i].InView(ref view)) {
                     edges[i].Visible = true;
-                } else if (edges[i].Visible && base.Scene.OnInterval(0.25f, (float) i * 0.01f) && !edges[i].InView(ref view)) {
+                } else if (edges[i].Visible && Scene.OnInterval(0.25f, (float) i * 0.01f) && !edges[i].InView(ref view)) {
                     edges[i].Visible = false;
                 }
             }
@@ -373,7 +373,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (list.Count <= 0) {
                 return;
             }
-            Camera camera = (base.Scene as Level).Camera;
+            Camera camera = (Scene as Level).Camera;
             new Rectangle((int) camera.Left, (int) camera.Top, (int) (camera.Right - camera.Left), (int) (camera.Bottom - camera.Top));
             //Acts as a "color filter"
             

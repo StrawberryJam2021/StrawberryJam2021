@@ -49,7 +49,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 
         public UFO(Vector2[] nodes) : base(nodes[0]) {
-            base.Depth = Depths.Above;
+            Depth = Depths.Above;
             Add(sprite = new Image(GFX.Game["objects/StrawberryJam2021/UFO/UFO"]));
             sprite.CenterOrigin();
             Collider = new Hitbox(24f, 24f, -12f, -12f);
@@ -72,7 +72,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
-            List<UFO> list = base.Scene.Entities.FindAll<UFO>();
+            List<UFO> list = Scene.Entities.FindAll<UFO>();
             for (int num = list.Count - 1; num >= 0; num--) {
                 if (list[num].entityData.Level.Name != entityData.Level.Name) {
                     list.RemoveAt(num);
@@ -86,7 +86,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
             player = scene.Tracker.GetEntity<Player>();
-            if (player != null && player.X > base.X) {
+            if (player != null && player.X > X) {
                 RemoveSelf();
             }
         }
@@ -110,7 +110,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void OnPlayer(Player player) {
             if (state == States.Wait) {
                 bounceWiggler.Start();
-                player.Bounce(base.Top);
+                player.Bounce(Top);
                 GotoHit(player.Center);
             }
         }
@@ -125,8 +125,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Update();
             switch (state) {
                 case States.Wait:
-                    Player entity = base.Scene.Tracker.GetEntity<Player>();
-                    if (entity != null && entity.X - base.X >= 100f) {
+                    Player entity = Scene.Tracker.GetEntity<Player>();
+                    if (entity != null && entity.X - X >= 100f) {
                         Skip();
                     } else if (entity != null) {
                         float scaleFactor = Calc.ClampedMap((entity.Center - Position).Length(), 16f, 64f, 12f, 0f);
@@ -157,7 +157,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 player.Speed = Vector2.Zero;
                 state = States.Fling;
                 Add(new Coroutine(DoFlingRoutine(player)));
-                Audio.Play("event:/new_content/game/10_farewell/bird_throw", base.Center);
+                Audio.Play("event:/new_content/game/10_farewell/bird_throw", Center);
             } else {
                 foreach (Glider CollidingGlider in Scene.Entities.FindAll<Glider>()) {
                     if (CheckIfInRay(CollidingGlider.Position, CollidingGlider.Bottom, CollidingGlider.Top, true, CollidingGlider)) {
@@ -168,7 +168,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         CollidingGlider.Speed = Vector2.Zero;
                         state = States.Fling;
                         Add(new Coroutine(DoFlingRoutineJelly(CollidingGlider)));
-                        Audio.Play("event:/new_content/game/10_farewell/bird_throw", base.Center);
+                        Audio.Play("event:/new_content/game/10_farewell/bird_throw", Center);
                     }
                 }
             }

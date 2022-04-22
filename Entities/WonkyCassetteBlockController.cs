@@ -61,7 +61,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             ExtraBoostFrames = boostFrames - 1;
 
-            this.DisableFlag = disableFlag;
+            DisableFlag = disableFlag;
         }
 
         public void DisableAndReset(Scene scene, StrawberryJam2021Session session) {

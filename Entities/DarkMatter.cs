@@ -153,7 +153,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             : base(position) {
             VisualWidth = width;
             VisualHeight = height;
-            base.Collider = new Hitbox(width - 2, height - 2, 1f, 1f);
+            Collider = new Hitbox(width - 2, height - 2, 1f, 1f);
             Add(new PlayerCollider(OnPlayer));
             this.id = id;
             
@@ -175,10 +175,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Update() {
-            if (Collidable && base.Scene.OnInterval(0.25f, toggleOffset)) {
+            if (Collidable && Scene.OnInterval(0.25f, toggleOffset)) {
                 ToggleCheck();
             }
-            if (!Collidable && base.Scene.OnInterval(0.05f, toggleOffset)) {
+            if (!Collidable && Scene.OnInterval(0.05f, toggleOffset)) {
                 ToggleCheck();
             }
             base.Update();
@@ -189,9 +189,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private bool InView() {
-            Camera camera = (base.Scene as Level).Camera;
-            if (base.X + base.Width > camera.X - 16f && base.Y + base.Height > camera.Y - 16f && base.X < camera.X + 320f + 16f) {
-                return base.Y < camera.Y + 180f + 16f;
+            Camera camera = (Scene as Level).Camera;
+            if (X + Width > camera.X - 16f && Y + Height > camera.Y - 16f && X < camera.X + 320f + 16f) {
+                return Y < camera.Y + 180f + 16f;
             }
             return false;
         }
@@ -199,7 +199,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void OnPlayer(Player player) {
             if (renderer.mode == DarkMatterRenderer.Mode.Kill) {
                 if (!SaveData.Instance.Assists.Invincible) {
-                    int num = Math.Sign(player.X - base.X);
+                    int num = Math.Sign(player.X - X);
                     if (num == 0) {
                         num = -1;
                     }
