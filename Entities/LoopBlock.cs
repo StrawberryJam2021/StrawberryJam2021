@@ -15,14 +15,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         // Center tile doesn't need to be stored in a structured 2d array, but it has 8 variations.
         private static readonly MTexture[] centerTiles = new MTexture[8];
 
-        private Vector2 start;
+        private readonly Vector2 start;
         private Vector2 speed;
 
         private MTexture[,] tiles;
         private Vector2 scale = Vector2.One;
-        private Color color;
+        private readonly Color color;
 
-        private ParticleType particleType;
+        private readonly ParticleType particleType;
 
         private Level level;
 
@@ -35,7 +35,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float targetSpeedX;
         private float dashedDirX;
 
-        private int edgeThickness;
+        private readonly int edgeThickness;
 
         private const float sideBoostSpeed = 310f; // decided by mapper
 

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked]
     public class BubbleCollider : Component {
-        private Collider collider;
+        private readonly Collider collider;
 
         public BubbleCollider(Collider collider = null) : base(true, false) {
             this.collider = collider;

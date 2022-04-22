@@ -10,21 +10,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class CustomLightningEdge : Entity {
         public enum Directions { Right, Up, Left, Down }
 
-        private Color[] _electricityColors;
+        private readonly Color[] _electricityColors;
 
         private float Fade;
-        private Vector2 _start = Vector2.Zero;
-        private Vector2 _end;
+        private readonly Vector2 start = Vector2.Zero;
+        private readonly Vector2 end;
         private VertexPositionColor[] _edgeVerts = new VertexPositionColor[1024];
         private uint _edgeSeed;
-        private int size;
-        private float interval;
+        private readonly int size;
+        private readonly float interval;
 
         public CustomLightningEdge(EntityData data, Vector2 offset) : base(data.Position + offset) {
             Depth = data.Int("Depth", 10);
             Vector2? node = data.FirstNodeNullable(offset);
             if (node.HasValue) {
-                _end = node.Value - Position;
+                end = node.Value - Position;
             } else {
 
                 Directions direction = data.Enum<Directions>("direction", Directions.Up);
@@ -42,7 +42,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         _offset = Vector2.UnitY * size;
                         break;
                 }
-                _end = _offset;
+                end = _offset;
             }
             _electricityColors = new[] { Utilities.HexOrNameToColor(data.Attr("color1", "fcf579")), Utilities.HexOrNameToColor(data.Attr("color2", "8cf7e2")) };
             interval = Math.Max(data.Float("interval", 0.05f), 0.016f);
@@ -61,8 +61,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Camera camera = (Scene as Level).Camera;
             if (camera != null) {
                 int index = 0;
-                DrawSimpleLightning(ref index, ref _edgeVerts, _edgeSeed, Position, _start, _end, _electricityColors[0], 1f + Fade * 1f);
-                DrawSimpleLightning(ref index, ref _edgeVerts, _edgeSeed + 1, Position, _start, _end, _electricityColors[1], 1f + Fade * 1f);
+                DrawSimpleLightning(ref index, ref _edgeVerts, _edgeSeed, Position, start, end, _electricityColors[0], 1f + Fade * 1f);
+                DrawSimpleLightning(ref index, ref _edgeVerts, _edgeSeed + 1, Position, start, end, _electricityColors[1], 1f + Fade * 1f);
                 if (index > 0) {
                     GameplayRenderer.End();
                     GFX.DrawVertices(camera.Matrix, _edgeVerts, index);

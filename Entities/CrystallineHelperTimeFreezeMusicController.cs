@@ -7,12 +7,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
     [CustomEntity("SJ2021/TimeFreezeMusicController")]
     public class CrystallineHelperTimeFreezeMusicController : Entity {
-        
+
         public static FieldInfo crystallineHelper_TimeCrystal_stopStage;
 
-        public float paramOff, paramOn;
-        public string paramName;
-        public bool prevValue;
+        private readonly float paramOff;
+        private readonly float paramOn;
+        private readonly string paramName;
+        private bool prevValue;
 
         public CrystallineHelperTimeFreezeMusicController(EntityData data, Vector2 offset) : base(data.Position + offset) {
             paramName = data.Attr("musicParam");

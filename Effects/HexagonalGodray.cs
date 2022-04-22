@@ -41,26 +41,25 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
         }
 
 
-        private VertexPositionColor[] vertices;
+        private readonly VertexPositionColor[] vertices;
 
         private int vertexCount;
 
-        private Color rayColor = Calc.HexToColor("f52b63") * 0.5f;
-        private HexRay[] rays;
+        private readonly Color rayColor;
+        private readonly HexRay[] rays;
 
         private float fade;
 
-        private Color fadeColor;
+        private readonly Color fadeColor;
 
-        public float speedX;
-        public float speedY;
-        private float minRotation;
-        private float maxRotation;
+        public readonly float speedX;
+        public readonly float speedY;
+        private readonly float minRotation;
+        private readonly float maxRotation;
 
         public HexagonalGodray(string color, string fadeToColor, int numRays, float speedx, float speedy, float minRotation, float maxRotation) {
             vertices = new VertexPositionColor[12 * numRays];
             rays = new HexRay[numRays];
-
 
             if (string.IsNullOrEmpty(fadeToColor)) { //we could add an exception case for optimization.
                 fadeToColor = color;
@@ -157,5 +156,4 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
             }
         }
     }
-
 }

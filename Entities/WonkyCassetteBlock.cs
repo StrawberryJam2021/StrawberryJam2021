@@ -19,9 +19,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly int OverrideBoostFrames;
         public int boostFrames;
 
-        private DynData<CassetteBlock> cassetteBlockData;
+        private readonly DynData<CassetteBlock> cassetteBlockData;
 
-        private string textureDir;
+        private readonly string textureDir;
 
         public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, string moveSpec, Color color, string textureDir, int overrideBoostFrames, int controllerIndex)
             : base(position, id, width, height, index, 1.0f) {

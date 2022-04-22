@@ -12,9 +12,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
     public class EntityDespawner : Entity
     {
         //fields
-        public bool invert;
-        private Type[] typesToDespawn;
-        public string sessionFlagName;
+        public readonly bool invert;
+        private readonly Type[] typesToDespawn;
+        public readonly string sessionFlagName;
 
         //constructors
         public EntityDespawner(EntityData data, Vector2 offset)

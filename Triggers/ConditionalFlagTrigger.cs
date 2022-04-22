@@ -8,11 +8,11 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/ConditionalFlagTrigger")]
     [Tracked]
     public class ConditionalFlagTrigger : Trigger {
-        private string flag; //the flag to set when the trigger is set
-        private string controllerFlag; //the flag that enables these triggers
+        private readonly string flag; //the flag to set when the trigger is set
+        private readonly string controllerFlag; //the flag that enables these triggers
         private bool priorState; //the prior state
-        private bool flagValue; //value to set the flag to on entry
-        private bool revertOnLeave; //whether or not to reset on leaving the trigger
+        private readonly bool flagValue; //value to set the flag to on entry
+        private readonly bool revertOnLeave; //whether or not to reset on leaving the trigger
 
         public ConditionalFlagTrigger(EntityData data, Vector2 offset)
             : base(data, offset) {

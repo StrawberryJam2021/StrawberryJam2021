@@ -10,10 +10,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public bool Finished;
         public Follower Follower;
 
-        private int index;
-        private bool twoDashes;
-        private bool resetOnGround;
-        private RefillShardController controller;
+        private readonly int index;
+        private readonly bool twoDashes;
+        private readonly bool resetOnGround;
+        private readonly RefillShardController controller;
 
         private Vector2 start;
         private Platform attached;
@@ -21,16 +21,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float loseTimer;
         private bool losing;
 
-        private Sprite sprite;
-        private Sprite flash;
-        private Sprite outlineSprite;
-        private ParticleType p_shatter;
-        private ParticleType p_regen;
-        private ParticleType p_glow;
-        private Wiggler wiggler;
-        private BloomPoint bloom;
-        private VertexLight light;
-        private SineWave sine;
+        private readonly Sprite sprite;
+        private readonly Sprite flash;
+        private readonly Sprite outlineSprite;
+        private readonly ParticleType p_shatter;
+        private readonly ParticleType p_regen;
+        private readonly ParticleType p_glow;
+        private readonly Wiggler wiggler;
+        private readonly BloomPoint bloom;
+        private readonly VertexLight light;
+        private readonly SineWave sine;
 
         private bool renderShard; //we can't use the standard Visible modifier without removing the dotted outline after grabbing a shard
 

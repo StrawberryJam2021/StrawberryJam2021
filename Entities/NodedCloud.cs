@@ -9,16 +9,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/NodedCloud")]
     public class NodedCloud : Cloud {
         private static ParticleType P_Spawn, P_Ghost;
-        private static byte BaseGhostOpacity = 0x62; // (0.385 * 255)
+        private static readonly byte BaseGhostOpacity = 0x62; // (0.385 * 255)
 
         private readonly Vector2[] nodes;
         private readonly DynData<Cloud> base_Entity;
         private readonly Vector2 RoomOffset;
-        private Image ghost;
+        private readonly Image ghost;
         private float GhostAlphaOffset { get => 1 + 0.2f * (float) Math.Sin(timer * 4); }
 
         private int nextNode;
-        private float moveTime;
+        private readonly float moveTime;
         private float fadeInProgress;
 
         private float timer { get => base_Entity.Get<float>("timer"); }

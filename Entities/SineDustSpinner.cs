@@ -8,9 +8,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class SineDustSpinner : DustStaticSpinner {
         private readonly Vector2 origPos;
         private Vector2 lastPos;
-        private float xAmplitude, yAmplitude;
-        private float xPeriod, xPhase, yPeriod, yPhase;
-        private bool xLinear, yLinear;
+        private readonly float xAmplitude;
+        private readonly float yAmplitude;
+        private readonly float xPeriod;
+        private readonly float xPhase;
+        private readonly float yPeriod;
+        private readonly float yPhase;
+        private readonly bool xLinear;
+        private readonly bool yLinear;
 
         private float TimeSinceAwake;
 

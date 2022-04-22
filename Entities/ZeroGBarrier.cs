@@ -89,8 +89,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public EntityData data;
         public Vector2 offset;
         public FourWayDirection direction;
-        private List<Vector2> particles;
-        private Vector2 region;
+        private readonly List<Vector2> particles;
+        private readonly Vector2 region;
 
         public ZeroGBarrier(EntityData data, Vector2 offset) : base(data, offset) {
             this.data = data;

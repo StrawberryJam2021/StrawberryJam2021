@@ -12,17 +12,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class RefillShardController : Entity {
         public const float RespawnTime = 3600f;
 
-        private static MethodInfo m_RefillRespawn = typeof(Refill).GetMethod("Respawn", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo m_RefillRespawn = typeof(Refill).GetMethod("Respawn", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public List<RefillShard> Shards;
         public Refill Refill;
 
-        private bool spawnRefill;
-        private bool twoDashes;
-        private bool resetOnGround;
-        private bool oneUse;
-        private int collectAmount;
-        private Vector2[] nodes;
+        private readonly bool spawnRefill;
+        private readonly bool twoDashes;
+        private readonly bool resetOnGround;
+        private readonly bool oneUse;
+        private readonly int collectAmount;
+        private readonly Vector2[] nodes;
 
         private DynData<Refill> refillData;
         private bool finished;

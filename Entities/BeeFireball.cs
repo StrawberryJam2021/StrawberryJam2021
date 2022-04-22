@@ -8,7 +8,7 @@ using System.Reflection;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/BeeFireball")]
     public class BeeFireball : FireBall {
-        private static MethodInfo fireballGetPercentPosition = typeof(FireBall).GetMethod("GetPercentPosition", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly MethodInfo fireballGetPercentPosition = typeof(FireBall).GetMethod("GetPercentPosition", BindingFlags.NonPublic | BindingFlags.Instance);
 
         private static ParticleType P_Noop;
 
@@ -19,11 +19,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             };
         }
 
-        private Sprite sprite;
+        private readonly Sprite sprite;
         private bool isFacingLeft;
         private bool isFacingLeftAtStartOfTrack;
 
-        private DynData<FireBall> selfData;
+        private readonly DynData<FireBall> selfData;
 
         private readonly Vector2[] nodes;
         private readonly int amount;

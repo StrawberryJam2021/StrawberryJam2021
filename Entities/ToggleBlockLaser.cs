@@ -9,7 +9,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class ToggleBlockLaser : Entity {
 		private VertexPositionColor[] fade;
 
-		private MTexture laserSprite;
+		private readonly MTexture laserSprite;
 
 		private float angle;
 

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [CustomEntity("SJ2021/AllInOneMask")]
     public class AllInOneMask : Mask {
-        private List<Entity> masks;
+        private readonly List<Entity> masks;
 
         public AllInOneMask(EntityData data, Vector2 offset) : base(data, offset) {
             float width = data.Width;

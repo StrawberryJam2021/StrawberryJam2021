@@ -8,19 +8,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class GrabTempleGate : Solid {
 
         private const float switchTimeDelay = 0.2f;
-        private int closedHeight;
+        private readonly int closedHeight;
 
-        private Sprite sprite;
-        private Shaker shaker;
+        private readonly Sprite sprite;
+        private readonly Shaker shaker;
         private float drawHeight;
         private float drawHeightMoveSpeed;
 
-        private bool startClosed;
+        private readonly bool startClosed;
         private bool open;
 
         private float canSwitchTimer;
 
-        private SoundSource sfx;
+        private readonly SoundSource sfx;
 
         public GrabTempleGate(Vector2 position, bool startClosed)
             : base(position, 8f, 48, safe: true) {

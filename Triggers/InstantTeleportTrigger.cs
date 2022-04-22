@@ -38,11 +38,11 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         public bool differentSide;
 
         private bool triggered;
-        private float timeSlowDown;
+        private readonly float timeSlowDown;
         private Color flashColor;
-        private float delay;
-        private int legacyCamera;
-        private bool resetDashes;
+        private readonly float delay;
+        private readonly int legacyCamera;
+        private readonly bool resetDashes;
 
         //new stuff
         private int direction = -1;

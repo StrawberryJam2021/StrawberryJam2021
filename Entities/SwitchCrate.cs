@@ -23,9 +23,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private Level Level;
 
-        private Collision onCollideH;
+        private readonly Collision onCollideH;
 
-        private Collision onCollideV;
+        private readonly Collision onCollideV;
 
         private float noGravityTimer;
 
@@ -37,27 +37,27 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private float swatTimer;
 
-        private float TimeToExplode;
+        private readonly float TimeToExplode;
 
-        private bool IsMounted = false;
+        private readonly bool IsMounted = false;
 
         private EntityID id;
 
         private Player player;
 
-        private string FlagName;
+        private readonly string FlagName;
 
         public static Type ConveyorType;
 
         private static Type FloorBoosterType;
 
-        private Sprite sprite;
+        private readonly Sprite sprite;
 
         private bool IsHeld;
 
-        private bool DepleteOnJumpThru;
+        private readonly bool DepleteOnJumpThru;
 
-        private bool KillMaddyOnExplosion;
+        private readonly bool KillMaddyOnExplosion;
 
         private bool IsFirstFrame = true;
 

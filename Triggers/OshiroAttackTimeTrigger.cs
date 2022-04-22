@@ -9,10 +9,10 @@ using System.Reflection;
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/OshiroAttackTimeTrigger")]
     public class OshiroAttackTimeTrigger : Trigger {
-        private bool Enable = true;
+        private readonly bool Enable = true;
         private static ILHook oshiroHook;
-        private static BindingFlags privateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
-        private static MethodInfo oshiroCoroutineInfo = typeof(AngryOshiro).GetMethod("ChaseCoroutine", privateInstance).GetStateMachineTarget();
+        private static readonly BindingFlags privateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
+        private static readonly MethodInfo oshiroCoroutineInfo = typeof(AngryOshiro).GetMethod("ChaseCoroutine", privateInstance).GetStateMachineTarget();
         public OshiroAttackTimeTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             Enable = data.Bool("Enable", true);
         }

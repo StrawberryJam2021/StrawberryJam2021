@@ -22,23 +22,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static ParticleType P_Signal = DashSwitch.P_PressAMirror;
 
-        private Sides side;
+        private readonly Sides side;
 
         private bool pressed;
 
-        private Vector2 pressDirection;
+        private readonly Vector2 pressDirection;
 
-        private bool persistent;
+        private readonly bool persistent;
 
-        private EntityID id;
+        private readonly EntityID id;
 
-        private bool allGates;
+        private readonly bool allGates;
 
-        private Sprite sprite;
+        private readonly Sprite sprite;
 
-        private bool alwaysFlag;
+        private readonly bool alwaysFlag;
 
-        private string FlagName;
+        private readonly string FlagName;
 
         public SwitchCrateHolder(Vector2 position, Sides side, bool persistent, bool allGates, bool alwaysFlag, EntityID id)
             : base(position, 0f, 0f, safe: true) {

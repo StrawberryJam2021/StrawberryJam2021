@@ -8,8 +8,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     // The parameter is turned off when the player lands.
     [CustomEntity("SJ2021/AirTimeMusicController")]
     public class AirTimeMusicController : Entity {
-        private float airtimeThreshold;
-        private string param;
+        private readonly float airtimeThreshold;
+        private readonly string param;
 
         public AirTimeMusicController(EntityData data, Vector2 offset) : base(data.Position + offset) {
             airtimeThreshold = data.Float("activationThreshold");

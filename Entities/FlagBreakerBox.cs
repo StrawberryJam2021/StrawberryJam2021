@@ -6,20 +6,20 @@ using Monocle;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/FlagBreakerBox")]
     public class FlagBreakerBox : Solid {
-        private Sprite sprite;
-        private SineWave sine;
-        private Vector2 start;
+        private readonly Sprite sprite;
+        private readonly SineWave sine;
+        private readonly Vector2 start;
         private float sink;
         private int health;
-        private string flag; //the flag to control with the breaker box
-        private bool aliveState; //the state that the flag should be set to when the box is made
+        private readonly string flag; //the flag to control with the breaker box
+        private readonly bool aliveState; //the state that the flag should be set to when the box is made
         private float shakeCounter;
-        private string music;
-        private int musicProgress;
-        private bool musicStoreInSession;
+        private readonly string music;
+        private readonly int musicProgress;
+        private readonly bool musicStoreInSession;
         private Vector2 bounceDir;
-        private Wiggler bounce;
-        private Shaker shaker;
+        private readonly Wiggler bounce;
+        private readonly Shaker shaker;
         private bool makeSparks;
         private bool smashParticles;
         private SoundSource firstHitSfx;

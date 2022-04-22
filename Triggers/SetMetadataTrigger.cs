@@ -6,7 +6,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/SetMetadataTrigger")]
     public class SetMetadataTrigger : Trigger {
 
-        private bool theoInBooster;
+        private readonly bool theoInBooster;
 
         public SetMetadataTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             theoInBooster = data.Bool("theoInBooster", false);

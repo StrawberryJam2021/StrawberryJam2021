@@ -7,25 +7,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/ShatterDashBlock")]
     public class ShatterDashBlock : Solid {
 
-        private bool permanent;
+        private readonly bool permanent;
 
-        private EntityID id;
+        private readonly EntityID id;
 
-        private char tileType;
+        private readonly char tileType;
 
-        private float width;
+        private readonly float width;
 
-        private float height;
+        private readonly float height;
 
-        private bool blendIn;
+        private readonly bool blendIn;
 
-        private float speedReq;
+        private readonly float speedReq;
 
-        private float delay;
+        private readonly float delay;
 
         //Temporary Debug Variables, these will be consts by the end of the workload
-        private float speedDec;
-        private float shakeTime;
+        private readonly float speedDec;
+        private readonly float shakeTime;
 
         public ShatterDashBlock(EntityData data, Vector2 offset, EntityID id) : base(data.Position + offset, data.Width, data.Height, true) {
             Depth = Depths.FakeWalls + 1;

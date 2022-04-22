@@ -13,9 +13,9 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [Tracked]
     [CustomEntity("SJ2021/ColorGradeMask")]
     public class ColorGradeMask : Mask {
-        private static List<VirtualRenderTarget> FadeBuffers = new List<VirtualRenderTarget>();
+        private static readonly List<VirtualRenderTarget> FadeBuffers = new List<VirtualRenderTarget>();
 
-        private static BlendState BetterAlphaBlend = new BlendState {
+        private static readonly BlendState BetterAlphaBlend = new BlendState {
             ColorSourceBlend = Blend.One,
             AlphaSourceBlend = Blend.One,
             ColorDestinationBlend = Blend.InverseSourceAlpha,

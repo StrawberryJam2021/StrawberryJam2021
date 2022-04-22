@@ -16,16 +16,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public float[] riseSpeeds { get; private set; } // downhold, upwind + uphold, uphold, upwind, neutral
 
         private bool bubble, destroyed;
-        private float highFrictionTimer, noGravityTimer, downThrowMultiplier, diagThrowXMultiplier, diagThrowYMultiplier, gravity, lastDroppedTime;
-        private Vector2 speed, startPosition, prevLiftSpeed;
-        private Collision onCollideH, onCollideV;
-        private Sprite sprite;
-        private Wiggler wiggler;
-        private Holdable hold;
-        private SineWave platformSine;
-        private SoundSource risingSFX;
+        private float highFrictionTimer, noGravityTimer;
+        private readonly float downThrowMultiplier;
+        private readonly float diagThrowXMultiplier;
+        private readonly float diagThrowYMultiplier;
+        private readonly float gravity;
+        private float lastDroppedTime;
+        private Vector2 speed;
+        private readonly Vector2 startPosition;
+        private Vector2 prevLiftSpeed;
+        private readonly Collision onCollideH;
+        private readonly Collision onCollideV;
+        private readonly Sprite sprite;
+        private readonly Wiggler wiggler;
+        private readonly Holdable hold;
+        private readonly SineWave platformSine;
+        private readonly SoundSource risingSFX;
         private Level level;
-        private VertexLight light;
+        private readonly VertexLight light;
         private static ParticleType particleGlow, particleExpand, particleGlide, particlePlatform, particleGlideDown;
 
         public SkyLantern(EntityData data, Vector2 offset) : this(data.Position + offset, data.Bool("bubble", false), data.Float("downThrowMultiplier", 1.8f),

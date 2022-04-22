@@ -6,10 +6,15 @@ using Monocle;
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/PocketUmbrellaTrigger")]
     public class PocketUmbrellaTrigger : Trigger {
-        private bool Enable = true, revertOnLeave, prevVal;
-        private float staminaCost, prevCost, cooldown, prevCooldown;
+        private readonly bool Enable = true;
+        private readonly bool revertOnLeave;
+        private bool prevVal;
+        private readonly float staminaCost;
+        private float prevCost;
+        private readonly float cooldown;
+        private float prevCooldown;
 
-        private string musicParam;
+        private readonly string musicParam;
 
         public PocketUmbrellaTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             Enable = data.Bool("enabled", true);

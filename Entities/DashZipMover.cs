@@ -10,20 +10,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class DashZipMover : Solid {
 
         private class DashZipMoverPathRenderer : Entity {
-            public DashZipMover zipMover;
+            public readonly DashZipMover zipMover;
 
-            private MTexture cog;
+            private readonly MTexture cog;
 
-            private Vector2 from;
-            private Vector2 to;
+            private readonly Vector2 from;
+            private readonly Vector2 to;
 
-            private Vector2 sparkAdd;
-            private float sparkDirFromA;
-            private float sparkDirFromB;
-            private float sparkDirToA;
-            private float sparkDirToB;
+            private readonly Vector2 sparkAdd;
+            private readonly float sparkDirFromA;
+            private readonly float sparkDirFromB;
+            private readonly float sparkDirToA;
+            private readonly float sparkDirToB;
 
-            private float length;
+            private readonly float length;
 
             public DashZipMoverPathRenderer(DashZipMover zipMover) {
                 Depth = Depths.SolidsBelow;
@@ -101,16 +101,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        private MTexture[,] edges = new MTexture[3, 3];
+        private readonly MTexture[,] edges = new MTexture[3, 3];
 
-        private Sprite streetlight;
-        private BloomPoint bloom;
+        private readonly Sprite streetlight;
+        private readonly BloomPoint bloom;
 
         private DashZipMoverPathRenderer pathRenderer;
-        private List<MTexture> innerCogs;
-        private MTexture temp = new MTexture();
+        private readonly List<MTexture> innerCogs;
+        private readonly MTexture temp = new MTexture();
 
-        private Vector2 start;
+        private readonly Vector2 start;
         private Vector2 target;
         private float percent;
         private bool triggered;
@@ -121,7 +121,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static readonly Color ropeLightColor = Calc.HexToColor("329415");
         private static readonly Color ropeShadow = Calc.HexToColor("003622");
 
-        private SoundSource sfx = new SoundSource();
+        private readonly SoundSource sfx = new SoundSource();
 
         public DashZipMover(Vector2 position, int width, int height, Vector2 target)
             : base(position, width, height, safe: false) {

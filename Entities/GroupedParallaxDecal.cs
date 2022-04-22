@@ -11,8 +11,8 @@ using static Celeste.Mod.DecalRegistry;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class GroupedParallaxDecal : Entity {
-        
-        private float parallaxAmount;
+
+        private readonly float parallaxAmount;
 
         // GroupedParallaxDecal class should have a constructor with params LevelData ld and DecalData dd,
         // And be placed in the center of the room
@@ -90,8 +90,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     {
                         cursor.Emit(OpCodes.Ldarg_0);
                         cursor.Emit(OpCodes.Ldloc, dIndex); //dIndex is absolutely set
-                        cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if 
-                        cursor.Emit(OpCodes.Ldc_I4_1); 
+                        cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if
+                        cursor.Emit(OpCodes.Ldc_I4_1);
                         cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(MakeParallaxGroup);
                         cursor.Emit(OpCodes.Brtrue, target);
                     }
@@ -102,7 +102,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     {
                         cursor.Emit(OpCodes.Ldarg_0);
                         cursor.Emit(OpCodes.Ldloc, dIndex); //dIndex is absolutely set
-                        cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if 
+                        cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if
                         cursor.Emit(OpCodes.Ldc_I4_0);
                         cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(MakeParallaxGroup);
                         cursor.Emit(OpCodes.Brtrue, target);
@@ -135,7 +135,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 ParallaxDecalByGroup.Add(groupName, groupeddecal);
                 level.Add(groupeddecal);
             }
-            
+
             return true;
         }
     }

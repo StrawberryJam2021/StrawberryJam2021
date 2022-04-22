@@ -8,9 +8,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class UpsidedownSpring : Spring {
 
         public readonly float strength, xAxisFriction;
-        private StaticMover staticMover;
-        private Sprite sprite;
-        private Wiggler wiggler;
+        private readonly StaticMover staticMover;
+        private readonly Sprite sprite;
+        private readonly Wiggler wiggler;
 
         public UpsidedownSpring(Vector2 position, float strength, float xAxisFriction) : base(position, Orientations.Floor, false) {
 

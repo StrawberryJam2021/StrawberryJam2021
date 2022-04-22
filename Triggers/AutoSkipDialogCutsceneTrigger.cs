@@ -10,12 +10,12 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/AutoSkipDialogCutsceneTrigger")]
     public class AutoSkipDialogCutsceneTrigger : Trigger {
 
-        private string dialogEntry;
+        private readonly string dialogEntry;
         private bool triggered;
-        private EntityID id;
-        private bool onlyOnce;
-        private bool endLevel;
-        private int deathCount;
+        private readonly EntityID id;
+        private readonly bool onlyOnce;
+        private readonly bool endLevel;
+        private readonly int deathCount;
 
         public AutoSkipDialogCutsceneTrigger(EntityData data, Vector2 offset, EntityID entId)
             : base(data, offset) {
@@ -44,9 +44,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         private class AutoSkipDialogCutscene : CutsceneEntity {
-            private Player player;
-            private string dialogID;
-            private bool endLevel;
+            private readonly Player player;
+            private readonly string dialogID;
+            private readonly bool endLevel;
 
             public AutoSkipDialogCutscene(string dialogID, Player player, bool endLevel) {
                 this.dialogID = dialogID;

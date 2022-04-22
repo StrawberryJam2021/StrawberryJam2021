@@ -5,8 +5,8 @@ using Celeste.Mod.StrawberryJam2021.Entities;
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/bubbleEmitterFireTrigger")]
     public class BubbleEmitterFireTrigger : Trigger {
-        private string flag;
-        private bool onlyOnce;
+        private readonly string flag;
+        private readonly bool onlyOnce;
 
         public BubbleEmitterFireTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             flag = data.Attr("flag");

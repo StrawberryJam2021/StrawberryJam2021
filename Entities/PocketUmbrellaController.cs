@@ -10,7 +10,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked(false)]
     public class PocketUmbrellaController : Entity {
 
-        private Vector2 spawnOffset;
+        private readonly Vector2 spawnOffset;
         private float holdDelay;
         private bool prevGrab;
         public bool Enabled { get; set; }

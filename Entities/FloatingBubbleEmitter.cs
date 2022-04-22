@@ -7,7 +7,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked]
     [CustomEntity("SJ2021/FloatingBubbleEmitter")]
     public class FloatingBubbleEmitter : Entity {
-        private Sprite sprite;
+        private readonly Sprite sprite;
         private bool firing;
         public string flag;
 

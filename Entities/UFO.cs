@@ -17,7 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static readonly Vector2 FlingSpeed = new Vector2(380f, -100f);
 
-        private Image sprite;
+        private readonly Image sprite;
 
         private States state;
 
@@ -27,9 +27,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private float flingAccel;
 
-        private EntityData entityData;
+        private readonly EntityData entityData;
 
-        private SoundSource moveSfx;
+        private readonly SoundSource moveSfx;
 
         private int segmentIndex;
 
@@ -37,13 +37,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private Player player;
 
-        private Wiggler bounceWiggler;
+        private readonly Wiggler bounceWiggler;
 
         private Vector2 hitSpeed;
 
-        private float RaySizeX = 13f;
+        private readonly float RaySizeX = 13f;
 
-        private float RaySizeY = 60f;
+        private readonly float RaySizeY = 60f;
 
         public static System.Reflection.MethodInfo SpringBounce;
 

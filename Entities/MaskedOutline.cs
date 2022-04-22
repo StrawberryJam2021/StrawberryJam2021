@@ -17,14 +17,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static MTexture dot_texture;
         private static Color SingleColor, DoubleColor;
 
-        private bool Controller;
-        private EntityData data;
+        private readonly bool Controller;
+        private readonly EntityData data;
         private MaskedOutline[] children;
-        private Entity parent;
+        private readonly Entity parent;
         private SineWave RefillSine;
         private OutlineType type;
-        private List<Vector2> dot_positions;
-        private Tween tween;
+        private readonly List<Vector2> dot_positions;
+        private readonly Tween tween;
         private Color color;
 
         public static void Load() {

@@ -14,18 +14,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/CrystalBombBadelineBoss")]
     [Tracked]
     public class CrystalBombBadelineBoss : FinalBoss {
-        private DynamicData baseData;
-        private Action<Player> base_OnPlayer;
+        private readonly DynamicData baseData;
+        private readonly Action<Player> base_OnPlayer;
 
-        private string music;
+        private readonly string music;
 
-        private Circle playerCollider;
+        private readonly Circle playerCollider;
         // be more lenient with death hitbox
         private const float playerCollideRadius = 8f;
 
         private static Hook crystalBombExplodeHook;
-        private static MethodInfo crystalBombExplodeInfo = typeof(CrystalBomb).GetMethod("Explode", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static MethodInfo crystalBombExplodeHookInfo = typeof(CrystalBombBadelineBoss).GetMethod("On_CrystalBomb_Explode", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo crystalBombExplodeInfo = typeof(CrystalBomb).GetMethod("Explode", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly MethodInfo crystalBombExplodeHookInfo = typeof(CrystalBombBadelineBoss).GetMethod("On_CrystalBomb_Explode", BindingFlags.NonPublic | BindingFlags.Static);
 
         public CrystalBombBadelineBoss(EntityData data, Vector2 offset) : base(data, offset) {
             baseData = new DynamicData(typeof(FinalBoss), this);

@@ -81,22 +81,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		#region ToggleSwapBlock Class Members
 
 		private const int STAY = 8, DONE = 9;
-		private static string[] paths = { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
+		private static readonly string[] paths = { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
 		private static readonly string defaultIndicatorPath = "objects/StrawberryJam2021/toggleSwapBlock/indicator/plain/";
 		private static readonly string defaultStartAudio = "event:/game/05_mirror_temple/swapblock_move";
 		private static readonly string defaultStopAudio = "event:/game/05_mirror_temple/swapblock_move_end";
-		private DashListener dashListener;
+		private readonly DashListener dashListener;
 		private EventInstance moveSfx;
-		private Color offColor = Color.DarkGray;
-		private Color onColor = Color.MediumPurple;
-		private Color endColor = new Color(0.65f, 0.4f, 0.4f);
-		private ToggleBlockLaser[] lasers;
+		private readonly Color offColor = Color.DarkGray;
+		private readonly Color onColor = Color.MediumPurple;
+		private readonly Color endColor = new Color(0.65f, 0.4f, 0.4f);
+		private readonly ToggleBlockLaser[] lasers;
 		private readonly int laserCount;
 		//private Sprite middleRed;
 		private float lerp;
-		private MTexture[,] nineSliceBlock;
-		private Vector2[] nodes;
-		private ToggleBlockNode[] nodeTextures;
+		private readonly MTexture[,] nineSliceBlock;
+		private readonly Vector2[] nodes;
+		private readonly ToggleBlockNode[] nodeTextures;
 		private int nodeIndex;
 		private bool moving;
 		private float travelSpeed = 5f;

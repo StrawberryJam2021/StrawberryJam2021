@@ -10,18 +10,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private const float MAX_SPEED = 282; //internally the player has a max lift boost in each direction
         private const float MAX_SPEED_X = 250;
         private const float MAX_SPEED_Y = -130;
-        private Vector2 targetSpeed, targetSpeedFlagged;
-        private Color speedColor, speedColorFlagged;
-        private float angle, angleFlagged;
-        private Color startColor, endColor;
-        private MTexture arrowTexture, arrowTextureFlagged;
-        private string flag;
+        private readonly Vector2 targetSpeed;
+        private readonly Vector2 targetSpeedFlagged;
+        private readonly Color speedColor;
+        private readonly Color speedColorFlagged;
+        private readonly float angle;
+        private readonly float angleFlagged;
+        private readonly Color startColor;
+        private readonly Color endColor;
+        private readonly MTexture arrowTexture;
+        private readonly MTexture arrowTextureFlagged;
+        private readonly string flag;
         private bool isFlagged;
         private Player ridingPlayer;
 
-        private MTexture flashTexture, flashTextureFlagged;
+        private readonly MTexture flashTexture;
+        private readonly MTexture flashTextureFlagged;
         private float flashTimer;
-        private Color flashColor;
+        private readonly Color flashColor;
         private bool doFlash;
 
         public MomentumBlock(EntityData data, Vector2 offset)

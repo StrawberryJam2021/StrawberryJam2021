@@ -11,7 +11,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked]
     [CustomEntity("SJ2021/MaskedDecal")]
     public class MaskedDecal : Entity {
-        private static BlendState DestinationAlphaBlend = new BlendState {
+        private static readonly BlendState DestinationAlphaBlend = new BlendState {
             ColorSourceBlend = Blend.DestinationAlpha,
             ColorDestinationBlend = Blend.InverseSourceAlpha,
             AlphaSourceBlend = Blend.Zero,

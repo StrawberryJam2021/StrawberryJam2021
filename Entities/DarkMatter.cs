@@ -60,7 +60,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         //ILHook required for clean, no error throwing code. At large numbers of hooks, this can cause lock-time issues because of concurrent threads, or something like that. This seems to resolve that bug.
         private static void LevelLoader_LoadingThread(ILContext il) {
             ILCursor cursor = new ILCursor(il);
-            cursor.GotoNext(instr => instr.MatchRet()); 
+            cursor.GotoNext(instr => instr.MatchRet());
             if (cursor.TryGotoPrev(instr => instr.MatchLdarg(0))) { //Goes directly before `this.Loaded = true`
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<LevelLoader>>(LoadingThreadMod);
@@ -84,7 +84,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         //DarkMatter Behavior. Copied from TwigHelper/JackalCollabHelper but cleaned up significantly.
         public static IEnumerator DarkMatterCoroutine(Player player) {
             yield return 0.1f; // wait 6 frames, this should be ample time for the player, and if the game is frozen this should not increase
-            player.RefillStamina(); // refill all stamina 
+            player.RefillStamina(); // refill all stamina
             Input.Rumble(RumbleStrength.Strong, RumbleLength.Medium);
             player.SceneAs<Level>().DirectionalShake(Vector2.Normalize(player.Speed));
         }
@@ -139,14 +139,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         //Particles are renderer from the StrawberryJamDarkMatterRenderer, operating on the List of rectangles.
         public const string Flag = "disable_lightning";
 
-        private float toggleOffset;
-        
-        public int VisualWidth;
-        
-        public int VisualHeight;
-        
+        private readonly float toggleOffset;
+
+        public readonly int VisualWidth;
+
+        public readonly int VisualHeight;
+
         public DarkMatterRenderer renderer;
-        
+
         public EntityID id;
 
         public DarkMatter(Vector2 position, int width, int height, EntityID id)
@@ -156,7 +156,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Collider = new Hitbox(width - 2, height - 2, 1f, 1f);
             Add(new PlayerCollider(OnPlayer));
             this.id = id;
-            
+
             toggleOffset = Calc.Random.NextFloat();
         }
 

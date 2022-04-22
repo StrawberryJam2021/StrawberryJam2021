@@ -10,13 +10,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked]
     public class FlagFloatySpaceBlock : Solid {
         private TileGrid tiles;
-        private char tileType;
-        private string flag;
+        private readonly char tileType;
+        private readonly string flag;
         private bool activated;
-        private Vector2 node;
-        private Vector2 startPosition;
+        private readonly Vector2 node;
+        private readonly Vector2 startPosition;
         private Vector2 tweenStartPosition;
-        private float moveTime;
+        private readonly float moveTime;
         private Tween floatTween;
 
         private float sineWave;

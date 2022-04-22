@@ -8,10 +8,10 @@ using ExtendedVariants.Module;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/VariantToggleController")]
     public class VariantToggleController : Entity {
-        private string flag; //the flag that controls the variants
+        private readonly string flag; //the flag that controls the variants
         private bool isFlagged; //last flag state
-        private bool defaultValue;
-        private Dictionary<ExtendedVariantsModule.Variant, int> variantValues;
+        private readonly bool defaultValue;
+        private readonly Dictionary<ExtendedVariantsModule.Variant, int> variantValues;
 
         public VariantToggleController(EntityData data, Vector2 offset)
             : this(data.Position + offset, data.Attr("flag"), data.Attr("variantList"), data.Bool("defaultValue", true)) {

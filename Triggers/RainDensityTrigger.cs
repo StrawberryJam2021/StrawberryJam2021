@@ -16,8 +16,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         private static Data SessionData => StrawberryJam2021Module.Session.RainDensityData;
 
-        private float triggerEndDensity;
-        private float triggerDuration;
+        private readonly float triggerEndDensity;
+        private readonly float triggerDuration;
 
         public RainDensityTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             triggerEndDensity = Calc.Clamp(data.Float("density", 0f), 0f, 1f);

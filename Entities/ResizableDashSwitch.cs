@@ -22,10 +22,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static ParticleType P_Fizzle;
         public static ParticleType P_Shatter;
 
-        private DynamicData baseData;
+        private readonly DynamicData baseData;
         private Vector2 spriteOffset;
-        private int width;
-        private List<Image> switchImages = new();
+        private readonly int width;
+        private readonly List<Image> switchImages = new();
 
         private int widthTiles => width / 8;
 

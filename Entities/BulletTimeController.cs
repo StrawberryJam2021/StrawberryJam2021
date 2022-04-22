@@ -5,7 +5,7 @@ using Monocle;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/BTController")]
     public class BTController : Entity {
-        private float timerate = 1;
+        private readonly float timerate;
 
         public BTController(EntityData data, Vector2 offset) : base(data.Position + offset) {
             timerate = data.Float("speed");

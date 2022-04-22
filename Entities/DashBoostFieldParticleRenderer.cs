@@ -7,7 +7,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class DashBoostFieldParticleRenderer : Component {
         private const float density = 0.02f;
 
-        private List<Particle> particles = new List<Particle>();
+        private readonly List<Particle> particles = new List<Particle>();
 
         private DashBoostField BoostField => Entity as DashBoostField;
         // thank you to Vexatos for being better at math than me
@@ -62,8 +62,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             public float Percent;
             public float Alpha;
 
-            private DashBoostFieldParticleRenderer parent;
-            private Color[] colors;
+            private readonly DashBoostFieldParticleRenderer parent;
+            private readonly Color[] colors;
 
             public Particle(DashBoostFieldParticleRenderer parent) {
                 this.parent = parent;

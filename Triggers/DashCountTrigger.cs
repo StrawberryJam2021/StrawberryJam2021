@@ -13,9 +13,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static bool IsInCurrentMap;
         private static int NormalDashAmount = 1;
         private static bool ResetOnDeath;
-        private int NormalDashAmountSetting = 1;
-        private int NumberOfDashesSetting = 1;
-        private bool ResetOnDeathSetting;
+        private readonly int NormalDashAmountSetting = 1;
+        private readonly int NumberOfDashesSetting = 1;
+        private readonly bool ResetOnDeathSetting;
 
         public DashCountTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             NumberOfDashesSetting = data.Int("NumberOfDashes",1);

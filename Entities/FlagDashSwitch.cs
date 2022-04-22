@@ -8,12 +8,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/FlagDashSwitch")]
     public class FlagDashSwitch : DashSwitch {
 
-        private string flag;
-        private bool persistent, flagTargetValue;
+        private readonly string flag;
+        private readonly bool persistent;
+        private readonly bool flagTargetValue;
         private static FieldInfo ds_pressed, ds_pressDirection, ds_side, ds_pressedTarget, ds_startY;
 
         private Vector2 spriteOffset;
-        private StaticMover mover;
+        private readonly StaticMover mover;
 
         public FlagDashSwitch(EntityData data, Vector2 offset, EntityID id) : base(data.Position + offset, chooseFacing(data.Enum<Sides>("orientation")), data.Bool("persistent", false), false, id, data.Attr("sprite", "default")) {
             persistent = data.Bool("persistent", false);

@@ -5,16 +5,17 @@ using System.Collections;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class PocketUmbrella : Actor {
-        private float staminaCost;
-        private Sprite sprite, sweat;
+        private readonly float staminaCost;
+        private readonly Sprite sprite;
+        private readonly Sprite sweat;
 
         public bool destroyed, spawning = true;
         public Holdable Hold;
         private Level level;
-        private SoundSource fallingSfx;
+        private readonly SoundSource fallingSfx;
         private Player player;
 
-        private string musicParam;
+        private readonly string musicParam;
 
         private static ParticleType P_Glow, P_Glide, P_GlideUp, P_Expand;
 

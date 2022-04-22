@@ -30,9 +30,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public Spikes.Directions Direction;
-        private Vector2 directionVector;
+        private readonly Vector2 directionVector;
         private Vector2 imageOffset;
-        private int size;
+        private readonly int size;
 
         public DashThroughSpikes(Vector2 position, int size, Spikes.Directions direction) :
             base(position) {

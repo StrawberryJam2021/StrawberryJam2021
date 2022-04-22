@@ -7,13 +7,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
     [CustomEntity("SJ2021/PinkCloudyFlower")]
     public class PinkCloudyFlower : Glider {
-        private JumpThru platform;
-        private Vector2 carryOffset;
-        private Holdable hold;
+        private readonly JumpThru platform;
+        private readonly Vector2 carryOffset;
+        private readonly Holdable hold;
         private bool waiting, returning;
         private float speedY;
-        private Action orig_onPickup;
-        private Action<Vector2> orig_onRelease;
+        private readonly Action orig_onPickup;
+        private readonly Action<Vector2> orig_onRelease;
 
         public PinkCloudyFlower(EntityData data, Vector2 offset) : base(data, offset) {
             Get<Sprite>().SetColor(Color.MediumOrchid);

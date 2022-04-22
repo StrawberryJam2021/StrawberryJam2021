@@ -13,22 +13,32 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class TripleBoostFlower : Actor {
 
         private int charges, lastFacing;
-        private float boostCooldown, boostDelay, boostSpeed, boostDuration, boostDurationMax, boostThreshold, gravity, highFrictionTimer, noGravityTimer;
+        private float boostCooldown;
+        private readonly float boostDelay;
+        private readonly float boostSpeed;
+        private float boostDuration;
+        private readonly float boostDurationMax;
+        private readonly float boostThreshold;
+        private readonly float gravity;
+        private float highFrictionTimer, noGravityTimer;
         private bool destroyed;
-        private Vector2 speed, customCarryOffset, prevLiftSpeed;
-        private Holdable hold;
-        private Collision onCollideH, onCollideV;
+        private Vector2 speed;
+        private readonly Vector2 customCarryOffset;
+        private Vector2 prevLiftSpeed;
+        private readonly Holdable hold;
+        private readonly Collision onCollideH;
+        private readonly Collision onCollideV;
         private Player player;
         private DynData<Player> playerDynData;
         private Level level;
-        private Sprite sprite;
+        private readonly Sprite sprite;
 
         public float FallSpeed { get; private set; }
         public float FastFallSpeed { get; private set; }
         public float SlowFallSpeed { get; private set; }
 
         private static ParticleType boostParticles;
-        private static MethodInfo player_launchBegin = typeof(Player).GetMethod("LaunchBegin", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo player_launchBegin = typeof(Player).GetMethod("LaunchBegin", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public TripleBoostFlower(EntityData data, Vector2 offset) : this(data.Position + offset, data.Float("boostDelay", 0.2f), data.Float("boostSpeed", -160f), data.Float("boostDuration", 0.5f), data.Float("fastFallSpeed", 120f), data.Float("slowFallSpeed", 24f), data.Float("normalFallSpeed", 40f)) {
         }

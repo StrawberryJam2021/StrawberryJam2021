@@ -27,16 +27,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static readonly FieldInfo GetPrivateRiders = typeof(Solid).GetField("riders", BindingFlags.NonPublic | BindingFlags.Static);
         private static HashSet<Actor> riders => (HashSet<Actor>)GetPrivateRiders.GetValue(null);
 
-        private string LevelID;
+        private readonly string LevelID;
 
         // 0 - Left; 1 - Right
-        private Hitbox[] colliders;
-        private Sprite[] sprites;
+        private readonly Hitbox[] colliders;
+        private readonly Sprite[] sprites;
 
-        private bool Inverted;
-        private string Flag;
-        public OpenDirections OpenDirection;
-        public Types Type;
+        private readonly bool Inverted;
+        private readonly string Flag;
+        public readonly OpenDirections OpenDirection;
+        public readonly Types Type;
 
         // maximum distance between foot of door and edge
         private const float MinEdgeSpace = 4f;
@@ -56,7 +56,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private bool open;
         private bool lockState;
 
-        private Shaker shaker;
+        private readonly Shaker shaker;
 
 
         //The full section between this comment and the next was written by lilybeevee
@@ -339,7 +339,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             float num = Math.Max(targetWidth, MinEdgeSpace);
             if (drawWidth != num) {
                 lockState = true;
-                drawWidth = Calc.Approach(drawWidth, num, 
+                drawWidth = Calc.Approach(drawWidth, num,
                     moveSpeedMultiplier * widthMoveSpeed * Engine.DeltaTime);
             } else {
                 lockState = false;
@@ -349,13 +349,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Render() {
             if (OpenDirection != OpenDirections.Right) {
                 Vector2 shake = new Vector2(0f, Math.Sign(shaker.Value.X));
-                sprites[0].DrawSubrect(new Vector2(0, -2) + shake, 
+                sprites[0].DrawSubrect(new Vector2(0, -2) + shake,
                     new Rectangle((int) (sprites[0].Width - drawWidth), 0,
                         (int) drawWidth, (int) sprites[0].Height));
             }
             if (OpenDirection != OpenDirections.Left) {
                 Vector2 shake = new Vector2(0f, Math.Sign(shaker.Value.Y));
-                sprites[1].DrawSubrect(new Vector2(48f - drawWidth, -3) + shake, 
+                sprites[1].DrawSubrect(new Vector2(48f - drawWidth, -3) + shake,
                     new Rectangle(0, 0, (int) drawWidth, (int) sprites[1].Height));
             }
         }

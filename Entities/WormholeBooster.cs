@@ -8,7 +8,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked]
     [CustomEntity("SJ2021/WormholeBooster")]
     public class WormholeBooster : Booster {
-        private DynData<Booster> data;
+        private readonly DynData<Booster> data;
         public Sprite sprite;
         public static bool TeleDeath;
         public static bool CanTeleport;
@@ -18,8 +18,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Color color;
         private static readonly Color displaceColor = Calc.HexToColor("827E00");
         public DisplacementRenderHook displaceHook;
-        private MTexture displace;
-        private Sprite displacementMask;
+        private readonly MTexture displace;
+        private readonly Sprite displacementMask;
         private float displaceEase = 1;
         private const float DelayTime = 0.3f;
         private float delayTimer;
@@ -233,7 +233,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private class WBTrailManager : Entity {
-            private Tween t;
+            private readonly Tween t;
 
             public WBTrailManager(Vector2 from, Vector2 to) : base(from) {
                 Tag = Tags.FrozenUpdate;

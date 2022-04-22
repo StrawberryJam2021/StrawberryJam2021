@@ -5,13 +5,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 	[Pooled]
 	[Tracked(false)]
     public class ToggleBlockNode : Entity {
-		private MTexture nodeTexture;
+		private readonly MTexture nodeTexture;
 
-		private MTexture nodeCrystalTexture;
+		private readonly MTexture nodeCrystalTexture;
 
 		public Color color = Color.Red;
 
-		private SineWave sine;
+		private readonly SineWave sine;
 
 		private float positionOffset;
 

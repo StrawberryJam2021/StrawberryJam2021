@@ -15,11 +15,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private class Bolt {
 
-            private DarkMatterRenderer Parent;
+            private readonly DarkMatterRenderer Parent;
 
-            private List<Vector2> nodes = new List<Vector2>();
+            private readonly List<Vector2> nodes = new List<Vector2>();
 
-            private Coroutine routine;
+            private readonly Coroutine routine;
 
             private bool visible;
 
@@ -121,17 +121,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private class Edge {
-            public DarkMatter Parent;
+            public readonly DarkMatter Parent;
 
             public bool Visible;
 
-            public Vector2 A;
+            public readonly Vector2 A;
 
-            public Vector2 B;
+            public readonly Vector2 B;
 
-            public Vector2 Min;
+            public readonly Vector2 Min;
 
-            public Vector2 Max;
+            public readonly Vector2 Max;
 
             public Edge(DarkMatter parent, Vector2 a, Vector2 b) {
                 Parent = parent;
@@ -155,11 +155,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Zoomies = 1,
         }
 
-        private List<DarkMatter> list = new List<DarkMatter>();
+        private readonly List<DarkMatter> list = new List<DarkMatter>();
 
-        private List<Edge> edges = new List<Edge>();
+        private readonly List<Edge> edges = new List<Edge>();
 
-        private List<Bolt> bolts = new List<Bolt>();
+        private readonly List<Bolt> bolts = new List<Bolt>();
 
         private VertexPositionColor[] edgeVerts;
 
@@ -175,13 +175,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public Mode mode;
 
-        private static Dictionary<Mode, Color[]> colorSets = new Dictionary<Mode, Color[]> {
+        private static readonly Dictionary<Mode, Color[]> colorSets = new Dictionary<Mode, Color[]> {
             { Mode.Kill, new Color[2] { Calc.HexToColor("7800b5"), Calc.HexToColor("663fA0") } },
             { Mode.Zoomies, new Color[2] { Calc.HexToColor("3b0c5c"), Calc.HexToColor("5e0864") } },
         };
 
 
-        private Color[] colorsLerped;
+        private readonly Color[] colorsLerped;
 
         public float Fade;
 
@@ -191,7 +191,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public bool DrawEdges = true;
 
-        public SoundSource AmbientSfx;
+        public readonly SoundSource AmbientSfx;
 
         public DarkMatterRenderer() {
             Tag = (int) Tags.Global | (int) Tags.TransitionUpdate;

@@ -12,7 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [Tracked]
     public class SkateboardTrigger : Trigger {
         #region static
-        private static Vector2 PlayerSpriteOffset = new Vector2(0, -3);
+        private static readonly Vector2 PlayerSpriteOffset = new Vector2(0, -3);
         private static MTexture SkateboardSprite;
         private static ILHook OrigUpdateSpriteHook;
 
@@ -92,7 +92,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             Disable,
             Toggle,
         }
-        private TriggerMode triggerMode;
+        private readonly TriggerMode triggerMode;
 
         public SkateboardTrigger(EntityData data, Vector2 offset)
             : base(data, offset) {

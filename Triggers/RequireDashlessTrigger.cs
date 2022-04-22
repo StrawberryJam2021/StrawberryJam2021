@@ -9,8 +9,8 @@ using System.Linq;
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/RequireDashlessTrigger")]
     public class RequireDashlessTrigger : Trigger {
-        private static char[] separators = { ',' };
-        private List<Entity> trackedEntities = new List<Entity>();
+        private static readonly char[] separators = { ',' };
+        private readonly List<Entity> trackedEntities = new List<Entity>();
         private bool removed;
 
         public string[] EntityNames;

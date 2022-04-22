@@ -19,7 +19,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public float TargetTimeRateMult;
         public float Radius;
 
-        private Image boostFieldTexture;
+        private readonly Image boostFieldTexture;
 
         public const string DefaultColor = "ffffff";
         public const float DefaultDashSpeedMult = 1.7f;
@@ -30,13 +30,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static ParticleType P_RedRefill;
         public static float CurrentTimeRateMult = 1f;
 
-        private static BindingFlags privateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
-        private static MethodInfo dashCoroutineInfo = typeof(Player).GetMethod("DashCoroutine", privateInstance).GetStateMachineTarget();
+        private static readonly BindingFlags privateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
+        private static readonly MethodInfo dashCoroutineInfo = typeof(Player).GetMethod("DashCoroutine", privateInstance).GetStateMachineTarget();
         private static ILHook dashCoroutineHook;
 
         // for some reason the default Center isn't actually the exact center
         public new Vector2 Center => Position - new Vector2(0.5f, 0.5f);
-        
+
         public DashBoostField(EntityData data, Vector2 offset)
             : base(data.Position + offset) {
             Color = Calc.HexToColor(data.Attr("color", DefaultColor));
