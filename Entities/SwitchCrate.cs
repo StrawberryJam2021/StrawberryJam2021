@@ -182,31 +182,31 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     previousPosition = ExactPosition;
                     MoveH(Speed.X * Engine.DeltaTime, onCollideH);
                     MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
-                    if (Center.X > (float) Level.Bounds.Right) {
+                    if (Center.X > Level.Bounds.Right) {
                         MoveH(32f * Engine.DeltaTime);
-                        if (Left - 8f > (float) Level.Bounds.Right) {
+                        if (Left - 8f > Level.Bounds.Right) {
                             RemoveSelf();
                         }
-                    } else if (Left < (float) Level.Bounds.Left) {
+                    } else if (Left < Level.Bounds.Left) {
                         Left = Level.Bounds.Left;
                         Speed.X *= -0.4f;
-                    } else if (Top < (float) (Level.Bounds.Top - 4)) {
+                    } else if (Top < Level.Bounds.Top - 4) {
                         Top = Level.Bounds.Top + 4;
                         Speed.Y = 0f;
-                    } else if (Bottom > (float) Level.Bounds.Bottom && SaveData.Instance.Assists.Invincible) {
+                    } else if (Bottom > Level.Bounds.Bottom && SaveData.Instance.Assists.Invincible) {
                         Bottom = Level.Bounds.Bottom;
                         Speed.Y = -300f;
                         Audio.Play("event:/game/general/assist_screenbottom", Position);
-                    } else if (Top > (float) Level.Bounds.Bottom) {
+                    } else if (Top > Level.Bounds.Bottom) {
                         Die(forceKillMaddy: true);
                     }
-                    if (X < (float) (Level.Bounds.Left + 10)) {
+                    if (X < Level.Bounds.Left + 10) {
                         MoveH(32f * Engine.DeltaTime);
                     }
                     TempleGate templeGate = CollideFirst<TempleGate>();
                     if (templeGate != null && player != null) {
                         templeGate.Collidable = false;
-                        MoveH((float) (Math.Sign(player.X - X) * 32) * Engine.DeltaTime);
+                        MoveH(Math.Sign(player.X - X) * 32 * Engine.DeltaTime);
                         templeGate.Collidable = true;
                     }
                 }
@@ -265,7 +265,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             if (data.Hit is SwitchCrateHolder) {
                 SwitchCrateHolder batterySwitch = data.Hit as SwitchCrateHolder;
-                batterySwitch.Hit(this, Vector2.UnitY * (float) Math.Sign(Speed.Y));
+                batterySwitch.Hit(this, Vector2.UnitY * Math.Sign(Speed.Y));
             }
             if (Speed.Y > 160f) {
                 ImpactParticles(data.Direction);
@@ -307,7 +307,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (num == 0) {
                     num = 1;
                 }
-                Speed.X = (float) num * 120f;
+                Speed.X = num * 120f;
                 Speed.Y = -30f;
             }
         }

@@ -130,9 +130,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 level.Add(new LightningStrike(new Vector2(player.X + 220f, player.Y - 180), 40, 200f, 0.25f));
                 Audio.Play("event:/new_content/game/10_farewell/lightning_strike");
             }
-            
+
         }
-        
+
 
         public override void OnEnter(Player player)
         {
@@ -162,7 +162,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 if (delay > 0) Add(new Coroutine(OnEnterSequence(player)));
                 else if (!triggered && StrawberryJam2021Module.VivHelperGetFlags(level, flags, "and") && player != null && !player.Dead) Teleport(player);
             }
-            
+
         }
 
         public override void OnLeave(Player player)
@@ -196,7 +196,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 {
                     if (delay > 0) Add(new Coroutine(OnEnterSequence(player)));
                     else if (!triggered && StrawberryJam2021Module.VivHelperGetFlags(level, flags, "and") && player != null && !player.Dead) Teleport(player);
-                } 
+                }
             }
             direction = -1;
         }
@@ -275,7 +275,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     level.Remove(player);
                     level.UnloadLevel();
                     level.Entities.Remove(level.Entities.FindAll<FlingBird>()); //Apparently Awake is called in a FlingBird to save it to the EntityList and we don't want that.
-                    
+
                     //Sets the future values of the player. This code is modified from the Teleport Trigger to accommodate more things.
                     level.Session.Level = newRoom;
                     level.Session.Dreaming = dreaming;
@@ -377,7 +377,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 player.Speed = velMod ? player.Speed * vel2 : player.Speed + new Vector2(vel2 * (float)Math.Cos(Calc.Angle(player.Speed)), vel2 * (float)Math.Sin(Calc.Angle(player.Speed)));
             }
             player.Speed = rotMod ? Calc.RotateTowards(player.Speed, rot, 6.3f) : Calc.Rotate(player.Speed, rot);
-            
+
         }
 
         private void CameraShit(Level level, Player player, Vector2 v)
@@ -390,8 +390,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             {
                 Vector2 camPos = player.Position;
                 Vector2 vector2 = new Vector2(player.X - 160f, player.Y - 90f);
-                camPos.X = MathHelper.Clamp(vector2.X, (float)level.Bounds.Left, (float)(level.Bounds.Right - 320));
-                camPos.Y = MathHelper.Clamp(vector2.Y, (float)level.Bounds.Top, (float)(level.Bounds.Bottom - 180));
+                camPos.X = MathHelper.Clamp(vector2.X, level.Bounds.Left, level.Bounds.Right - 320);
+                camPos.Y = MathHelper.Clamp(vector2.Y, level.Bounds.Top, level.Bounds.Bottom - 180);
                 level.Camera.Position = camPos;
 
             }
@@ -402,8 +402,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             level.CameraOffset = vals[3];
             Vector2 camPos = player.Position;
             Vector2 vector2 = new Vector2(player.X - 160f, player.Y - 90f) + vals[3];
-            camPos.X = MathHelper.Clamp(vector2.X, (float)level.Bounds.Left, (float)(level.Bounds.Right - 320));
-            camPos.Y = MathHelper.Clamp(vector2.Y, (float)level.Bounds.Top, (float)(level.Bounds.Bottom - 180));
+            camPos.X = MathHelper.Clamp(vector2.X, level.Bounds.Left, level.Bounds.Right - 320);
+            camPos.Y = MathHelper.Clamp(vector2.Y, level.Bounds.Top, level.Bounds.Bottom - 180);
             level.Camera.Position = camPos;
 
 
@@ -422,9 +422,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     player.CameraAnchorIgnoreY = c.Item4;
                     break;
             }
-            
+
 
         }
-      
+
     }
 }

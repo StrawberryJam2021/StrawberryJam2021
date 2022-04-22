@@ -178,7 +178,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             self.Speed = Vector2.Zero;
             Vector2 vector = self.Holding.Entity.Position - self.Position;
             Vector2 carryOffsetTarget = self_carryOffsetTarget;
-            Vector2 control = new Vector2(vector.X + (float) (Math.Sign(vector.X) * 2), self_carryOffsetTarget.Y - 2f);
+            Vector2 control = new Vector2(vector.X + Math.Sign(vector.X) * 2, self_carryOffsetTarget.Y - 2f);
             SimpleCurve curve = new SimpleCurve(vector, carryOffsetTarget, control);
             set_self_carryOffset(vector);
             Tween tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeInOut, 0.16f, true);
@@ -221,7 +221,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (self.Holding?.Entity is SkyLantern && Input.MoveY.Value == 1 && Input.MoveX.Value != 0) {
                 Input.Rumble(RumbleStrength.Strong, RumbleLength.Short);
                 self.Holding.Release(Vector2.UnitX * (float) self.Facing);
-                self.Speed.X = self.Speed.X + 80f * (float) -(float) self.Facing;
+                self.Speed.X = self.Speed.X + 80f * -(float) self.Facing;
                 self.Play(SFX.char_mad_crystaltheo_throw, null, 0f);
                 self.Sprite.Play("throw", false, false);
                 self.Holding = null;
@@ -579,7 +579,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void CollideHandlerH(CollisionData data) {
             if (data.Hit is DashSwitch dashswitch)
-                dashswitch.OnDashCollide(null, Vector2.UnitX * (float) Math.Sign(speed.X));
+                dashswitch.OnDashCollide(null, Vector2.UnitX * Math.Sign(speed.X));
             string sfx = "event:/new_content/game/10_farewell/glider_wallbounce_" + ((speed.X < 0) ? "left" : "right");
             Audio.Play(sfx, Position);
             speed.X *= -1;

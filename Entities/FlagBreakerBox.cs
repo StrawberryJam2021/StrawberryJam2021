@@ -161,7 +161,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             if (Collidable) {
                 bool hasPlayerRider = HasPlayerRider();
-                sink = Calc.Approach(sink, (float) (hasPlayerRider ? 1 : 0), 2f * Engine.DeltaTime);
+                sink = Calc.Approach(sink, hasPlayerRider ? 1 : 0, 2f * Engine.DeltaTime);
                 sine.Rate = MathHelper.Lerp(1f, 0.5f, sink);
                 Vector2 target = start;
                 target.Y += sink * 6f + sine.Value * MathHelper.Lerp(4f, 2f, sink);
@@ -210,7 +210,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Audio.SetMusic(SFX.EventnameByHandle(music), false, true);
                 }
                 if (musicProgress >= 0) {
-                    Audio.SetMusicParam("progress", (float) musicProgress);
+                    Audio.SetMusicParam("progress", musicProgress);
                 }
                 if (!string.IsNullOrEmpty(music) && Audio.CurrentMusicEventInstance != null) {
                     Audio.CurrentMusicEventInstance.start();

@@ -66,7 +66,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (self is WormholeBooster) {
                 ParticleSystem particlesBG = self.SceneAs<Level>().ParticlesBG;
                 for (int i = 0; i < 360; i += 30) {
-                    particlesBG.Emit(P_WAppear, 1, self.Center, Vector2.One * 2f, (float) i * ((float) Math.PI / 180f));
+                    particlesBG.Emit(P_WAppear, 1, self.Center, Vector2.One * 2f, i * ((float) Math.PI / 180f));
                 }
             } else {
                 orig(self);
@@ -178,7 +178,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Vector2 target = level.GetFullCameraTargetAt(player, player.Position);
             while (Vector2.Distance(level.Camera.Position, target) > Engine.ViewWidth / 8) {
                 Vector2 current = level.Camera.Position;
-                level.Camera.Position = current + (target - current) * (1f - (float) Math.Pow((double) (0.01f / 1f), (double) Engine.DeltaTime));
+                level.Camera.Position = current + (target - current) * (1f - (float) Math.Pow(0.01f / 1f, Engine.DeltaTime));
                 yield return null;
             }
             level.Frozen = false;

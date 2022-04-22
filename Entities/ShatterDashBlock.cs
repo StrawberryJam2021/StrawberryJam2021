@@ -82,8 +82,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Audio.Play(SFX.game_gen_wallbreak_stone, Position);
                 }
             }
-            for (int i = 0; (float) i < Width / 8f; i++) {
-                for (int j = 0; (float) j < Height / 8f; j++) {
+            for (int i = 0; i < Width / 8f; i++) {
+                for (int j = 0; j < Height / 8f; j++) {
                     Scene.Add(Engine.Pooler.Create<Debris>().Init(Position + new Vector2(4 + i * 8, 4 + j * 8), tileType, playDebrisSound).BlastFrom(player.Center));
                 }
             }

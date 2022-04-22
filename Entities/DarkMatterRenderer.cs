@@ -61,13 +61,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     List<Vector2> list = new List<Vector2>();
                     for (int k = 0; k < 3; k++) {
                         Vector2 item = Calc.Random.Choose(new Vector2(0f, Calc.Random.Range(8, height - 16)), new Vector2(Calc.Random.Range(8, width - 16), 0f), new Vector2(width, Calc.Random.Range(8, height - 16)), new Vector2(Calc.Random.Range(8, width - 16), height));
-                        Vector2 item2 = ((item.X <= 0f || item.X >= (float) width) ? new Vector2((float) width - item.X, item.Y) : new Vector2(item.X, (float) height - item.Y));
+                        Vector2 item2 = ((item.X <= 0f || item.X >= width) ? new Vector2(width - item.X, item.Y) : new Vector2(item.X, height - item.Y));
                         list.Add(item);
                         list.Add(item2);
                     }
                     List<Vector2> list2 = new List<Vector2>();
                     for (int l = 0; l < 3; l++) {
-                        list2.Add(new Vector2(Calc.Random.Range(0.25f, 0.75f) * (float) width, Calc.Random.Range(0.25f, 0.75f) * (float) height));
+                        list2.Add(new Vector2(Calc.Random.Range(0.25f, 0.75f) * width, Calc.Random.Range(0.25f, 0.75f) * height));
                     }
                     nodes.Clear();
                     foreach (Vector2 item4 in list) {
@@ -93,8 +93,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         if (!Settings.Instance.DisableFlashes) {
                             visible = false;
                         }
-                        yield return 0.05f + (float) j * 0.02f;
-                        float num = (float) j / 5f;
+                        yield return 0.05f + j * 0.02f;
+                        float num = j / 5f;
                         visible = true;
                         size = (1f - num) * 5f;
                         gap = num;
@@ -143,8 +143,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             public bool InView(ref Rectangle view) {
-                if ((float) view.Left < Parent.X + Max.X && (float) view.Right > Parent.X + Min.X && (float) view.Top < Parent.Y + Max.Y) {
-                    return (float) view.Bottom > Parent.Y + Min.Y;
+                if (view.Left < Parent.X + Max.X && view.Right > Parent.X + Min.X && view.Top < Parent.Y + Max.Y) {
+                    return view.Bottom > Parent.Y + Min.Y;
                 }
                 return false;
             }
@@ -245,8 +245,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (list.Count <= 0) {
                 tiles = null;
             } else {
-                for (int i = (int) block.X / 8; (float) i < block.Right / 8f; i++) {
-                    for (int j = (int) block.Y / 8; (float) j < block.Bottom / 8f; j++) {
+                for (int i = (int) block.X / 8; i < block.Right / 8f; i++) {
+                    for (int j = (int) block.Y / 8; j < block.Bottom / 8f; j++) {
                         tiles[i - levelTileBounds.X, j - levelTileBounds.Y] = false;
                     }
                 }
@@ -291,9 +291,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             for (int i = 0; i < edges.Count; i++) {
                 if (immediate) {
                     edges[i].Visible = edges[i].InView(ref view);
-                } else if (!edges[i].Visible && Scene.OnInterval(0.05f, (float) i * 0.01f) && edges[i].InView(ref view)) {
+                } else if (!edges[i].Visible && Scene.OnInterval(0.05f, i * 0.01f) && edges[i].InView(ref view)) {
                     edges[i].Visible = true;
-                } else if (edges[i].Visible && Scene.OnInterval(0.25f, (float) i * 0.01f) && !edges[i].InView(ref view)) {
+                } else if (edges[i].Visible && Scene.OnInterval(0.25f, i * 0.01f) && !edges[i].InView(ref view)) {
                     edges[i].Visible = false;
                 }
             }
@@ -313,8 +313,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             new Point(1, 0),
             };
             foreach (DarkMatter item in list) {
-                for (int i = (int) item.X / 8; (float) i < item.Right / 8f; i++) {
-                    for (int j = (int) item.Y / 8; (float) j < item.Bottom / 8f; j++) {
+                for (int i = (int) item.X / 8; i < item.Right / 8f; i++) {
+                    for (int j = (int) item.Y / 8; j < item.Bottom / 8f; j++) {
                         Point[] array2 = array;
                         for (int k = 0; k < array2.Length; k++) {
                             Point point = array2[k];
@@ -418,11 +418,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             int num2 = ((PseudoRand(ref seed) % 2u != 0) ? 1 : (-1));
             float num3 = PseudoRandRange(ref seed, 0f, (float) Math.PI * 2f);
             float num4 = 0f;
-            float num5 = (float) index + ((b - a).Length() / 4f + 1f) * 6f;
-            while (num5 >= (float) verts.Length) {
+            float num5 = index + ((b - a).Length() / 4f + 1f) * 6f;
+            while (num5 >= verts.Length) {
                 Array.Resize(ref verts, verts.Length * 2);
             }
-            for (int i = index; (float) i < num5; i++) {
+            for (int i = index; i < num5; i++) {
                 verts[i].Color = color;
             }
             do {
@@ -459,7 +459,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             Vector2 vector2 = simpleCurve.GetPoint(0f);
             for (int i = 0; i <= steps; i++) {
-                Vector2 point = simpleCurve.GetPoint((float) i / (float) steps);
+                Vector2 point = simpleCurve.GetPoint(i / (float) steps);
                 if (i != steps) {
                     point += new Vector2(PseudoRandRange(ref seed, -2f, 2f), PseudoRandRange(ref seed, -2f, 2f));
                 }
@@ -515,7 +515,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public static float PseudoRandRange(ref uint seed, float min, float max) {
-            return min + (float) (PseudoRand(ref seed) & 0x3FFu) / 1024f * (max - min);
+            return min + (PseudoRand(ref seed) & 0x3FFu) / 1024f * (max - min);
         }
     }
 }

@@ -76,7 +76,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (completion > 1 || completion < 0) {
                 completion -= Math.Sign(completion) * (int) (Math.Abs(completion) + 1);
             }
-            return linear ? (float) (-amplitude + 2 * amplitude * completion) : (float) Math.Sin(completion * Math.PI * 2) * amplitude;
+            return linear ? -amplitude + 2 * amplitude * completion : (float) Math.Sin(completion * Math.PI * 2) * amplitude;
         }
     }
 }

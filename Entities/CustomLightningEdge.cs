@@ -46,7 +46,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             _electricityColors = new[] { Utilities.HexOrNameToColor(data.Attr("color1", "fcf579")), Utilities.HexOrNameToColor(data.Attr("color2", "8cf7e2")) };
             interval = Math.Max(data.Float("interval", 0.05f), 0.016f);
-            
+
         }
 
         public override void Update() {
@@ -84,11 +84,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             int num2 = (PseudoRand(ref seed) % 2u != 0) ? 1 : (-1);
             float num3 = PseudoRandRange(ref seed, 0f, (float) Math.PI * 2f);
             float num4 = 0f;
-            float num5 = (float) index + ((b - a).Length() / 4f + 1f) * 6f;
-            while (num5 >= (float) verts.Length) {
+            float num5 = index + ((b - a).Length() / 4f + 1f) * 6f;
+            while (num5 >= verts.Length) {
                 Array.Resize(ref verts, verts.Length * 2);
             }
-            for (int i = index; (float) i < num5; i++) {
+            for (int i = index; i < num5; i++) {
                 verts[i].Color = color * 0.75f;
             }
             do {

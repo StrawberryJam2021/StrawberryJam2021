@@ -98,7 +98,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             direction = data.Enum<FourWayDirection>("direction", FourWayDirection.Right);
             particles = new List<Vector2>();
             region = new Vector2(Width - 1f, Height - 1f);
-            for (int i = 0; (float) i < Width * Height / 16f; i++) {
+            for (int i = 0; i < Width * Height / 16f; i++) {
                 particles.Add(new Vector2(Calc.Random.NextFloat(Width - 1f), Calc.Random.NextFloat(Height - 1f)));
             }
 
