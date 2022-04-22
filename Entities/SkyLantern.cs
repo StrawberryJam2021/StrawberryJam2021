@@ -51,8 +51,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             lastDroppedTime = -2;
 
             Collider = new Hitbox(8, 10, -4, -10);
-            onCollideH = new Collision(CollideHandlerH);
-            onCollideV = new Collision(CollideHandlerV);
+            onCollideH = CollideHandlerH;
+            onCollideV = CollideHandlerV;
             Add(sprite = StrawberryJam2021Module.SpriteBank.Create("skyLantern"));
             Add(wiggler = Wiggler.Create(0.25f, 4, null, false, false));
             Depth = Depths.Player - 5;
@@ -60,8 +60,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hold.PickupCollider = new Hitbox(20, 22, -10, -16);
             hold.SlowFall = true;
             hold.SlowRun = false;
-            hold.OnPickup = new Action(PickupHandler);
-            hold.OnRelease = new Action<Vector2>(ReleaseHandler);
+            hold.OnPickup = PickupHandler;
+            hold.OnRelease = ReleaseHandler;
             hold.SpeedGetter = () => { return speed; };
             hold.OnHitSpring = SpringHandler;
             Add(platformSine = new SineWave(0.3f, 0));
@@ -155,15 +155,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Vector2 self_carryOffsetTarget = new Vector2(0f, -12f); // not the """correct""" way to do it but it never gets changed soo....why not
             DynData<Player> dyndata_player = new DynData<Player>(self);
 
-            Func<float> get_self_gliderBoosterTimer = new Func<float>(() => { return dyndata_player.Get<float>("gliderBoostTimer"); });
-            Action<float> set_self_gliderBoosterTimer = new Action<float>((x) => dyndata_player.Set("gliderBoostTimer", x));
+            Func<float> get_self_gliderBoosterTimer = () => { return dyndata_player.Get<float>("gliderBoostTimer"); };
+            Action<float> set_self_gliderBoosterTimer = (x) => dyndata_player.Set("gliderBoostTimer", x);
 
             Vector2 self_gliderBoostDir = new DynData<Player>(self).Get<Vector2>("gliderBoostDir");
 
-            Func<float> get_self_varJumpTimer = new Func<float>(() => { return dyndata_player.Get<float>("varJumpTimer"); });
-            Action<float> set_self_varJumpTimer = new Action<float>((x) => dyndata_player.Set("varJumpTimer", x));
+            Func<float> get_self_varJumpTimer = () => { return dyndata_player.Get<float>("varJumpTimer"); };
+            Action<float> set_self_varJumpTimer = (x) => dyndata_player.Set("varJumpTimer", x);
 
-            Action<Vector2> set_self_carryOffset = new Action<Vector2>((x) => dyndata_player.Set("carryOffset", x));
+            Action<Vector2> set_self_carryOffset = (x) => dyndata_player.Set("carryOffset", x);
 
             bool self_onGround = dyndata_player.Get<bool>("onGround");
             bool self_holdCannotDuck = dyndata_player.Get<bool>("holdCannotDuck");

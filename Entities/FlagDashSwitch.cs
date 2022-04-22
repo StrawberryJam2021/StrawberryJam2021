@@ -21,19 +21,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             flag = data.Attr("flag");
             if (data.Bool("attach", false)) {
                 Add(mover = new StaticMover {
-                    OnMove = new Action<Vector2>(staticMoverMove),
-                    OnEnable = new Action(onEnable) ,
+                    OnMove = staticMoverMove,
+                    OnEnable = onEnable ,
                     OnAttach = delegate (Platform p) { Depth = p.Depth + 1; },
-                    OnShake = new Action<Vector2>(onShake),
-                    SolidChecker = new Func<Solid, bool>((s) =>
+                    OnShake = onShake,
+                    SolidChecker = (s) =>
                         (Sides) ds_side.GetValue(this) switch {
                             Sides.Down => CollideCheckOutside(s, Position + Vector2.UnitY * 4),
                             Sides.Up => CollideCheckOutside(s, Position - Vector2.UnitY * 4),
                             Sides.Left => CollideCheckOutside(s, Position - Vector2.UnitX * 2),
                             Sides.Right => CollideCheckOutside(s, Position + Vector2.UnitX * 2),
                             _ => false,
-                        }
-                ),
+                        },
                 });
             }
             Sides side = (Sides) ds_side.GetValue(this);

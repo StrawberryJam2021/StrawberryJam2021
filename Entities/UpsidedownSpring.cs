@@ -28,7 +28,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Remove(Get<HoldableCollider>());
 
             // replace them with ones we need
-            Add(new HoldableCollider(new Action<Holdable>(onHoldable), null));
+            Add(new HoldableCollider(onHoldable, null));
 
             sprite.Position = sprite.Position + Vector2.UnitY * 7;
             sprite.Rotation = (float) Math.PI;

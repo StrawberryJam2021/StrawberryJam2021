@@ -57,7 +57,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             bounce.StartZero = false;
             Add(bounce);
             Add(shaker = new Shaker(false, null));
-            OnDashCollide = new DashCollision(Dashed);
+            OnDashCollide = Dashed;
         }
 
         public FlagBreakerBox(EntityData e, Vector2 levelOffset)

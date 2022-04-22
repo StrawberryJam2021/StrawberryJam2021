@@ -50,7 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Hold.SlowFall = true;
             Hold.SlowRun = false;
             Hold.PickupCollider = new Hitbox(20, 22, -10, -16);
-            Hold.OnPickup = new Action(onPickup);
+            Hold.OnPickup = onPickup;
 
             Add(fallingSfx = new SoundSource());
         }

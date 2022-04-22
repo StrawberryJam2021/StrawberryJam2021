@@ -59,12 +59,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     break;
             }
 
-            Add(new PlayerCollider(new Action<Player>(OnCollide)));
+            Add(new PlayerCollider(OnCollide));
 
             Add(new StaticMover {
-                OnShake = new Action<Vector2>(OnShake),
-                SolidChecker = new Func<Solid, bool>(IsRiding),
-                JumpThruChecker = new Func<JumpThru, bool>(IsRiding),
+                OnShake = OnShake,
+                SolidChecker = IsRiding,
+                JumpThruChecker = IsRiding,
             });
         }
 
@@ -153,14 +153,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             };
         }
 
-        //returns bool based on if the player is still dash type state, 
+        //returns bool based on if the player is still dash type state,
         //and their direction is toward the spikes in at least 1 direction
         private bool DashingIntoSpikes(Player player) {
             return (player.DashAttacking
-                || player.StateMachine.State == Player.StDash 
+                || player.StateMachine.State == Player.StDash
                 || player.StateMachine.State == Player.StRedDash
                 || player.StateMachine.State == Player.StDreamDash)
-                && (Math.Sign(player.DashDir.X) == -Math.Sign(directionVector.X) 
+                && (Math.Sign(player.DashDir.X) == -Math.Sign(directionVector.X)
                 || Math.Sign(player.DashDir.Y) == -Math.Sign(directionVector.Y));
         }
 

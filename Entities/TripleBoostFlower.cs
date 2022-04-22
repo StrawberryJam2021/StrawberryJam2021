@@ -57,8 +57,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             sprite.Play("idle_3");
 
             Collider = new Hitbox(6, 10, -3, -5); // todo adjust
-            onCollideH = new Collision(collideHandlerH);
-            onCollideV = new Collision(collideHandlerV);
+            onCollideH = collideHandlerH;
+            onCollideV = collideHandlerV;
 
 
             Add(hold = new Holdable(0.3f));
@@ -66,9 +66,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hold.SlowFall = true;
             hold.SlowRun = false; // todo ask
             hold.SpeedGetter = () => speed;
-            hold.OnPickup = new Action(onPickup);
-            hold.OnRelease = new Action<Vector2>(onRelease);
-            hold.OnHitSpring = new Func<Spring, bool>(onHitSpring);
+            hold.OnPickup = onPickup;
+            hold.OnRelease = onRelease;
+            hold.OnHitSpring = onHitSpring;
 
         }
 
