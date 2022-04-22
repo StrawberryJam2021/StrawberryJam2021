@@ -31,8 +31,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void OnPlayer(Player player) {
+            int playerRealDashes = player.Dashes - (session.ExpiringDashRemainingTime > 0 ? 1 : 0);
+
+            // The dash shouldn't be picked up if the ExpiringDash the player holds would last longer
+            if (session.ExpiringDashRemainingTime >= dashExpirationTime)
+                return;
+
             // Unconditionally add the dash, bypassing inventory limits
-            player.Dashes = 1;
+            player.Dashes = playerRealDashes + 1;
             session.ExpiringDashRemainingTime = dashExpirationTime;
             session.ExpiringDashFlashThreshold = hairFlashTime;
 
@@ -53,12 +59,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Player.Update += Update;
             On.Celeste.Player.Die += OnPlayerDeath;
             On.Celeste.Player.OnTransition += OnTransition;
+            On.Celeste.Player.DashBegin += OnDashBegin;
         }
         public static void Unload() {
             On.Celeste.Player.UpdateHair -= UpdateHair;
             On.Celeste.Player.Update -= Update;
             On.Celeste.Player.Die -= OnPlayerDeath;
             On.Celeste.Player.OnTransition -= OnTransition;
+            On.Celeste.Player.DashBegin -= OnDashBegin;
         }
 
         public static void UpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player player, bool applyGravity) {
@@ -67,11 +75,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             orig.Invoke(player, applyGravity);
         }
 
+        public static void OnDashBegin(On.Celeste.Player.orig_DashBegin orig, Player player) {
+            // The expiring dash should get used first
+            session.ExpiringDashRemainingTime = 0;
+            player.OverrideHairColor = null;
+            orig.Invoke(player);
+        }
+
+
         public static PlayerDeadBody OnPlayerDeath(On.Celeste.Player.orig_Die orig, Player player, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats) {
             if (evenIfInvincible || !SaveData.Instance.Assists.Invincible) {
                 flash = false;
                 session.ExpiringDashRemainingTime = 0;
-                player.Dashes = 0;
             }
 
             return orig.Invoke(player, direction, evenIfInvincible, registerDeathInStats);
@@ -80,7 +95,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static void OnTransition(On.Celeste.Player.orig_OnTransition orig, Player player) {
             // We first remove the expiring dash if the player still has one
             if (session.ExpiringDashRemainingTime > 0) {
-                player.Dashes = 0;
+                player.Dashes--;
 
                 player.OverrideHairColor = null;
 
@@ -96,9 +111,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             self.OverrideHairColor = null;
 
-            if (self.Dashes == 0)
-                return;
-
             if (session.ExpiringDashRemainingTime <= 0)
                 return;
 
@@ -106,7 +118,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (session.ExpiringDashRemainingTime <= 0) {
                 // Remove given dash
-                self.Dashes = 0;
+                self.Dashes--;
                 flash = false;
 
                 return;
