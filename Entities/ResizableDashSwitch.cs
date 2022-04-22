@@ -409,7 +409,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     }
 
     public static class ResizableDashSwitchExtensions {
-        private static readonly Vector2[] outlineOffsets = new Vector2[] {
+        private static readonly Vector2[] outlineOffsets = {
             -Vector2.UnitX,
             Vector2.UnitX,
             -Vector2.UnitY,

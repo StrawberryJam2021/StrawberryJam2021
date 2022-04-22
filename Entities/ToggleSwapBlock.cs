@@ -81,7 +81,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		#region ToggleSwapBlock Class Members
 
 		private const int STAY = 8, DONE = 9;
-		private static string[] paths = new string[] { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
+		private static string[] paths = { "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", "done" };
 		private static readonly string defaultIndicatorPath = "objects/StrawberryJam2021/toggleSwapBlock/indicator/plain/";
 		private static readonly string defaultStartAudio = "event:/game/05_mirror_temple/swapblock_move";
 		private static readonly string defaultStopAudio = "event:/game/05_mirror_temple/swapblock_move_end";

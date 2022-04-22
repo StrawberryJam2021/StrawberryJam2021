@@ -16,11 +16,11 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     public class StylegroundMask : Mask {
         public static Dictionary<string, VirtualRenderTarget> BgBuffers = new Dictionary<string, VirtualRenderTarget>();
         public static Dictionary<string, VirtualRenderTarget> FgBuffers = new Dictionary<string, VirtualRenderTarget>();
-        public string[] RenderTags = new string[] { };
+        public string[] RenderTags = new string[0];
         public bool Foreground;
         public bool EntityRenderer;
         public bool BehindForeground;
-        
+
         public float AlphaFrom;
         public float AlphaTo;
 
