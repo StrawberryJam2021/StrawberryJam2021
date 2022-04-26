@@ -4,11 +4,8 @@ using Monocle;
 using System.Collections;
 using System.Reflection;
 
-
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    // At the moment this entity is heavily based around these assumption :
-    // 1. that the player will have the prologue inventory
-    // 2. that they can only hold 1 expiring dash at any given time
+    // At the moment this entity is heavily based around the assumption that the player can only hold at-most one ER at any given moment
     [Tracked]
     [CustomEntity("SJ2021/ExpiringDashRefill")]
     public class ExpiringDashRefill : Refill {
@@ -83,7 +80,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             flash = false;
             orig.Invoke(player);
         }
-
 
         public static PlayerDeadBody OnPlayerDeath(On.Celeste.Player.orig_Die orig, Player player, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats) {
             if (evenIfInvincible || !SaveData.Instance.Assists.Invincible) {
