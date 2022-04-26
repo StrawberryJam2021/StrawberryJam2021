@@ -38,6 +38,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
 
             // Unconditionally add the dash, bypassing inventory limits
+            flash = false;
             player.Dashes = playerRealDashes + 1;
             session.ExpiringDashRemainingTime = dashExpirationTime;
             session.ExpiringDashFlashThreshold = hairFlashTime;
@@ -70,7 +71,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public static void UpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player player, bool applyGravity) {
-            player.OverrideHairColor = flash ? Player.UsedHairColor : null;
+            if (flash)
+                player.OverrideHairColor = Player.FlashHairColor;
 
             orig.Invoke(player, applyGravity);
         }
@@ -78,7 +80,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static void OnDashBegin(On.Celeste.Player.orig_DashBegin orig, Player player) {
             // The expiring dash should get used first
             session.ExpiringDashRemainingTime = 0;
-            player.OverrideHairColor = null;
+            flash = false;
             orig.Invoke(player);
         }
 
@@ -96,8 +98,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // We first remove the expiring dash if the player still has one
             if (session.ExpiringDashRemainingTime > 0) {
                 player.Dashes--;
-
-                player.OverrideHairColor = null;
+                flash = false;
 
                 session.ExpiringDashRemainingTime = 0;
             }
@@ -109,11 +110,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static void Update(On.Celeste.Player.orig_Update orig, Player self) {
             orig.Invoke(self);
 
-            self.OverrideHairColor = null;
-
             // If touching the ground would've replenished the dash if the ExpiringDash wasn't there, remove the timer
-            if (!self.Inventory.NoRefills && self.OnGround() && self.Dashes <= self.MaxDashes)
+            if (!self.Inventory.NoRefills && self.OnGround() && self.Dashes <= self.MaxDashes) {
                 session.ExpiringDashRemainingTime = 0;
+                flash = false;
+            }
 
             if (session.ExpiringDashRemainingTime <= 0)
                 return;
