@@ -22,13 +22,11 @@ public class BTController : Entity {
         if (player != null && !player.IsIntroState && !player.JustRespawned && player.Dashes > 0 && (string.IsNullOrEmpty(flag) || SceneAs<Level>().Session.GetFlag(flag))) {
             if (Scene.Paused) {
                 Engine.TimeRate = 1.0f;
-            }
-            else {
+            } else {
                 Engine.TimeRate = timerate;
             }
             active = true;
-        }
-        else if (active) {
+        } else if (active) {
             Engine.TimeRate = 1.0f;
             active = false;
         }
