@@ -62,9 +62,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Player.OnTransition -= OnTransition;
         }
 
+        private static Color? previousOverride = null;
         public static void UpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player player, bool applyGravity) {
-            if (flash)
-                player.OverrideHairColor = Player.UsedHairColor;
+            player.OverrideHairColor = flash ? Player.UsedHairColor : previousOverride;
 
             orig.Invoke(player, applyGravity);
         }
@@ -113,8 +113,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (session.ExpiringDashRemainingTime <= session.ExpiringDashFlashThreshold) {
                 // Flash hair
-                if (self.Scene.OnInterval(0.05f))
+                if (self.Scene.OnInterval(0.05f)) {
+                    if (!flash)
+                        previousOverride = self.OverrideHairColor;
                     flash = !flash;
+
+                }
             }
         }
     }
