@@ -33,6 +33,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void OnPlayer(Player player) {
             // Unconditionally add the dash, bypassing inventory limits
             player.Dashes = 1;
+            flash = false;
             session.ExpiringDashRemainingTime = dashExpirationTime;
             session.ExpiringDashFlashThreshold = hairFlashTime;
 
@@ -62,7 +63,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public static void UpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player player, bool applyGravity) {
-            player.OverrideHairColor = flash ? Player.UsedHairColor : null;
+            if (flash)
+                player.OverrideHairColor = Player.UsedHairColor;
 
             orig.Invoke(player, applyGravity);
         }
@@ -81,8 +83,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // We first remove the expiring dash if the player still has one
             if (session.ExpiringDashRemainingTime > 0) {
                 player.Dashes = 0;
-
-                player.OverrideHairColor = null;
+                flash = false;
 
                 session.ExpiringDashRemainingTime = 0;
             }
@@ -93,8 +94,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void Update(On.Celeste.Player.orig_Update orig, Player self) {
             orig.Invoke(self);
-
-            self.OverrideHairColor = null;
 
             if (self.Dashes == 0)
                 return;
