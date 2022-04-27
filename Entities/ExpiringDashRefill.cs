@@ -67,8 +67,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Player.DashBegin -= OnDashBegin;
         }
 
-        // Used to keep track if something else has ovverriden the overriden color beforehand
-        private static Color? previousOverride;
         public static void UpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player player, bool applyGravity) {
             if (flash)
                 player.OverrideHairColor = Player.FlashHairColor;
