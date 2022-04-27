@@ -350,6 +350,8 @@ placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletCount=The number of pe
 placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
 placements.entities.SJ2021/PelletEmitterUp.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
 placements.entities.SJ2021/PelletEmitterUp.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.wiggleFrequency=The number of times the pellet should wiggle back and forth per second. Defaults to 2.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.wiggleAmount=The amplitude of the wiggle. Defaults to 2. Set to 0 to disable wiggling, causing pellets to travel in a straight line.
 
 # Pellet Emitter (Down)
 placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
@@ -357,6 +359,8 @@ placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletCount=The number of 
 placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
 placements.entities.SJ2021/PelletEmitterDown.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
 placements.entities.SJ2021/PelletEmitterDown.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.wiggleFrequency=The number of times the pellet should wiggle back and forth per second. Defaults to 2.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.wiggleAmount=The amplitude of the wiggle. Defaults to 2. Set to 0 to disable wiggling, causing pellets to travel in a straight line.
 
 # Pellet Emitter (Left)
 placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
@@ -364,6 +368,8 @@ placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletCount=The number of 
 placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
 placements.entities.SJ2021/PelletEmitterLeft.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
 placements.entities.SJ2021/PelletEmitterLeft.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.wiggleFrequency=The number of times the pellet should wiggle back and forth per second. Defaults to 2.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.wiggleAmount=The amplitude of the wiggle. Defaults to 2. Set to 0 to disable wiggling, causing pellets to travel in a straight line.
 
 # Pellet Emitter (Right)
 placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
@@ -371,6 +377,8 @@ placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletCount=The number of
 placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
 placements.entities.SJ2021/PelletEmitterRight.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
 placements.entities.SJ2021/PelletEmitterRight.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.wiggleFrequency=The number of times the pellet should wiggle back and forth per second. Defaults to 2.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.wiggleAmount=The amplitude of the wiggle. Defaults to 2. Set to 0 to disable wiggling, causing pellets to travel in a straight line.
 
 # Auto-Skip Dialog Cutscene Trigger (Everest)
 placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.onlyOnce=Whether the dialogue should only trigger once.
