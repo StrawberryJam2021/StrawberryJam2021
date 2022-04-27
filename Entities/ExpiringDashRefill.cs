@@ -53,31 +53,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static bool flash;
 
         public static void Load() {
-            On.Celeste.Player.UpdateHair += UpdateHair;
             On.Celeste.Player.Update += Update;
             On.Celeste.Player.Die += OnPlayerDeath;
             On.Celeste.Player.OnTransition += OnTransition;
             On.Celeste.Player.DashBegin += OnDashBegin;
+
+            On.Celeste.PlayerHair.GetHairColor += GetHairColor;
         }
         public static void Unload() {
-            On.Celeste.Player.UpdateHair -= UpdateHair;
             On.Celeste.Player.Update -= Update;
             On.Celeste.Player.Die -= OnPlayerDeath;
             On.Celeste.Player.OnTransition -= OnTransition;
             On.Celeste.Player.DashBegin -= OnDashBegin;
+
+            On.Celeste.PlayerHair.GetHairColor -= GetHairColor;
         }
 
-        public static void UpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player player, bool applyGravity) {
-            if (flash)
-                player.OverrideHairColor = Player.FlashHairColor;
-
-            orig.Invoke(player, applyGravity);
-
-            // At this point I'm assuming that all mods have applied their color, and is displayed on screen
-            // We clear the overriden color here to ensure the flash color doesn't remain for users who don't use MoreDashline
-            // This will only show in the next frame
-            player.OverrideHairColor = null;
-        }
+        public static Color GetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index)
+            => flash ? Player.FlashHairColor : orig.Invoke(self, index);
 
         public static void OnDashBegin(On.Celeste.Player.orig_DashBegin orig, Player player) {
             // The expiring dash should get used first
@@ -110,17 +103,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public static void Update(On.Celeste.Player.orig_Update orig, Player self) {
-            // Invoking this first to ensure every mod behind us goes first
-            orig.Invoke(self);
-
             // If touching the ground would've replenished the dash if the ExpiringDash wasn't there, remove the timer
             if (!self.Inventory.NoRefills && self.OnGround() && self.Dashes <= self.MaxDashes) {
                 session.ExpiringDashRemainingTime = 0;
                 flash = false;
             }
 
-            if (session.ExpiringDashRemainingTime <= 0)
+            if (session.ExpiringDashRemainingTime <= 0) {
+                orig.Invoke(self);
                 return;
+            }
 
             session.ExpiringDashRemainingTime -= Engine.DeltaTime;
 
@@ -128,15 +120,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 // Remove given dash
                 self.Dashes--;
                 flash = false;
+                orig.Invoke(self);
                 return;
             }
 
             if (session.ExpiringDashRemainingTime <= session.ExpiringDashFlashThreshold) {
                 // Flash hair
-                if (self.Scene.OnInterval(0.05f)) {
+                if (self.Scene.OnInterval(0.05f))
                     flash = !flash;
-                }
             }
+
+            orig.Invoke(self);
         }
     }
 }
