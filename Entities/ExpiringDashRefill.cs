@@ -67,17 +67,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Player.DashBegin -= OnDashBegin;
         }
 
+        // Used to keep track if something else has ovverriden the overriden color beforehand
+        private static Color? previousOverride;
         public static void UpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player player, bool applyGravity) {
             if (flash)
                 player.OverrideHairColor = Player.FlashHairColor;
 
             orig.Invoke(player, applyGravity);
+
+            // At this point I'm assuming that all mods have applied their color, and is displayed on screen
+            // We clear the overriden color here to ensure the flash color doesn't remain for users who don't use MoreDashline
+            // This will only show in the next frame
+            player.OverrideHairColor = null;
         }
 
         public static void OnDashBegin(On.Celeste.Player.orig_DashBegin orig, Player player) {
             // The expiring dash should get used first
             session.ExpiringDashRemainingTime = 0;
             flash = false;
+
             orig.Invoke(player);
         }
 
@@ -104,6 +112,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public static void Update(On.Celeste.Player.orig_Update orig, Player self) {
+            // Invoking this first to ensure every mod behind us goes first
             orig.Invoke(self);
 
             // If touching the ground would've replenished the dash if the ExpiringDash wasn't there, remove the timer
@@ -121,14 +130,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 // Remove given dash
                 self.Dashes--;
                 flash = false;
-
                 return;
             }
 
             if (session.ExpiringDashRemainingTime <= session.ExpiringDashFlashThreshold) {
                 // Flash hair
-                if (self.Scene.OnInterval(0.05f))
+                if (self.Scene.OnInterval(0.05f)) {
                     flash = !flash;
+                }
             }
         }
     }
