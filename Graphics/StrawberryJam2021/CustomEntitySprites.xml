@@ -83,4 +83,13 @@
         <Anim id="idle_gust_1" path="1charge/fly" delay="0.1" frames="3-0,1,2" goto="idle_1:9,idle_gust_1:1"/>
         <Anim id="death" path="death" delay="0.1" />
     </roseGlider>
+
+    <!--Switch Door-->
+    <switchDoor path="objects/StrawberryJam2021/SwitchDoor/" start="idle">
+    	<Justify x="0.5" y="0"/>
+    	<Loop id="idle" path="door" delay="0.1" frames="1"/>
+    	<Anim id="open" path="door" delay="0.1" frames="7-15" goto="opened"/>
+    	<Anim id="hit" path="door" delay="0.08" frames="1-5" goto="idle"/>
+    	<Loop id="opened" path="door" delay="0.1" frames="15"/>
+    </switchDoor>
 </Sprites>
