@@ -1,2 +1,4 @@
 # Auto-formatting is "Strawberry Jam2021"
 modname_StrawberryJam2021= Strawberry Jam 2021
+
+sj2021_menu_hint= Hint

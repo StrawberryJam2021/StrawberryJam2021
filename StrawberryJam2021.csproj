@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
+    <PackageReference Include="MonoMod" Version="21.3.1.1" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="MonoMod.RuntimeDetour" Version="21.3.1.1" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="MonoMod.Utils" Version="21.3.1.1" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" PrivateAssets="all" ExcludeAssets="runtime" />
@@ -35,6 +36,10 @@
       <HintPath>lib-stripped\CavernHelper.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="CollabUtils2">
+      <HintPath>lib-stripped\CollabUtils2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="ExtendedVariantMode">
       <HintPath>lib-stripped\ExtendedVariantMode.dll</HintPath>
       <Private>false</Private>
@@ -47,6 +52,10 @@
       <HintPath>lib-stripped\ExtendedVariantMode.dll</HintPath>
       <Private>false</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Cutscenes\" />
   </ItemGroup>
 
   <Choose>

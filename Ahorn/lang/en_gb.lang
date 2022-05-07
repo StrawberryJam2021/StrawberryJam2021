@@ -2,6 +2,7 @@
 placements.entities.SJ2021/DashSequenceController.tooltips.dashCode=The code the player needs to input. Should be in the form of "U,DR,L", with commas separating each direction. When writing diagonals, write them with vertical first, then horizontal, with no space. * is also a valid input, meaning you can dash any direction for it to work.
 placements.entities.SJ2021/DashSequenceController.tooltips.flagLabel=The starting label of the flags that will get activated. Every time a dash is successfully inputted, a flag with this label + "-#" will be set to true (e.g. "test" followed by a successful dash will set "test-1" to true).
 placements.entities.SJ2021/DashSequenceController.tooltips.flagOnFailure=Flag that will get set to true if the sequence has started, but fails partway through.
+placements.entities.SJ2021/DashSequenceController.tooltips.index=This sequence's index, used by the UI entity to correctly display dash sequences in order.
 
 # Sharded Refill
 placements.entities.SJ2021/RefillShard.tooltips.collectAmount=The amount of shards needed for collection. (0 for all)
@@ -13,38 +14,102 @@ placements.entities.SJ2021/RefillShard.tooltips.twoDashes=Whether the refill giv
 # Sine Dust Spinner
 placements.entities.SJ2021/SineDustSpinner.tooltips.xPeriod=Period of the X-Sine in seconds. If X Linear is enabled, travel time in seconds before wrapping around (travel direction reversed if negative)
 placements.entities.SJ2021/SineDustSpinner.tooltips.yPeriod=Period of the Y-Sine in seconds. If Y Linear is enabled, travel time in seconds before wrapping around (travel direction reversed if negative)
-placements.entities.SJ2021/SineDustSpinner.tooltips.xPhase=X-Sine Phase in Rad*Pi
-placements.entities.SJ2021/SineDustSpinner.tooltips.yPhase=Y-Sine Phase in Rad*PI
+placements.entities.SJ2021/SineDustSpinner.tooltips.xPhase=X-Sine Phase in Rad*Pi. If X Linear is enabled, it functions as a lerp for the starting point
+placements.entities.SJ2021/SineDustSpinner.tooltips.yPhase=Y-Sine Phase in Rad*PI. If Y Linear is enabled, it functions as a lerp for the starting point
 placements.entities.SJ2021/SineDustSpinner.tooltips.xLinear=Whether the X-Sine should be replaced with a linear, wrapping motion
 placements.entities.SJ2021/SineDustSpinner.tooltips.yLinear=Whether the Y-Sine should be replaced with a linear, wrapping motion
 
 # Laser Emitter (Up)
-placements.entities.SJ2021/LaserEmitterUp.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.color=Colour of the laser emitted.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.colorChannel=Colour of linked zip movers that will be triggered if enabled.
 placements.entities.SJ2021/LaserEmitterUp.tooltips.alpha=Base alpha if flickering is disabled.
 placements.entities.SJ2021/LaserEmitterUp.tooltips.flicker=Whether or not the laser beam should flicker.
 placements.entities.SJ2021/LaserEmitterUp.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
 placements.entities.SJ2021/LaserEmitterUp.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.collideWithSolids=Whether or not the laser beam will stop at solids.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same colour channel.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same colour channel.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser colour.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.leniency=Shrinks the collider hitbox by this many pixels either side. Defaults to 1.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.beamAboveEmitter=Whether or not the beam should be rendered above the emitter sprite.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.emitterColliderWidth=The width of the emitter if it were pointing up or down. Defaults to 14.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.emitterColliderHeight=The height of the emitter if it were pointing up or down. Defaults to 6.
+placements.entities.SJ2021/LaserEmitterUp.tooltips.emitSparks=Whether the laser should emit sparks if it collides with a solid. Defaults to true.
 
 # Laser Emitter (Down)
-placements.entities.SJ2021/LaserEmitterDown.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.color=Colour of the laser emitted.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.colorChannel=Colour of linked zip movers that will be triggered if enabled.
 placements.entities.SJ2021/LaserEmitterDown.tooltips.alpha=Base alpha if flickering is disabled.
 placements.entities.SJ2021/LaserEmitterDown.tooltips.flicker=Whether or not the laser beam should flicker.
 placements.entities.SJ2021/LaserEmitterDown.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
 placements.entities.SJ2021/LaserEmitterDown.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.collideWithSolids=Whether or not the laser beam will stop at solids.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same colour channel.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same colour channel.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser colour.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.leniency=Shrinks the collider hitbox by this many pixels either side. Defaults to 1.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.beamAboveEmitter=Whether or not the beam should be rendered above the emitter sprite.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.emitterColliderWidth=The width of the emitter if it were pointing up or down. Defaults to 14.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.emitterColliderHeight=The height of the emitter if it were pointing up or down. Defaults to 6.
+placements.entities.SJ2021/LaserEmitterDown.tooltips.emitSparks=Whether the laser should emit sparks if it collides with a solid. Defaults to true.
 
 # Laser Emitter (Left)
-placements.entities.SJ2021/LaserEmitterLeft.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.color=Colour of the laser emitted.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.colorChannel=Colour of linked zip movers that will be triggered if enabled.
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.alpha=Base alpha if flickering is disabled.
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.flicker=Whether or not the laser beam should flicker.
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
 placements.entities.SJ2021/LaserEmitterLeft.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.collideWithSolids=Whether or not the laser beam will stop at solids.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same colour channel.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same colour channel.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser colour.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.leniency=Shrinks the collider hitbox by this many pixels either side. Defaults to 1.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.beamAboveEmitter=Whether or not the beam should be rendered above the emitter sprite.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.emitterColliderWidth=The width of the emitter if it were pointing up or down. Defaults to 14.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.emitterColliderHeight=The height of the emitter if it were pointing up or down. Defaults to 6.
+placements.entities.SJ2021/LaserEmitterLeft.tooltips.emitSparks=Whether the laser should emit sparks if it collides with a solid. Defaults to true.
 
 # Laser Emitter (Right)
-placements.entities.SJ2021/LaserEmitterRight.tooltips.color=Color of the laser emitted.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.color=Colour of the laser emitted.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.colorChannel=Colour of linked zip movers that will be triggered if enabled.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.alpha=Base alpha if flickering is disabled.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.flicker=Whether or not the laser beam should flicker.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.thickness=The thickness of the beam and killbox, where the middle third is rendered at twice the alpha of the rest.
 placements.entities.SJ2021/LaserEmitterRight.tooltips.killPlayer=Whether or not the laser beam should kill the player on contact.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.collideWithSolids=Whether or not the laser beam will stop at solids.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.disableLasers=Whether or not the laser beam will disable other lasers with the same colour channel.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.triggerZipMovers=Whether or not the laser beam will trigger zip movers with the same colour channel.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.style=The rendering style to use. Simple will display a single sprite, Tinted will tint an overlay with the laser colour.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.leniency=Shrinks the collider hitbox by this many pixels either side. Defaults to 1.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.beamAboveEmitter=Whether or not the beam should be rendered above the emitter sprite.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.emitterColliderWidth=The width of the emitter if it were pointing up or down. Defaults to 14.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.emitterColliderHeight=The height of the emitter if it were pointing up or down. Defaults to 6.
+placements.entities.SJ2021/LaserEmitterRight.tooltips.emitSparks=Whether the laser should emit sparks if it collides with a solid. Defaults to true.
+
+# Paintbrush (Up)
+placements.entities.SJ2021/PaintbrushUp.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/PaintbrushUp.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/PaintbrushUp.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/PaintbrushUp.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+
+# Paintbrush (Down)
+placements.entities.SJ2021/PaintbrushDown.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/PaintbrushDown.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/PaintbrushDown.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/PaintbrushDown.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+
+# Paintbrush (Left)
+placements.entities.SJ2021/PaintbrushLeft.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/PaintbrushLeft.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/PaintbrushLeft.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/PaintbrushLeft.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
+
+# Paintbrush (Right)
+placements.entities.SJ2021/PaintbrushRight.tooltips.cassetteIndex=The zero-based index of the cassette swap that this brush should fire on. The charging animation will play in the previous tick. Using default Celeste colours, 0 is blue and 1 is pink.
+placements.entities.SJ2021/PaintbrushRight.tooltips.killPlayer=Whether or not the beam will kill the player on contact.
+placements.entities.SJ2021/PaintbrushRight.tooltips.collideWithSolids=Whether or not the beam will stop at solids.
+placements.entities.SJ2021/PaintbrushRight.tooltips.halfLength=If set to true, the beam will only stay on for half the length of a cassette swap (one tick).
 
 # Bubble Emitter Fire Trigger
 placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of the emitters to fire. Will fire every emitter if empty
@@ -53,10 +118,13 @@ placements.triggers.SJ2021/bubbleEmitterFireTrigger.tooltips.flag=The flag of th
 placements.triggers.SJ2021/HoldableDashTrigger.tooltips.mode="Toggle" will set or clear a session flag that allows dashing anywhere.\n"OnStay" will force the ability to be on/off while inside the trigger, regardless of what the session flag is set to.
 
 # Conditional Flag Trigger
-placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.flag=The flag to set when  the player enters and leaves.
+placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.flag=The flag to set when the player enters and leaves.
 placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.flagValue=The value to set the flag to when the player is in the trigger.
 placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.controllerFlag=The flag that enables and disables the trigger.
 placements.triggers.SJ2021/ConditionalFlagTrigger.tooltips.revertOnLeave=Whether or not to reset the flag to it's origional state when the player leaves the trigger.
+
+# Oshiro Attack Time Trigger
+placements.triggers.SJ2021/OshiroAttackTimeTrigger.tooltips.Enable=If true, makes Oshiro attack after a second, like in B and C sides. Otherwise, makes the attack time normal for the current map's side.
 
 # Variant Toggle Controller
 placements.entities.SJ2021/VariantToggleController.tooltips.flag=The flag that controls the variants (variants set on true).
@@ -71,11 +139,16 @@ placements.entities.SJ2021/FlagBreakerBox.tooltips.flipX=Whether or not to flip 
 placements.entities.SJ2021/FlagBreakerBox.tooltips.music_progress=The progress to set the music to when the box is broken.
 placements.entities.SJ2021/FlagBreakerBox.tooltips.music_session=Whether or not to store the music changes in the session.
 
+# Bullet Time Controller
+placements.entities.SJ2021/BTController.tooltips.speed=The speed the game will run at when the player has dashes remaining, relative to regular game speed.
+placements.entities.SJ2021/BTController.tooltips.flag=(Optional) The flag that will activate this controller. If no flag is given, the controller will always be active.
+
 # Dash Boost Field / Nyom Buble
-placements.entities.SJ2021/DashBoostField.tooltips.mode=The color of the object. Red will instantly refill the player if they dash inside of it, while Blue will not.
+placements.entities.SJ2021/DashBoostField.tooltips.color=The color of the field.
 placements.entities.SJ2021/DashBoostField.tooltips.dashSpeedMultiplier=How much the player's dash should be boosted.
 placements.entities.SJ2021/DashBoostField.tooltips.timeRateMultiplier=How much the game should down while the player is inside (1 is normal speed, 0.5 is half, etc.)
 placements.entities.SJ2021/DashBoostField.tooltips.radius=The radius of the effect, in tiles.
+placements.entities.SJ2021/DashBoostField.tooltips.preserveDash=Whether or not the field will save the player's dash when dashing within it.
 
 # Triple Boost Flower
 placements.entities.SJ2021/TripleBoostFlower.tooltips.boostDelay=Cooldown between boosts, in seconds
@@ -85,6 +158,9 @@ placements.entities.SJ2021/TripleBoostFlower.tooltips.fastFallSpeed=Falling spee
 placements.entities.SJ2021/TripleBoostFlower.tooltips.slowFallSpeed=Falling speed while holding up
 placements.entities.SJ2021/TripleBoostFlower.tooltips.normalFallSpeed=Falling speed while not holding anything
 
+# Theo Respawn
+placements.entities.SJ2021/TheoRespawn.tooltips.flag=The flag that must be active for this Theo Respawn to activate.
+
 # Crystal Bomb Badeline Boss
 placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.music=The music event that should be triggered if "Can Change Music" is checked.
 # (these are copied from the original finalBoss)
@@ -92,3 +168,260 @@ placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.patternIndex=Determi
 placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.cameraLockY=Whether the camera should be locked vertically, functioning similarly as a killbox.
 placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.canChangeMusic=Whether the boss should be able to change the music to the boss track.
 placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.cameraPastY=Locks the camera from vertically rising, and changes the bottom screen killbox plane to be under Badeline's current position.
+placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.disableCameraLock=Disables all camera locking, both horizontal and vertical.\nOverrides the "Camera Past Y" and "Camera Lock Y" settings.
+
+# Speed Preserve Puffer
+placements.entities.SJ2021/SpeedPreservePuffer.tooltips.right=Determines the facing direction of the puffer.
+placements.entities.SJ2021/SpeedPreservePuffer.tooltips.static=Whether the puffer idly floats around or stays in a fixed position.
+
+# Strawberry Jam Jar
+placements.entities.SJ2021/StrawberryJamJar.tooltips.map=The SID of the map this jam jar pedestal should teleport to.\nThe jar will be filled up when that map is completed.
+placements.entities.SJ2021/StrawberryJamJar.tooltips.sprite=The sprite this jar will use.
+placements.entities.SJ2021/StrawberryJamJar.tooltips.returnToLobbyMode=Determines how "Return to Lobby" will behave after entering this map.\n- SetReturnToHere: the Return to Lobby button will return the player to the nearest spawn point in the current map.\n- RemoveReturn: the Return to Lobby button will disappear from the pause menu.\n- DoNotChangeReturn: the current Return to Lobby button will not be changed.
+placements.entities.SJ2021/StrawberryJamJar.tooltips.allowSaving=If selected, the player will be allowed to save and return to the lobby in the map this trigger teleports to, by selecting "Save" when returning to lobby. Not compatible with maps that have checkpoints.
+
+# Horizontal Template Gate
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.flag=Session flag used by this gate. If the type is flagActive, the door will open/close when the flag is set.
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.openWidth=How much of the gate will remain unopened when the gate is open.
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.direction=Where the door will come from. If this is "center" the door will come from both sides.
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.type=How the door is activated.
+placements.entities.SJ2021/HorizontalTempleGate.tooltips.inverted=If this is set, the door will start open and be closed.
+
+# Toggle Swap Block
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.oscillate=Whether block reverses direction instead of returning to start after reaching its last node. Ignored if "Stop At End" is checked.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.stopAtEnd=Whether block doesn't move again after reaching its last node.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.customTexturePath=Path to a 24 pixel x 24 pixel texture representing what a 3 tile x 3 tile block should look like. Default texture is used if left blank.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.directionIndicator=If checked, the block displays an indicator showing the direction it will move next.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.constantSpeed=If checked, the velocity of the block will be the same each time it moves, and not scale with the distance between nodes. Furthermore, "Travel Speed" will be interpretted as a multiplier, with 1.0 corresponding to vanilla swap block speed.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.customIndicatorPath=Only used if "Direction Indicator" is checked. Path to a folder containing textures named "right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight", "stay", and "done", which are displayed depending on the direction the block moves next, in place of the default indicators. Built-in examples include "objects/StrawberryJam2021/toggleSwapBlock/indicator/plain/" (default), "objects/StrawberryJam2021/toggleSwapBlock/indicator/negative/", "objects/StrawberryJam2021/toggleSwapBlock/indicator/value/", "objects/StrawberryJam2021/toggleSwapBlock/indicator/sticker/".
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.disableTracks=Disables the tracks that appear along the path of the block.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.allowDashSliding=When unchecked, the behavior is the same as vanilla swap blocks: if the player is on top of the block or grabbing the side and dashes in the horizontal direction of the block's movement, they remain fixed in place on the block. When checked, the behavior is the same as Frost Helper ToggleSwapBlocks, and the player slides along the block instead.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStartAudio=Custom audio to play when the block starts moving. If blank, vanilla swap block sound is used.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStopAudio=Custom audio to play when the block stops moving. If blank, vanilla swap block sound is used.
+
+# Wonky Cassette Block
+placements.entities.SJ2021/WonkyCassetteBlock.tooltips.onAtBeats=A list of integers (separated by a comma) corresponding to the beats on which this block should activate, being deactivated on all other beats not included in this list.\nExample: 1, 2, 4
+placements.entities.SJ2021/WonkyCassetteBlock.tooltips.color=The hexadecimal colour code of this block (without the hash # symbol).
+placements.entities.SJ2021/WonkyCassetteBlock.tooltips.textureDirectory=The path to the folder containing two textures for this block, starting from Graphics/Atlases/Gameplay/. In order for this to work, the specified folder must containing two image files named "solid.png" and "pressed.png", each corresponding to the texture of the block when activated and deactivated respectively. Preferably without the "/" symbol at the end.
+placements.entities.SJ2021/WonkyCassetteBlock.tooltips.boostFrames=The number of frames after activation that a cassette boost is possible for. Must be at least 1 to be active. If set to 0 (default), will use boost frame count from the controller.
+placements.entities.SJ2021/WonkyCassetteBlock.tooltips.controllerIndex=The index of the controller that controls this cassette block. Must be 0 or greater. 0 refers to the main controller.
+
+# Wonky Cassette Block Controller
+placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.bpm=The tempo of the cassette loop event in this room.
+placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.bars=The number of bars that should play before looping over in the cassette loop event.
+placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.timeSignature=The time signature of this cassette loop event, written in this form: x/y.\nATTENTION: this should always be a multiple of 1/16, since Cassette Blocks always work in 16th notes.\nExample: 5/4
+placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.sixteenthNoteParam=The FMOD parameter that should be affected in this room.
+placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.cassetteOffset=The constant offset in seconds that the cassette blocks will lag behind the music progress.\nPositive numbers will make the cassette blocks trigger later.
+placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.boostFrames=The number of frames after activation that a cassette boost is possible for. Must be at least 1. Cassette blocks with their own boost frame count set will not be affected.
+placements.entities.SJ2021/WonkyCassetteBlockController.tooltips.disableFlag=The flag that deactivates all cassette blocks in the room. Leave empty if you don't want to use it.
+
+# Wonky Minor Cassette Block Controller
+placements.entities.SJ2021/WonkyMinorCassetteBlockController.tooltips.timeSignature=The time signature of this cassette loop event, written in this form: x/y.\nATTENTION: this should always be a multiple of 1/16, since Cassette Blocks always work in 16th notes.\nExample: 5/4.\nDenominator must be equal to main controller's denominator.
+placements.entities.SJ2021/WonkyMinorCassetteBlockController.tooltips.controllerIndex=The index of this controller. Used to determine which cassette blocks are controlled by this. Must be 1 or greater.
+
+# Skateboard Trigger
+placements.triggers.SJ2021/SkateboardTrigger.tooltips.mode=Whether entering the trigger will enable, disable, or toggle the skateboard.
+
+# Switch Crate
+placements.entities.SJ2021/SwitchCrate.tooltips.TimeToExplode=The time (in seconds) it will take for the crate to explode.
+placements.entities.SJ2021/SwitchCrate.tooltips.DepleteOnJumpThru=Whether the explosion timer counts down when the crate is on a jumpthru (rather than on ground).
+placements.entities.SJ2021/SwitchCrate.tooltips.KillMaddyOnExplosion=Whether the player should be killed when the crate explodes. Madeline will die if the crate is squished or dropped out of the level regardless of this option.
+
+# Noded Cloud
+placements.entities.SJ2021/NodedCloud.tooltips.moveTime=How much time the cloud takes to move to the next position, in seconds.
+
+# Directional Booster
+placements.entities.SJ2021/DirectionalBooster.tooltips.boosterColor=The colour to use for booster particles. Defaults to a honeyish yellow.
+
+# Hint Controller
+placements.entities.SJ2021/HintController.tooltips.dialogId=The identifier of the dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
+placements.entities.SJ2021/HintController.tooltips.singleUse=Whether the hint may only be viewed a single time per session.
+
+# Cassette Badeline Block
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.tiletype=The tileset to use when rendering the block.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.hideFinalTransition=If true, the transition between last and first nodes will be hidden (useful for conveyors).
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.ignoredNodes=A comma separated list of nodes which will not spawn a block, but are still part of the path. Negative indices indicate going backward from the end of list. For example, -1 indicates the final node. The first node cannot be ignored.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.offBeat=If true, transitions will occur halfway between cassette swaps.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.playImpactSounds=If true, blocks will make slamming sounds when hitting another solid. Disable this if using a conveyor.
+placements.entities.SJ2021/CassetteBadelineBlock.tooltips.emitImpactParticles=If true, blocks will emit dust particles when hitting another solid. Disable this if using a conveyor.
+
+# Airtime Music Controller
+placements.entities.SJ2021/AirTimeMusicController.tooltips.activationThreshold=The amount of airtime in seconds required before the music parameter is enabled.
+placements.entities.SJ2021/AirTimeMusicController.tooltips.musicParam=The music parameter that will be adjusted by this controller.
+
+# Rain Density Trigger
+placements.triggers.SJ2021/RainDensityTrigger.tooltips.density=The target rain density, expressed as a number between 0 and 1.\n0 = No rain, 1 = Full rain.
+placements.triggers.SJ2021/RainDensityTrigger.tooltips.duration=The time (in seconds) spent transitioning to the target rain density.
+
+# Require Dashless Trigger
+placements.triggers.SJ2021/RequireDashlessTrigger.tooltips.entityNames=The class names of the entities to remove if the player has dashed as a comma-separated list.
+
+# Set Metadata Trigger
+placements.triggers.SJ2021/SetMetadataTrigger.tooltips.theoInBooster=Whether player is allowed to hold crystal Theo while in a booster or not.
+
+# Expiring Dash Refill
+placements.entities.SJ2021/ExpiringDashRefill.tooltips.dashExpirationTime=The amount of time given before the dash is revoked if not used.
+placements.entities.SJ2021/ExpiringDashRefill.tooltips.hairFlashThreshold=The threshold ratio that determines when the warning flash begins. (0 - 1)
+
+#Entity Despawner
+placements.entities.SJ2021/EntityDespawner.tooltips.entityTypes=The full class names of the types of entities to despawn. Use commas to add multiple entities to the list (e.g. Celeste.Entity1,Celeste.Entity2)
+placements.entities.SJ2021/EntityDespawner.tooltips.flag=The name of the session flag to watch. Listed entities are removed if the session flag is set when entering the room.
+placements.entities.SJ2021/EntityDespawner.tooltips.invert=If checked, this entity will instead remove the listed entities when the session flag is not set.
+
+# Pocket Umbrella Trigger
+placements.entities.SJ2021/PocketUmbrellaTrigger.tooltips.musicParam=(Optional) The music parameter to be turned on when gliding with the umbrella.
+
+# Change Theme Trigger
+placements.triggers.SJ2021/ChangeThemeTrigger.tooltips.enable=Whether the alternate theme is enabled when entering this zone.
+placements.triggers.SJ2021/ChangeThemeTrigger.tooltips.toggle=If set, "Enable" will be ignored and theme will be toggled when entering this zone.
+
+# Styleground Mask
+placements.entities.SJ2021/StylegroundMask.tooltips.scrollX=Parallax scrolling of the mask along the X axis.
+placements.entities.SJ2021/StylegroundMask.tooltips.scrollY=Parallax scrolling of the mask along the Y axis.
+placements.entities.SJ2021/StylegroundMask.tooltips.fade=Direction the styleground transparency will fade.
+placements.entities.SJ2021/StylegroundMask.tooltips.customFade=The path of a white texture (from Gameplay/fademasks) which will be used to mask the effect with Custom fade type enabled.
+placements.entities.SJ2021/StylegroundMask.tooltips.flag=Flag that must be activated for the mask to display. (Empty for none)
+placements.entities.SJ2021/StylegroundMask.tooltips.notFlag=Inverts the flag requirement.
+placements.entities.SJ2021/StylegroundMask.tooltips.tag=Styleground tag to render. For example, "stars" will render all stylegrounds with the tag "sjstylemask_stars".
+placements.entities.SJ2021/StylegroundMask.tooltips.entityRenderer=Enables lighting and other inaccurate effects.
+placements.entities.SJ2021/StylegroundMask.tooltips.behindFg=(Entity renderer disabled only) Makes the foreground effects of this mask appear behind the level's foreground effects.
+placements.entities.SJ2021/StylegroundMask.tooltips.alphaFrom=The transparency of the styleground at the start of the fade.
+placements.entities.SJ2021/StylegroundMask.tooltips.alphaTo=The transparency of the styleground at the end of the fade.
+
+# Bloom Mask
+placements.entities.SJ2021/BloomMask.tooltips.scrollX=Parallax scrolling of the mask along the X axis.
+placements.entities.SJ2021/BloomMask.tooltips.scrollY=Parallax scrolling of the mask along the Y axis.
+placements.entities.SJ2021/BloomMask.tooltips.fade=Direction the bloom changes will fade.
+placements.entities.SJ2021/BloomMask.tooltips.customFade=The path of a white texture (from Gameplay/fademasks) which will be used to mask the effect with Custom fade type enabled.
+placements.entities.SJ2021/BloomMask.tooltips.flag=Flag that must be activated for the mask to display. (Empty for none)
+placements.entities.SJ2021/BloomMask.tooltips.notFlag=Inverts the flag requirement.
+placements.entities.SJ2021/BloomMask.tooltips.baseFrom=The base bloom amount at the start of the fade. (-1 for current value)
+placements.entities.SJ2021/BloomMask.tooltips.baseTo=The base bloom amount at the end of the fade. (-1 for current value)
+placements.entities.SJ2021/BloomMask.tooltips.strengthFrom=The bloom strength at the start of the fade. (-1 for current value)
+placements.entities.SJ2021/BloomMask.tooltips.strengthTo=The bloom strength at the end of the fade. (-1 for current value)
+
+# Color Grade Mask
+placements.entities.SJ2021/ColorGradeMask.tooltips.scrollX=Parallax scrolling of the mask along the X axis.
+placements.entities.SJ2021/ColorGradeMask.tooltips.scrollY=Parallax scrolling of the mask along the Y axis.
+placements.entities.SJ2021/ColorGradeMask.tooltips.fade=Direction the color grade will fade in.
+placements.entities.SJ2021/ColorGradeMask.tooltips.customFade=The path of a white texture (from Gameplay/fademasks) which will be used to mask the effect with Custom fade type enabled.
+placements.entities.SJ2021/ColorGradeMask.tooltips.flag=Flag that must be activated for the mask to display. (Empty for none)
+placements.entities.SJ2021/ColorGradeMask.tooltips.notFlag=Inverts the flag requirement.
+placements.entities.SJ2021/ColorGradeMask.tooltips.colorGradeFrom=The color grading to use at the start of the fade.
+placements.entities.SJ2021/ColorGradeMask.tooltips.colorGradeTo=The color grading to use at the end of the fade.
+placements.entities.SJ2021/ColorGradeMask.tooltips.fadeFrom=How much the From color grade should start faded in.
+placements.entities.SJ2021/ColorGradeMask.tooltips.fadeTo=How much the To Color grade should end faded in.
+
+# Lighting Mask
+placements.entities.SJ2021/LightingMask.tooltips.scrollX=Parallax scrolling of the mask along the X axis.
+placements.entities.SJ2021/LightingMask.tooltips.scrollY=Parallax scrolling of the mask along the Y axis.
+placements.entities.SJ2021/LightingMask.tooltips.fade=Direction the lighting will fade.
+placements.entities.SJ2021/LightingMask.tooltips.customFade=The path of a white texture (from Gameplay/fademasks) which will be used to mask the effect with Custom fade type enabled.
+placements.entities.SJ2021/LightingMask.tooltips.flag=Flag that must be activated for the mask to display. (Empty for none)
+placements.entities.SJ2021/LightingMask.tooltips.notFlag=Inverts the flag requirement.
+placements.entities.SJ2021/LightingMask.tooltips.lightingFrom=The lighting of the region at the start of the fade. (-1 for current value)
+placements.entities.SJ2021/LightingMask.tooltips.lightingTo=The lighting of the region at the end of the fade. (-1 for current value)
+placements.entities.SJ2021/LightingMask.tooltips.addBase=Whether the level's darkness alpha will be added to the mask's darkness.
+
+# All-In-One Mask
+placements.entities.SJ2021/AllInOneMask.tooltips.scrollX=Parallax scrolling of the mask along the X axis.
+placements.entities.SJ2021/AllInOneMask.tooltips.scrollY=Parallax scrolling of the mask along the Y axis.
+placements.entities.SJ2021/AllInOneMask.tooltips.fade=Direction the effects will fade.
+placements.entities.SJ2021/AllInOneMask.tooltips.customFade=The path of a white texture (from Gameplay/fademasks) which will be used to mask the effect with Custom fade type enabled.
+placements.entities.SJ2021/AllInOneMask.tooltips.flag=Flag that must be activated for the mask to display. (Empty for none)
+placements.entities.SJ2021/AllInOneMask.tooltips.notFlag=Inverts the flag requirement.
+placements.entities.SJ2021/AllInOneMask.tooltips.stylemaskTag=Styleground tag to render. For example, "stars" will render all stylegrounds with the tag "sjstylemask_stars".
+placements.entities.SJ2021/AllInOneMask.tooltips.entityRenderer=Enables lighting and other innacurate effects on the styleground.
+placements.entities.SJ2021/AllInOneMask.tooltips.styleBehindFg=(Entity renderer disabled only) Makes the foreground effects of this mask appear behind the level's foreground effects.
+placements.entities.SJ2021/AllInOneMask.tooltips.styleAlphaFrom=The transparency of the styleground at the start of the fade.
+placements.entities.SJ2021/AllInOneMask.tooltips.styleAlphaTo=The transparency of the styleground at the end of the fade.
+placements.entities.SJ2021/AllInOneMask.tooltips.bloomBaseFrom=The base bloom amount at the start of the fade. (-1 for current value)
+placements.entities.SJ2021/AllInOneMask.tooltips.bloomBaseTo=The base bloom amount at the end of the fade. (-1 for current value)
+placements.entities.SJ2021/AllInOneMask.tooltips.bloomStrengthFrom=The bloom strength at the start of the fade. (-1 for current value)
+placements.entities.SJ2021/AllInOneMask.tooltips.bloomStrengthTo=The bloom strength at the end of the fade. (-1 for current value)
+placements.entities.SJ2021/AllInOneMask.tooltips.colorGradeFrom=The color grading to use at the start of the fade.
+placements.entities.SJ2021/AllInOneMask.tooltips.colorGradeTo=The color grading to use at the end of the fade.
+placements.entities.SJ2021/AllInOneMask.tooltips.lightingFrom=The lighting of the region at the start of the fade. (-1 for current value)
+placements.entities.SJ2021/AllInOneMask.tooltips.lightingTo=The lighting of the region at the end of the fade. (-1 for current value)
+placements.entities.SJ2021/AllInOneMask.tooltips.addBaseLight=Whether the level's darkness alpha will be added to the mask's darkness.
+
+# Pellet Emitter (Up)
+placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.wiggleFrequency=The number of times the pellet should wiggle back and forth per second. Defaults to 2.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.wiggleAmount=The amplitude of the wiggle. Defaults to 2. Set to 0 to disable wiggling, causing pellets to travel in a straight line.
+
+# Pellet Emitter (Down)
+placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.wiggleFrequency=The number of times the pellet should wiggle back and forth per second. Defaults to 2.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.wiggleAmount=The amplitude of the wiggle. Defaults to 2. Set to 0 to disable wiggling, causing pellets to travel in a straight line.
+
+# Pellet Emitter (Left)
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.wiggleFrequency=The number of times the pellet should wiggle back and forth per second. Defaults to 2.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.wiggleAmount=The amplitude of the wiggle. Defaults to 2. Set to 0 to disable wiggling, causing pellets to travel in a straight line.
+
+# Pellet Emitter (Right)
+placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletCount=The number of pellets to fire at once. Defaults to 1.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.wiggleFrequency=The number of times the pellet should wiggle back and forth per second. Defaults to 2.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.wiggleAmount=The amplitude of the wiggle. Defaults to 2. Set to 0 to disable wiggling, causing pellets to travel in a straight line.
+
+# Auto-Skip Dialog Cutscene Trigger (Everest)
+placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.onlyOnce=Whether the dialogue should only trigger once.
+placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.dialogId=The dialog ID to use for the dialogue.\nIn this dialogue, use {trigger 0} to start auto-skipping dialogue, and {trigger 1} to stop auto-skipping.
+placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.endLevel=Whether finishing the dialog triggers the level to end.
+placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.deathCount=Determines the exact amount of deaths required to activate dialog trigger. Will always trigger if set to -1.
+
+# Hexagonal Godrays
+placements.effects.SJ2021/HexagonalGodray.tooltips.color=The colour the godrays should start as, as a hex (example: FFFFFF).
+placements.effects.SJ2021/HexagonalGodray.tooltips.fadeColor=The colour godrays should end as, as a hex (example: FFFFFF). Keep blank to have a solid colour.
+placements.effects.SJ2021/HexagonalGodray.tooltips.numberOfRays=The number of godrays that will attempted to be rendered simultaneously.
+placements.effects.SJ2021/HexagonalGodray.tooltips.speedX=The speed (as a decimal) at which godrays should travel horizontally.
+placements.effects.SJ2021/HexagonalGodray.tooltips.speedY=The speed (as a decimal) at which godrays should travel vertically.
+placements.effects.SJ2021/HexagonalGodray.tooltips.rotation=How much to rotate each hexagon by, in degrees.
+placements.effects.SJ2021/HexagonalGodray.tooltips.rotationRandomness=Adds a random amount to the rotation of each godray in degrees to each hexagon between -randomness and +randomness. Set to 0 to not add randomness to rotations.
+
+# Glow Controller
+placements.entities.SJ2021/GlowController.tooltips.lightWhitelist=A comma-separated list of fully qualified entity class names to apply VertexLights to.  Defaults to empty string.
+placements.entities.SJ2021/GlowController.tooltips.lightBlacklist=A comma-separated list of fully qualified entity class names to remove VertexLights from.  Defaults to empty string.
+placements.entities.SJ2021/GlowController.tooltips.lightColor=The colour to use for the lights, as a hex representation.  Defaults to white (FFFFFF).
+placements.entities.SJ2021/GlowController.tooltips.lightAlpha=The opacity of the light, ranging from 0 (invisible) to 1 (opaque).  Defaults to 1.
+placements.entities.SJ2021/GlowController.tooltips.lightStartFade=The distance from the entity's position at which the light should begin to fade in.  Defaults to 24.
+placements.entities.SJ2021/GlowController.tooltips.lightEndFade=The distance from the entity's position at which the light should begin to fade out.  Defaults to 48.
+placements.entities.SJ2021/GlowController.tooltips.lightOffsetX=The X offset from the entity's position at which to place the VertexLight.  Defaults to 0.
+placements.entities.SJ2021/GlowController.tooltips.lightOffsetY=The Y offset from the entity's position at which to place the VertexLight.  Defaults to 0.
+placements.entities.SJ2021/GlowController.tooltips.bloomWhitelist=A comma-separated list of fully qualified entity class names to apply BloomPoints to.  Defaults to empty string.
+placements.entities.SJ2021/GlowController.tooltips.bloomBlacklist=A comma-separated list of fully qualified entity class names to remove BloomPoints and CustomBlooms from.  Defaults to empty string.
+placements.entities.SJ2021/GlowController.tooltips.bloomAlpha=The opacity of the bloom, ranging from 0 (invisible) to 1 (opaque).  Defaults to 1.
+placements.entities.SJ2021/GlowController.tooltips.bloomRadius=The radius of the bloom in pixels.  Defaults to 8.
+placements.entities.SJ2021/GlowController.tooltips.bloomOffsetX=The X offset from the entity's position at which to place the BloomPoint.  Defaults to 0.
+placements.entities.SJ2021/GlowController.tooltips.bloomOffsetY=The Y offset from the entity's position at which to place the BloomPoint.  Defaults to 0.
+
+# Flag Floaty Space Block
+placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.tiletype=The tileset to use when rendering the block.
+placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.disableSpawnOffset=Whether or not the entity should spawn without the random offset.
+placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.flag=The name of the flag that will activate the block.
+placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.moveTime=The time in seconds for the block to move to a new position.
+
+# Core Toggle No Flash
+placements.entities.SJ2021/CoreToggleNoFlash.tooltips.onlyIce=Whether the switch can only turn the core mode to ice.
+placements.entities.SJ2021/CoreToggleNoFlash.tooltips.onlyFire=Whether the switch can only turn the core mode to fire.
+placements.entities.SJ2021/CoreToggleNoFlash.tooltips.persistent=Whether the core mode persists after death instead of resetting to initial room entry state.
+
+# Show Hitbox Trigger
+placements.triggers.SJ2021/ShowHitboxTrigger.tooltips.typeNames=A comma-separated list of class names of the entities to show hitboxes when player is inside the trigger.\nExample: Celeste.Player,Celeste.CrystalStaticSpinner,Refill

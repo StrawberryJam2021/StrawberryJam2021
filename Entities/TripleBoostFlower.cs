@@ -209,13 +209,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (canBoost()) {
                 player_launchBegin.Invoke(hold.Holder, new object[] { });
                 hold.Holder.Speed.Y = boostSpeed;
-                charges--;
                 // todo particles
                 //level.ParticlesBG.Emit(boostParticles, 8, Position - Vector2.UnitY * 10, Vector2.UnitX * 5 + Vector2.UnitY * 3, (float) Math.PI);
-
                 if (charges > 0) {
-                    sprite.Play($"idle_{charges}");
+                    sprite.Play($"boost_{charges}");
                 }
+                charges--;
                 boostDuration = boostDurationMax;
                 Input.Dash.ConsumeBuffer();
             } else if (shouldBeDestroyed()) {
@@ -301,7 +300,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private IEnumerator destroySelfCoroutine() {
             // todo audio effect
-            sprite.Play("death");
             yield return 1f;
             RemoveSelf();
             yield break;

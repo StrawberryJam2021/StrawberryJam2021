@@ -1,13 +1,24 @@
 using Celeste.Mod.StrawberryJam2021.Entities;
 using Celeste.Mod.StrawberryJam2021.Triggers;
-using Microsoft.Xna.Framework;
+using Celeste.Mod.StrawberryJam2021.StylegroundMasks;
 using Monocle;
 using System;
+using Celeste.Mod.StrawberryJam2021.Effects;
+using Celeste.Mod.Helpers;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
 
         public static StrawberryJam2021Module Instance;
+
+        public override Type SettingsType => typeof(StrawberryJam2021Settings);
+        public static StrawberryJam2021Settings Settings => (StrawberryJam2021Settings) Instance._Settings;
+
+        public override Type SaveDataType => typeof(StrawberryJam2021SaveData);
+        public static StrawberryJam2021SaveData SaveData => (StrawberryJam2021SaveData) Instance._SaveData;
+
+        public override Type SessionType => typeof(StrawberryJam2021Session);
+        public static StrawberryJam2021Session Session => (StrawberryJam2021Session) Instance._Session;
 
         public static SpriteBank SpriteBank => Instance._CustomEntitySpriteBank;
         private SpriteBank _CustomEntitySpriteBank;
@@ -33,7 +44,30 @@ namespace Celeste.Mod.StrawberryJam2021 {
             BarrierDashSwitch.Load();
             TripleBoostFlower.Load();
             ResettingRefill.Load();
-            SineDustSpinner.Load();
+            HorizontalTempleGate.Load();
+            WonkyCassetteBlock.Load();
+            WonkyCassetteBlockController.Load();
+            SpeedPreservePuffer.Load();
+            ResizableDashSwitch.Load();
+            SkateboardTrigger.Load();
+            LaserEmitter.Load();
+            OshiroAttackTimeTrigger.Load();
+            ConstantDelayFallingBlockController.Load();
+            DirectionalBooster.Load();
+            HintController.Load();
+            RainDensityTrigger.Load();
+            ZeroGBarrier.Load();
+            DarkMatterHooks.Load();
+            MaskHooks.Load();
+            MaskedOutline.Load();
+            DashSequenceDisplay.Load();
+            GroupedParallaxDecal.Load();
+            ExpiringDashRefill.Load();
+            ToggleSwapBlock.Load();
+            CoreToggleNoFlash.Load();
+            ShowHitboxTrigger.Load();
+
+            Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
         }
 
         public override void Unload() {
@@ -53,6 +87,29 @@ namespace Celeste.Mod.StrawberryJam2021 {
             BarrierDashSwitch.Unload();
             TripleBoostFlower.Unload();
             ResettingRefill.Unload();
+            HorizontalTempleGate.Unload();
+            WonkyCassetteBlock.Unload();
+            WonkyCassetteBlockController.Unload();
+            SpeedPreservePuffer.Unload();
+            ResizableDashSwitch.Unload();
+            SkateboardTrigger.Unload();
+            LaserEmitter.Unload();
+            OshiroAttackTimeTrigger.Unload();
+            ConstantDelayFallingBlockController.Unload();
+            DirectionalBooster.Unload();
+            HintController.Unload();
+            RainDensityTrigger.Unload();
+            ZeroGBarrier.Unload();
+            DarkMatterHooks.Unload();
+            MaskHooks.Unload();
+            DashSequenceDisplay.Unload();
+            GroupedParallaxDecal.Unload();
+            ExpiringDashRefill.Unload();
+            ToggleSwapBlock.Unload();
+            CoreToggleNoFlash.Unload();
+            ShowHitboxTrigger.Unload();
+
+            Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -65,6 +122,46 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SwitchCrateHolder.SetupParticles();
             LoopBlock.InitializeTextures();
             DashBoostField.LoadParticles();
+            ResizableDashSwitch.LoadParticles();
+            SkateboardTrigger.InitializeTextures();
+            PocketUmbrella.LoadParticles();
+            Paintbrush.LoadParticles();
+            PelletEmitter.PelletShot.LoadParticles();
+            NodedCloud.LoadParticles();
+            LaserEmitter.LoadParticles();
+            DarkMatterHooks.LoadContent(firstLoad);
+            Utilities.LoadContent();
+            MaskedOutline.LoadTexture();
+            BeeFireball.LoadContent();
+        }
+
+        private Backdrop onLoadBackdrop(MapData map, BinaryPacker.Element child, BinaryPacker.Element above) {
+            if (child.Name.Equals("SJ2021/HexagonalGodray", StringComparison.OrdinalIgnoreCase)) {
+                return new HexagonalGodray(child.Attr("color"), child.Attr("fadeColor"), child.AttrInt("numberOfRays"), child.AttrFloat("speedX"), child.AttrFloat("speedY"), child.AttrFloat("rotation"), child.AttrFloat("rotationRandomness"));
+            }
+            return null;
+		}
+
+        //This occurs after all mods get initialized.
+        public override void Initialize() {
+            base.Initialize();
+            //In theory this won't be a problem because it requires CrystallineHelper for the StrawberryJam collab anyways
+            try {
+                CrystallineHelperTimeFreezeMusicController.crystallineHelper_TimeCrystal_stopStage =
+                       FakeAssembly.GetFakeEntryAssembly().GetType("vitmod.TimeCrystal").GetField("stopStage", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            } catch { }
+        }
+
+        // Temporary code from vivhelper
+        public static bool VivHelperGetFlags(Level l, string[] flags, string and_or) {
+            if (l == null)
+                return false;
+            bool b = and_or == "and";
+            if (flags.Length == 1 && flags[0] == "") { return true; }
+            foreach (string flag in flags) {
+                if (and_or == "or") { b |= flag[0] != '!' ? l.Session.GetFlag(flag) : !l.Session.GetFlag(flag.TrimStart('!')); } else { b &= flag[0] != '!' ? l.Session.GetFlag(flag) : !l.Session.GetFlag(flag.TrimStart('!')); }
+            }
+            return b;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿namespace Celeste.Mod.StrawberryJam2021 {
-    class CustomSoundEffects {
-
+    public static class CustomSoundEffects {
         // Dash Zip Mover
         public const string game_dash_zip_mover_zip_mover = "event:/strawberry_jam_2021/game/dash_zip_mover/zip_mover";
 
@@ -11,10 +10,28 @@
         // Boost Block
         public const string game_boost_block_boost = "event:/strawberry_jam_2021/game/boost_block/boost";
 
-        // Jam Jars (Demo)
+        // Jam Jars (all sounds except demo are in sj21_jamjars.bank)
         public const string game_jars_open_demo = "event:/strawberry_jam_2021/game/jars/open_demo";
+        public const string game_jars_open_beginner = "event:/sj21_jamjar-blue";
+        public const string game_jars_open_intermediate = "event:/sj21_jamjar-red";
+        public const string game_jars_open_advanced = "event:/sj21_jamjar-yellow";
+        public const string game_jars_open_expert = "event:/sj21_jamjar-orange";
+        public const string game_jars_open_grandmaster = "event:/sj21_jamjar-purple";
 
         // Bees
-        public const string game_jars_bee_fireball_idle = "event:/strawberry_jam_2021/game/bee/fireball_idle";
+        public const string game_bee_fireball_idle = "event:/strawberry_jam_2021/game/bee/fireball_idle";
+
+        // Loop Block
+        public const string game_loop_block_sideboost = "event:/strawberry_jam_2021/game/loop_block/sideboost";
+
+        // Drum Swap Blocks
+        public const string game_drum_swapblock_move = "event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move";
+        public const string game_drum_swapblock_move_end = "event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move_end";
+        
+        // Dash Sequence Controller Fail Jingle
+        public const string game_dash_seq_fail = "event:/strawberry_jam_2021/game/dash_seq/fail";
+
+        //Dark Matter Ambient Electrical Audio
+        public const string env_darkMatter = "event:/strawberry_jam_2021/env/darkMatter";
     }
 }

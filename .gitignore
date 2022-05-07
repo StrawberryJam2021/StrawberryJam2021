@@ -351,3 +351,8 @@ MigrationBackup/
 
 # JetBrains Rider
 .idea/
+
+# Metadata files created by Windows / macOS that should not be committed
+.DS_Store
+Thumbs.db
+desktop.ini

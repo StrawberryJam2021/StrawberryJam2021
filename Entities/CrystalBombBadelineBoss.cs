@@ -37,6 +37,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(new PlayerCollider(OnPlayer, playerCollider));
 
             music = data.Attr("music", "");
+            if (data.Bool("disableCameraLock")) {
+                Remove(Get<CameraLocker>());
+            }
         }
 
         public override void Update() {
@@ -65,6 +68,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Seeker.RegenerateCoroutine += On_Seeker_RegenerateCoroutine;
             On.Celeste.Puffer.Explode += On_Puffer_Explode;
             IL.Celeste.FinalBoss.OnPlayer += IL_FinalBoss_OnPlayer;
+            IL.Celeste.FinalBoss.CreateBossSprite += IL_FinalBoss_CreateBossSprite;
         }
 
         public static void Unload() {
@@ -72,6 +76,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.Seeker.RegenerateCoroutine -= On_Seeker_RegenerateCoroutine;
             On.Celeste.Puffer.Explode -= On_Puffer_Explode;
             IL.Celeste.FinalBoss.OnPlayer -= IL_FinalBoss_OnPlayer;
+            IL.Celeste.FinalBoss.CreateBossSprite -= IL_FinalBoss_CreateBossSprite;
         }
 
         private static void On_CrystalBomb_Explode(Action<CrystalBomb> orig, CrystalBomb self) {
@@ -127,5 +132,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return origMusic;
             }
         }
+
+        private static void IL_FinalBoss_CreateBossSprite(ILContext il) {
+            ILCursor cursor = new ILCursor(il);
+            while (cursor.TryGotoNext(MoveType.Before, instr => instr.MatchDup())) {
+                cursor.Emit(OpCodes.Ldarg_0);
+                cursor.EmitDelegate<Func<Sprite, FinalBoss, Sprite>>(ChangeSprite);
+                break;
+            }
+        }
+
+        private static Sprite ChangeSprite(Sprite origSprite, FinalBoss self) {
+            if (self is CrystalBombBadelineBoss) {
+                return StrawberryJam2021Module.SpriteBank.Create("crystalBombBadelineBoss");
+            } else {
+                return origSprite;
+            }
+        }
+
     }
 }
