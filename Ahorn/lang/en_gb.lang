@@ -199,6 +199,12 @@ placements.entities.SJ2021/ToggleSwapBlock.tooltips.allowDashSliding=When unchec
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStartAudio=Custom audio to play when the block starts moving. If blank, vanilla swap block sound is used.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStopAudio=Custom audio to play when the block stops moving. If blank, vanilla swap block sound is used.
 
+# Wind Tunnel
+placements.entities.SJ2021/WindTunnelNoParticles.tooltips.activationId=String value of the entity's Activation Id. When a factory activator with this Id is turned on the entity will toggle state.
+placements.entities.SJ2021/WindTunnelNoParticles.tooltips.startActive=If `true` the entity will initially be active.
+placements.entities.SJ2021/WindTunnelNoParticles.tooltips.direction=The direction the wind blows inside the wind tunnel.
+placements.entities.SJ2021/WindTunnelNoParticles.tooltips.strength=This value determines the wind strength. Experiment with these values to find the strength you desire.\nSome familiar values from the base game are:\n	* Weak horizontal: 400\n	* Strong horizontal: 800\n	* Crazy horizontal: 1200\n	* Summit updraft: 300\n	* Summit downdraft: 400
+
 # Wonky Cassette Block
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.onAtBeats=A list of integers (separated by a comma) corresponding to the beats on which this block should activate, being deactivated on all other beats not included in this list.\nExample: 1, 2, 4
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.color=The hexadecimal colour code of this block (without the hash # symbol).
