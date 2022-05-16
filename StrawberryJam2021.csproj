@@ -44,6 +44,10 @@
       <HintPath>lib-stripped\ExtendedVariantMode.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="FactoryHelper">
+      <HintPath>lib-stripped\FactoryHelper.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="MaxHelpingHand">
       <HintPath>lib-stripped\MaxHelpingHand.dll</HintPath>
       <Private>false</Private>

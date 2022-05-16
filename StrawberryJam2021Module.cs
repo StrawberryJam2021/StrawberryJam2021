@@ -66,6 +66,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ToggleSwapBlock.Load();
             CoreToggleNoFlash.Load();
             ShowHitboxTrigger.Load();
+            WindTunnelNoParticles.Load();
 
             Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
         }
@@ -108,6 +109,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ToggleSwapBlock.Unload();
             CoreToggleNoFlash.Unload();
             ShowHitboxTrigger.Unload();
+            WindTunnelNoParticles.Unload();
 
             Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
         }
