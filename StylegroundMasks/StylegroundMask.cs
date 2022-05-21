@@ -14,8 +14,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [Tracked]
     [CustomEntity("SJ2021/StylegroundMask")]
     public class StylegroundMask : Mask {
-        public static Dictionary<string, VirtualRenderTarget> BgBuffers = new Dictionary<string, VirtualRenderTarget>();
-        public static Dictionary<string, VirtualRenderTarget> FgBuffers = new Dictionary<string, VirtualRenderTarget>();
         public string[] RenderTags = new string[] { };
         public bool Foreground = false;
         public bool EntityRenderer = false;
@@ -23,12 +21,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
         
         public float AlphaFrom;
         public float AlphaTo;
-
-        private ColorGradeMask coreModeGrading;
-
-        public static readonly string TagPrefix = "sjstylemask_";
-
-        public static readonly string DynDataRendererName = "SJ21_StylegroundMaskRenderer";
 
         public StylegroundMask(Vector2 position, float width, float height)
             : base(position, width, height) {
@@ -60,11 +52,11 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 });
             }
 
-            HeatWave heatWave;
-            if (!Foreground && (heatWave = (scene as Level).Foreground.GetEach<HeatWave>().FirstOrDefault(current => RenderTags.Any(tag => current.Tags.Contains(TagPrefix + tag)) &&
-                (current.GetType() != typeof(HeatWaveNoColorGrade)))) != null) {
+            if (!Foreground && (scene as Level).Foreground.Backdrops.Any(backdrop =>
+                backdrop is HeatWave wave and not HeatWaveNoColorGrade &&
+                RenderTags.Any(tag => wave.Tags.Contains(StylegroundMaskRenderer.TagPrefix + tag)))) {
 
-                scene.Add(coreModeGrading = new ColorGradeMask(Position, Width, Height) {
+                scene.Add(new ColorGradeMask(Position, Width, Height) {
                     Fade = Fade, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
                     ColorGradeTo = "(core)",
                 });
@@ -74,7 +66,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
         public override void Render() {
             base.Render();
             if (EntityRenderer) {
-                var bufferDict = Foreground ? FgBuffers : BgBuffers;
+                var bufferDict = StylegroundMaskRenderer.GetBuffers(Foreground);
                 foreach (var tag in RenderTags) {
                     if (bufferDict.TryGetValue(tag, out var buffer)) {
                         foreach (var slice in GetMaskSlices()) {
@@ -84,11 +76,191 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 }
             }
         }
+    }
 
+    public class StylegroundMaskRenderer : Renderer {
+        public const string TagPrefix = "sjstylemask_";
+        public const string DynDataRendererName = "SJ21_StylegroundMaskRenderer";
 
+        /// <summary>
+        /// used internally to render consumed stylegrounds
+        /// </summary>
+        private static BackdropRenderer DummyBackdropRenderer = new();
+
+        public static Dictionary<string, VirtualRenderTarget> BgBuffers = new();
+        public static Dictionary<string, VirtualRenderTarget> FgBuffers = new();
+
+        public bool Foreground;
+        public bool Behind;
+
+        // tag -> backdrops
+        public Dictionary<string, List<Backdrop>> FGBackdrops = new();
+        public Dictionary<string, List<Backdrop>> BGBackdrops = new();
+
+        public Dictionary<string, List<StylegroundMask>> Masks = new();
+
+        public static Dictionary<string, VirtualRenderTarget> GetBuffers(bool foreground) => foreground ? FgBuffers : BgBuffers;
+
+        public Dictionary<string, List<Backdrop>> GetBackdrops(bool foreground) => foreground ? FGBackdrops : BGBackdrops;
+
+        public List<StylegroundMask> GetMasksWithTag(Scene scene, string tag) {
+            if (Masks.TryGetValue(tag, out var masks)) {
+                // if the first mask's Scene is null, then the masks got removed from the scene and they should be recached
+                if (masks.Count == 0 || masks[0].Scene is not null) {
+                    return masks;
+                }
+            }
+
+            masks = scene.Tracker.GetEntities<StylegroundMask>()
+                                 .Where(m => (m as StylegroundMask).RenderTags.Contains(tag))
+                                 .Cast<StylegroundMask>()
+                                 .ToList();
+
+            return Masks[tag] = masks;
+        }
+
+        public static VirtualRenderTarget GetBuffer(string tag, bool foreground) {
+            var buffers = GetBuffers(foreground);
+
+            if (!buffers.ContainsKey(tag))
+                buffers.Add(tag, VirtualContent.CreateRenderTarget(tag, 320, 180));
+
+            return buffers[tag];
+        }
+
+        private static bool TagIsMaskTag(string tag) => tag.StartsWith(TagPrefix);
+
+        private static string StripTagPrefix(string tag) => tag.Substring(TagPrefix.Length);
+
+        private static void AddBackdrop(string tag, Backdrop backdrop, Dictionary<string, List<Backdrop>> into) {
+            if (!into.ContainsKey(tag)) {
+                into.Add(tag, new());
+            }
+
+            into[tag].Insert(0, backdrop);
+        }
+
+        public static StylegroundMaskRenderer GetRendererInLevel(Level level) => new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName);
+
+        private void ConsumeStylegroundsFrom(List<Backdrop> from, Dictionary<string, List<Backdrop>> into) {
+            // reversed loop to allow removing items while iterating
+            for (int i = from.Count - 1; i >= 0; i--) {
+                var backdrop = from[i];
+
+                foreach (var tag in backdrop.Tags) {
+                    if (TagIsMaskTag(tag)) {
+                        AddBackdrop(StripTagPrefix(tag), backdrop, into);
+                        backdrop.Renderer = DummyBackdropRenderer;
+                        from.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
+        public void ConsumeStylegrounds(Level level) {
+            ConsumeStylegroundsFrom(level.Foreground.Backdrops, FGBackdrops);
+            ConsumeStylegroundsFrom(level.Background.Backdrops, BGBackdrops);
+        }
+
+        public static bool IsEntityInView(Level level, Entity entity) {
+            Camera camera = level.Camera;
+            return new Rectangle((int)entity.X, (int) entity.Y, (int) entity.Width, (int) entity.Height)
+                   .Intersects(new Rectangle((int) camera.X, (int)camera.Y, 320, 180));
+        }
+
+        public bool AnyMaskIsInView(Level level, string tag) {
+            foreach (var mask in GetMasksWithTag(level, tag)) {
+                if (IsEntityInView(level, mask))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public void RenderStylegroundsIntoBuffers(Level level, bool foreground) {
+            foreach (var pair in GetBackdrops(foreground)) {
+                string tag = pair.Key;
+                var backdrops = pair.Value;
+
+                Engine.Graphics.GraphicsDevice.SetRenderTarget(GetBuffer(tag, foreground));
+                Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
+
+                if (AnyMaskIsInView(level, tag)) {
+                    // since masked stylegrounds are not in the level's styleground renderers at all,
+                    // we need to go through the whole update-render cycle here
+                    DummyBackdropRenderer.Backdrops = backdrops;
+                    DummyBackdropRenderer.Update(level);
+                    DummyBackdropRenderer.BeforeRender(level);
+                    DummyBackdropRenderer.Render(level);
+                }
+            }
+        }
+
+        public void RenderWith(Scene scene, bool fg, bool behind = false) {
+            Foreground = fg;
+            Behind = behind;
+            Render(scene);
+        }
+
+        public override void Render(Scene scene) {
+            var level = scene as Level;
+
+            var lastTargets = Engine.Graphics.GraphicsDevice.GetRenderTargets();
+            RenderStylegroundsIntoBuffers(level, Foreground);
+            Engine.Graphics.GraphicsDevice.SetRenderTargets(lastTargets);
+
+            var bufferDict = GetBuffers(Foreground);
+            if (bufferDict.Count == 0)
+                return;
+
+            var masks = scene.Tracker.GetEntities<StylegroundMask>().Cast<StylegroundMask>()
+                .Where(mask => !mask.EntityRenderer && (!Foreground || mask.BehindForeground == Behind) && mask.IsVisible());
+            var fadeMasks = masks.Where(mask => mask.Fade == Mask.FadeType.Custom);
+            var batchMasks = masks.Where(mask => mask.Fade != Mask.FadeType.Custom);
+
+            if (fadeMasks.Any()) {
+                var targets = Engine.Graphics.GraphicsDevice.GetRenderTargets();
+
+                Draw.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, level.Camera.Matrix);
+                foreach (var mask in fadeMasks) {
+                    Engine.Graphics.GraphicsDevice.SetRenderTarget(GameplayBuffers.TempA);
+                    Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
+
+                    mask.DrawFadeMask();
+
+                    Engine.Graphics.GraphicsDevice.BlendState = Mask.DestinationAlphaBlend;
+                    foreach (var tag in mask.RenderTags) {
+                        if (bufferDict.TryGetValue(tag, out var buffer)) {
+                            foreach (var slice in mask.GetMaskSlices())
+                                Draw.SpriteBatch.Draw(buffer, slice.Position, slice.Source, Color.White);
+                        }
+                    }
+
+                    Engine.Graphics.GraphicsDevice.SetRenderTargets(targets);
+                    Engine.Graphics.GraphicsDevice.BlendState = BlendState.AlphaBlend;
+                    Draw.SpriteBatch.Draw(GameplayBuffers.TempA, level.Camera.Position, Color.White);
+                }
+                Draw.SpriteBatch.End();
+            }
+
+            if (batchMasks.Any()) {
+                Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, level.Camera.Matrix);
+                foreach (var mask in batchMasks) {
+                    foreach (var tag in mask.RenderTags) {
+                        if (bufferDict.TryGetValue(tag, out var buffer)) {
+                            foreach (var slice in mask.GetMaskSlices()) {
+                                Draw.SpriteBatch.Draw(buffer, slice.Position, slice.Source, Color.White * slice.GetValue(mask.AlphaFrom, mask.AlphaTo));
+                            }
+                        }
+                    }
+                }
+                Draw.SpriteBatch.End();
+            }
+        }
+
+        #region Hooks
         public static void Load() {
             On.Celeste.Level.LoadLevel += Level_LoadLevel;
-            On.Celeste.BackdropRenderer.Render += BackdropRenderer_Render;
             IL.Celeste.Level.Render += Level_Render;
             IL.Celeste.DisplacementRenderer.BeforeRender += DisplacementRenderer_BeforeRender;
             On.Celeste.HeatWave.Update += HeatWave_Update;
@@ -96,7 +268,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         public static void UnLoad() {
             On.Celeste.Level.LoadLevel -= Level_LoadLevel;
-            On.Celeste.BackdropRenderer.Render -= BackdropRenderer_Render;
             IL.Celeste.Level.Render -= Level_Render;
             IL.Celeste.DisplacementRenderer.BeforeRender -= DisplacementRenderer_BeforeRender;
             On.Celeste.HeatWave.Update -= HeatWave_Update;
@@ -126,56 +297,8 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 var renderer = new StylegroundMaskRenderer();
                 new DynData<Level>(self).Set(DynDataRendererName, renderer);
                 self.Add(renderer);
+                renderer.ConsumeStylegrounds(self);
             }
-        }
-
-        private static void BackdropRenderer_Render(On.Celeste.BackdropRenderer.orig_Render orig, BackdropRenderer self, Scene scene) {
-            if (scene is not Level level) {
-                orig(self, scene);
-                return;
-            }
-
-            if (self != level.Background && self != level.Foreground) {
-                orig(self, scene);
-                return;
-            }
-
-            var bufferDict = (self == level.Foreground) ? FgBuffers : BgBuffers;
-
-            var lastVisible = new Dictionary<Backdrop, bool>();
-            var renderedKeys = new HashSet<string>();
-
-            foreach (var backdrop in self.Backdrops) {
-                lastVisible[backdrop] = backdrop.Visible;
-                foreach (var tag in backdrop.Tags) {
-                    if (tag.StartsWith(TagPrefix)) {
-                        var key = tag.Substring(TagPrefix.Length);
-                        if (!bufferDict.ContainsKey(key))
-                            bufferDict.Add(key, VirtualContent.CreateRenderTarget(tag, 320, 180));
-                        renderedKeys.Add(key);
-                    }
-                }
-            }
-            foreach (var i in bufferDict.Keys.Where((key) => !renderedKeys.Contains(key)).ToList()) {
-                bufferDict[i].Dispose();
-                bufferDict.Remove(i);
-            }
-
-            EnableTag(self, "", lastVisible);
-            orig(self, scene);
-            var lastTargets = Engine.Graphics.GraphicsDevice.GetRenderTargets();
-            foreach (var pair in bufferDict) {
-                var tag = pair.Key;
-                var buffer = pair.Value;
-                EnableTag(self, tag, lastVisible);
-                Engine.Graphics.GraphicsDevice.SetRenderTarget(buffer);
-                Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
-                orig(self, scene);
-            }
-            Engine.Graphics.GraphicsDevice.SetRenderTargets(lastTargets);
-
-            foreach (var pair in lastVisible)
-                pair.Key.Visible = pair.Value;
         }
 
         private static void Level_Render(ILContext il) {
@@ -189,7 +312,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 Logger.Log("SJ2021/StylegroundMask", $"Adding background styleground mask render call at {cursor.Index} in IL for Level.Render");
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
-                    new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName)?.RenderWith(level, false);
+                    GetRendererInLevel(level)?.RenderWith(level, false);
                 });
             }
 
@@ -203,14 +326,14 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 Logger.Log("SJ2021/StylegroundMask", $"Adding foreground styleground mask render behind call at {cursor.Index} in IL for Level.Render");
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
-                    new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName)?.RenderWith(level, true, true);
+                    GetRendererInLevel(level)?.RenderWith(level, true, true);
                 });
 
                 cursor.Index += 4;
 
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
-                    new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName)?.RenderWith(level, true, false);
+                    GetRendererInLevel(level)?.RenderWith(level, true, false);
                 });
             }
         }
@@ -255,79 +378,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 }
             }
         }
-
-        private static void EnableTag(BackdropRenderer renderer, string tag, Dictionary<Backdrop, bool> lastVisible) {
-            string prefixedTag = TagPrefix + tag; // avoid allocating inside of the loop
-
-            foreach (var backdrop in renderer.Backdrops) {
-                var tags = backdrop.Tags;
-
-                bool foundTag = string.IsNullOrEmpty(tag) ? tags.Any(s => s.StartsWith(TagPrefix)) : tags.Contains(prefixedTag);
-
-                if (string.IsNullOrEmpty(tag))
-                    foundTag = !foundTag || tags.Contains("nomaskhide");
-
-                backdrop.Visible = foundTag && lastVisible[backdrop];
-            }
-        }
-
-        public class StylegroundMaskRenderer : Renderer {
-            public bool Foreground;
-            public bool Behind;
-
-            public void RenderWith(Scene scene, bool fg, bool behind = false) {
-                Foreground = fg;
-                Behind = behind;
-                Render(scene);
-            }
-
-            public override void Render(Scene scene) {
-                var bufferDict = Foreground ? FgBuffers : BgBuffers;
-                if (bufferDict.Count == 0)
-                    return;
-                var level = scene as Level;
-                var masks = scene.Tracker.GetEntities<StylegroundMask>().Cast<StylegroundMask>()
-                    .Where(mask => !mask.EntityRenderer && (!Foreground || mask.BehindForeground == Behind) && mask.IsVisible());
-                var fadeMasks = masks.Where(mask => mask.Fade == FadeType.Custom);
-                var batchMasks = masks.Where(mask => mask.Fade != FadeType.Custom);
-                if (fadeMasks.Any()) {
-                    var targets = Engine.Graphics.GraphicsDevice.GetRenderTargets();
-
-                    Draw.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, level.Camera.Matrix);
-                    foreach (var mask in fadeMasks) {
-                        Engine.Graphics.GraphicsDevice.SetRenderTarget(GameplayBuffers.TempA);
-                        Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
-
-                        mask.DrawFadeMask();
-
-                        Engine.Graphics.GraphicsDevice.BlendState = Mask.DestinationAlphaBlend;
-                        foreach (var tag in mask.RenderTags) {
-                            if (bufferDict.TryGetValue(tag, out var buffer)) {
-                                foreach (var slice in mask.GetMaskSlices())
-                                    Draw.SpriteBatch.Draw(buffer, slice.Position, slice.Source, Color.White);
-                            }
-                        }
-
-                        Engine.Graphics.GraphicsDevice.SetRenderTargets(targets);
-                        Engine.Graphics.GraphicsDevice.BlendState = BlendState.AlphaBlend;
-                        Draw.SpriteBatch.Draw(GameplayBuffers.TempA, level.Camera.Position, Color.White);
-                    }
-                    Draw.SpriteBatch.End();
-                }
-                if (batchMasks.Any()) {
-                    Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, level.Camera.Matrix);
-                    foreach (var mask in batchMasks) {
-                        foreach (var tag in mask.RenderTags) {
-                            if (bufferDict.TryGetValue(tag, out var buffer)) {
-                                foreach (var slice in mask.GetMaskSlices()) {
-                                    Draw.SpriteBatch.Draw(buffer, slice.Position, slice.Source, Color.White * slice.GetValue(mask.AlphaFrom, mask.AlphaTo));
-                                }
-                            }
-                        }
-                    }
-                    Draw.SpriteBatch.End();
-                }
-            }
-        }
+        #endregion
     }
 }
