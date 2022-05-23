@@ -40,6 +40,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             session.ExpiringDashRemainingTime = dashExpirationTime;
             session.ExpiringDashFlashThreshold = hairFlashTime;
 
+            player.RefillStamina();
+
             // Everything after this line is roundabout ways of doing the same things Refill does
             Audio.Play("event:/game/general/diamond_touch");
 
