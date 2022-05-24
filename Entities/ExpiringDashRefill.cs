@@ -31,7 +31,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             int playerRealDashes = player.Dashes - (session.ExpiringDashRemainingTime > 0 ? 1 : 0);
 
             // The dash shouldn't be picked up if the ExpiringDash the player holds would last longer
-            if (session.ExpiringDashRemainingTime >= dashExpirationTime)
+            // If the player's in stamina panic, this rule is ignored
+            if (session.ExpiringDashRemainingTime >= dashExpirationTime && player.Stamina >= 20f)
                 return;
 
             // Unconditionally add the dash, bypassing inventory limits
