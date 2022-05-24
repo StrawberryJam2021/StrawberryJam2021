@@ -103,15 +103,12 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         public Dictionary<string, List<Backdrop>> GetBackdrops(bool foreground) => foreground ? FGBackdrops : BGBackdrops;
 
-        public List<StylegroundMask> GetMasksWithTag(Scene scene, string tag) {
-            if (Masks.TryGetValue(tag, out var masks)) {
-                // if the first mask's Scene is null, then the masks got removed from the scene and they should be recached
-                if (masks.Count == 0 || masks[0].Scene is not null) {
-                    return masks;
-                }
+        public List<StylegroundMask> GetMasksWithTag(Level level, string tag) {
+            if (Masks.TryGetValue(tag, out var cachedMasks)) {
+                return cachedMasks;
             }
 
-            masks = scene.Tracker.GetEntities<StylegroundMask>()
+            var masks = level.Tracker.GetEntities<StylegroundMask>()
                                  .Where(m => (m as StylegroundMask).RenderTags.Contains(tag))
                                  .Cast<StylegroundMask>()
                                  .ToList();
@@ -182,15 +179,17 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 string tag = pair.Key;
                 var backdrops = pair.Value;
 
-                Engine.Graphics.GraphicsDevice.SetRenderTarget(GetBuffer(tag, foreground));
-                Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
-
                 if (AnyMaskIsInView(level, tag)) {
                     // since masked stylegrounds are not in the level's styleground renderers at all,
                     // we need to go through the whole update-render cycle here
                     DummyBackdropRenderer.Backdrops = backdrops;
-                    DummyBackdropRenderer.Update(level);
+                    if (!level.Paused)
+                        DummyBackdropRenderer.Update(level);
                     DummyBackdropRenderer.BeforeRender(level);
+
+                    Engine.Graphics.GraphicsDevice.SetRenderTarget(GetBuffer(tag, foreground));
+                    Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
+
                     DummyBackdropRenderer.Render(level);
                 }
             }
@@ -299,6 +298,8 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 self.Add(renderer);
                 renderer.ConsumeStylegrounds(self);
             }
+
+            GetRendererInLevel(self).Masks.Clear();
         }
 
         private static void Level_Render(ILContext il) {
