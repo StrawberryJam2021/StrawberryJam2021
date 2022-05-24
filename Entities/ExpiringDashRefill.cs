@@ -28,12 +28,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void OnPlayer(Player player) {
-            int playerRealDashes = player.Dashes - (session.ExpiringDashRemainingTime > 0 ? 1 : 0);
-
             // The dash shouldn't be picked up if the ExpiringDash the player holds would last longer
             // If the player's in stamina panic, this rule is ignored
             if (session.ExpiringDashRemainingTime >= dashExpirationTime && player.Stamina >= 20f)
                 return;
+
+            int playerRealDashes = player.Dashes - (session.ExpiringDashRemainingTime > 0 ? 1 : 0);
 
             // Unconditionally add the dash, bypassing inventory limits
             flash = false;
