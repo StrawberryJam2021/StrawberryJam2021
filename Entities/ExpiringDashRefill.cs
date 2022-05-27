@@ -28,17 +28,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void OnPlayer(Player player) {
-            int playerRealDashes = player.Dashes - (session.ExpiringDashRemainingTime > 0 ? 1 : 0);
-
             // The dash shouldn't be picked up if the ExpiringDash the player holds would last longer
-            if (session.ExpiringDashRemainingTime >= dashExpirationTime)
+            // If the player's in stamina panic, this rule is ignored
+            if (session.ExpiringDashRemainingTime >= dashExpirationTime && player.Stamina >= 20f)
                 return;
+
+            int playerRealDashes = player.Dashes - (session.ExpiringDashRemainingTime > 0 ? 1 : 0);
 
             // Unconditionally add the dash, bypassing inventory limits
             flash = false;
             player.Dashes = playerRealDashes + 1;
             session.ExpiringDashRemainingTime = dashExpirationTime;
             session.ExpiringDashFlashThreshold = hairFlashTime;
+
+            player.RefillStamina();
 
             // Everything after this line is roundabout ways of doing the same things Refill does
             Audio.Play("event:/game/general/diamond_touch");
