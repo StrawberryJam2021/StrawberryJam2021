@@ -21,9 +21,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int targetNodeIndex;
         private Vector2 sourcePosition;
         private Vector2 targetPosition;
-
-        private readonly int initialNodeIndex;
+        private int initialNodeIndex;
         private CassetteListener cassetteListener;
+
+        internal bool wait;
 
         public CassetteBadelineBlock(CassetteBadelineBlock parent, int initialNodeIndex)
             : base(parent.Nodes[initialNodeIndex], parent.Width, parent.Height, false) {
@@ -41,6 +42,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Tag = Tags.FrozenUpdate;
 
             AddComponents();
+            wait = true;
         }
 
         public CassetteBadelineBlock(EntityData data, Vector2 offset)
@@ -65,6 +67,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Tag = Tags.FrozenUpdate;
 
             AddComponents();
+            wait = true;
         }
 
         private void AddComponents() {
@@ -74,6 +77,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 new LightOcclude(),
                 cassetteListener = new CassetteListener {
                     OnBeat = state => {
+                        //This is a terrible solution but it worked first try.
+                        if (wait) {
+                            if (state.CurrentTick.Index == 0) 
+                                wait = false;
+                            else
+                                return;
+                        } 
                         bool indexWillChange = state.NextTick.Index != state.CurrentTick.Index;
                         if (sourceNodeIndex == targetNodeIndex && OffBeat != indexWillChange) {
                             if (offsetNodeIndex < 0)
@@ -96,7 +106,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Added(scene);
 
             offsetNodeIndex = -1;
-
             if (initialNodeIndex == 0) {
                 for (int i = 1; i < Nodes.Length; i++) {
                     if (!IgnoredNodes.Contains(i) && !IgnoredNodes.Contains(i - Nodes.Length))
@@ -106,6 +115,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (IgnoredNodes.Contains(0))
                     RemoveSelf();
             }
+        }
+
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
         }
 
         public override void Update() {
