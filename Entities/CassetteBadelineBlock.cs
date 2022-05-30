@@ -117,10 +117,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        public override void Awake(Scene scene) {
-            base.Awake(scene);
-        }
-
         public override void Update() {
             base.Update();
 
