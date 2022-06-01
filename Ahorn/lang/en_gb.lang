@@ -424,10 +424,8 @@ placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.disableSpawnOffset=Whet
 placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.flag=The name of the flag that will activate the block.
 placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.moveTime=The time in seconds for the block to move to a new position.
 
-# Core Toggle No Flash
-placements.entities.SJ2021/CoreToggleNoFlash.tooltips.onlyIce=Whether the switch can only turn the core mode to ice.
-placements.entities.SJ2021/CoreToggleNoFlash.tooltips.onlyFire=Whether the switch can only turn the core mode to fire.
-placements.entities.SJ2021/CoreToggleNoFlash.tooltips.persistent=Whether the core mode persists after death instead of resetting to initial room entry state.
-
 # Show Hitbox Trigger
 placements.triggers.SJ2021/ShowHitboxTrigger.tooltips.typeNames=A comma-separated list of class names of the entities to show hitboxes when player is inside the trigger.\nExample: Celeste.Player,Celeste.CrystalStaticSpinner,Refill
+
+# Core Mode Trigger (No Flash)
+placements.triggers.SJ2021/CoreModeTriggerNoFlash.tooltips.mode=The core mode that should be used when the trigger is entered.
