@@ -14,7 +14,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public string deathColor;
         public bool instantCamera;
         private DynamicData boosterData;
-        private DynamicData playerData;
         public Sprite sprite;
         public static bool TeleDeath;
         public static bool CanTeleport;
@@ -154,9 +153,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Awake(Scene scene) {
             base.Awake(scene);
             boosterData.Get<Entity>("outline").RemoveSelf();
-            if (playerData == null) {
-                playerData = new DynamicData(scene.Tracker.GetEntity<Player>());
-            }
         }
 
         public override void Update() {
@@ -214,6 +210,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             player.StateMachine.State = Player.StDummy;
             player.DummyGravity = false;
             player.Collidable = false;
+            DynamicData playerData = new DynamicData(player);
             playerData.Set("varJumpTimer", 0f);
             player.Speed = Vector2.Zero;
             Collidable = false;
