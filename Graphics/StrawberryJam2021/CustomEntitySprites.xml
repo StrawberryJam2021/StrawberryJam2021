@@ -161,11 +161,20 @@
     <!--Switch Door-->
     <switchDoor path="objects/StrawberryJam2021/SwitchDoor/" start="idle">
     	<Justify x="0.5" y="0"/>
-    	<Loop id="idle" path="door" delay="0.1" frames="1"/>
-    	<Anim id="open" path="door" delay="0.1" frames="7-15" goto="opened"/>
-    	<Anim id="hit" path="door" delay="0.08" frames="1-5" goto="idle"/>
-    	<Loop id="opened" path="door" delay="0.1" frames="15"/>
+    	<Loop id="idle" path="SwitchDoor" delay="0.1" frames="0"/>
+    	<Anim id="open" path="SwitchDoor" delay="0.1" frames="6-14" goto="opened"/>
+    	<Anim id="hit" path="SwitchDoor" delay="0.08" frames="0-4" goto="idle"/>
+    	<Loop id="opened" path="SwitchDoor" delay="0.1" frames="14"/>
     </switchDoor>
+
+	<!--Switch Crate Holder-->
+	<switchCrateHolder path="objects/StrawberryJam2021/SwitchCrateHolder/" start="empty">
+		<Justify x=".5" y=".75" />
+		<Loop id="empty" path="empty" delay="0.2"/>
+		<Anim id="insert" path="insert" delay="0.055" goto="start"/>
+		<Anim id="start" path="start" delay="0.04" goto="buzz"/>
+		<Loop id="buzz" path="buzz" delay="0.15"/>
+	</switchCrateHolder>
     
     <!--Strawberry Jam Jars-->
     <jamJar_trailer path="objects/StrawberryJam2021/jamJar/trailer/" start="empty">

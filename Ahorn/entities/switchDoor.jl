@@ -5,21 +5,21 @@ using ..Ahorn, Maple
 @mapdef Entity "SJ2021/SwitchDoor" SwitchDoor(x::Integer, y::Integer, vertical::Bool=true, closes::Bool=false, height::Integer=48, switchId::Integer=-1)
 
 const placements = Ahorn.PlacementDict(
-    "SwitchDoor (Vertical)" => Ahorn.EntityPlacement(
+    "Switch Door (Vertical) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         SwitchDoor,
         "point",
         Dict{String, Any}(
             "vertical" => true,
         )
     ),
-    "SwitchDoor (Horizontal)" => Ahorn.EntityPlacement(
+    "Switch Door (Horizontal) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         SwitchDoor,
         "point",
         Dict{String, Any}(
             "vertical" => false,
         )
     ),
-    "Closing SwitchDoor (Vertical)" => Ahorn.EntityPlacement(
+    "Closing Switch Door (Vertical) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         SwitchDoor,
         "point",
         Dict{String, Any}(
@@ -27,7 +27,7 @@ const placements = Ahorn.PlacementDict(
             "closes" => true,
         )
     ),
-    "Closing SwitchDoor (Horizontal)" => Ahorn.EntityPlacement(
+    "Closing Switch Door (Horizontal) (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         SwitchDoor,
         "point",
         Dict{String, Any}(
@@ -49,8 +49,11 @@ function Ahorn.selection(entity::SwitchDoor)
 end
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::SwitchDoor, room::Maple.Room)
-
-    sprite = "objects/StrawberryJam2021/SwitchDoor/SwitchDoor15"
+    if get(entity.data, "closes", false)
+        sprite = "objects/StrawberryJam2021/SwitchDoor/SwitchDoor14"
+    else
+        sprite = "objects/StrawberryJam2021/SwitchDoor/SwitchDoor00"
+    end
 
     if get(entity.data, "vertical", true)
         Ahorn.drawSprite(ctx, sprite, 7, 24)

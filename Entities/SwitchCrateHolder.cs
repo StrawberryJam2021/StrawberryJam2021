@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Celeste.Mod.Batteries;
 using Celeste.Mod.Entities;
@@ -48,7 +49,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.allGates = allGates;
             this.id = id;
             this.alwaysFlag = alwaysFlag;
-            Add(sprite = BatteriesModule.SpriteBank.Create("battery_switch"));
+            Add(sprite = StrawberryJam2021Module.SpriteBank.Create("switchCrateHolder"));
             if (side == Sides.Up || side == Sides.Down) {
                 base.Collider.Width = 16f;
                 base.Collider.Height = 8f;
@@ -167,11 +168,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
             Crate.Use();
-            Crate.RemoveSelf();
+            Add(new Coroutine(InsertRoutine(Crate)));
             LitState();
-            Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
-            Audio.Play("event:/game/05_mirror_temple/button_activate", Position);
-            sprite.Play("insert");
             pressed = true;
             Player player = base.Scene.Tracker.GetEntity<Player>();
             if (player != null && base.Collider.Collide(player)) {
@@ -193,6 +191,36 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (persistent || alwaysFlag) {
                 SceneAs<Level>().Session.SetFlag(FlagName);
             }
+        }
+
+        private IEnumerator InsertRoutine(SwitchCrate crate) {
+            Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
+            Audio.Play("event:/game/05_mirror_temple/button_activate", Position);
+            Vector2 target = Center;
+            switch (side) {
+                case Sides.Down:
+                    target = new Vector2(Center.X, Bottom + crate.Height / 2f);
+                    break;
+                case Sides.Up:
+                    target = new Vector2(Center.X, Top - crate.Height / 2f);
+                    break;
+                case Sides.Right:
+                    target = new Vector2(Right + crate.Width / 2f, Center.Y);
+                    break;
+                case Sides.Left:
+                    target = new Vector2(Left - crate.Width / 2f, Center.Y);
+                    break;
+            }
+            crate.Depth = Depth - 1;
+
+            while (crate.Position != target) {
+                crate.Position = Calc.Approach(crate.Position, target, 1f);
+                yield return null;
+            }
+
+            crate.RemoveSelf();
+            sprite.Play("insert");
+            yield break;
         }
 
         public override void Removed(Scene scene) {

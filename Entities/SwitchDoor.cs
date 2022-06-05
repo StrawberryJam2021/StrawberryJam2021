@@ -2,36 +2,29 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
-using System;
-using System.Linq;
-using System.Reflection;
-
+using Celeste.Mod.Batteries;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-
+    [TrackedAs(typeof(BatteryGate))]
     [CustomEntity("SJ2021/SwitchDoor")]
-    public class SwitchDoor : Batteries.BatteryGate {
-        DynData<Batteries.BatteryGate> GateData;
-        public SwitchDoor(Vector2 position, int size, bool vertical, int? openWith, bool closes, EntityID id) : base(position, size, vertical, openWith, closes, id) {
-            GateData = new DynData<Batteries.BatteryGate>(this);
-            Remove(GateData.Get<Sprite>("sprite"));
-            Sprite sprite = StrawberryJam2021Module.SpriteBank.Create("switchDoor");
-            Add(sprite);
-            GateData["sprite"] = sprite;
-        }
-        public SwitchDoor(EntityData data, Vector2 offset, EntityID id)
-        : this(data.Position + offset, data.Height, data.Bool("vertical"), data.Int("switchId", -1), data.Bool("closes"), id) {
-        }
+    public class SwitchDoor : BatteryGate {
+        private DynamicData gateData;
+        private Sprite sprite;
 
-        public override void Render() {
-            base.Render();
-        }
+        public SwitchDoor(EntityData data, Vector2 offset, EntityID id) : base(data, offset, id) {
+            gateData = new DynamicData(typeof(BatteryGate), this);
+            Remove(gateData.Get<Sprite>("sprite"));
+            Add(sprite = StrawberryJam2021Module.SpriteBank.Create("switchDoor"));
+            gateData.Set("sprite", sprite);
 
-        public override void Update() {
-            base.Update();
-        }
-        public override void Awake(Scene scene) {
-            base.Awake(scene);
+            if (gateData.Get<bool>("vertical")) {
+                sprite.X = (Collider.Width - 1f) / 2f;
+            } else {
+                sprite.Rotation = 1.5f * MathHelper.Pi;
+                sprite.Y = (Collider.Height + 1f) / 2f;
+            }
+
+            sprite.Play("idle", false, false);
         }
     }
 }
