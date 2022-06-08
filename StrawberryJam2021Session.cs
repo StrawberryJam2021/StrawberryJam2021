@@ -12,6 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
         public bool OshiroBSideMode = false;
         public bool SkateboardEnabled = false;
         public bool ZeroG = false;
+        public bool IncreaseLightSourceLimit = false;
 
         // ExpiringDashRefill stuff
         public double ExpiringDashRemainingTime;
