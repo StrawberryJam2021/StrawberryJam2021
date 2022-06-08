@@ -16,6 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public const int VanillaRenderTargetBufferSize = 1024;
         public const int VanillaLightsPerChannel = VanillaLightLimit / 4;
         public const int VanillaTextureSplit = 4;
+        public const float VanillaMatrixScale = 0.0009765625f;
         public const float Radius = 128f;
 
         public LightSourceLimitController(EntityData data, Vector2 offset) : base(data.Position + offset) {
@@ -76,7 +77,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void LightingRendererCtorHook(ILContext il) {
             ILCursor cursor = new ILCursor(il);
 
-            // Quadruple the size of all our arrays
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcI4(VanillaVertexCount))) {
                 cursor.EmitDelegate<Func<int, int>>(GetArraySize);
             }
@@ -100,8 +100,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             cursor.Index = 0;
             
-            
-            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(0.0009765625f))) {
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(VanillaMatrixScale))) {
                 cursor.EmitDelegate<Func<float, float>>(GetMatrixScalingFactor);
             }
         }
@@ -141,26 +140,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         #endregion
 
-        // Scaling matrix is 1/1024, patch to 1/2048
-        private static float GetMatrixScalingFactor(float orig) {
-            if (StrawberryJam2021Module.Session.IncreaseLightSourceLimit) {
-                return orig / 2f;
-            }
-            return orig;
-        }
-
-        // Double our lighting buffer size from 1024x1024 to 2048x2048
+        // Double our lighting render target size from 1024x1024 to 2048x2048
         private static int GetLightBufferSize(int orig) {
             if (StrawberryJam2021Module.Session.IncreaseLightSourceLimit) {
                 return orig * 2;
-            }
-            return orig;
-        }
-
-        // Double our lighting buffer size from 1024x1024 to 2048x2048
-        private static float GetLightTextureSize(float orig) {
-            if (StrawberryJam2021Module.Session.IncreaseLightSourceLimit) {
-                return orig * 2f;
             }
             return orig;
         }
@@ -169,6 +152,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static int GetArraySize(int orig) {
             if (StrawberryJam2021Module.Session.IncreaseLightSourceLimit) {
                 return orig * 4;
+            }
+            return orig;
+        }
+
+        // Scaling matrix is 1/1024, patch to 1/2048
+        private static float GetMatrixScalingFactor(float orig) {
+            if (StrawberryJam2021Module.Session.IncreaseLightSourceLimit) {
+                return orig / 2f;
+            }
+            return orig;
+        }
+
+        // Double our lighting texture size from 1024x1024 to 2048x2048
+        private static float GetLightTextureSize(float orig) {
+            if (StrawberryJam2021Module.Session.IncreaseLightSourceLimit) {
+                return orig * 2f;
             }
             return orig;
         }
