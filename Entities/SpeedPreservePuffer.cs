@@ -32,6 +32,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void Unload() {
             origUpdateHook?.Dispose();
+            origUpdateHook = null;
             IL.Celeste.Puffer.ctor_Vector2_bool -= onPufferConstructor;
             IL.Celeste.Puffer.Explode -= onPufferExplode;
         }
