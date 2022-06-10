@@ -108,7 +108,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void BoosterPlayerReleasedHook(On.Celeste.Booster.orig_PlayerReleased orig, Booster self) {
             orig(self);
-            if (self is WormholeBooster booster) {
+            if (self is WormholeBooster) {
                 CanTeleport = true;
             }
         }
