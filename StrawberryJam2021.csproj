@@ -29,7 +29,7 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="Batteries">
-      <HintPath>..\Batteries\Batteries.dll</HintPath>
+      <HintPath>lib-stripped\Batteries.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="CavernHelper">
@@ -42,6 +42,10 @@
     </Reference>
     <Reference Include="ExtendedVariantMode">
       <HintPath>lib-stripped\ExtendedVariantMode.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="FactoryHelper">
+      <HintPath>lib-stripped\FactoryHelper.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="MaxHelpingHand">

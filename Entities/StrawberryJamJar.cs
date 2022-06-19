@@ -55,6 +55,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     }
                 };
             }
+
+            Depth = Depths.NPCs;
         }
 
         public StrawberryJamJar(EntityData data, Vector2 offset) : this(data.Position + offset, data.Attr("sprite"), data.Attr("map"), data.Attr("returnToLobbyMode"), data.Bool("allowSaving")) { }

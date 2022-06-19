@@ -93,7 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(
                 ExtendedVariantsModule.Variant.JumpCount,
                 persistJump ? 2 : 1,
-                false, false, false
+                false, false, false, true
             );
 
             if (extraJump)

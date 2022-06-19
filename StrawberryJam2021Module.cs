@@ -3,6 +3,8 @@ using Celeste.Mod.StrawberryJam2021.Triggers;
 using Celeste.Mod.StrawberryJam2021.StylegroundMasks;
 using Monocle;
 using System;
+using Celeste.Mod.StrawberryJam2021.Effects;
+using Celeste.Mod.Helpers;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
@@ -62,6 +64,11 @@ namespace Celeste.Mod.StrawberryJam2021 {
             GroupedParallaxDecal.Load();
             ExpiringDashRefill.Load();
             ToggleSwapBlock.Load();
+            ShowHitboxTrigger.Load();
+            WindTunnelNoParticles.Load();
+            LightSourceLimitController.Load();
+
+            Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
         }
 
         public override void Unload() {
@@ -100,6 +107,11 @@ namespace Celeste.Mod.StrawberryJam2021 {
             GroupedParallaxDecal.Unload();
             ExpiringDashRefill.Unload();
             ToggleSwapBlock.Unload();
+            ShowHitboxTrigger.Unload();
+            WindTunnelNoParticles.Unload();
+            LightSourceLimitController.Unload();
+
+            Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -118,10 +130,28 @@ namespace Celeste.Mod.StrawberryJam2021 {
             Paintbrush.LoadParticles();
             PelletEmitter.PelletShot.LoadParticles();
             NodedCloud.LoadParticles();
+            LaserEmitter.LoadParticles();
             DarkMatterHooks.LoadContent(firstLoad);
             Utilities.LoadContent();
             MaskedOutline.LoadTexture();
             BeeFireball.LoadContent();
+        }
+
+        private Backdrop onLoadBackdrop(MapData map, BinaryPacker.Element child, BinaryPacker.Element above) {
+            if (child.Name.Equals("SJ2021/HexagonalGodray", StringComparison.OrdinalIgnoreCase)) {
+                return new HexagonalGodray(child.Attr("color"), child.Attr("fadeColor"), child.AttrInt("numberOfRays"), child.AttrFloat("speedX"), child.AttrFloat("speedY"), child.AttrFloat("rotation"), child.AttrFloat("rotationRandomness"));
+            }
+            return null;
+		}
+
+        //This occurs after all mods get initialized.
+        public override void Initialize() {
+            base.Initialize();
+            //In theory this won't be a problem because it requires CrystallineHelper for the StrawberryJam collab anyways
+            try {
+                CrystallineHelperTimeFreezeMusicController.crystallineHelper_TimeCrystal_stopStage =
+                       FakeAssembly.GetFakeEntryAssembly().GetType("vitmod.TimeCrystal").GetField("stopStage", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            } catch { }
         }
 
         // Temporary code from vivhelper

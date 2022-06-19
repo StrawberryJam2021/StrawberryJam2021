@@ -355,7 +355,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public void Die(bool forceKillMaddy) {
             if (!dead) {
                 dead = true;
-                Remove(Hold);
                 Audio.Play("event:/char/madeline/death", Position);
                 Add(new DeathEffect(Color.Gray, base.Center - Position));
                 sprite.Visible = false;
@@ -365,6 +364,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (KillMaddyOnExplosion || forceKillMaddy) {
                     Scene.Tracker.GetEntity<Player>()?.Die(Vector2.Zero);
                 }
+                RemoveSelf();
             }
         }
 

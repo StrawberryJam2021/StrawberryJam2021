@@ -251,7 +251,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     Vector2 levelOffset = level.LevelOffset;
                     Vector2[] vals = new Vector2[5];
                     vals[0] = player.Position - levelOffset; vals[1] = level.Camera.Position - levelOffset;
-                    vals[2] = player.Position.X < this.Position.X ? player.Position - this.Position + new Vector2(8, 0) : player.Position - this.Position;
+                    vals[2] = player.Position.X < Position.X ? player.Position - Position + new Vector2(8, 0) : player.Position - Position;
                     vals[3] = level.CameraOffset;
                     Tuple<Vector2, Vector2, bool, bool> c = new Tuple<Vector2, Vector2, bool, bool>(player.CameraAnchor, player.CameraAnchorLerp, player.CameraAnchorIgnoreX, player.CameraAnchorIgnoreY);
                     Dictionary<Entity, Vector2> followerPoints = new Dictionary<Entity, Vector2>();
@@ -262,7 +262,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                         {
                             follower.Entity.Position -= player.Position;
                             follower.Entity.AddTag(Tags.Global);
-                            if(CompareEntityIDs(follower.ParentEntityID, EntityID.None)) level.Session.DoNotLoad.Add(follower.ParentEntityID);
+                            if(!CompareEntityIDs(follower.ParentEntityID, EntityID.None)) level.Session.DoNotLoad.Add(follower.ParentEntityID);
                         }
                     }
                     for (int i = 0; i < leader.PastPoints.Count; i++)
@@ -331,7 +331,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                         {
                             follower.Entity.Position += player.Position;
                             follower.Entity.RemoveTag(Tags.Global);
-                            level.Session.DoNotLoad.Remove(follower.ParentEntityID);
+                            if(follower.Entity is not Key)
+                                level.Session.DoNotLoad.Remove(follower.ParentEntityID);
                         }
                     }
                     for (int i = 0; i < leader.PastPoints.Count; i++)
