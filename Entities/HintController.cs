@@ -8,17 +8,29 @@ using System.Collections;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/HintController")]
     public class HintController : Entity {
-        public string DialogId { get; }
-        public bool SingleUse { get; }
+        public string DialogId1 { get; }
+        public string DialogId2 { get; }
+        public bool SingleUse1 { get; }
+        public bool SingleUse2 { get; }
+        public string ToggleFlag { get; }
 
-        private static string FlagForRoom(string roomId) => $"HintController:{roomId}";
+        public string DialogId => ToggleFlagValue ? DialogId2 : DialogId1;
+        public bool SingleUse => ToggleFlagValue ? SingleUse2 : SingleUse1;
 
+        private string UsedFlag => $"HintControllerUsed:{(Engine.Scene as Level)?.Session.Level ?? string.Empty}:{ToggleFlagValue}";
+        
+        private bool ToggleFlagValue => (Engine.Scene as Level)?.Session.GetFlag(ToggleFlag) ?? false;
+        private bool UsedFlagValue => (Engine.Scene as Level)?.Session.GetFlag(UsedFlag) ?? false;
+        
         private static bool showingHint;
 
         public HintController(EntityData data, Vector2 offset)
             : base(data.Position + offset) {
-            DialogId = data.Attr("dialogId");
-            SingleUse = data.Bool("singleUse");
+            DialogId1 = data.Attr("dialogId1");
+            DialogId2 = data.Attr("dialogId2");
+            SingleUse1 = data.Bool("singleUse1");
+            SingleUse2 = data.Bool("singleUse2");
+            ToggleFlag = data.Attr("toggleFlag");
             Tag = Tags.PauseUpdate;
         }
 
@@ -61,7 +73,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         menu.OnCancel();
                         hintController.ShowHint();
                     },
-                    Disabled = hintController.SingleUse && level.Session.GetFlag(FlagForRoom(level.Session.Level)),
+                    Disabled = hintController.SingleUse && hintController.UsedFlagValue,
                 });
             }
         }
@@ -69,6 +81,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void ShowHint() {
             if (Scene is Level level) {
                 level.Paused = true;
+                level.Session.SetFlag(UsedFlag);
             }
 
             Add(new Coroutine(ShowHintSequence()));
