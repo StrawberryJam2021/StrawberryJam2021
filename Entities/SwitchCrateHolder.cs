@@ -168,6 +168,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
             Crate.Use();
+            Crate.Collidable = false;
             Add(new Coroutine(InsertRoutine(Crate)));
             LitState();
             pressed = true;
