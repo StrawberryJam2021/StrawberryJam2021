@@ -244,8 +244,11 @@ placements.entities.SJ2021/WormholeBooster.tooltips.deathColor=The color to use 
 placements.entities.SJ2021/WormholeBooster.tooltips.instantCamera=Whether the camera should transition instantly or not.
 
 # Hint Controller
-placements.entities.SJ2021/HintController.tooltips.dialogId=The identifier of the dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
-placements.entities.SJ2021/HintController.tooltips.singleUse=Whether the hint may only be viewed a single time per session.
+placements.entities.SJ2021/HintController.tooltips.dialogId1=The identifier of the first dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
+placements.entities.SJ2021/HintController.tooltips.dialogId2=The identifier of the second dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
+placements.entities.SJ2021/HintController.tooltips.singleUse1=Whether the first hint may only be viewed a single time per session.
+placements.entities.SJ2021/HintController.tooltips.singleUse2=Whether the second hint may only be viewed a single time per session.
+placements.entities.SJ2021/HintController.tooltips.toggleFlag=When this flag is set, the second dialog will be displayed rather than the first.
 
 # Cassette Badeline Block
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.tiletype=The tileset to use when rendering the block.
