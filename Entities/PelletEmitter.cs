@@ -33,6 +33,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public float Delay { get; }
         public float Speed { get; }
         public int CassetteIndex { get; }
+        public float WiggleFrequency { get; }
+        public float WiggleAmount { get; }
 
         #endregion
 
@@ -55,6 +57,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Count = data.Int("pelletCount", 1);
             Delay = data.Float("pelletDelay", 0.25f);
             Speed = data.Float("pelletSpeed", 100f);
+            WiggleFrequency = data.Float("wiggleFrequency", 2f);
+            WiggleAmount = data.Float("wiggleAmount", 2f);
 
             Direction = Orientation.Direction();
             Origin = Orientation.Direction() * shotOriginOffset;
@@ -122,11 +126,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             private readonly SineWave travelSineWave;
             private readonly Wiggler hitWiggler;
 
-            private const float wiggleAmount = 2f;
-            private const float wiggleFrequency = 2f;
-
             private ParticleType particleType;
             private Vector2 hitDir;
+
+            private float wiggleAmount = 2f;
 
             public static void LoadParticles() {
                 P_BlueTrail = new ParticleType {
@@ -155,7 +158,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Add(projectileSprite = StrawberryJam2021Module.SpriteBank.Create("pelletProjectile"),
                     impactSprite = StrawberryJam2021Module.SpriteBank.Create("pelletImpact"),
                     new PlayerCollider(OnPlayerCollide),
-                    travelSineWave = new SineWave(wiggleFrequency),
+                    travelSineWave = new SineWave(2f),
                     hitWiggler = Wiggler.Create(1.2f, 2f));
 
                 hitWiggler.StartZero = true;
@@ -183,8 +186,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 projectileSprite.Visible = delay == 0;
                 projectileSprite.Stop();
 
+                travelSineWave.Frequency = emitter.WiggleFrequency;
                 travelSineWave.Active = true;
                 travelSineWave.Reset();
+                wiggleAmount = emitter.WiggleAmount;
+
                 hitWiggler.StopAndClear();
                 hitDir = Vector2.Zero;
 

@@ -331,7 +331,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                         {
                             follower.Entity.Position += player.Position;
                             follower.Entity.RemoveTag(Tags.Global);
-                            level.Session.DoNotLoad.Remove(follower.ParentEntityID);
+                            if(follower.Entity is not Key)
+                                level.Session.DoNotLoad.Remove(follower.ParentEntityID);
                         }
                     }
                     for (int i = 0; i < leader.PastPoints.Count; i++)
