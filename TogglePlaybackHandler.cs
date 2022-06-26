@@ -21,7 +21,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         private static void PlayerPlayback_ctor_EntityData_Vector2(On.Celeste.PlayerPlayback.orig_ctor_EntityData_Vector2 orig, PlayerPlayback self, EntityData e, Vector2 offset) {
             orig(self, e, offset);
-            self.PreUpdate += _PreUpdate;
+            (self as Entity).PreUpdate += _PreUpdate;
         }
 
         //Is always called regardless of Active state so this just works.
