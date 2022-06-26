@@ -63,6 +63,13 @@ namespace Celeste.Mod.StrawberryJam2021 {
             GroupedParallaxDecal.Load();
             ExpiringDashRefill.Load();
             ToggleSwapBlock.Load();
+            ShowHitboxTrigger.Load();
+            WindTunnelNoParticles.Load();
+            LightSourceLimitController.Load();
+            TogglePlaybackHandler.Load();
+
+            Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
+
         }
 
         public override void Unload() {
@@ -101,6 +108,12 @@ namespace Celeste.Mod.StrawberryJam2021 {
             GroupedParallaxDecal.Unload();
             ExpiringDashRefill.Unload();
             ToggleSwapBlock.Unload();
+            ShowHitboxTrigger.Unload();
+            WindTunnelNoParticles.Unload();
+            LightSourceLimitController.Unload();
+            TogglePlaybackHandler.Unload();
+
+            Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
         }
 
         public override void LoadContent(bool firstLoad) {
