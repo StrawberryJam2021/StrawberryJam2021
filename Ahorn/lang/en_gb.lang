@@ -436,3 +436,8 @@ placements.triggers.SJ2021/ShowHitboxTrigger.tooltips.typeNames=A comma-separate
 
 # Core Mode Trigger (No Flash)
 placements.triggers.SJ2021/CoreModeTriggerNoFlash.tooltips.mode=The core mode that should be used when the trigger is entered.
+
+# Custom Summit Background Manager
+placements.entities.SJ2021/CustomAscendManager.tooltips.backgroundColor=Hex color of the background. Vanilla options are:\nNormal: 75a0ab\nDark: 000000
+placements.entities.SJ2021/CustomAscendManager.tooltips.streakColors=Hex colors of the cloud streaks, as a comma-separated list. Vanilla options are:\nNormal: ffffff,e69ecb\nDark: 041b44,011230
+placements.entities.SJ2021/CustomAscendManager.tooltips.introLaunch=Use to match the camera and fade-in settings of the first launch in Summit (where you spawn into it).
