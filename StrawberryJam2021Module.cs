@@ -67,7 +67,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ShowHitboxTrigger.Load();
             WindTunnelNoParticles.Load();
             LightSourceLimitController.Load();
-
+            TogglePlaybackHandler.Load();
             Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
         }
 
@@ -110,6 +110,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ShowHitboxTrigger.Unload();
             WindTunnelNoParticles.Unload();
             LightSourceLimitController.Unload();
+            TogglePlaybackHandler.Unload();
 
             Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
         }
