@@ -48,7 +48,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             player.Sprite.Play("launch", false, false);
             player.Speed = Vector2.Zero;
-            player.StateMachine.State = 11;
+            player.StateMachine.State = Player.StDummy;
             player.DummyGravity = false;
             player.DummyAutoAnimate = false;
 
