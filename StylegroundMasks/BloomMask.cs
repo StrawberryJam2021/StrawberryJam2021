@@ -78,8 +78,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 if (cursor.TryGotoPrev(MoveType.AfterLabel,
                     instr => instr.MatchCall(typeof(Draw), "get_SpriteBatch"))) {
 
-                    Logger.Log("SJ2021/BloomMask", $"Adding bloom mask rendering at {cursor.Index} in IL for BloomRenderer.Apply");
-
                     cursor.Emit(OpCodes.Ldarg_0);
                     cursor.Emit(OpCodes.Ldarg_1);
                     cursor.Emit(OpCodes.Ldarg_2);
@@ -138,8 +136,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchCall<Engine>("get_Instance"),
                 instr => instr.MatchCallvirt<Game>("get_GraphicsDevice"),
                 instr => instr.MatchLdarg(1))) {
-
-                Logger.Log("SJ2021/BloomMask", $"Cutting bloom mask slices at {cursor.Index} in IL for BloomRenderer.Apply");
 
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.Emit(OpCodes.Ldarg_2);

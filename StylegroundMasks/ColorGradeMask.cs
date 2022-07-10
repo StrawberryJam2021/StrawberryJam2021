@@ -81,8 +81,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchLdnull(),
                 instr => instr.MatchCallOrCallvirt<GraphicsDevice>("SetRenderTarget"))) {
 
-                Logger.Log("SJ2021/ColorGradeMask", $"Adding color grade fade mask rendering at {cursor.Index} in IL for Level.Render");
-
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>(level => {
                     var masks = level.Tracker.GetEntities<ColorGradeMask>().OfType<ColorGradeMask>().Where(mask => mask.Fade == FadeType.Custom).ToArray();
@@ -135,8 +133,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             if (cursor.TryGotoNext(MoveType.Before, 
                 instr => instr.MatchLdarg(0),
                 instr => instr.MatchLdfld<Level>("Pathfinder"))) {
-
-                Logger.Log("SJ2021/ColorGradeMask", $"Adding color grade mask rendering at {cursor.Index} in IL for Level.Render");
 
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.Emit(OpCodes.Ldloc_S, (byte)matrixLocal);

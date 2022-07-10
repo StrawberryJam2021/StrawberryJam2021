@@ -81,8 +81,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                         }
                 */
 
-                Logger.Log("SJ2021/ShowHitboxTrigger", $"Adding IL hook at {cursor.Index} to draw hitboxes");
-
                 ILLabel beforeGameplayRendererEnd = cursor.DefineLabel();
                 cursor.Emit(OpCodes.Br, beforeGameplayRendererEnd);
 

@@ -51,8 +51,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 instr => instr.MatchLdarg(0),
                 instr => instr.MatchCallvirt<Renderer>("Render"))) {
 
-                Logger.Log("StrawberryJam2021/MaskedDecal", "Added Level.Render IL hook");
-
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>(level => {
 

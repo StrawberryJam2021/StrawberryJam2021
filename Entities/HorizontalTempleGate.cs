@@ -71,7 +71,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (cursor.TryGotoNext(instr => instr.MatchLdfld<DashSwitch>("allGates"))) {
                 if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchBrfalse(out _))) {
-                    Logger.Log("SJ2021/HorizontalTempleGate", $"Adding IL hook at {cursor.Index} in DashSwitch.OnDashed (1/2)");
                     cursor.Emit(OpCodes.Ldarg_0);
                     cursor.EmitDelegate<Action<DashSwitch>>(self => {
                         var data = new DynData<DashSwitch>(self);
@@ -86,8 +85,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             cursor.Index = 0;
 
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCallOrCallvirt<DashSwitch>("GetGate"))) {
-                Logger.Log("SJ2021/HorizontalTempleGate", $"Adding IL hook at {cursor.Index} in DashSwitch.OnDashed (2/2)");
-
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Func<TempleGate, DashSwitch, TempleGate>>((templeGate, self) => {
                     var data = new DynData<DashSwitch>(self);

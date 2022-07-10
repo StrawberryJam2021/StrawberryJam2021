@@ -203,7 +203,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 } else if (self.Speed.Y > 0f && (get_self_gliderBoosterTimer() <= 0)) {
                     float pickupTimeDiff = self.Scene.TimeActive - jelly.lastDroppedTime;
                     if (pickupTimeDiff < 1.5f) {
-                        Logger.Log("SJ2021/AntiGravJelly", $"Anticheese, pickup time diff: {self.Scene.TimeActive - jelly.lastDroppedTime}");
                         self.Speed.Y = -self.Speed.Y * 1.2f;
                     } else {
                         self.Speed.Y = Math.Max(self.Speed.Y, -105f);

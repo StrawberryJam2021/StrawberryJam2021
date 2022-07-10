@@ -47,7 +47,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void Textbox_Render_Update(ILContext il) {
-            Logger.Log("SJ2021/HintController", $"Adding IL hook for {il.Method.Name}");
             var cursor = new ILCursor(il);
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCallvirt<Level>("get_FrozenOrPaused"))) {
                 // force update and render if showing hint

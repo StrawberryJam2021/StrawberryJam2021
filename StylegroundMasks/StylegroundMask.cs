@@ -310,7 +310,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchLdfld<Level>("Background"),
                 instr => instr.MatchLdarg(0),
                 instr => instr.MatchCallvirt<Renderer>("Render"))) {
-                Logger.Log("SJ2021/StylegroundMask", $"Adding background styleground mask render call at {cursor.Index} in IL for Level.Render");
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
                     GetRendererInLevel(level)?.RenderWith(level, false);
@@ -324,7 +323,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchLdfld<Level>("Foreground"),
                 instr => instr.MatchLdarg(0),
                 instr => instr.MatchCallvirt<Renderer>("Render"))) {
-                Logger.Log("SJ2021/StylegroundMask", $"Adding foreground styleground mask render behind call at {cursor.Index} in IL for Level.Render");
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
                     GetRendererInLevel(level)?.RenderWith(level, true, true);
@@ -352,8 +350,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
                 ILLabel breakLabel = null;
                 if (cursor.TryGotoPrev(MoveType.After, instr => instr.MatchBrfalse(out breakLabel))) {
-                    Logger.Log("SJ2021/StylegroundMask", $"Masking heat wave displacement rendering at {cursor.Index} in IL for DisplacementRenderer.BeforeRender");
-
                     cursor.Emit(OpCodes.Ldarg, levelArg);
                     cursor.Emit(OpCodes.Isinst, typeof(Level));
                     cursor.EmitDelegate<Func<Level, bool>>(level => {
