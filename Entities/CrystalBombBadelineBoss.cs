@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/CrystalBombBadelineBoss")]
-    [Tracked]
+    [TrackedAs(typeof(FinalBoss))]
     public class CrystalBombBadelineBoss : FinalBoss {
         private DynamicData baseData;
         private Action<Player> base_OnPlayer;
