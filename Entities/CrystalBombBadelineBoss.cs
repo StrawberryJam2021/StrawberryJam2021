@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/CrystalBombBadelineBoss")]
-    [Tracked]
+    [TrackedAs(typeof(FinalBoss))]
     public class CrystalBombBadelineBoss : FinalBoss {
         private DynamicData baseData;
         private Action<Player> base_OnPlayer;
@@ -85,8 +85,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             Collider origCollider = self.Collider;
             self.Collider = bombData.Get<Circle>("pushRadius");
-            foreach (CrystalBombBadelineBoss boss in self.CollideAll<CrystalBombBadelineBoss>()) {
-                boss.OnHit();
+            foreach (FinalBoss boss in self.CollideAll<FinalBoss>()) {
+                if (boss is CrystalBombBadelineBoss cbbb)
+                    cbbb.OnHit();
             }
             self.Collider = origCollider;
             orig(self);
@@ -99,8 +100,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             Collider origCollider = self.Collider;
             self.Collider = DynamicData.For(self).Get<Circle>("pushRadius");
-            foreach (CrystalBombBadelineBoss boss in self.CollideAll<CrystalBombBadelineBoss>()) {
-                boss.OnHit();
+            foreach (FinalBoss boss in self.CollideAll<FinalBoss>()) {
+                if (boss is CrystalBombBadelineBoss cbbb)
+                    cbbb.OnHit();
             }
             self.Collider = origCollider;
         }
@@ -109,8 +111,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             orig(self);
             Collider origCollider = self.Collider;
             self.Collider = DynamicData.For(self).Get<Circle>("pushRadius");
-            foreach (CrystalBombBadelineBoss boss in self.CollideAll<CrystalBombBadelineBoss>()) {
-                boss.OnHit();
+            foreach (FinalBoss boss in self.CollideAll<FinalBoss>()) {
+                if (boss is CrystalBombBadelineBoss cbbb)
+                    cbbb.OnHit();
             }
             self.Collider = origCollider;
         }
