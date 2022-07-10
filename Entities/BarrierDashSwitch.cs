@@ -15,7 +15,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public BarrierDashSwitch(Vector2 position, Sides side, bool persistent, EntityID id, string spritePath)
             : base(position, side, persistent, false, id, "default") {
             if (!string.IsNullOrEmpty(spritePath)) {
-                DynamicData baseData = new DynamicData(typeof(DashSwitch), this);
+                DynamicData baseData = new DynamicData(this);
                 Sprite sprite = baseData.Get<Sprite>("sprite");
                 Remove(sprite);
                 //sprites.xml cringe
@@ -78,7 +78,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void DestroyIfBarrierDashSwitch(Glider glider, Platform hit) {
             if (hit is BarrierDashSwitch) {
-                DynamicData gliderData = new DynamicData(typeof(Glider), glider);
+                DynamicData gliderData = new DynamicData(glider);
                 gliderData.Set("destroyed", true);
                 glider.Collidable = false;
                 glider.Add(new Coroutine(gliderData.Invoke<IEnumerator>("DestroyAnimationRoutine")));

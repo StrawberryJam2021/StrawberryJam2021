@@ -73,9 +73,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchBrfalse(out _))) {
                     cursor.Emit(OpCodes.Ldarg_0);
                     cursor.EmitDelegate<Action<DashSwitch>>(self => {
-                        var data = new DynData<DashSwitch>(self);
                         foreach (HorizontalTempleGate entity in self.Scene.Tracker.GetEntities<HorizontalTempleGate>()) {
-                            if (entity.Type == HorizontalTempleGate.Types.NearestSwitch && entity.LevelID == data.Get<EntityID>("id").Level) {
+                            if (entity.Type == HorizontalTempleGate.Types.NearestSwitch && entity.LevelID == DynamicData.For(self).Get<EntityID>("id").Level) {
                                 entity.SwitchOpen();
                             }
                         }
@@ -87,12 +86,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCallOrCallvirt<DashSwitch>("GetGate"))) {
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Func<TempleGate, DashSwitch, TempleGate>>((templeGate, self) => {
-                    var data = new DynData<DashSwitch>(self);
                     var entities = self.Scene.Tracker.GetEntities<HorizontalTempleGate>();
                     HorizontalTempleGate hTempleGate = null;
                     float dist = 0f;
                     foreach (HorizontalTempleGate item in entities) {
-                        if (item.Type == HorizontalTempleGate.Types.NearestSwitch && !item.ClaimedByASwitch && item.LevelID == data.Get<EntityID>("id").Level) {
+                        if (item.Type == HorizontalTempleGate.Types.NearestSwitch && !item.ClaimedByASwitch && item.LevelID == DynamicData.For(self).Get<EntityID>("id").Level) {
                             float currentDist = Vector2.DistanceSquared(self.Position, item.Position);
                             if (hTempleGate == null || currentDist < dist) {
                                 hTempleGate = item;

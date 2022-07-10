@@ -74,7 +74,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public ResizableDashSwitch(Vector2 position, Sides side, bool persistent, EntityID id, int width, bool actLikeTouchSwitch, bool attachToSolid)
             : base(position, side, persistent, false, id, "default") {
-            baseData = new DynamicData(typeof(DashSwitch), this);
+            baseData = new DynamicData(this);
 
             Side = side;
             this.width = width;

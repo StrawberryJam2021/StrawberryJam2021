@@ -28,7 +28,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static MethodInfo crystalBombExplodeHookInfo = typeof(CrystalBombBadelineBoss).GetMethod("On_CrystalBomb_Explode", BindingFlags.NonPublic | BindingFlags.Static);
 
         public CrystalBombBadelineBoss(EntityData data, Vector2 offset) : base(data, offset) {
-            baseData = new DynamicData(typeof(FinalBoss), this);
+            baseData = new DynamicData(this);
             // store original OnPlayer method so we can call it later...
             base_OnPlayer = Get<PlayerCollider>().OnCollide;
             // ...and then replace it for our boss
@@ -50,7 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (Collidable) {
                 foreach (CrystalBomb bomb in SceneAs<Level>()?.Entities.FindAll<CrystalBomb>()) {
                     if (CollideCheck(bomb))
-                        new DynamicData(bomb).Invoke("Explode");
+                        DynamicData.For(bomb).Invoke("Explode");
                 }
             }
         }
@@ -80,7 +80,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void On_CrystalBomb_Explode(Action<CrystalBomb> orig, CrystalBomb self) {
-            DynamicData bombData = new DynamicData(self);
+            DynamicData bombData = DynamicData.For(self);
             if (bombData.Get<bool>("exploded"))
                 return;
             Collider origCollider = self.Collider;
@@ -97,9 +97,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             while (origEnum.MoveNext()) {
                 yield return origEnum.Current;
             }
-            DynamicData seekerData = new DynamicData(self);
             Collider origCollider = self.Collider;
-            self.Collider = seekerData.Get<Circle>("pushRadius");
+            self.Collider = DynamicData.For(self).Get<Circle>("pushRadius");
             foreach (CrystalBombBadelineBoss boss in self.CollideAll<CrystalBombBadelineBoss>()) {
                 boss.OnHit();
             }
@@ -108,9 +107,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void On_Puffer_Explode(On.Celeste.Puffer.orig_Explode orig, Puffer self) {
             orig(self);
-            DynamicData pufferData = new DynamicData(self);
             Collider origCollider = self.Collider;
-            self.Collider = pufferData.Get<Circle>("pushRadius");
+            self.Collider = DynamicData.For(self).Get<Circle>("pushRadius");
             foreach (CrystalBombBadelineBoss boss in self.CollideAll<CrystalBombBadelineBoss>()) {
                 boss.OnHit();
             }

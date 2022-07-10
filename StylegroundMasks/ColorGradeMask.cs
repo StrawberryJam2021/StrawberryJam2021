@@ -53,7 +53,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             var name = from ? ColorGradeFrom : ColorGradeTo;
 
             if (name == "(current)") {
-                name = from ? new DynData<Level>(level).Get<string>("lastColorGrade") : level.Session.ColorGrade;
+                name = from ? DynamicData.For(level).Get<string>("lastColorGrade") : level.Session.ColorGrade;
             } else if (name == "(core)") {
                 switch (level.CoreMode) {
                     case Session.CoreModes.Cold: name = "cold"; break;
@@ -139,7 +139,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 cursor.EmitDelegate<Action<Level, Matrix>>((level, matrix) => {
                     var colorGradeMasks = level.Tracker.GetEntities<ColorGradeMask>();
                     if (colorGradeMasks.Count > 0) {
-                        var levelData = new DynData<Level>(level);
+                        var levelData = DynamicData.For(level);
                         var currentFrom = GFX.ColorGrades.GetOrDefault(levelData.Get<string>("lastColorGrade"), GFX.ColorGrades["none"]);
                         var currentTo = GFX.ColorGrades.GetOrDefault(level.Session.ColorGrade, GFX.ColorGrades["none"]);
                         var currentValue = ColorGrade.Percent;
