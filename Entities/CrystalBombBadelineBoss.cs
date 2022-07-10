@@ -85,8 +85,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             Collider origCollider = self.Collider;
             self.Collider = bombData.Get<Circle>("pushRadius");
-            foreach (CrystalBombBadelineBoss boss in self.CollideAll<CrystalBombBadelineBoss>()) {
-                boss.OnHit();
+            foreach (FinalBoss boss in self.CollideAll<FinalBoss>()) {
+                if (boss is CrystalBombBadelineBoss cbbb)
+                    cbbb.OnHit();
             }
             self.Collider = origCollider;
             orig(self);
@@ -100,8 +101,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             DynamicData seekerData = new DynamicData(self);
             Collider origCollider = self.Collider;
             self.Collider = seekerData.Get<Circle>("pushRadius");
-            foreach (CrystalBombBadelineBoss boss in self.CollideAll<CrystalBombBadelineBoss>()) {
-                boss.OnHit();
+            foreach (FinalBoss boss in self.CollideAll<FinalBoss>()) {
+                if (boss is CrystalBombBadelineBoss cbbb)
+                    cbbb.OnHit();
             }
             self.Collider = origCollider;
         }
@@ -111,8 +113,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             DynamicData pufferData = new DynamicData(self);
             Collider origCollider = self.Collider;
             self.Collider = pufferData.Get<Circle>("pushRadius");
-            foreach (CrystalBombBadelineBoss boss in self.CollideAll<CrystalBombBadelineBoss>()) {
-                boss.OnHit();
+            foreach (FinalBoss boss in self.CollideAll<FinalBoss>()) {
+                if (boss is CrystalBombBadelineBoss cbbb)
+                    cbbb.OnHit();
             }
             self.Collider = origCollider;
         }
