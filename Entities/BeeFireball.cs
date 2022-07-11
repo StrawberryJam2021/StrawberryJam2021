@@ -24,7 +24,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private bool isFacingLeft;
         private bool isFacingLeftAtStartOfTrack;
 
-        private DynData<FireBall> selfData;
+        private DynamicData selfData;
 
         private readonly Vector2[] nodes;
         private readonly int amount;
@@ -42,7 +42,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.offset = offset;
             mult = speedMult;
 
-            selfData = new DynData<FireBall>(this);
+            selfData = new DynamicData(this);
 
             // replace fireball sprites with bee sprites
             sprite = Get<Sprite>();
@@ -68,10 +68,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Added(Scene scene) {
             base_Added(scene);
 
-            DynData<FireBall> selfData = new DynData<FireBall>(this);
+            selfData.Set("iceMode", false);
+            selfData.Set("speedMult", 1f);
 
-            selfData["iceMode"] = false;
-            selfData["speedMult"] = 1;
             if (index == 0) {
                 for (int i = 1; i < amount; i++) {
                     Scene.Add(new BeeFireball(nodes, amount, i, offset, mult));
@@ -85,7 +84,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Awake(scene);
 
             // what will be the initial facing? determine it by computing (position at percent + 0.01) - (position at percent).
-            float initPercent = new DynData<FireBall>(this).Get<float>("percent");
+            float initPercent = selfData.Get<float>("percent");
             float firstMoveX = ((Vector2) fireballGetPercentPosition.Invoke(this, new object[] { (initPercent + 0.01f) % 1f })).X
                 - ((Vector2) fireballGetPercentPosition.Invoke(this, new object[] { initPercent })).X;
 

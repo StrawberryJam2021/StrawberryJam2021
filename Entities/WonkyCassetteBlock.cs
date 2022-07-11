@@ -21,7 +21,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly int OverrideBoostFrames;
         public int boostFrames = 0;
 
-        private DynData<CassetteBlock> cassetteBlockData;
+        private DynamicData cassetteBlockData;
 
         private string textureDir;
 
@@ -31,8 +31,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             OnAtBeats = Regex.Split(moveSpec, @",\s*").Select(int.Parse).Select(i => i - 1).ToArray();
 
-            cassetteBlockData = new DynData<CassetteBlock>(this);
-            cassetteBlockData["color"] = color;
+            cassetteBlockData = new DynamicData(this);
+            cassetteBlockData.Set("color", color);
 
             this.textureDir = textureDir;
 

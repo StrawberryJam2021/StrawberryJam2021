@@ -320,7 +320,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     catch
                     {
                         level.Session.RespawnPoint = player.Position;
-                        Console.WriteLine("No Respawn Point found, made one. Please be aware."); //Test
                     }
                     if (MatchDashState(player.StateMachine.State)) { player.DashDir = pDashDir.RotateTowards(player.Speed.Angle(), 6.3f); }
                     if (state == 10) { player.SummitLaunch(player.Position.X); }

@@ -50,7 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 sprite.OnChange = (lastAnimationId, currentAnimationId) => {
                     if (currentAnimationId == "fill") {
                         SoundSource sound = new SoundSource(new Vector2(0, -20f), pickFillSoundEffect(spriteName)) { RemoveOnOneshotEnd = true };
-                        new DynData<SoundSource>(sound).Get<EventInstance>("instance").setVolume(0.3f);
+                        new DynamicData(sound).Get<EventInstance>("instance").setVolume(0.3f);
                         Add(sound);
                     }
                 };
