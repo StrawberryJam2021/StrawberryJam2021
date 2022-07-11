@@ -1,15 +1,12 @@
-﻿using System;
+﻿using Celeste.Mod.Entities;
+using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
+using Monocle;
+using MonoMod.Cil;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Monocle;
-using Microsoft.Xna.Framework;
-using System.Collections;
-using Celeste.Mod.Entities;
-using MonoMod.RuntimeDetour;
-using MonoMod.Cil;
-using Mono.Cecil.Cil;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 
@@ -63,7 +60,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         //ILHook required for clean, no error throwing code. At large numbers of hooks, this can cause lock-time issues because of concurrent threads, or something like that. This seems to resolve that bug.
         private static void LevelLoader_LoadingThread(ILContext il) {
             ILCursor cursor = new ILCursor(il);
-            cursor.GotoNext(instr => instr.MatchRet()); 
+            cursor.GotoNext(instr => instr.MatchRet());
             if (cursor.TryGotoPrev(instr => instr.MatchLdarg(0))) { //Goes directly before `this.Loaded = true`
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<LevelLoader>>(LoadingThreadMod);
@@ -116,18 +113,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return Player.StDummy;
             }
             //I should probably optimize this check but that's fine.
-            if (!player.CollideCheck<DarkMatter>())
+            if (!player.CollideCheck<DarkMatter>()) {
                 return Player.StNormal;
+            }
+
             Vector2 normalSpeed = Vector2.Normalize(player.Speed); //Normalize externally because memory to code efficiency balance
             if (player.CollideCheck<Solid>()) {
-                for(int i = 0; i < 3; i++)
-                player.Die(-normalSpeed, true, true);
+                for (int i = 0; i < 3; i++) {
+                    player.Die(-normalSpeed, true, true);
+                }
+
                 return Player.StDummy;
             }
             if (player.Speed.LengthSquared() < 40000f) { // LengthSquared is faster than Length because Math.Sqrt is slow
                 player.Speed = normalSpeed * 200f;
-            }
-            else if(player.Speed.LengthSquared() > initialSpeedSq * DarkMatterMaxSpeedMultSq) {
+            } else if (player.Speed.LengthSquared() > initialSpeedSq * DarkMatterMaxSpeedMultSq) {
                 player.Speed = normalSpeed * (initialSpeedSq * DarkMatterMaxSpeedMultSq);
             }
             Input.Rumble(RumbleStrength.Climb, RumbleLength.Short);
@@ -143,13 +143,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public const string Flag = "disable_lightning";
 
         private float toggleOffset;
-        
+
         public int VisualWidth;
-        
+
         public int VisualHeight;
-        
+
         public DarkMatterRenderer renderer;
-        
+
         public EntityID id;
 
         public DarkMatter(Vector2 position, int width, int height, EntityID id)
@@ -159,7 +159,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Collider = new Hitbox(width - 2, height - 2, 1f, 1f);
             Add(new PlayerCollider(OnPlayer));
             this.id = id;
-            
+
             toggleOffset = Calc.Random.NextFloat();
         }
 

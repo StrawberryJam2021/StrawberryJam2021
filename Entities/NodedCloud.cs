@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
+using System;
+using System.Collections;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/NodedCloud")]
@@ -49,7 +49,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
-            if (nextNode  < nodes.Length) {
+            if (nextNode < nodes.Length) {
                 ghost.RenderPosition = nodes[nextNode] + RoomOffset;
                 ghost.Color.A = (byte) (fadeInProgress * BaseGhostOpacity * GhostAlphaOffset);
             } else {
@@ -93,7 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private IEnumerator ghostFadeInRoutine() {
             yield return moveTime / 2;
-            
+
             while (fadeInProgress < 1) {
                 fadeInProgress += Engine.DeltaTime * 2f * moveTime;
                 if (nextNode + 1 <= nodes.Length) {

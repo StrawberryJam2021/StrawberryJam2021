@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Monocle;
-using Microsoft.Xna.Framework;
-using Celeste.Mod.Entities;
-using MonoMod.Cil;
-using MonoMod.Utils;
-using MonoMod.RuntimeDetour;
+﻿using Celeste.Mod.Entities;
 using Celeste.Mod.StrawberryJam2021.Triggers;
-using System.Collections;
+using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
-using MonoMod;
+using Monocle;
+using MonoMod.Cil;
+using System;
+using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <summary>
@@ -38,13 +31,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             cursor.GotoNext(instr => instr.MatchRet());
             cursor.Emit(OpCodes.Ldarg_0);
             cursor.Emit(OpCodes.Ldarg_0);
-            cursor.Emit(OpCodes.Ldfld, typeof(SeekerBarrier).GetField("particles",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance));
+            cursor.Emit(OpCodes.Ldfld, typeof(SeekerBarrier).GetField("particles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
             cursor.EmitDelegate<Action<SeekerBarrier, List<Vector2>>>(ClearParticlesForZeroG);
         }
 
         private static void ClearParticlesForZeroG(SeekerBarrier barrier, List<Vector2> particles) {
-            if (barrier is ZeroGBarrier)
+            if (barrier is ZeroGBarrier) {
                 particles.Clear();
+            }
         }
 
         public static void Unload() {
@@ -56,7 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void Player_ClimbHop(On.Celeste.Player.orig_ClimbHop orig, Player self) {
             if (StrawberryJam2021Module.Session.ZeroG) {
                 int i = 0;
-                while(self.CollideFirst<Solid>(self.Position + Vector2.UnitX * (float)self.Facing - Vector2.UnitY * i) != null) {
+                while (self.CollideFirst<Solid>(self.Position + Vector2.UnitX * (float) self.Facing - Vector2.UnitY * i) != null) {
                     i++;
                 }
                 self.Position -= Vector2.UnitY * i;
@@ -65,18 +59,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void Player_Update(On.Celeste.Player.orig_Update orig, Player self) {
-            if (self.JustRespawned)
+            if (self.JustRespawned) {
                 softlockFrames = 0;
+            }
+
             orig(self);
             if (!self.JustRespawned && StrawberryJam2021Module.Session.ZeroG) {
-                if(self.Position == self.PreviousPosition && self.Dashes == 0 && (self.Stamina < 20 || !self.CanUnDuck || (!self.ClimbCheck(-1) && !self.ClimbCheck(1)))) {
+                if (self.Position == self.PreviousPosition && self.Dashes == 0 && (self.Stamina < 20 || !self.CanUnDuck || (!self.ClimbCheck(-1) && !self.ClimbCheck(1)))) {
                     softlockFrames++;
                 } else {
                     softlockFrames = 0;
                 }
                 //I'll eventually figure out a way to render the fade to black better from 360->480 softlockFrames
                 //for some reason this runs every other frame????
-                if(softlockFrames > 240) {
+                if (softlockFrames > 240) {
                     softlockFrames = 0;
                     self.Die(Vector2.Zero, true, false);
                 }
@@ -115,13 +111,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Awake(scene);
             scene.Add(new ZeroGTrigger(data, offset, direction));
         }
-        
+
 
         public override void Update() {
             base.Update();
             int count = particles.Count;
             for (int i = 0; i < count; i++) {
-                Vector2 value = particles[i] + directionSet[(int)direction] * speeds[i % 3] * Engine.DeltaTime; //speeds.Length is constant here so it's fine to leave this.
+                Vector2 value = particles[i] + directionSet[(int) direction] * speeds[i % 3] * Engine.DeltaTime; //speeds.Length is constant here so it's fine to leave this.
                 value = modVec2(value, region);
                 particles[i] = value;
             }

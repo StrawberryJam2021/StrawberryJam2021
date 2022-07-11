@@ -49,8 +49,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (Collidable) {
                 foreach (CrystalBomb bomb in SceneAs<Level>()?.Entities.FindAll<CrystalBomb>()) {
-                    if (CollideCheck(bomb))
+                    if (CollideCheck(bomb)) {
                         DynamicData.For(bomb).Invoke("Explode");
+                    }
                 }
             }
         }
@@ -81,13 +82,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void On_CrystalBomb_Explode(Action<CrystalBomb> orig, CrystalBomb self) {
             DynamicData bombData = DynamicData.For(self);
-            if (bombData.Get<bool>("exploded"))
+            if (bombData.Get<bool>("exploded")) {
                 return;
+            }
+
             Collider origCollider = self.Collider;
             self.Collider = bombData.Get<Circle>("pushRadius");
             foreach (FinalBoss boss in self.CollideAll<FinalBoss>()) {
-                if (boss is CrystalBombBadelineBoss cbbb)
+                if (boss is CrystalBombBadelineBoss cbbb) {
                     cbbb.OnHit();
+                }
             }
             self.Collider = origCollider;
             orig(self);
@@ -101,8 +105,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Collider origCollider = self.Collider;
             self.Collider = DynamicData.For(self).Get<Circle>("pushRadius");
             foreach (FinalBoss boss in self.CollideAll<FinalBoss>()) {
-                if (boss is CrystalBombBadelineBoss cbbb)
+                if (boss is CrystalBombBadelineBoss cbbb) {
                     cbbb.OnHit();
+                }
             }
             self.Collider = origCollider;
         }
@@ -112,8 +117,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Collider origCollider = self.Collider;
             self.Collider = DynamicData.For(self).Get<Circle>("pushRadius");
             foreach (FinalBoss boss in self.CollideAll<FinalBoss>()) {
-                if (boss is CrystalBombBadelineBoss cbbb)
+                if (boss is CrystalBombBadelineBoss cbbb) {
                     cbbb.OnHit();
+                }
             }
             self.Collider = origCollider;
         }

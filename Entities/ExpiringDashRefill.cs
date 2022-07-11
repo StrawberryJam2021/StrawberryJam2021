@@ -30,8 +30,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void OnPlayer(Player player) {
             // The dash shouldn't be picked up if the ExpiringDash the player holds would last longer
             // If the player's in stamina panic, this rule is ignored
-            if (session.ExpiringDashRemainingTime >= dashExpirationTime && player.Stamina >= 20f)
+            if (session.ExpiringDashRemainingTime >= dashExpirationTime && player.Stamina >= 20f) {
                 return;
+            }
 
             int playerRealDashes = player.Dashes - (session.ExpiringDashRemainingTime > 0 ? 1 : 0);
 
@@ -129,8 +130,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (session.ExpiringDashRemainingTime <= session.ExpiringDashFlashThreshold) {
                 // Flash hair
-                if (self.Scene.OnInterval(0.05f))
+                if (self.Scene.OnInterval(0.05f)) {
                     flash = !flash;
+                }
             }
 
             orig.Invoke(self);

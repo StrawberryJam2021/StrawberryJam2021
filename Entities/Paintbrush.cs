@@ -1,6 +1,5 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
 using System.Collections;
@@ -104,7 +103,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             };
 
             pinkCooldownParticle = new ParticleType(blueCooldownParticle) {
-                Color = Calc.HexToColor("e84292"), Color2 = Calc.HexToColor("9c2a70"),
+                Color = Calc.HexToColor("e84292"),
+                Color2 = Calc.HexToColor("9c2a70"),
             };
 
             blueImpactParticle = new ParticleType(Booster.P_Burst) {
@@ -125,21 +125,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Acceleration = Vector2.Zero,
             };
 
-            pinkImpactParticle = new ParticleType(blueImpactParticle) {Color2 = Calc.HexToColor("ef73bf"),};
+            pinkImpactParticle = new ParticleType(blueImpactParticle) { Color2 = Calc.HexToColor("ef73bf"), };
         }
 
         private void setAnimationSpeed(string key, float totalRunTime) {
-            if (largeBrushSprite.Animations.TryGetValue(key, out var emitterAnimation))
+            if (largeBrushSprite.Animations.TryGetValue(key, out var emitterAnimation)) {
                 emitterAnimation.Delay = totalRunTime / emitterAnimation.Frames.Length;
-            if (paintParticlesSprite.Animations.TryGetValue(key, out var paintAnimation))
+            }
+
+            if (paintParticlesSprite.Animations.TryGetValue(key, out var paintAnimation)) {
                 paintAnimation.Delay = totalRunTime / paintAnimation.Frames.Length;
+            }
         }
 
         public LaserState State {
             get => laserState;
             set {
-                if (laserState == value)
+                if (laserState == value) {
                     return;
+                }
 
                 // var oldState = laserState;
                 laserState = value;
@@ -226,7 +230,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 smallBrushFrames = Enumerable.Range(0, smallBrushAnimation.Frames.Length).ToArray();
                 for (int i = 0; i < smallBrushFrames.Length - 1; i++) {
                     int swapIndex = rnd.Next(i, smallBrushFrames.Length);
-                    if (swapIndex == i) continue;
+                    if (swapIndex == i) {
+                        continue;
+                    }
+
                     int oldValue = smallBrushFrames[i];
                     smallBrushFrames[i] = smallBrushFrames[swapIndex];
                     smallBrushFrames[swapIndex] = oldValue;
@@ -234,39 +241,39 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             Add(cassetteListener = new CassetteListener {
-                    OnBeat = state => {
-                        int beat = state.Beat % state.BeatsPerTick;
-                        float beatFraction = (float)beat / state.BeatsPerTick;
+                OnBeat = state => {
+                    int beat = state.Beat % state.BeatsPerTick;
+                    float beatFraction = (float) beat / state.BeatsPerTick;
 
-                        switch (State) {
-                            case LaserState.Cooldown:
-                            case LaserState.Idle:
-                                if (beat == 0 && state.CurrentTick.Index != CassetteIndex && state.NextTick.Index == CassetteIndex) {
-                                    State = LaserState.Precharge;
-                                }
-                                break;
+                    switch (State) {
+                        case LaserState.Cooldown:
+                        case LaserState.Idle:
+                            if (beat == 0 && state.CurrentTick.Index != CassetteIndex && state.NextTick.Index == CassetteIndex) {
+                                State = LaserState.Precharge;
+                            }
+                            break;
 
-                            case LaserState.Precharge:
-                                if (beatFraction >= chargeDelayFraction) {
-                                    setAnimationSpeed(chargingAnimation, state.TickLength * (1 - chargeDelayFraction));
-                                    State = LaserState.Charging;
-                                }
-                                break;
+                        case LaserState.Precharge:
+                            if (beatFraction >= chargeDelayFraction) {
+                                setAnimationSpeed(chargingAnimation, state.TickLength * (1 - chargeDelayFraction));
+                                State = LaserState.Charging;
+                            }
+                            break;
 
-                            case LaserState.Charging:
-                                if (beat == 0 && state.CurrentTick.Index == CassetteIndex) {
-                                    State = LaserState.Burst;
-                                }
-                                break;
+                        case LaserState.Charging:
+                            if (beat == 0 && state.CurrentTick.Index == CassetteIndex) {
+                                State = LaserState.Burst;
+                            }
+                            break;
 
-                            case LaserState.Firing:
-                                if (State == LaserState.Firing && beat == 0 && (state.CurrentTick.Index != CassetteIndex || HalfLength)) {
-                                    State = LaserState.Cooldown;
-                                }
-                                break;
-                        }
+                        case LaserState.Firing:
+                            if (State == LaserState.Firing && beat == 0 && (state.CurrentTick.Index != CassetteIndex || HalfLength)) {
+                                State = LaserState.Cooldown;
+                            }
+                            break;
                     }
-                },
+                }
+            },
                 new PlayerCollider(onPlayerCollide),
                 new LedgeBlocker(_ => KillPlayer),
                 beamSprite,
@@ -294,8 +301,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             Get<StaticMover>().OnMove = v => {
                 Position += v;
-                foreach (var collider in components)
+                foreach (var collider in components) {
                     collider.UpdateBeam();
+                }
             };
         }
 
@@ -322,7 +330,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             var start = offset / 2;
             return Enumerable.Range(0, Tiles).Select(i => new LaserColliderComponent {
-                CollideWithSolids = CollideWithSolids, Offset = start + offset * i, Thickness = tileSize,
+                CollideWithSolids = CollideWithSolids,
+                Offset = start + offset * i,
+                Thickness = tileSize,
             });
         }
 
@@ -337,8 +347,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void forceUpdate() {
-            if (!cassetteListener.UpdateState())
+            if (!cassetteListener.UpdateState()) {
                 return;
+            }
 
             needsForcedUpdate = false;
 
@@ -358,10 +369,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void onPlayerCollide(Player player) {
             if (KillPlayer) {
                 Vector2 direction;
-                if (Orientation == Orientations.Left || Orientation == Orientations.Right)
+                if (Orientation == Orientations.Left || Orientation == Orientations.Right) {
                     direction = player.Center.Y <= Position.Y ? -Vector2.UnitY : Vector2.UnitY;
-                else
+                } else {
                     direction = player.Center.X <= Position.X ? -Vector2.UnitX : Vector2.UnitX;
+                }
 
                 player.Die(direction);
             }
@@ -370,13 +382,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
 
-            if (needsForcedUpdate)
+            if (needsForcedUpdate) {
                 forceUpdate();
+            }
 
             if (State == LaserState.Burst && collisionDelayRemaining > 0) {
                 collisionDelayRemaining -= Engine.DeltaTime;
-                if (collisionDelayRemaining <= 0)
+                if (collisionDelayRemaining <= 0) {
                     State = LaserState.Firing;
+                }
             }
 
             if (State == LaserState.Cooldown && !paintParticlesSprite.Animating) {
@@ -386,11 +400,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Render() {
             if (State is LaserState.Burst or LaserState.Firing) {
-                for (int i = 0; i < beamHitboxes.Length; i++)
+                for (int i = 0; i < beamHitboxes.Length; i++) {
                     renderBeam(beamHitboxes[i], i);
+                }
             } else if (State == LaserState.Charging) {
-                foreach (var hitbox in beamHitboxes)
+                foreach (var hitbox in beamHitboxes) {
                     renderTelegraph(hitbox);
+                }
             }
 
             var offset = Orientation.Vertical() ? new Vector2(tileSize, 0) : new Vector2(0, tileSize);
@@ -428,8 +444,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void renderBeam(Hitbox beamHitbox, int index) {
-            if (beamSprite.CurrentAnimationID == string.Empty)
+            if (beamSprite.CurrentAnimationID == string.Empty) {
                 return;
+            }
 
             var frame = beamSprite.GetFrame(beamSprite.CurrentAnimationID, beamSprite.CurrentAnimationFrame);
             float length = Math.Abs(Orientation switch {
@@ -448,11 +465,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             var origin = beamSprite.Origin;
 
             if (beamHitboxes.Length > 1) {
-                if (index == 0 && Orientation.Horizontal() || index == beamHitboxes.Length - 1 && Orientation.Vertical())
+                if (index == 0 && Orientation.Horizontal() || index == beamHitboxes.Length - 1 && Orientation.Vertical()) {
                     frame = frame.GetSubtexture(new Rectangle(0, 0, frame.Width, frame.Height / 2));
-                else if (index == 0 && Orientation.Vertical() || index == beamHitboxes.Length - 1 && Orientation.Horizontal())
+                } else if (index == 0 && Orientation.Vertical() || index == beamHitboxes.Length - 1 && Orientation.Horizontal()) {
                     frame = frame.GetSubtexture(new Rectangle(0, frame.Height / 2, frame.Width, frame.Height / 2));
-                else {
+                } else {
                     var rectTopLeft = Position + beamHitbox.TopLeft;
                     var color = State == LaserState.Burst && beamSprite.CurrentAnimationFrame == 0 ? Color.White : beamFillColor;
                     Draw.Rect(rectTopLeft.X, rectTopLeft.Y, beamHitbox.Width, beamHitbox.Height, color);
@@ -467,14 +484,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             for (int i = 0; i < count; i++) {
                 var position = startPosition + i * frameOffset;
                 int width = i == count - 1 && remainder != 0 ? remainder : frame.Width;
-                frame.Draw(position, origin, beamSprite.Color, beamSprite.Scale, beamSprite.Rotation , new Rectangle(0, 0, width, frame.Height));
+                frame.Draw(position, origin, beamSprite.Color, beamSprite.Scale, beamSprite.Rotation, new Rectangle(0, 0, width, frame.Height));
             }
         }
 
         private void renderTelegraph(Hitbox beamHitbox) {
-            float animationProgress = (float)largeBrushSprite.CurrentAnimationFrame / largeBrushSprite.CurrentAnimationTotalFrames;
+            float animationProgress = (float) largeBrushSprite.CurrentAnimationFrame / largeBrushSprite.CurrentAnimationTotalFrames;
             int hitboxThickness = (int) Orientation.ThicknessOfHitbox(beamHitbox);
-            int lerped = (int)Calc.LerpClamp(0, hitboxThickness, Ease.QuintOut(animationProgress));
+            int lerped = (int) Calc.LerpClamp(0, hitboxThickness, Ease.QuintOut(animationProgress));
             int thickness = Math.Min(lerped + 2, hitboxThickness);
             thickness -= thickness % 2;
 
@@ -493,7 +510,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 int length = (int) Orientation.LengthOfHitbox(laserHitbox) - beamOffsetMultiplier;
                 var offset = Orientation.Normal();
                 float angle = Orientation.Angle() - (float) Math.PI / 2f;
-                var startPos =  Position + Orientation.OriginOfHitbox(laserHitbox) + beamOffset * 2;
+                var startPos = Position + Orientation.OriginOfHitbox(laserHitbox) + beamOffset * 2;
                 var particle = CassetteIndex == 0 ? blueCooldownParticle : pinkCooldownParticle;
 
                 for (int i = 0; i < length; i += Calc.Random.Next(8, 16)) {
@@ -506,11 +523,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             var level = SceneAs<Level>();
             var particle = CassetteIndex == 0 ? blueImpactParticle : pinkImpactParticle;
             var offset = Orientation.Vertical() ? Vector2.UnitX : Vector2.UnitY;
-            float angle = Orientation.Angle() + (float)Math.PI / 2f;
+            float angle = Orientation.Angle() + (float) Math.PI / 2f;
 
             int thickness = (int) Orientation.ThicknessOfHitbox(laserHitbox);
             var startPos = new Vector2(Orientation == Orientations.Right ? laserHitbox.Right + X : laserHitbox.Left + X,
-                Orientation == Orientations.Down ? laserHitbox.Bottom + Y: laserHitbox.Top + Y);
+                Orientation == Orientations.Down ? laserHitbox.Bottom + Y : laserHitbox.Top + Y);
 
             const int particleCount = 3;
             level.ParticlesFG.Emit(particle, particleCount, startPos, Vector2.Zero, angle);

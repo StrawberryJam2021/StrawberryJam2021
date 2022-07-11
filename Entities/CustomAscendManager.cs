@@ -1,10 +1,10 @@
+using Celeste.Mod.Entities;
+using Microsoft.Xna.Framework;
+using Monocle;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Celeste.Mod.Entities;
-using Microsoft.Xna.Framework;
-using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/CustomAscendManager")]
@@ -180,8 +180,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 this.manager = manager;
                 if (manager != null) {
                     colors = manager.StreakColors;
-                }
-                else {
+                } else {
                     colors = new Color[]
                     {
                         Color.White,

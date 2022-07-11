@@ -27,8 +27,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
             foreach (Particle particle in particles) {
-                if (particle.Percent >= 1f)
+                if (particle.Percent >= 1f) {
                     particle.Reset();
+                }
+
                 particle.Percent += Engine.DeltaTime / particle.Duration;
                 particle.Position += particle.Velocity * Engine.DeltaTime;
             }

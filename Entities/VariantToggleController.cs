@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
+using ExtendedVariants.Module;
 using Microsoft.Xna.Framework;
 using Monocle;
-using ExtendedVariants.Module;
+using System;
+using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/VariantToggleController")]
@@ -16,11 +13,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private bool defaultValue;
         private Dictionary<ExtendedVariantsModule.Variant, int> variantValues;
 
-        public VariantToggleController(EntityData data, Vector2 offset) 
+        public VariantToggleController(EntityData data, Vector2 offset)
             : this(data.Position + offset, data.Attr("flag"), data.Attr("variantList"), data.Bool("defaultValue", true)) {
         }
 
-        public VariantToggleController(Vector2 position, string flagName, string variantList, bool defValue) 
+        public VariantToggleController(Vector2 position, string flagName, string variantList, bool defValue)
             : base(position) {
             flag = flagName;
             defaultValue = defValue;
@@ -45,8 +42,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 foreach (KeyValuePair<ExtendedVariantsModule.Variant, int> variant in variantValues) {
                     ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, variant.Value, false, false, false, true);
                 }
-            } 
-            else {
+            } else {
                 foreach (KeyValuePair<ExtendedVariantsModule.Variant, int> variant in variantValues) {
                     object defaultValue = ExtendedVariants.ExtendedVariantTriggerManager.GetDefaultValueForVariant(variant.Key);
                     ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(variant.Key, defaultValue, false, false, false, false);
@@ -55,21 +51,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void UpdateFlag() {
-            if (string.IsNullOrEmpty(flag) || (isFlagged == SceneAs<Level>().Session.GetFlag(flag)))
+            if (string.IsNullOrEmpty(flag) || (isFlagged == SceneAs<Level>().Session.GetFlag(flag))) {
                 return;
+            }
+
             isFlagged = SceneAs<Level>().Session.GetFlag(flag);
             UpdateVariants();
         }
 
         static private Dictionary<ExtendedVariantsModule.Variant, int> ParseParameterList(string list) {
             Dictionary<ExtendedVariantsModule.Variant, int> variantList = new Dictionary<ExtendedVariantsModule.Variant, int>();
-            if (string.IsNullOrEmpty(list))
+            if (string.IsNullOrEmpty(list)) {
                 return variantList;
+            }
+
             string[] keyValueList = list.Split(',');
             //comma separated list of Variant:Value pairs
-            foreach(string keyValue in keyValueList) {
+            foreach (string keyValue in keyValueList) {
                 string[] variantKeyValue = keyValue.Split(':');
-                if(variantKeyValue.Length >= 2) {
+                if (variantKeyValue.Length >= 2) {
                     ExtendedVariantsModule.Variant variant = (ExtendedVariantsModule.Variant) Enum.Parse(typeof(ExtendedVariantsModule.Variant), variantKeyValue[0]);
                     int value = int.Parse(variantKeyValue[1]);
                     variantList[variant] = value;

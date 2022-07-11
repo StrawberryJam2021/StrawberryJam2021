@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
-using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
@@ -19,8 +18,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         bool ResetOnDeathSetting = false;
 
         public DashCountTrigger(EntityData data, Vector2 offset) : base(data, offset) {
-            NumberOfDashesSetting = data.Int("NumberOfDashes",1);
-            NormalDashAmountSetting = data.Int("DashAmountOnReset",1);
+            NumberOfDashesSetting = data.Int("NumberOfDashes", 1);
+            NormalDashAmountSetting = data.Int("DashAmountOnReset", 1);
             ResetOnDeathSetting = data.Bool("ResetOnDeath");
         }
 
@@ -75,7 +74,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 return Player.NormalHairColor;
             } else {
                 return orig(self);
-            } 
+            }
         }
 
         private static PlayerDeadBody modDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible = false, bool registerDeathInStats = true) {
@@ -83,7 +82,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 PlayerDeadBody Deadbody = orig(self, direction, evenIfInvincible, registerDeathInStats);
                 if (Deadbody != null) {
                     Color hairColor = (self.Dashes > 0) ? Player.NormalHairColor : Player.UsedHairColor;
-                    new DynamicData(Deadbody).Set("initialHairColor", hairColor);             
+                    new DynamicData(Deadbody).Set("initialHairColor", hairColor);
                 }
                 return Deadbody;
             }
@@ -93,7 +92,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static void modDraw(On.Celeste.DeathEffect.orig_Draw orig, Vector2 position, Color color, float ease) {
             if (IsInCurrentMap) {
                 Player player = Engine.Scene.Tracker.GetEntity<Player>();
-                if(player != null) { 
+                if (player != null) {
                     if (player.Dashes > 0) {
                         color = Player.NormalHairColor;
                     } else {

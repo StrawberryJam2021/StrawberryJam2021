@@ -57,7 +57,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             string ignoredNodesString = data.Attr("ignoredNodes") ?? string.Empty;
             IgnoredNodes = ignoredNodesString
                 .Trim()
-                .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => int.TryParse(s, out int value) ? value : int.MaxValue)
                 .Where(i => Math.Abs(i) < Nodes.Length)
                 .ToArray();
@@ -79,17 +79,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     OnBeat = state => {
                         //This is a terrible solution but it worked first try.
                         if (wait) {
-                            if (state.CurrentTick.Index == 0) 
+                            if (state.CurrentTick.Index == 0) {
                                 wait = false;
-                            else
+                            } else {
                                 return;
-                        } 
+                            }
+                        }
                         bool indexWillChange = state.NextTick.Index != state.CurrentTick.Index;
                         if (sourceNodeIndex == targetNodeIndex && OffBeat != indexWillChange) {
-                            if (offsetNodeIndex < 0)
+                            if (offsetNodeIndex < 0) {
                                 offsetNodeIndex = initialNodeIndex;
-                            else
+                            } else {
                                 offsetNodeIndex++;
+                            }
 
                             sourceNodeIndex = offsetNodeIndex % Nodes.Length;
                             targetNodeIndex = (sourceNodeIndex + 1) % Nodes.Length;
@@ -108,12 +110,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             offsetNodeIndex = -1;
             if (initialNodeIndex == 0) {
                 for (int i = 1; i < Nodes.Length; i++) {
-                    if (!IgnoredNodes.Contains(i) && !IgnoredNodes.Contains(i - Nodes.Length))
+                    if (!IgnoredNodes.Contains(i) && !IgnoredNodes.Contains(i - Nodes.Length)) {
                         scene.Add(new CassetteBadelineBlock(this, i));
+                    }
                 }
 
-                if (IgnoredNodes.Contains(0))
+                if (IgnoredNodes.Contains(0)) {
                     RemoveSelf();
+                }
             }
         }
 

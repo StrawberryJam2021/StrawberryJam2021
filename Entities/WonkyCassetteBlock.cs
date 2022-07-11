@@ -36,13 +36,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             this.textureDir = textureDir;
 
-            if (overrideBoostFrames < 0)
+            if (overrideBoostFrames < 0) {
                 throw new ArgumentException($"Boost Frames must be 0 or greater, but is set to {overrideBoostFrames}.");
+            }
 
             OverrideBoostFrames = overrideBoostFrames;
 
-            if (controllerIndex < 0)
+            if (controllerIndex < 0) {
                 throw new ArgumentException($"Controller Index must be 0 or greater, but is set to {controllerIndex}.");
+            }
 
             ControllerIndex = controllerIndex;
         }
@@ -90,7 +92,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     if (OverrideBoostFrames > 0) {
                         boostFrames = OverrideBoostFrames;
                     } else {
-                        WonkyCassetteBlockController controller = this.Scene.Tracker.GetEntity<WonkyCassetteBlockController>();
+                        WonkyCassetteBlockController controller = Scene.Tracker.GetEntity<WonkyCassetteBlockController>();
                         if (controller != null) {
                             boostFrames = controller.ExtraBoostFrames;
                         }
@@ -98,7 +100,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 } else if (boostFrames > 0) {
                     // Provide an extra boost for the duration of the extra boost frames
-                    this.LiftSpeed.Y = -1 / Engine.DeltaTime;
+                    LiftSpeed.Y = -1 / Engine.DeltaTime;
 
                     // Update lift of riders
                     MoveVExact(0);
@@ -109,8 +111,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static bool NewCheckForSame(On.Celeste.CassetteBlock.orig_CheckForSame origCheckForSame, CassetteBlock self, float x, float y) {
-            if (!(self is WonkyCassetteBlock))
+            if (!(self is WonkyCassetteBlock)) {
                 return origCheckForSame(self, x, y);
+            }
 
             WonkyCassetteBlock selfCast = (WonkyCassetteBlock) self;
 
@@ -131,8 +134,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 GFX.Game.PushFallback(GFX.Game["objects/cassetteblock/solid"]);
                 block.cassetteBlockData.Get<List<Image>>("solid").Add((Image) m_CassetteBlock_CreateImage.Invoke(block, new object[] { x, y, tx, ty, GFX.Game[block.textureDir + "/solid"] }));
                 GFX.Game.PopFallback();
-            } else
+            } else {
                 orig(self, x, y, tx, ty);
+            }
         }
 
         private static void CassetteBlock_Awake(ILContext il) {

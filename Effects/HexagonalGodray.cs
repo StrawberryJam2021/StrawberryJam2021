@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-// Adapted from Celeste.Godrays, most base code taken from said file
-using Celeste;
-using Celeste.Mod.Entities;
+﻿// Adapted from Celeste.Godrays, most base code taken from said file
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
-using MonoMod.Utils;
+using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Effects {
     public class HexagonalGodray : Backdrop {
@@ -38,8 +30,9 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
                 angle = (float) (Math.PI / 180F * (randRotate));
                 length = Calc.Random.Next(15, 22);
 
-                if (points == null)
+                if (points == null) {
                     points = new Vector2[3];
+                }
 
                 points[0] = new((float) Math.Cos(angle), (float) Math.Sin(angle));
                 points[1] = new((float) Math.Cos(angle + Math.PI / 3), (float) Math.Sin(angle + Math.PI / 3));

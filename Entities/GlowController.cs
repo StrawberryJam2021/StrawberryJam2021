@@ -22,8 +22,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly Vector2 _bloomOffset;
 
         public GlowController(EntityData data, Vector2 offset)
-            : base(data.Position + offset)
-        {
+            : base(data.Position + offset) {
             _lightWhitelist = data.Attr("lightWhitelist").Split(',');
             _lightBlacklist = data.Attr("lightBlacklist").Split(',');
             _lightColor = data.HexColor("lightColor", Color.White);
@@ -45,7 +44,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             var allEntities = scene.Entities.Concat(scene.Entities.GetToAdd());
             foreach (var entity in allEntities) {
                 var type = entity.GetType();
-                var typeName = type.FullName;
+                string typeName = type.FullName;
 
                 if (_lightWhitelist.Contains(typeName)) {
                     entity.Add(new VertexLight(_lightOffset, _lightColor, _lightAlpha, _lightStartFade, _lightEndFade));

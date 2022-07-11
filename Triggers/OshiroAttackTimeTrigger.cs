@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
-using Celeste.Mod.Entities;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
+using System;
 using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
@@ -16,7 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         public OshiroAttackTimeTrigger(EntityData data, Vector2 offset) : base(data, offset) {
             Enable = data.Bool("Enable", true);
         }
-        public static void Load(){
+        public static void Load() {
             oshiroHook = new ILHook(oshiroCoroutineInfo, ModAttackTime);
         }
         public static void Unload() {

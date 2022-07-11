@@ -1,7 +1,7 @@
-﻿using System;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity(
@@ -157,10 +157,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         //and their direction is toward the spikes in at least 1 direction
         private bool DashingIntoSpikes(Player player) {
             return (player.DashAttacking
-                || player.StateMachine.State == Player.StDash 
+                || player.StateMachine.State == Player.StDash
                 || player.StateMachine.State == Player.StRedDash
                 || player.StateMachine.State == Player.StDreamDash)
-                && (Math.Sign(player.DashDir.X) == -Math.Sign(directionVector.X) 
+                && (Math.Sign(player.DashDir.X) == -Math.Sign(directionVector.X)
                 || Math.Sign(player.DashDir.Y) == -Math.Sign(directionVector.Y));
         }
 

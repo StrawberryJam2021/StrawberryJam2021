@@ -27,7 +27,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private DynamicData refillData;
         private bool finished;
 
-        public RefillShardController(EntityData data, Vector2 offset) 
+        public RefillShardController(EntityData data, Vector2 offset)
             : base(data.Position + offset) {
             spawnRefill = data.Bool("spawnRefill");
             twoDashes = data.Bool("twoDashes");
@@ -36,8 +36,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             collectAmount = data.Int("collectAmount");
 
             // old flcc behavior
-            if (!spawnRefill && !data.Has("collectAmount"))
+            if (!spawnRefill && !data.Has("collectAmount")) {
                 oneUse = true;
+            }
 
             nodes = spawnRefill ? data.NodesOffset(offset) : data.NodesWithPosition(offset);
         }
@@ -70,27 +71,31 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            if (!finished && spawnRefill)
+            if (!finished && spawnRefill) {
                 refillData.Set("respawnTimer", RespawnTime);
+            }
         }
 
         public void CheckCollection() {
             int collectedShards = Shards.Count(shard => shard.Follower.HasLeader);
             if (!finished && collectedShards >= (collectAmount > 0 ? collectAmount : Shards.Count)) {
-                if (spawnRefill || (oneUse && collectedShards == Shards.Count))
+                if (spawnRefill || (oneUse && collectedShards == Shards.Count)) {
                     finished = true;
+                }
 
                 if (!spawnRefill) {
                     List<RefillShard> toRemove = new List<RefillShard>();
                     foreach (RefillShard shard in Shards) {
                         if (shard.Follower.HasLeader) {
                             shard.Collect(!oneUse);
-                            if (oneUse)
+                            if (oneUse) {
                                 toRemove.Add(shard);
+                            }
                         }
                     }
-                    foreach (RefillShard shard in toRemove)
+                    foreach (RefillShard shard in toRemove) {
                         Shards.Remove(shard);
+                    }
 
                     Player player = Scene.Tracker.GetEntity<Player>();
                     Audio.Play(twoDashes ? SFX.game_10_pinkdiamond_touch : SFX.game_gen_diamond_touch, player.Position);
@@ -103,8 +108,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                     foreach (RefillShard shard in Shards) {
                         shard.Finished = true;
-                        if (shard.Follower.HasLeader)
+                        if (shard.Follower.HasLeader) {
                             shard.Follower.Leader.LoseFollower(shard.Follower);
+                        }
 
                         Vector2 startPos = shard.Position;
                         Vector2 targetPos = Refill.Position;

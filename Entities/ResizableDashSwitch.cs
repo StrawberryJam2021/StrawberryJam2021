@@ -29,8 +29,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private int widthTiles => width / 8;
 
-        private float SwitchRotation => Side switch
-        {
+        private float SwitchRotation => Side switch {
             Sides.Down => 0f,
             Sides.Up => Calc.HalfCircle,
             Sides.Right => -Calc.QuarterCircle,
@@ -138,15 +137,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
-            if (pressed)
+            if (pressed) {
                 Switch?.Activate();
+            }
         }
 
         public override void Render() {
             Vector2 oldPos = Position;
             Position += spriteOffset;
-            foreach (Image image in switchImages)
+            foreach (Image image in switchImages) {
                 image.Texture.DrawOnlyOutlineCentered(Position + image.Position, image.Rotation);
+            }
+
             base.Render();
             Position = oldPos;
         }
@@ -184,8 +186,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         #region Sprites
 
         private void CreateSprite(int index) {
-            foreach (Image image in switchImages)
+            foreach (Image image in switchImages) {
                 Remove(image);
+            }
+
             switchImages.Clear();
 
             Vector2 startPos, posIncrement;
@@ -230,7 +234,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 currentPos += posIncrement;
             }
-            
+
             Image midImage = new Image(GFX.Game[$"objects/StrawberryJam2021/bigDashSwitch/bigSwitchMid{index:D2}"]);
             midImage.JustifyOrigin(0.5f, 0.5f);
             midImage.Position = Center - Position;
@@ -261,8 +265,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void OnPressed(Player player, Vector2 direction) {
             player.RefillDash();
-            if (Switch?.Activate() == true)
+            if (Switch?.Activate() == true) {
                 SoundEmitter.Play(SFX.game_gen_touchswitch_last_oneshot);
+            }
+
             Add(new Coroutine(PlayPushedAnimation()));
             AddLightningSprite(player.Center);
 
@@ -311,9 +317,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static DashCollisionResults On_DashSwitch_OnDashed(
             On.Celeste.DashSwitch.orig_OnDashed orig, DashSwitch self, Player player, Vector2 direction) {
-            if (self is ResizableDashSwitch dashSwitch && !dashSwitch.pressed && direction == dashSwitch.pressDirection)
+            if (self is ResizableDashSwitch dashSwitch && !dashSwitch.pressed && direction == dashSwitch.pressDirection) {
                 dashSwitch.OnPressed(player, direction);
-            
+            }
+
             return orig(self, player, direction);
         }
 

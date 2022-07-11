@@ -1,6 +1,4 @@
-﻿using Celeste;
-using Celeste.Mod;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
@@ -9,9 +7,6 @@ using MonoMod.Cil;
 using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [Tracked]
@@ -54,15 +49,17 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         private static void BloomRenderer_Apply(On.Celeste.BloomRenderer.orig_Apply orig, BloomRenderer self, VirtualRenderTarget target, Scene scene) {
             DynamicData.For(self).Set("bloomMaskLastStrength", self.Strength);
-            if (scene.Tracker.GetEntity<BloomMask>() != null)
+            if (scene.Tracker.GetEntity<BloomMask>() != null) {
                 self.Strength = 1f;
+            }
+
             orig(self, target, scene);
         }
 
         private static void BloomRenderer_ApplyIL(ILContext il) {
             var cursor = new ILCursor(il);
 
-            var textureLoc = 0;
+            int textureLoc = 0;
             if (!cursor.TryGotoNext(
                 instr => instr.MatchCall(typeof(GaussianBlur), "Blur"),
                 instr => instr.MatchStloc(out textureLoc))) {
@@ -81,22 +78,22 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     cursor.Emit(OpCodes.Ldarg_0);
                     cursor.Emit(OpCodes.Ldarg_1);
                     cursor.Emit(OpCodes.Ldarg_2);
-                    cursor.Emit(OpCodes.Ldloc_S, (byte)textureLoc);
+                    cursor.Emit(OpCodes.Ldloc_S, (byte) textureLoc);
                     cursor.EmitDelegate<Action<BloomRenderer, VirtualRenderTarget, Scene, Texture2D>>((self, target, scene, texture) => {
                         var selfData = DynamicData.For(self);
                         var sliceRects = new List<Rectangle>();
-                        var renderedMask = false;
+                        bool renderedMask = false;
                         var lastTargets = Engine.Graphics.GraphicsDevice.GetRenderTargets();
-                        var bloomMaskLastStrength = selfData.Get<float>("bloomMaskLastStrength");
+                        float bloomMaskLastStrength = selfData.Get<float>("bloomMaskLastStrength");
                         foreach (BloomMask entity in scene.Tracker.GetEntities<BloomMask>()) {
                             var level = scene as Level;
                             renderedMask = true;
 
-                            var baseFrom = (entity.BaseFrom >= 0f ? entity.BaseFrom : self.Base);
-                            var baseTo = (entity.BaseTo >= 0f ? entity.BaseTo : self.Base);
+                            float baseFrom = (entity.BaseFrom >= 0f ? entity.BaseFrom : self.Base);
+                            float baseTo = (entity.BaseTo >= 0f ? entity.BaseTo : self.Base);
 
-                            var strengthFrom = (entity.StrengthFrom >= 0f ? entity.StrengthFrom : bloomMaskLastStrength);
-                            var strengthTo = (entity.StrengthTo >= 0f ? entity.StrengthTo : bloomMaskLastStrength);
+                            float strengthFrom = (entity.StrengthFrom >= 0f ? entity.StrengthFrom : bloomMaskLastStrength);
+                            float strengthTo = (entity.StrengthTo >= 0f ? entity.StrengthTo : bloomMaskLastStrength);
 
                             var slices = entity.GetMaskSlices();
 
@@ -115,17 +112,18 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                             Engine.Instance.GraphicsDevice.SetRenderTarget(target);
                             Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BloomRenderer.AdditiveMaskToScreen, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, level.Camera.Matrix);
                             foreach (var slice in slices) {
-                                var strength = slice.GetValue(strengthFrom, strengthTo);
+                                float strength = slice.GetValue(strengthFrom, strengthTo);
                                 for (int i = 0; i < strength; i++) {
-                                    var scale = (i < strength - 1f) ? 1f : (strength - i);
+                                    float scale = (i < strength - 1f) ? 1f : (strength - i);
                                     Draw.SpriteBatch.Draw(BloomBuffer, slice.Position, slice.Source, Color.White * scale);
                                 }
-                                sliceRects.Add(new Rectangle((int)slice.Position.X, (int)slice.Position.Y, slice.Source.Width, slice.Source.Height));
+                                sliceRects.Add(new Rectangle((int) slice.Position.X, (int) slice.Position.Y, slice.Source.Width, slice.Source.Height));
                             }
                             Draw.SpriteBatch.End();
                         }
-                        if (renderedMask)
+                        if (renderedMask) {
                             Engine.Instance.GraphicsDevice.SetRenderTargets(lastTargets);
+                        }
 
                         selfData.Set("bloomMaskRects", sliceRects);
                     });

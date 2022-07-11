@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Monocle;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using FourWayDirection = Celeste.Mod.StrawberryJam2021.Entities.ZeroGBarrier.FourWayDirection;
-using Celeste.Mod.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/ZeroGTrigger = Load")]

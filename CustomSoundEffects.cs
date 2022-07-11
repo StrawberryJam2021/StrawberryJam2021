@@ -27,7 +27,7 @@
         // Drum Swap Blocks
         public const string game_drum_swapblock_move = "event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move";
         public const string game_drum_swapblock_move_end = "event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move_end";
-        
+
         // Dash Sequence Controller Fail Jingle
         public const string game_dash_seq_fail = "event:/strawberry_jam_2021/game/dash_seq/fail";
 

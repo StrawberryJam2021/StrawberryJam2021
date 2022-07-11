@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework;
 using Monocle;
-using Microsoft.Xna.Framework;
-using MonoMod.Utils;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     internal static class TogglePlaybackHandler {

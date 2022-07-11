@@ -195,7 +195,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 level.Frozen = true;
                 float distance = Vector2.Distance(level.Camera.Position, cameraTo);
                 float catchup = Calc.Clamp(distance / 5f, 8f, 600f);
-                while (!level.InsideCamera(target, player.Height*2)) {
+                while (!level.InsideCamera(target, player.Height * 2)) {
                     Vector2 current = level.Camera.Position;
                     level.Camera.Position += (cameraTo - current) * (1f - (float) Math.Pow((double) (0.01f / catchup), (double) Engine.DeltaTime));
                     yield return null;

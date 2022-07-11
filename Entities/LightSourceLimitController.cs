@@ -99,7 +99,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             cursor.Index = 0;
-            
+
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcR4(VanillaMatrixScale))) {
                 cursor.EmitDelegate<Func<float, float>>(GetMatrixScalingFactor);
             }

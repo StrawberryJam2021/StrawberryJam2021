@@ -1,11 +1,11 @@
 ﻿using Celeste.Mod.Entities;
+using FactoryHelper.Entities;
 using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using System;
 using System.Reflection;
-using FactoryHelper.Entities;
-using MonoMod.RuntimeDetour;
-using MonoMod.Cil;
-using Mono.Cecil.Cil;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/WindTunnelNoParticles")]
@@ -21,11 +21,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             ILCursor cursor = new ILCursor(il);
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchDiv())) {
                 cursor.Emit(OpCodes.Ldarg_0);
-                cursor.EmitDelegate<Func<int, WindTunnel, int>>((orig, self) => { 
+                cursor.EmitDelegate<Func<int, WindTunnel, int>>((orig, self) => {
                     if (self is WindTunnelNoParticles tunnel) {
                         return 0;
                     }
-                    return orig; 
+                    return orig;
                 });
             }
         }

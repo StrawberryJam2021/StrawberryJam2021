@@ -97,10 +97,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 target = 0f;
             }
 
-            if (Hold.IsHeld && !player.OnGround() && !climbUpdate)
+            if (Hold.IsHeld && !player.OnGround() && !climbUpdate) {
                 Audio.SetMusicParam(musicParam, 1);
-            else
+            } else {
                 Audio.SetMusicParam(musicParam, 0);
+            }
 
             sprite.Rotation = Calc.Approach(sprite.Rotation, target, (float) Math.PI * Engine.DeltaTime);
 

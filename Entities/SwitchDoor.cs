@@ -1,8 +1,8 @@
-﻿using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Batteries;
+using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
-using Celeste.Mod.Batteries;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [TrackedAs(typeof(BatteryGate))]

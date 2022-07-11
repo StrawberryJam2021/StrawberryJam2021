@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Celeste;
+﻿using Celeste;
+using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using Celeste.Mod.Entities;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 [CustomEntity("SJ2021/UFO")]
 public class UFO : Actor {
@@ -124,7 +124,7 @@ public class UFO : Actor {
     public override void Update() {
         base.Update();
         switch (state) {
-            case States.Wait: 
+            case States.Wait:
                 Player entity = base.Scene.Tracker.GetEntity<Player>();
                 if (entity != null && entity.X - base.X >= 100f) {
                     Skip();
@@ -200,16 +200,16 @@ public class UFO : Actor {
                     break;
             }
             SpringBounce.Invoke(CollidingSpring, null);
-            
+
         }
     }
 
     bool CheckIfInRay(Vector2 EntityPosition, float EntityBottom, float EntityTop, bool IsJelly, Glider CollidingGlider) {
-        if(EntityPosition.X >= Position.X - RaySizeX && EntityPosition.X <= Position.X + RaySizeX && EntityTop < Position.Y + RaySizeY + 12 && EntityBottom > Top + 5f && state == States.Wait) {
+        if (EntityPosition.X >= Position.X - RaySizeX && EntityPosition.X <= Position.X + RaySizeX && EntityTop < Position.Y + RaySizeY + 12 && EntityBottom > Top + 5f && state == States.Wait) {
             if (!IsJelly) {
                 return true;
             }
-            if(player.Holding != null && player.Holding.Entity == CollidingGlider && CheckIfInRay(player.Position, player.Bottom, player.Top, false, null)) {
+            if (player.Holding != null && player.Holding.Entity == CollidingGlider && CheckIfInRay(player.Position, player.Bottom, player.Top, false, null)) {
                 return true;
             }
         }
@@ -275,7 +275,7 @@ public class UFO : Actor {
         Add(new Coroutine(level.ZoomBack(0.1f)));
         flingTargetSpeed = Vector2.Zero;
         flingAccel = 4000f;
-        Jelly.Speed = FlingSpeed/1.5f;
+        Jelly.Speed = FlingSpeed / 1.5f;
         yield return 0.3f;
         Add(new Coroutine(MoveRoutine()));
     }

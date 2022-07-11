@@ -1,12 +1,8 @@
-﻿using Celeste;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [Tracked(true)]
@@ -85,14 +81,16 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             => FadeMask?.Draw(Position, Vector2.Zero, color ?? Color.White, new Vector2(Width / FadeMask.Width, Height / FadeMask.Height));
 
         public bool IsVisible() {
-            if (!string.IsNullOrEmpty(Flag) && Level.Session.GetFlag(Flag) == NotFlag)
+            if (!string.IsNullOrEmpty(Flag) && Level.Session.GetFlag(Flag) == NotFlag) {
                 return false;
+            }
+
             var visibleRect = GetVisibleRect();
             return visibleRect.Width > 0 && visibleRect.Height > 0;
         }
 
         public Rectangle GetVisibleRect()
-            => Rectangle.Intersect(new Rectangle(0, 0, 320, 180), new Rectangle((int)(X - Level.Camera.X), (int)(Y - Level.Camera.Y), (int)Width, (int)Height));
+            => Rectangle.Intersect(new Rectangle(0, 0, 320, 180), new Rectangle((int) (X - Level.Camera.X), (int) (Y - Level.Camera.Y), (int) Width, (int) Height));
 
         public Vector2 GetDrawPos()
             => new Vector2(Math.Max(X, Level.Camera.X), Math.Max(Y, Level.Camera.Y));
@@ -102,8 +100,10 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         public List<MaskSlice> GetMaskSlices() {
             var slices = new List<MaskSlice>();
-            if (!IsVisible())
+            if (!IsVisible()) {
                 return slices;
+            }
+
             var offset = Vector2.Zero;
             var source = Rectangle.Empty;
             switch (Fade) {
@@ -115,11 +115,11 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 case FadeType.RightToLeft:
                     offset = GetDrawOffset();
                     source = GetVisibleRect();
-                    for (int x = (int)offset.X; x < Width; x++) {
-                        if ((x - (int)offset.X) < source.Width) {
+                    for (int x = (int) offset.X; x < Width; x++) {
+                        if ((x - (int) offset.X) < source.Width) {
                             slices.Add(new MaskSlice(
                                 Position + new Vector2(x, offset.Y),
-                                new Rectangle(source.X + (x - (int)offset.X), source.Y, 1, source.Height),
+                                new Rectangle(source.X + (x - (int) offset.X), source.Y, 1, source.Height),
                                 Fade == FadeType.LeftToRight ? (x / Width) : (1 - x / Width)
                             ));
                         }
@@ -129,12 +129,12 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 case FadeType.BottomToTop:
                     offset = GetDrawOffset();
                     source = GetVisibleRect();
-                    for (int y = (int)offset.Y; y < Height; y++) {
-                        if ((y - (int)offset.Y) < source.Height) {
+                    for (int y = (int) offset.Y; y < Height; y++) {
+                        if ((y - (int) offset.Y) < source.Height) {
                             slices.Add(new MaskSlice(
                                 Position + new Vector2(offset.X, y),
-                                new Rectangle(source.X, source.Y + (y - (int)offset.Y), source.Width, 1),
-                                Fade == FadeType.TopToBottom ? (y/ Height) : (1 - y / Height)
+                                new Rectangle(source.X, source.Y + (y - (int) offset.Y), source.Width, 1),
+                                Fade == FadeType.TopToBottom ? (y / Height) : (1 - y / Height)
                             ));
                         }
                     }

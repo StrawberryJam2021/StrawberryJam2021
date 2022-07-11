@@ -1,11 +1,10 @@
-﻿using System;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using System;
 using System.Reflection;
-using On.Celeste;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
@@ -41,14 +40,14 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             while (cursor.TryGotoNext(MoveType.After, instr => (instr.MatchLdstr("runSlow") ||
                      instr.MatchLdstr("runFast")) &&
                      instr.Next.Next.Next.MatchCallvirt<Monocle.Sprite>("Play"))) {
-                cursor.EmitDelegate<Func<String, String>>((orig) => {
+                cursor.EmitDelegate<Func<string, string>>((orig) => {
                     return StrawberryJam2021Module.Session.SkateboardEnabled ? "idle" : orig;
                 });
             }
             cursor.Index = 0;
             while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdstr("runSlow_carry") &&
                      instr.Next.Next.Next.MatchCallvirt<Monocle.Sprite>("Play"))) {
-                cursor.EmitDelegate<Func<String, String>>((orig) => {
+                cursor.EmitDelegate<Func<string, string>>((orig) => {
                     return StrawberryJam2021Module.Session.SkateboardEnabled ? "idle_carry" : orig;
                 });
             }

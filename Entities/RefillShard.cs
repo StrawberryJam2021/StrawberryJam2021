@@ -34,7 +34,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool renderShard; //we can't use the standard Visible modifier without removing the dotted outline after grabbing a shard
 
-        public RefillShard(RefillShardController controller, Vector2 position, int index, bool two, bool groundReset) 
+        public RefillShard(RefillShardController controller, Vector2 position, int index, bool two, bool groundReset)
             : base(position) {
             this.index = index;
             this.controller = controller;
@@ -115,8 +115,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
 
-            if (!Finished && Visible && Scene.OnInterval(0.1f))
+            if (!Finished && Visible && Scene.OnInterval(0.1f)) {
                 SceneAs<Level>().ParticlesFG.Emit(p_glow, 1, Position, Vector2.One * 4f);
+            }
 
             if (Scene.OnInterval(2f) && Visible) {
                 flash.Play("flash", true);
@@ -129,14 +130,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
-            if (sprite.Visible && renderShard) 
+            if (sprite.Visible && renderShard) {
                 sprite.DrawOutline();
-           
+            }
+
             outlineSprite.RenderPosition = start + new Vector2(0, sine.Value * 2f);
             outlineSprite.Render();
 
-            if (renderShard)
+            if (renderShard) {
                 base.Render();
+            }
         }
 
         public void OnCollectCutscene() {
@@ -202,8 +205,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void Respawn() {
             Position = start;
-            if (attached != null)
+            if (attached != null) {
                 Position += attached.Position;
+            }
+
             FMOD.Studio.EventInstance sound = Audio.Play(twoDashes ? SFX.game_10_pinkdiamond_return : SFX.game_gen_diamond_return, Position);
             sound.setVolume(0.75f);
             sound.setPitch(2f);

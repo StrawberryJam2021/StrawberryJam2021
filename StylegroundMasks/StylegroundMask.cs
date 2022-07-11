@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Entities;
+using Celeste.Mod.MaxHelpingHand.Effects;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
 using Monocle;
@@ -7,8 +9,6 @@ using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Celeste.Mod.MaxHelpingHand.Effects;
-using Celeste.Mod.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [Tracked]
@@ -18,7 +18,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
         public bool Foreground = false;
         public bool EntityRenderer = false;
         public bool BehindForeground = false;
-        
+
         public float AlphaFrom;
         public float AlphaTo;
 
@@ -43,7 +43,11 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 scene.Add(new StylegroundMask(Position, Width, Height) {
                     Depth = -2000000,
                     Foreground = true,
-                    Fade = Fade, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
+                    Fade = Fade,
+                    Flag = Flag,
+                    NotFlag = NotFlag,
+                    ScrollX = ScrollX,
+                    ScrollY = ScrollY,
                     RenderTags = RenderTags,
                     EntityRenderer = EntityRenderer,
                     BehindForeground = BehindForeground,
@@ -57,7 +61,11 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 RenderTags.Any(tag => wave.Tags.Contains(StylegroundMaskRenderer.TagPrefix + tag)))) {
 
                 scene.Add(new ColorGradeMask(Position, Width, Height) {
-                    Fade = Fade, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
+                    Fade = Fade,
+                    Flag = Flag,
+                    NotFlag = NotFlag,
+                    ScrollX = ScrollX,
+                    ScrollY = ScrollY,
                     ColorGradeTo = "(core)",
                 });
             }
@@ -67,7 +75,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             base.Render();
             if (EntityRenderer) {
                 var bufferDict = StylegroundMaskRenderer.GetBuffers(Foreground);
-                foreach (var tag in RenderTags) {
+                foreach (string tag in RenderTags) {
                     if (bufferDict.TryGetValue(tag, out var buffer)) {
                         foreach (var slice in GetMaskSlices()) {
                             Draw.SpriteBatch.Draw(buffer, slice.Position, slice.Source, Color.White * slice.GetValue(AlphaFrom, AlphaTo));
@@ -119,8 +127,9 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
         public static VirtualRenderTarget GetBuffer(string tag, bool foreground) {
             var buffers = GetBuffers(foreground);
 
-            if (!buffers.ContainsKey(tag))
+            if (!buffers.ContainsKey(tag)) {
                 buffers.Add(tag, VirtualContent.CreateRenderTarget(tag, 320, 180));
+            }
 
             return buffers[tag];
         }
@@ -144,7 +153,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             for (int i = from.Count - 1; i >= 0; i--) {
                 var backdrop = from[i];
 
-                foreach (var tag in backdrop.Tags) {
+                foreach (string tag in backdrop.Tags) {
                     if (TagIsMaskTag(tag)) {
                         AddBackdrop(StripTagPrefix(tag), backdrop, into);
                         backdrop.Renderer = DummyBackdropRenderer;
@@ -161,14 +170,15 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         public static bool IsEntityInView(Level level, Entity entity) {
             Camera camera = level.Camera;
-            return new Rectangle((int)entity.X, (int) entity.Y, (int) entity.Width, (int) entity.Height)
-                   .Intersects(new Rectangle((int) camera.X, (int)camera.Y, 320, 180));
+            return new Rectangle((int) entity.X, (int) entity.Y, (int) entity.Width, (int) entity.Height)
+                   .Intersects(new Rectangle((int) camera.X, (int) camera.Y, 320, 180));
         }
 
         public bool AnyMaskIsInView(Level level, string tag) {
             foreach (var mask in GetMasksWithTag(level, tag)) {
-                if (IsEntityInView(level, mask))
+                if (IsEntityInView(level, mask)) {
                     return true;
+                }
             }
 
             return false;
@@ -183,8 +193,10 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     // since masked stylegrounds are not in the level's styleground renderers at all,
                     // we need to go through the whole update-render cycle here
                     DummyBackdropRenderer.Backdrops = backdrops;
-                    if (!level.Paused)
+                    if (!level.Paused) {
                         DummyBackdropRenderer.Update(level);
+                    }
+
                     DummyBackdropRenderer.BeforeRender(level);
 
                     Engine.Graphics.GraphicsDevice.SetRenderTarget(GetBuffer(tag, foreground));
@@ -209,8 +221,9 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             Engine.Graphics.GraphicsDevice.SetRenderTargets(lastTargets);
 
             var bufferDict = GetBuffers(Foreground);
-            if (bufferDict.Count == 0)
+            if (bufferDict.Count == 0) {
                 return;
+            }
 
             var masks = scene.Tracker.GetEntities<StylegroundMask>().Cast<StylegroundMask>()
                 .Where(mask => !mask.EntityRenderer && (!Foreground || mask.BehindForeground == Behind) && mask.IsVisible());
@@ -228,10 +241,11 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     mask.DrawFadeMask();
 
                     Engine.Graphics.GraphicsDevice.BlendState = Mask.DestinationAlphaBlend;
-                    foreach (var tag in mask.RenderTags) {
+                    foreach (string tag in mask.RenderTags) {
                         if (bufferDict.TryGetValue(tag, out var buffer)) {
-                            foreach (var slice in mask.GetMaskSlices())
+                            foreach (var slice in mask.GetMaskSlices()) {
                                 Draw.SpriteBatch.Draw(buffer, slice.Position, slice.Source, Color.White);
+                            }
                         }
                     }
 
@@ -245,7 +259,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             if (batchMasks.Any()) {
                 Draw.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, level.Camera.Matrix);
                 foreach (var mask in batchMasks) {
-                    foreach (var tag in mask.RenderTags) {
+                    foreach (string tag in mask.RenderTags) {
                         if (bufferDict.TryGetValue(tag, out var buffer)) {
                             foreach (var slice in mask.GetMaskSlices()) {
                                 Draw.SpriteBatch.Draw(buffer, slice.Position, slice.Source, Color.White * slice.GetValue(mask.AlphaFrom, mask.AlphaTo));
@@ -275,10 +289,10 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
         private static void HeatWave_Update(On.Celeste.HeatWave.orig_Update orig, HeatWave self, Scene scene) {
             if (self.Tags.Any(tag => tag.StartsWith(TagPrefix))) {
                 var levelData = DynamicData.For(scene as Level);
-                var lastColorGrade = levelData.Get<string>("lastColorGrade");
-                var colorGradeEase = levelData.Get<float>("colorGradeEase");
-                var colorGradeEaseSpeed = levelData.Get<float>("colorGradeEaseSpeed");
-                var colorGrade = (scene as Level).Session.ColorGrade;
+                string lastColorGrade = levelData.Get<string>("lastColorGrade");
+                float colorGradeEase = levelData.Get<float>("colorGradeEase");
+                float colorGradeEaseSpeed = levelData.Get<float>("colorGradeEaseSpeed");
+                string colorGrade = (scene as Level).Session.ColorGrade;
                 orig(self, scene);
                 levelData.Set("lastColorGrade", lastColorGrade);
                 levelData.Set("colorGradeEase", colorGradeEase);
@@ -353,7 +367,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                     cursor.Emit(OpCodes.Ldarg, levelArg);
                     cursor.Emit(OpCodes.Isinst, typeof(Level));
                     cursor.EmitDelegate<Func<Level, bool>>(level => {
-                        var baseRendering = true;
+                        bool baseRendering = true;
                         foreach (var heatWave in level.Foreground.GetEach<HeatWave>()) {
                             var tags = heatWave.Tags;
                             if (tags.Any(tag => tag.StartsWith(TagPrefix))) {

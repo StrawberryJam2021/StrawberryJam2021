@@ -50,18 +50,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.cassetteOffset = cassetteOffset;
 
             GroupCollection timeSignatureParsed = new Regex(@"^(\d+)/(\d+)$").Match(timeSignature).Groups;
-            if (timeSignatureParsed.Count == 0)
+            if (timeSignatureParsed.Count == 0) {
                 throw new ArgumentException($"\"{timeSignature}\" is not a valid time signature.");
+            }
 
             barLength = int.Parse(timeSignatureParsed[1].Value);
             beatLength = int.Parse(timeSignatureParsed[2].Value);
 
-            if (boostFrames < 1)
+            if (boostFrames < 1) {
                 throw new ArgumentException($"Boost Frames must be 1 or greater, but is set to {boostFrames}.");
+            }
 
             ExtraBoostFrames = boostFrames - 1;
 
-            this.DisableFlag = disableFlag;
+            DisableFlag = disableFlag;
         }
 
         public void DisableAndReset(Scene scene, StrawberryJam2021Session session) {
@@ -70,7 +72,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             session.CassetteBeatTimer = session.MusicBeatTimer - cassetteOffset;
             session.CassetteWonkyBeatIndex = 0;
-            
+
             var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>();
 
             foreach (WonkyCassetteBlock wonkyBlock in wonkyBlocks) {
@@ -89,15 +91,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Awake(Scene scene) {
             base.Awake(scene);
 
-            if (Scene.Tracker.GetEntity<CassetteBlockManager>() is not null)
+            if (Scene.Tracker.GetEntity<CassetteBlockManager>() is not null) {
                 throw new Exception("WonkyCassetteBlockController detected in same room as ManualCassetteController!");
+            }
 
             isLevelMusic = AreaData.Areas[SceneAs<Level>().Session.Area.ID].CassetteSong == "-";
 
-            if (isLevelMusic)
+            if (isLevelMusic) {
                 sfx = Audio.CurrentMusicEventInstance;
-            else
+            } else {
                 snapshot = Audio.CreateSnapshot("snapshot:/music_mains_mute");
+            }
 
             StrawberryJam2021Session session = StrawberryJam2021Module.Session;
 
@@ -133,8 +137,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             StrawberryJam2021Session session = StrawberryJam2021Module.Session;
 
             if (DisableFlag.Length == 0) {
-                if (session.CassetteBlocksDisabled)
+                if (session.CassetteBlocksDisabled) {
                     session.CassetteBlocksDisabled = false;
+                }
+
                 return;
             }
 
@@ -152,8 +158,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void AdvanceMusic(float time, Scene scene, StrawberryJam2021Session session) {
             CheckDisableAndReset();
 
-            if (session.CassetteBlocksDisabled)
+            if (session.CassetteBlocksDisabled) {
                 return;
+            }
 
             session.CassetteBeatTimer += time;
 
@@ -172,8 +179,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 bool beatIncrementsNext = (nextBeatIndex / (float) (16 / beatLength)) % 1 == 0; // will the next beatIndex be the start of a new beat
 
                 foreach (WonkyCassetteBlock wonkyBlock in wonkyBlocks) {
-                    if (wonkyBlock.ControllerIndex != 0)
+                    if (wonkyBlock.ControllerIndex != 0) {
                         continue;
+                    }
 
                     wonkyBlock.Activated = wonkyBlock.OnAtBeats.Contains(beatInBar);
 
@@ -224,11 +232,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
 
-            if (transitioningIn)
+            if (transitioningIn) {
                 return;
+            }
 
-            if (isLevelMusic)
+            if (isLevelMusic) {
                 sfx = Audio.CurrentMusicEventInstance;
+            }
 
             if (!isLevelMusic && sfx == null) {
                 sfx = Audio.CreateInstance(AreaData.Areas[SceneAs<Level>().Session.Area.ID].CassetteSong);

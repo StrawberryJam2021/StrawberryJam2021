@@ -1,7 +1,7 @@
-﻿using System;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/SineDustSpinner")]
@@ -65,8 +65,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 
         private float getOffset(float period, float phase, float amplitude, bool linear, float? timeOverride = null) {
-            if (period == 0)
+            if (period == 0) {
                 return 0;
+            }
 
             float time = (timeOverride is not null) ? timeOverride.Value : TimeSinceAwake;
             int adjust = linear ? 1 : 2;

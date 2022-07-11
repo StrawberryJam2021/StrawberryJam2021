@@ -221,7 +221,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 int prevOffset = offset;
                 for (int y = 4; y <= Width - 4f; y += 8) {
                     int index = (int) (Mod((angle + (offset * percent * (float) Math.PI * 4f)) / ((float) Math.PI / 2f), 1f) * count);
-                    
+
                     MTexture innerCog = innerCogs[index];
                     Rectangle rectangle = new Rectangle(0, 0, innerCog.Width, innerCog.Height);
                     Vector2 zero = Vector2.Zero;
@@ -247,7 +247,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     innerCog = innerCog.GetSubtexture(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, temp);
                     Vector2 pos = Center + ((Position + new Vector2(y, x) + zero) - Center) * scale;
                     innerCog.DrawCentered(pos, Color.White * ((offset < 0) ? 0.5f : 1f), scale);
-                    
+
                     offset = -offset;
                     angle += (float) Math.PI / 3f;
                 }

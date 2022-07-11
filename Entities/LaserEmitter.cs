@@ -231,7 +231,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Thickness = Thickness - Leniency * 2,
                     Offset = Orientation.Normal() * EmitterColliderHeight,
                 },
-                new SineWave(flickerFrequency) {OnUpdate = v => sineValue = v},
+                new SineWave(flickerFrequency) { OnUpdate = v => sineValue = v },
                 new LedgeBlocker(_ => KillPlayer)
             );
 
@@ -332,9 +332,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // update tint layer based on multiplier and collision
             if (tintSprite != null) {
                 Color color;
-                if (!Collidable)
+                if (!Collidable) {
                     color = Color.Gray;
-                else {
+                } else {
                     float alphaMultiplier = 1f - (sineValue + 1f) * 0.5f * emitterFlickerRange;
                     color = Color * (Flicker ? alphaMultiplier : 1f);
                 }
@@ -347,19 +347,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        public override void Update()
-        {
+        public override void Update() {
             base.Update();
 
             if (EmitSparks && Collidable && Scene.OnInterval(0.1f) && !laserCollider.CollidedWithScreenBounds) {
                 var laserHitbox = laserCollider.Collider;
-                float angle = Orientation.Angle() + (float)Math.PI / 2f;
-                var startX = Orientation switch {
+                float angle = Orientation.Angle() + (float) Math.PI / 2f;
+                float startX = Orientation switch {
                     Orientations.Right => laserHitbox.Right,
                     Orientations.Left => laserHitbox.Left + 1,
                     _ => 0,
                 };
-                var startY = Orientation switch {
+                float startY = Orientation switch {
                     Orientations.Up => laserHitbox.Top + 1,
                     Orientations.Down => laserHitbox.Bottom,
                     _ => 0,
@@ -381,8 +380,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (DisableLasers) {
                 level.Entities.With<LaserEmitter>(emitter => {
-                    if (emitter.ColorChannel == ColorChannel)
+                    if (emitter.ColorChannel == ColorChannel) {
                         emitter.Collidable = false;
+                    }
                 });
             }
 
@@ -392,10 +392,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (KillPlayer) {
                 Vector2 direction;
-                if (Orientation == Orientations.Left || Orientation == Orientations.Right)
+                if (Orientation == Orientations.Left || Orientation == Orientations.Right) {
                     direction = player.Center.Y <= Position.Y ? -Vector2.UnitY : Vector2.UnitY;
-                else
+                } else {
                     direction = player.Center.X <= Position.X ? -Vector2.UnitX : Vector2.UnitX;
+                }
 
                 player.Die(direction);
             }

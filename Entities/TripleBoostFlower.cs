@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Monocle;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
-using System.Reflection;
-using MonoMod.Utils;
-using MonoMod.Cil;
 using Mono.Cecil.Cil;
+using Monocle;
+using MonoMod.Cil;
+using MonoMod.Utils;
+using System;
+using System.Collections;
+using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/TripleBoostFlower")]
@@ -37,7 +34,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
 
-        public TripleBoostFlower(Vector2 position, float boostDelay, float boostSpeed, float boostDuration, float fastFall, float slowFall, float fall) : base (position) {
+        public TripleBoostFlower(Vector2 position, float boostDelay, float boostSpeed, float boostDuration, float fastFall, float slowFall, float fall) : base(position) {
 
             Depth = Depths.Player - 5;
             FallSpeed = fall;
@@ -72,7 +69,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hold.OnPickup = new Action(onPickup);
             hold.OnRelease = new Action<Vector2>(onRelease);
             hold.OnHitSpring = new Func<Spring, bool>(onHitSpring);
-            
+
         }
 
         public static void Load() {
@@ -123,13 +120,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            if (boostCooldown > 0)
+            if (boostCooldown > 0) {
                 boostCooldown -= Engine.DeltaTime;
+            }
+
             if (boostDuration > 0 && hold.IsHeld) {
                 player.Speed.Y = boostSpeed;
                 boostDuration -= Engine.DeltaTime;
-                if (boostDuration <= 0)
+                if (boostDuration <= 0) {
                     boostCooldown = boostDelay;
+                }
             } else if (boostDuration <= 0 && charges == 0 && hold.IsHeld) {
                 destroySelf();
             }
@@ -137,8 +137,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (hold.IsHeld) {
                 if (Input.Dash.Pressed) {
                     consumeBoost();
-                    if (destroyed)
+                    if (destroyed) {
                         return;
+                    }
                 }
             } else {
                 if (highFrictionTimer >= 0) {
@@ -237,7 +238,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 boostParticles = new ParticleType() {
                     Source = GFX.Game["particles/petal"],
                     Color = Calc.HexToColor("E63244"),
-                    DirectionRange = 1/4 * (float) Math.PI,
+                    DirectionRange = 1 / 4 * (float) Math.PI,
                     FadeMode = ParticleType.FadeModes.Late,
                     LifeMin = 1f,
                     LifeMax = 1.5f,
@@ -261,7 +262,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
 
                 MoveTowardsY(spring.CenterY + 5f, 4f, null);
-                speed.X = spring.Orientation == Spring.Orientations.WallRight? -160f : 160;
+                speed.X = spring.Orientation == Spring.Orientations.WallRight ? -160f : 160;
                 speed.Y = -80f;
                 noGravityTimer = 0.1f;
                 return true;

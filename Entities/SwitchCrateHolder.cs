@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Celeste.Mod.Batteries;
+﻿using Celeste.Mod.Batteries;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 

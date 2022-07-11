@@ -1,6 +1,5 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
 
@@ -9,7 +8,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/MomentumBlock")]
     public class MomentumBlock : Solid {
         const float MAX_SPEED = 282; //internally the player has a max lift boost in each direction
-        const float MAX_SPEED_X = 250; 
+        const float MAX_SPEED_X = 250;
         const float MAX_SPEED_Y = -130;
         private Vector2 targetSpeed, targetSpeedFlagged;
         private Color speedColor, speedColorFlagged;
@@ -41,7 +40,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             //bound the components to their respective max for accurate angles
             targetSpeed = ClampLiftBoost(targetSpeed);
             targetSpeedFlagged = ClampLiftBoost(targetSpeedFlagged);
-            
+
             angle = dir;
             angleFlagged = dirFlagged;
 
@@ -50,7 +49,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             endColor = Calc.HexToColor(endC);
             speedColor = CalculateGradient(spd);
             speedColorFlagged = CalculateGradient(spdFlagged);
-            
+
             arrowTexture = GetArrowTexture(angle);
             arrowTextureFlagged = GetArrowTexture(angleFlagged);
             flashTexture = GetArrowTextureFlash(angle);
@@ -67,15 +66,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public MTexture GetArrowTexture(float angle) {
             int value = (int) Math.Floor((0f - angle + (float) Math.PI * 2f) % ((float) Math.PI * 2f) / ((float) Math.PI * 2f) * 8f + 0.5f);
-            if(((8 > Width - 1) || (8 > Height - 1))) //use a different texture if the size is small for readability
+            if (((8 > Width - 1) || (8 > Height - 1))) //use a different texture if the size is small for readability
+{
                 return GFX.Game.GetAtlasSubtextures("objects/StrawberryJam2021/momentumBlock/trianglearrow")[Calc.Clamp(value, 0, 7)];
+            }
+
             return GFX.Game.GetAtlasSubtextures("objects/moveBlock/arrow")[Calc.Clamp(value, 0, 7)];
         }
 
         public MTexture GetArrowTextureFlash(float angle) {
             int value = (int) Math.Floor((0f - angle + (float) Math.PI * 2f) % ((float) Math.PI * 2f) / ((float) Math.PI * 2f) * 8f + 0.5f);
             if (((8 > Width - 1) || (8 > Height - 1))) //use a different texture if the size is small for readability
+{
                 return GFX.Game.GetAtlasSubtextures("objects/StrawberryJam2021/momentumBlock/trianglearrowflash")[Calc.Clamp(value, 0, 7)];
+            }
+
             return GFX.Game.GetAtlasSubtextures("objects/StrawberryJam2021/momentumBlock/arrowflash")[Calc.Clamp(value, 0, 7)];
         }
 
@@ -107,10 +112,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (doFlash) {
                 flashTimer = Calc.Approach(flashTimer, 1f, Engine.DeltaTime * 20f);
-                if (flashTimer >= 1f)
+                if (flashTimer >= 1f) {
                     doFlash = false;
-            } else if (flashTimer > 0f)
+                }
+            } else if (flashTimer > 0f) {
                 flashTimer = Calc.Approach(flashTimer, 0f, Engine.DeltaTime * 6f);
+            }
+
             ridingPlayer = player;
         }
 
@@ -130,12 +138,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             LiftSpeed = isFlagged ? targetSpeedFlagged : targetSpeed;
             base.MoveVExact(move);
         }
-        
+
         public override void Render() {
             Draw.Rect(Position, Width, Height, Color.Black);
 
-            if(flashTimer > 0f)
+            if (flashTimer > 0f) {
                 Draw.Rect(Position, Width, Height, flashColor * flashTimer);
+            }
 
             Draw.HollowRect(Position, Width, Height, isFlagged ? speedColorFlagged : speedColor);
             MTexture currentTexture = isFlagged ? arrowTextureFlagged : arrowTexture;
@@ -145,13 +154,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Draw.Rect(Center.X - currentTexture.Width / 2, Center.Y - currentTexture.Height / 2, currentTexture.Width, currentTexture.Height, isFlagged ? speedColorFlagged : speedColor);
             currentTexture.DrawCentered(Center);
 
-            if (flashTimer > 0f)
+            if (flashTimer > 0f) {
                 currentTextureFlash.DrawCentered(Center, flashColor * flashTimer);
+            }
         }
 
         private void UpdateFlag() {
-            if (!string.IsNullOrEmpty(flag))
+            if (!string.IsNullOrEmpty(flag)) {
                 isFlagged = SceneAs<Level>().Session.GetFlag(flag);
+            }
         }
     }
 }

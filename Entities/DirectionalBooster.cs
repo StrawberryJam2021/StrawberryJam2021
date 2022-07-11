@@ -25,8 +25,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // replace particle type
             var boosterColor = data.HexColor("boosterColor", Calc.HexToColor("e6a434"));
-            boosterData.Set("particleType", new ParticleType(P_BurstRed) {Color = boosterColor, Color2 = boosterColor});
-            appearParticleType = new ParticleType(P_RedAppear) {Color = boosterColor, Color2 = boosterColor};
+            boosterData.Set("particleType", new ParticleType(P_BurstRed) { Color = boosterColor, Color2 = boosterColor });
+            appearParticleType = new ParticleType(P_RedAppear) { Color = boosterColor, Color2 = boosterColor };
         }
 
         private static string animForDirection(Vector2 direction) {
@@ -34,13 +34,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             int yDir = Math.Abs(direction.Y) < 0.1 ? 0 : Math.Sign(direction.Y);
 
             if (xDir == 0) {
-                if (yDir == -1) return "spin_up";
-                if (yDir == 1) return "spin_down";
+                if (yDir == -1) {
+                    return "spin_up";
+                }
+
+                if (yDir == 1) {
+                    return "spin_down";
+                }
+
                 return "";
             }
 
-            if (yDir == -1) return "spin_upright";
-            if (yDir == 1) return "spin_downright";
+            if (yDir == -1) {
+                return "spin_upright";
+            }
+
+            if (yDir == 1) {
+                return "spin_downright";
+            }
 
             return "spin_right";
         }
@@ -59,8 +70,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void Booster_PlayerBoosted(On.Celeste.Booster.orig_PlayerBoosted orig, Booster self, Player player, Vector2 direction) {
             orig(self, player, direction);
-            if (self is DirectionalBooster directionalBooster)
+            if (self is DirectionalBooster directionalBooster) {
                 directionalBooster.sprite.FlipX = direction.X < 0.1f;
+            }
         }
 
         private static void Booster_PlayerBoosted(ILContext il) {

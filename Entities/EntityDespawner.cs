@@ -5,13 +5,10 @@ using Monocle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
-namespace Celeste.Mod.StrawberryJam2021.Entities
-{
+namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/EntityDespawner")]
-    public class EntityDespawner : Entity
-    {
+    public class EntityDespawner : Entity {
         //fields
         public bool invert;
         private Type[] typesToDespawn;
@@ -21,7 +18,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
         public EntityDespawner(EntityData data, Vector2 offset)
             : base(data.Position + offset) {
             string unsplitNames = data.Attr("entityTypes");
-            if (string.IsNullOrWhiteSpace(unsplitNames)) throw new ArgumentException("Entity Types cannot be blank.");
+            if (string.IsNullOrWhiteSpace(unsplitNames)) {
+                throw new ArgumentException("Entity Types cannot be blank.");
+            }
 
             typesToDespawn = unsplitNames
                 .Split(',')
@@ -33,12 +32,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
         }
 
         //methods
-        public override void Awake(Scene scene)
-        {
+        public override void Awake(Scene scene) {
             bool sessionFlag = SceneAs<Level>().Session.GetFlag(sessionFlagName);
             if (sessionFlag ^ invert) {
                 foreach (Type t in typesToDespawn) {
-                    if(scene.Tracker.Entities.TryGetValue(t, out List<Entity> entitiesOfType)) {
+                    if (scene.Tracker.Entities.TryGetValue(t, out List<Entity> entitiesOfType)) {
                         foreach (Entity e in entitiesOfType) {
                             e.RemoveSelf();
                         }
@@ -46,5 +44,5 @@ namespace Celeste.Mod.StrawberryJam2021.Entities
                 }
             }
         }
-	}
+    }
 }

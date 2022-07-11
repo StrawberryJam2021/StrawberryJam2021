@@ -39,7 +39,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private const float sideBoostSpeed = 310f; // decided by mapper
 
-        public LoopBlock(EntityData data, Vector2 offset) 
+        public LoopBlock(EntityData data, Vector2 offset)
             : this(data.Position + offset, data.Width, data.Height, data.Int("edgeThickness", 1), data.HexColor("color")) { }
 
         public LoopBlock(Vector2 position, int width, int height, int edgeThickness, Color color)
@@ -50,7 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             start = position;
 
             int minEdgeSize = Math.Min(width, height) / 8;
-            this.edgeThickness = Calc.Clamp(edgeThickness, 1, (int)((minEdgeSize - 1) / 2f));
+            this.edgeThickness = Calc.Clamp(edgeThickness, 1, (int) ((minEdgeSize - 1) / 2f));
             this.color = color;
 
             particleType = new ParticleType(Cloud.P_Cloud) {
@@ -96,39 +96,42 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         if (filler) {
                             texture = centerTiles[Calc.Random.Next(8)];
                         } else if (innerEdge) {
-                            if (!downright)
+                            if (!downright) {
                                 texture = innerCorners[0, 0];
-                            else if (!downleft)
+                            } else if (!downleft) {
                                 texture = innerCorners[1, 0];
-                            else if (!upright)
+                            } else if (!upright) {
                                 texture = innerCorners[0, 1];
-                            else if (!upleft)
+                            } else if (!upleft) {
                                 texture = innerCorners[1, 1];
+                            }
                         } else {
-                            if (!up && down && left && right)
+                            if (!up && down && left && right) {
                                 texture = outerEdges[1, 0, index];
-                            else if (up && !down && left && right)
+                            } else if (up && !down && left && right) {
                                 texture = outerEdges[1, 2, index];
-                            else if (up && down && !left && right)
+                            } else if (up && down && !left && right) {
                                 texture = outerEdges[0, 1, index];
-                            else if (up && down && left && !right)
+                            } else if (up && down && left && !right) {
                                 texture = outerEdges[2, 1, index];
-                            else if (right && down)
+                            } else if (right && down) {
                                 texture = (downright ? outerEdges[0, 0, index] : wallEdges[0, 0, index]);
-                            else if (left && down)
+                            } else if (left && down) {
                                 texture = (downleft ? outerEdges[2, 0, index] : wallEdges[1, 0, index]);
-                            else if (right && up)
+                            } else if (right && up) {
                                 texture = (upright ? outerEdges[0, 2, index] : wallEdges[0, 1, index]);
-                            else if (left && up)
+                            } else if (left && up) {
                                 texture = (upleft ? outerEdges[2, 2, index] : wallEdges[1, 1, index]);
-                            else if (left && right && !up && !down)
+                            } else if (left && right && !up && !down) {
                                 texture = wallEdges[2, 0, index];
-                            else if (!left && !right && up && down)
+                            } else if (!left && !right && up && down) {
                                 texture = wallEdges[2, 1, index];
+                            }
                         }
 
-                        if (texture != null)
+                        if (texture != null) {
                             tiles[i, j] = texture;
+                        }
                     }
                 }
             }
@@ -147,7 +150,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 // We'll rescale spikes here instead, and it won't be done in Update.
                 // Because of the Celeste.Freeze call in Player.ExplodeLaunch,
                 // they would remain unscaled during the freeze time, which looked a bit weird.
-                RescaleSpikes(); 
+                RescaleSpikes();
                 player.ExplodeLaunch(new Vector2(Center.X, player.Center.Y), false, true);
 
                 player.Speed.X = -sideBoostSpeed * dir.X;
@@ -182,14 +185,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void RescaleSpikes() {
-            if (scaledSpikes)
+            if (scaledSpikes) {
                 return;
+            }
+
             foreach (StaticMover staticMover in staticMovers) {
                 if (staticMover.Entity is Spikes spikes) {
                     spikes.SetOrigins(Center);
                     foreach (Component component in spikes.Components) {
-                        if (component is Image image)
+                        if (component is Image image) {
                             image.Scale = scale;
+                        }
                     }
                 }
             }
@@ -205,8 +211,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Update();
 
             scale = Calc.Approach(scale, Vector2.One, 3f * Engine.DeltaTime);
-            if (!scaledSpikes)
+            if (!scaledSpikes) {
                 RescaleSpikes();
+            }
 
             scaledSpikes = false;
 
@@ -233,8 +240,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 } else {
                     speed.X = Calc.Approach(speed.X, targetSpeedX, 1200f * Engine.DeltaTime);
                     MoveH(speed.X * Engine.DeltaTime);
-                    if (speed.X == targetSpeedX && ((dashedDirX < 0 && X > start.X) || (dashedDirX > 0 && X < start.X)))
+                    if (speed.X == targetSpeedX && ((dashedDirX < 0 && X > start.X) || (dashedDirX > 0 && X < start.X))) {
                         returningDash = true;
+                    }
                 }
             }
 

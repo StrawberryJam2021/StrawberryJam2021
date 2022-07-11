@@ -77,8 +77,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private CassetteTick nextTick(CassetteTick tick) {
             if (++tick.Offset >= ticksPerSwap) {
                 tick.Offset = 0;
-                if (++tick.Index >= maxBeat)
+                if (++tick.Index >= maxBeat) {
                     tick.Index = 0;
+                }
             }
             return tick;
         }
@@ -86,25 +87,30 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private CassetteTick previousTick(CassetteTick tick) {
             if (--tick.Offset < 0) {
                 tick.Offset = ticksPerSwap - 1;
-                if (--tick.Index < 0)
+                if (--tick.Index < 0) {
                     tick.Index = maxBeat - 1;
+                }
             }
             return tick;
         }
 
-        public CassetteListener() : base(true, false)
-        {
+        public CassetteListener() : base(true, false) {
         }
 
         public override void EntityAdded(Scene scene) {
             base.EntityAdded(scene);
 
-            if (!(scene is Level level)) return;
+            if (!(scene is Level level)) {
+                return;
+            }
+
             level.HasCassetteBlocks = true;
 
             cassetteBlockManager = scene.Tracker.GetEntity<CassetteBlockManager>() ?? scene.Entities.ToAdd.OfType<CassetteBlockManager>().FirstOrDefault();
-            if (cassetteBlockManager == null)
+            if (cassetteBlockManager == null) {
                 scene.Add(cassetteBlockManager = new CassetteBlockManager());
+            }
+
             cassetteBlockManagerData = new DynamicData(cassetteBlockManager);
         }
 
@@ -115,8 +121,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public bool UpdateState() {
-            if (beatsPerTick == 0 || ticksPerSwap == 0)
+            if (beatsPerTick == 0 || ticksPerSwap == 0) {
                 return false;
+            }
 
             var currentTick = new CassetteTick {
                 Index = currentIndex,
@@ -142,7 +149,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            if (cassetteBlockManager == null) return;
+            if (cassetteBlockManager == null) {
+                return;
+            }
 
             var lastState = CurrentState;
             UpdateState();

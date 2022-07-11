@@ -40,20 +40,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             float y = level.strawberriesDisplay.DrawLerp > 0 ? 192 : 96;
             if (!level.TimerHidden) {
-                if (Settings.Instance.SpeedrunClock == SpeedrunType.Chapter)
+                if (Settings.Instance.SpeedrunClock == SpeedrunType.Chapter) {
                     y += 58f;
-                else if (Settings.Instance.SpeedrunClock == SpeedrunType.File)
+                } else if (Settings.Instance.SpeedrunClock == SpeedrunType.File) {
                     y += 78f;
+                }
             }
             Y = Calc.Approach(Y, y, Engine.DeltaTime * 800f);
 
             bool show = currentCodeArrows != null && StrawberryJam2021Module.Settings.DisplayDashSequence;
-            drawlerp = Calc.Approach(drawlerp, show ? 1 :0 , Engine.DeltaTime * 2);
+            drawlerp = Calc.Approach(drawlerp, show ? 1 : 0, Engine.DeltaTime * 2);
             lengthLerp = Calc.Approach(lengthLerp, 1, Engine.DeltaTime * 1.5f);
 
-            if (currentCodeArrowsAnim != null)
-                for (int i = 0; i < currentCodeArrowsAnim.Length; i++)
+            if (currentCodeArrowsAnim != null) {
+                for (int i = 0; i < currentCodeArrowsAnim.Length; i++) {
                     currentCodeArrowsAnim[i] = Calc.Approach(currentCodeArrowsAnim[i], i < animThreshold * currentCodeArrowsAnim.Length ? 1f : 0f, Engine.DeltaTime * 2.5f);
+                }
+            }
 
             base.Update();
         }
@@ -64,13 +67,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             doNotRemove = true;
             DashSequenceController[] controllers = level.Tracker.GetEntities<DashSequenceController>().Cast<DashSequenceController>().ToArray();
             if (controllers.Length != 0) {
-                foreach (DashSequenceController controller in controllers)
+                foreach (DashSequenceController controller in controllers) {
                     dashCodes[controller.Index] = controller.DashCode.Select(v => GFX.Gui[$"controls/directions/{(int) v.X}x{(int) v.Y}"]).ToArray();
+                }
 
-                if (dashCodes.Count != 0)
+                if (dashCodes.Count != 0) {
                     nextCode = dashCodes.First();
-            } else
+                }
+            } else {
                 nextCode = null;
+            }
         }
 
         public void ValidateInput() {
@@ -79,17 +85,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (codePosition >= currentCodeArrows.Length) {
                 Audio.Play(SFX.game_01_birdbros_thrust);
                 KeyValuePair<int, MTexture[]> next = dashCodes.FirstOrDefault(pair => pair.Key > Index);
-                if (next.Value != null)
+                if (next.Value != null) {
                     nextCode = next;
-                else
+                } else {
                     nextCode = null;
-            } else
+                }
+            } else {
                 Audio.Play(SFX.game_06_supersecret_dashflavour);
+            }
         }
 
         public void Fail() {
-            if (codePosition > 0)
+            if (codePosition > 0) {
                 Audio.Play(CustomSoundEffects.game_dash_seq_fail);
+            }
+
             codePosition = 0;
         }
 
@@ -105,8 +115,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 float l = lengthPrev + (lengthTarget - lengthPrev) * Ease.CubeOut(lengthLerp);
                 Vector2 bgPos = pos + Vector2.UnitX * (32 + (l - 7.5f) * 48);
-                if (bgPos.X > 0f)
+                if (bgPos.X > 0f) {
                     bg.DrawJustified(pos, new Vector2(0f, 0.5f), Color.White, new Vector2((bgPos.X - pos.X + 64) / bg.Width, 1.25f));
+                }
+
                 bg.DrawJustified(bgPos, new Vector2(0f, 0.5f), Color.White, Vector2.One * 1.25f);
 
                 if (currentCodeArrows != null) {
@@ -131,8 +143,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private IEnumerator ChangingDashCodeRoutine() {
             while (true) {
                 doNotRemove = false;
-                while (this.nextCode?.Value == currentCodeArrows)
+                while (this.nextCode?.Value == currentCodeArrows) {
                     yield return null;
+                }
+
                 KeyValuePair<int, MTexture[]> nextCode = this.nextCode ?? default;
 
                 int count = -1;
@@ -143,8 +157,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         currentCodeArrows = nextCode.Value;
                         continue;
                     }
-                } else if (currentCodeArrows != null)
+                } else if (currentCodeArrows != null) {
                     yield return 0.5f;
+                }
 
                 bool changedLength = false;
                 if (currentCodeArrows != null) {
@@ -196,8 +211,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
             orig(self, playerIntro, isFromLoader);
             DashSequenceDisplay display = self.Tracker.GetEntity<DashSequenceDisplay>();
-            if (display == null)
+            if (display == null) {
                 self.Add(display = new DashSequenceDisplay());
+            }
+
             display.InitializeDashCodes(self);
         }
 

@@ -9,10 +9,10 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
     public class ChangeThemeTrigger : Trigger {
         private readonly bool enableMode;
         private readonly bool toggleMode;
-        private readonly string[] gymSids = { 
-            "StrawberryJam2021/0-Gyms/1-Beginner", 
-            "StrawberryJam2021/0-Gyms/2-Intermediate", 
-            "StrawberryJam2021/0-Gyms/3-Advanced", 
+        private readonly string[] gymSids = {
+            "StrawberryJam2021/0-Gyms/1-Beginner",
+            "StrawberryJam2021/0-Gyms/2-Intermediate",
+            "StrawberryJam2021/0-Gyms/3-Advanced",
             "StrawberryJam2021/0-Gyms/4-Expert",
             "StrawberryJam2021/0-Gyms/5-Grandmaster",
             "StrawberryJam2021/0-Gyms/6-Library"
@@ -38,15 +38,12 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             if (toggleMode) {
                 if (enabled) {
                     RemoveMap(sid);
-                }
-                else {
+                } else {
                     AddMap(sid);
                 }
-            }
-            else if (enableMode) {
+            } else if (enableMode) {
                 AddMap(sid);
-            } 
-            else {
+            } else {
                 RemoveMap(sid);
             }
 
@@ -58,8 +55,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 foreach (string gymSid in gymSids) {
                     StrawberryJam2021Module.SaveData.ModifiedThemeMaps.Add(gymSid);
                 }
-            }
-            else {
+            } else {
                 StrawberryJam2021Module.SaveData.ModifiedThemeMaps.Add(sid);
             }
         }
@@ -105,7 +101,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     SetLighting(level, enabled ? 0.25f : 0f);
                     ExtendedVariantsModule.Instance.TriggerManager.OnEnteredInTrigger(ExtendedVariantsModule.Variant.BackgroundBrightness, enabled ? 8 : 10, revertOnLeave: false, isFade: false, revertOnDeath: false, legacy: true);
                     break;
-            } 
+            }
         }
 
         private void SetBloom(Level level, float bloomAdd) {

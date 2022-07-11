@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Celeste;
-using Monocle;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Monocle;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 
@@ -16,7 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static VirtualRenderTarget DarkMatterLightning;
         public static VirtualRenderTarget BlurTempBuffer;
-        
+
         private class Bolt {
 
             private DarkMatterRenderer Parent;
@@ -283,7 +279,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void UpdateMode(Level level = null) {
-            if(level == null && Scene is Level) {
+            if (level == null && Scene is Level) {
                 level = Scene as Level;
             }
             mode = level.Session.GetFlag("SJ2021/DarkMatterRenderer") ? Mode.Zoomies : Mode.Kill;
@@ -380,7 +376,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Camera camera = (base.Scene as Level).Camera;
             new Rectangle((int) camera.Left, (int) camera.Top, (int) (camera.Right - camera.Left), (int) (camera.Bottom - camera.Top));
             //Acts as a "color filter"
-            
+
             foreach (DarkMatter item in list) {
                 if (item.Visible) {
                     Draw.SpriteBatch.Draw(DarkMatterLightning, item.Position, new Rectangle((int) item.X, (int) item.Y, item.VisualWidth, item.VisualHeight), Color.White);

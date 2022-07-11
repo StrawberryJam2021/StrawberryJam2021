@@ -46,7 +46,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static void modRainRender(ILContext il) {
             ILCursor cursor = new ILCursor(il);
             while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchConvI4())) {
-                cursor.EmitDelegate<Func<int, int>>(len => (int)(len * SessionData.Density));
+                cursor.EmitDelegate<Func<int, int>>(len => (int) (len * SessionData.Density));
             }
         }
 

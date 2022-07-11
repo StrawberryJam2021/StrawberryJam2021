@@ -3,8 +3,6 @@ using ExtendedVariants.Module;
 using ExtendedVariants.Variants;
 using Microsoft.Xna.Framework;
 using Monocle;
-using On.Celeste.Pico8;
-using System;
 using System.Collections;
 using System.Linq;
 using System.Reflection;
@@ -62,7 +60,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 };
                 flash.CenterOrigin();
 
-                Add(wiggler = Wiggler.Create(1f, 4f, delegate(float v) {
+                Add(wiggler = Wiggler.Create(1f, 4f, delegate (float v) {
                     sprite.Scale = flash.Scale = Vector2.One * (1f + v * 0.2f);
                 }));
 
@@ -96,10 +94,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 false, false, false, true
             );
 
-            if (extraJump)
+            if (extraJump) {
                 JumpCountVariant.AddJumps(1, true, 1);
-            else
+            } else {
                 JumpCountVariant.AddJumps(0, true, 0);
+            }
 
             player.RefillStamina();
 
@@ -113,7 +112,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
             Collidable = false;
 
-            Add(new Coroutine((IEnumerator) RefillRoutine.Invoke(this, new object[] {player})));
+            Add(new Coroutine((IEnumerator) RefillRoutine.Invoke(this, new object[] { player })));
             respawnTimer.SetValue(this, 2.5f);
         }
 
@@ -124,8 +123,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void OnUpdateHair(On.Celeste.Player.orig_UpdateHair orig, Player self, bool gravity) {
             orig(self, gravity);
 
-            if (self.Scene.Tracker.GetEntity<ResettingRefill>() == null)
+            if (self.Scene.Tracker.GetEntity<ResettingRefill>() == null) {
                 return;
+            }
 
             float hairFlashTimer = (float) ResettingRefill.hairFlashTimer.GetValue(self);
             int lastDashes = (int) ResettingRefill.lastDashes.GetValue(self);

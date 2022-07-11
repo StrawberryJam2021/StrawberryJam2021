@@ -1,12 +1,8 @@
-﻿using Celeste;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [CustomEntity("SJ2021/AllInOneMask")]
@@ -26,7 +22,12 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             bool styleBehindFg = data.Bool("styleBehindFg", true);
             if (!string.IsNullOrEmpty(stylemaskTag)) {
                 masks.Add(new StylegroundMask(Position, Width, Height) {
-                    Fade = Fade, FadeMask = FadeMask, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
+                    Fade = Fade,
+                    FadeMask = FadeMask,
+                    Flag = Flag,
+                    NotFlag = NotFlag,
+                    ScrollX = ScrollX,
+                    ScrollY = ScrollY,
                     RenderTags = stylemaskTag.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries),
                     AlphaFrom = styleAlphaFrom,
                     AlphaTo = styleAlphaTo,
@@ -39,7 +40,12 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             string colorGradeTo = data.Attr("colorGradeTo", "(current)");
             if (colorGradeFrom != "(current)" || colorGradeTo != "(current)") {
                 masks.Add(new ColorGradeMask(Position, Width, Height) {
-                    Fade = Fade, FadeMask = FadeMask, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
+                    Fade = Fade,
+                    FadeMask = FadeMask,
+                    Flag = Flag,
+                    NotFlag = NotFlag,
+                    ScrollX = ScrollX,
+                    ScrollY = ScrollY,
                     ColorGradeFrom = colorGradeFrom,
                     ColorGradeTo = colorGradeTo
                 });
@@ -51,7 +57,12 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             float bloomStrengthTo = data.Float("bloomStrengthTo", -1f);
             if (bloomBaseFrom >= 0f || bloomBaseTo >= 0f || bloomStrengthFrom >= 0f || bloomStrengthTo >= 0f) {
                 masks.Add(new BloomMask(Position, Width, Height) {
-                    Fade = Fade, FadeMask = FadeMask, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
+                    Fade = Fade,
+                    FadeMask = FadeMask,
+                    Flag = Flag,
+                    NotFlag = NotFlag,
+                    ScrollX = ScrollX,
+                    ScrollY = ScrollY,
                     BaseFrom = bloomBaseFrom,
                     BaseTo = bloomBaseTo,
                     StrengthFrom = bloomStrengthFrom,
@@ -64,7 +75,12 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             bool addBaseLighting = data.Bool("addBaseLight", true);
             if (lightingFrom >= 0f || lightingTo >= 0f) {
                 masks.Add(new LightingMask(Position, Width, Height) {
-                    Fade = Fade, FadeMask = FadeMask, Flag = Flag, NotFlag = NotFlag, ScrollX = ScrollX, ScrollY = ScrollY,
+                    Fade = Fade,
+                    FadeMask = FadeMask,
+                    Flag = Flag,
+                    NotFlag = NotFlag,
+                    ScrollX = ScrollX,
+                    ScrollY = ScrollY,
                     LightingFrom = lightingFrom,
                     LightingTo = lightingTo,
                     AddBase = addBaseLighting
@@ -74,8 +90,9 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         public override void Added(Scene scene) {
             base.Added(scene);
-            foreach (Entity mask in masks)
+            foreach (Entity mask in masks) {
                 scene.Add(mask);
+            }
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         public HashSet<string> TypeNames { get; }
 
         public ShowHitboxTrigger(EntityData data, Vector2 offset) : base(data, offset) {
-            TypeNames = new HashSet<string>(data.Attr("typeNames").Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+            TypeNames = new HashSet<string>(data.Attr("typeNames").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(str => str.Trim()));
         }
 

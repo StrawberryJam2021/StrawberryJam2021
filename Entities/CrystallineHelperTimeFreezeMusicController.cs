@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Monocle;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using Monocle;
 using System.Reflection;
-using Celeste.Mod.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 
     [CustomEntity("SJ2021/TimeFreezeMusicController")]
     public class CrystallineHelperTimeFreezeMusicController : Entity {
-        
+
         public static FieldInfo crystallineHelper_TimeCrystal_stopStage;
 
         public float paramOff, paramOn;
@@ -27,8 +22,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            bool value = (int)crystallineHelper_TimeCrystal_stopStage.GetValue(null) == 1;
-            if(value != prevValue) {
+            bool value = (int) crystallineHelper_TimeCrystal_stopStage.GetValue(null) == 1;
+            if (value != prevValue) {
                 AudioState audio = SceneAs<Level>().Session.Audio;
                 audio.Music.Param(paramName, value ? paramOn : paramOff);
                 audio.Apply();

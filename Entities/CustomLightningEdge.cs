@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Monocle;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Monocle;
+using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity(
@@ -16,7 +12,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private Color[] _electricityColors;
 
-        private float Fade;
         private Vector2 _start = Vector2.Zero;
         private Vector2 _end;
         private VertexPositionColor[] _edgeVerts = new VertexPositionColor[1024];
@@ -50,7 +45,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             _electricityColors = new Color[] { Utilities.HexOrNameToColor(data.Attr("color1", "fcf579")), Utilities.HexOrNameToColor(data.Attr("color2", "8cf7e2")) };
             interval = Math.Max(data.Float("interval", 0.05f), 0.016f);
-            
+
         }
 
         public override void Update() {
@@ -65,8 +60,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Camera camera = (Scene as Level).Camera;
             if (camera != null) {
                 int index = 0;
-                DrawSimpleLightning(ref index, ref _edgeVerts, _edgeSeed, Position, _start, _end, _electricityColors[0], 1f + Fade * 1f);
-                DrawSimpleLightning(ref index, ref _edgeVerts, _edgeSeed + 1, Position, _start, _end, _electricityColors[1], 1f + Fade * 1f);
+                DrawSimpleLightning(ref index, ref _edgeVerts, _edgeSeed, Position, _start, _end, _electricityColors[0], 1f);
+                DrawSimpleLightning(ref index, ref _edgeVerts, _edgeSeed + 1, Position, _start, _end, _electricityColors[1], 1f);
                 if (index > 0) {
                     GameplayRenderer.End();
                     GFX.DrawVertices(camera.Matrix, _edgeVerts, index);

@@ -18,10 +18,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public bool SingleUse => ToggleFlagValue ? SingleUse2 : SingleUse1;
 
         private string UsedFlag => $"HintControllerUsed:{(Engine.Scene as Level)?.Session.Level ?? string.Empty}:{ToggleFlagValue}";
-        
+
         private bool ToggleFlagValue => (Engine.Scene as Level)?.Session.GetFlag(ToggleFlag) ?? false;
         private bool UsedFlagValue => (Engine.Scene as Level)?.Session.GetFlag(UsedFlag) ?? false;
-        
+
         private static bool showingHint;
 
         public HintController(EntityData data, Vector2 offset)

@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Entities;
+using Microsoft.Xna.Framework;
+using Monocle;
 using System;
 using System.Reflection;
-using Monocle;
-using Celeste.Mod.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/FlagDashSwitch")]
@@ -22,7 +22,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (data.Bool("attach", false)) {
                 Add(mover = new StaticMover {
                     OnMove = new Action<Vector2>(staticMoverMove),
-                    OnEnable = new Action(onEnable) ,
+                    OnEnable = new Action(onEnable),
                     OnAttach = delegate (Platform p) { Depth = p.Depth + 1; },
                     OnShake = new Action<Vector2>(onShake),
                     SolidChecker = new Func<Solid, bool>((s) =>

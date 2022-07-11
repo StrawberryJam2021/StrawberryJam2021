@@ -1,9 +1,9 @@
+using Celeste.Mod.MaxHelpingHand.Entities;
+using Microsoft.Xna.Framework;
+using Monocle;
+using MonoMod.RuntimeDetour;
 using System;
 using System.Reflection;
-using Celeste.Mod.MaxHelpingHand.Entities;
-using Monocle;
-using Microsoft.Xna.Framework;
-using MonoMod.RuntimeDetour;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class FloatingBubble : Actor {

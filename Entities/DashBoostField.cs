@@ -36,7 +36,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         // for some reason the default Center isn't actually the exact center
         public new Vector2 Center => Position - new Vector2(0.5f, 0.5f);
-        
+
         public DashBoostField(EntityData data, Vector2 offset)
             : base(data.Position + offset) {
             Color = Calc.HexToColor(data.Attr("color", DefaultColor));
@@ -125,10 +125,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             orig(self);
             // having the player itself handle collision is nicer
             DashBoostField boostField = self.CollideFirst<DashBoostField>();
-            if (!self.Dead && boostField != null && boostField.Active && !IsDashingOrRespawning(self))
+            if (!self.Dead && boostField != null && boostField.Active && !IsDashingOrRespawning(self)) {
                 CurrentTimeRateMult = boostField.TargetTimeRateMult;
-            else
+            } else {
                 CurrentTimeRateMult = 1f;
+            }
 
             // the last dash has ended so this should definitely be reset
             if (wasDashing && !(self.DashAttacking || self.StateMachine.State == Player.StDash)) {
@@ -137,8 +138,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static bool On_Player_UnderwaterMusicCheck(On.Celeste.Player.orig_UnderwaterMusicCheck orig, Player self) {
-            if (self.CollideCheck<DashBoostField>() && !IsDashingOrRespawning(self))
+            if (self.CollideCheck<DashBoostField>() && !IsDashingOrRespawning(self)) {
                 return true;
+            }
+
             return orig(self);
         }
 

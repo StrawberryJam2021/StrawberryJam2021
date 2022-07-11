@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Monocle;
-using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <summary>
@@ -39,7 +38,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void resizeHitbox(float size) {
-            if (!(Entity is OrientableEntity orientableEntity)) return;
+            if (!(Entity is OrientableEntity orientableEntity)) {
+                return;
+            }
 
             switch (orientableEntity.Orientation) {
                 case OrientableEntity.Orientations.Up:
@@ -69,7 +70,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void UpdateBeam() {
-            if (!(Entity is OrientableEntity orientableEntity)) return;
+            if (!(Entity is OrientableEntity orientableEntity)) {
+                return;
+            }
+
             var level = SceneAs<Level>();
 
             float high = orientableEntity.Orientation switch {
@@ -85,14 +89,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // first check if the laser hits the edge of the screen
             resizeHitbox(high);
             CollidedWithScreenBounds = !CollideWithSolids || !solidCollideCheck();
-            if (CollidedWithScreenBounds) return;
+            if (CollidedWithScreenBounds) {
+                return;
+            }
 
             // perform a binary search to hit the nearest solid
             while (safety-- > 0) {
                 int pivot = (int) (low + (high - low) / 2f);
                 resizeHitbox(pivot);
-                if (pivot == low)
+                if (pivot == low) {
                     break;
+                }
+
                 if (solidCollideCheck()) {
                     high = pivot;
                 } else {

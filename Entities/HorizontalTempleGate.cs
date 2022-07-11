@@ -1,14 +1,12 @@
-﻿using System;
-using Celeste;
-using Celeste.Mod.Entities;
-using System.Collections;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
-using Monocle;
-using System.Collections.Generic;
-using MonoMod.Utils;
-using MonoMod.Cil;
-using Celeste.Mod;
 using Mono.Cecil.Cil;
+using Monocle;
+using MonoMod.Cil;
+using MonoMod.Utils;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
@@ -27,7 +25,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Center
         }
         private static readonly FieldInfo GetPrivateRiders = typeof(Solid).GetField("riders", BindingFlags.NonPublic | BindingFlags.Static);
-        private static HashSet<Actor> riders => (HashSet<Actor>)GetPrivateRiders.GetValue(null);
+        private static HashSet<Actor> riders => (HashSet<Actor>) GetPrivateRiders.GetValue(null);
 
         private string LevelID;
 
@@ -146,18 +144,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     break;
             }
 
-            this.colliders = new Hitbox[]{
+            colliders = new Hitbox[]{
                 new Hitbox(targetX, 8f, 0, 0),
                 new Hitbox(48f - targetX, 8f, targetX, 0)
             };
-            if(OpenDirection != OpenDirections.Right) {
+            if (OpenDirection != OpenDirections.Right) {
                 ((ColliderList) Collider).Add(colliders[0]);
             }
             if (OpenDirection != OpenDirections.Left) {
                 ((ColliderList) Collider).Add(colliders[1]);
             }
 
-            this.sprites = new Sprite[2];
+            sprites = new Sprite[2];
             Add(sprites[0] = StrawberryJam2021Module.SpriteBank.Create("horizontalTempleGateLeft"));
             Add(sprites[1] = StrawberryJam2021Module.SpriteBank.Create("horizontalTempleGateRight"));
         }
@@ -167,27 +165,26 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (Inverted) {
                 // Init gate as open
-                this.drawWidth = Math.Max(OpenWidth, MinEdgeSpace);
+                drawWidth = Math.Max(OpenWidth, MinEdgeSpace);
                 SetWidth((int) OpenWidth);
-                this.open = true;
+                open = true;
             } else {
                 // init gate as closed
-                this.drawWidth = 48f * this.moveSpeedMultiplier;
-                SetWidth((int) this.drawWidth);
-                this.open = false;
+                drawWidth = 48f * moveSpeedMultiplier;
+                SetWidth((int) drawWidth);
+                open = false;
             }
 
             if (Type == Types.TouchSwitches) {
                 Add(new Coroutine(CheckTouchSwitches(), false));
-            }
-            else if (Type == Types.FlagActive) {
-                Add(new Coroutine(CheckFlag(this.Flag), false));
+            } else if (Type == Types.FlagActive) {
+                Add(new Coroutine(CheckFlag(Flag), false));
             }
         }
 
         //applies a delay to utilization of Open in the case the door is opened by a dash switch. I don't know why this was implemented, but for consistency with the vanilla temple gate this is being used.
-        public void SwitchOpen(){
-            foreach(Sprite s in sprites) {
+        public void SwitchOpen() {
+            foreach (Sprite s in sprites) {
                 s.Play("open");
             }
             if (Inverted) {
@@ -208,10 +205,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             widthMoveSpeed = 200f;
             shaker.ShakeFor(0.2f, removeOnFinish: false);
             SetWidth(0);
-            foreach(Sprite s in sprites) {
+            foreach (Sprite s in sprites) {
                 s.Play("open");
             }
-            this.open = true;
+            open = true;
         }
 
         public void Close() {
@@ -224,7 +221,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 s.Play("hit");
             }
 
-            this.open = false;
+            open = false;
         }
 
         private IEnumerator PerformChange(bool shake = true) {
@@ -253,14 +250,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private IEnumerator CheckFlag(string flag) {
             Level level = Scene as Level;
-            while ((this.open == level.Session.GetFlag(flag)) != this.Inverted) {
+            while ((open == level.Session.GetFlag(flag)) != Inverted) {
                 yield return null;
             }
             yield return PerformChange();
         }
 
         private void SetWidth(int width) {
-            this.targetWidth = width;
+            targetWidth = width;
             float x = X;
             float oldWidth = 0f;
             if (OpenDirection != OpenDirections.Right) {
@@ -285,7 +282,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
                 X = x;
             }
-            if(OpenDirection == OpenDirections.Center && oldWidth < width) {
+            if (OpenDirection == OpenDirections.Center && oldWidth < width) {
                 MoveRiders((int) (width - oldWidth));
             }
             Collidable = true;
@@ -304,8 +301,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // Drop the player down if they are at a particular height
             // the player gets stuck in the door without this
             if (player != null && CollideCheck(player, Position) &&
-                    (player.Top - this.Bottom) <= -6 && (player.Top - this.Bottom) > -12) {
-                player.NaiveMove((this.Bottom-player.Top) * Vector2.UnitY);
+                    (player.Top - Bottom) <= -6 && (player.Top - Bottom) > -12) {
+                player.NaiveMove((Bottom - player.Top) * Vector2.UnitY);
             }
 
             foreach (Actor entity in Scene.Tracker.GetEntities<Actor>()) {
@@ -315,10 +312,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     int move = (entity.CenterX > (left + right) / 2) ? -width : width;
                     if (!entity.TreatNaive && CollideCheck(entity, Position)) {
                         // yeah i kinda gave up here and just decided to hard center the entity
-                        entity.CenterX = this.CenterX - 1f;
+                        entity.CenterX = CenterX - 1f;
                         entity.MoveHExact(1, entity.SquishCallback, this);
                     } else if (riders.Contains(entity)) {
-                        entity.CenterX = this.CenterX - 1f;
+                        entity.CenterX = CenterX - 1f;
                         if (entity.TreatNaive) {
                             entity.NaiveMove(Vector2.UnitX);
                         } else {
@@ -336,7 +333,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             float num = Math.Max(targetWidth, MinEdgeSpace);
             if (drawWidth != num) {
                 lockState = true;
-                drawWidth = Calc.Approach(drawWidth, num, 
+                drawWidth = Calc.Approach(drawWidth, num,
                     moveSpeedMultiplier * widthMoveSpeed * Engine.DeltaTime);
             } else {
                 lockState = false;
@@ -346,13 +343,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Render() {
             if (OpenDirection != OpenDirections.Right) {
                 Vector2 shake = new Vector2(0f, Math.Sign(shaker.Value.X));
-                sprites[0].DrawSubrect(new Vector2(0, -2) + shake, 
+                sprites[0].DrawSubrect(new Vector2(0, -2) + shake,
                     new Rectangle((int) (sprites[0].Width - drawWidth), 0,
                         (int) drawWidth, (int) sprites[0].Height));
             }
             if (OpenDirection != OpenDirections.Left) {
                 Vector2 shake = new Vector2(0f, Math.Sign(shaker.Value.Y));
-                sprites[1].DrawSubrect(new Vector2(48f - drawWidth, -3) + shake, 
+                sprites[1].DrawSubrect(new Vector2(48f - drawWidth, -3) + shake,
                     new Rectangle(0, 0, (int) drawWidth, (int) sprites[1].Height));
             }
         }

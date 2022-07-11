@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Celeste;
-using Celeste.Mod;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
@@ -33,10 +27,12 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             //if the trigger is enabled, change the flag state to set
             if (!string.IsNullOrEmpty(flag)) {
                 ConditionalFlagTrigger active = GetActiveTrigger();
-                if (active != null)
+                if (active != null) {
                     priorState = active.priorState;
-                else
+                } else {
                     priorState = SceneAs<Level>().Session.GetFlag(flag);
+                }
+
                 SceneAs<Level>().Session.SetFlag(flag, flagValue);
             }
         }
@@ -46,8 +42,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             //if the trigger is enabled, change the flag state to it's prior state
             if (!string.IsNullOrEmpty(flag) && revertOnLeave) {
 
-                if(!FoundActiveTrigger())
+                if (!FoundActiveTrigger()) {
                     SceneAs<Level>().Session.SetFlag(flag, priorState);
+                }
             }
         }
 
@@ -55,8 +52,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             bool found = false;
             List<Entity> tracked = Scene.Tracker.GetEntities<ConditionalFlagTrigger>();
             foreach (ConditionalFlagTrigger current in tracked) {
-                if (current != this && current.Triggered && current.flag == flag)
+                if (current != this && current.Triggered && current.flag == flag) {
                     found = true;
+                }
             }
             return found;
         }
@@ -64,16 +62,18 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private ConditionalFlagTrigger GetActiveTrigger() {
             List<Entity> tracked = Scene.Tracker.GetEntities<ConditionalFlagTrigger>();
             foreach (ConditionalFlagTrigger current in tracked) {
-                if (current != this && current.Triggered && current.flag == flag)
+                if (current != this && current.Triggered && current.flag == flag) {
                     return current;
+                }
             }
             return null;
         }
 
         public override void Update() {
             base.Update();
-            if (!string.IsNullOrEmpty(controllerFlag))
+            if (!string.IsNullOrEmpty(controllerFlag)) {
                 Collidable = SceneAs<Level>().Session.GetFlag(controllerFlag);
+            }
         }
     }
 }

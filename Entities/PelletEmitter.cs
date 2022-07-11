@@ -43,7 +43,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public readonly Sprite EmitterSprite;
 
-        public string AnimationKeyPrefix => $"{CassetteIndex switch {0 => "blue", 1 => "pink", _ => "both"}}";
+        public string AnimationKeyPrefix => $"{CassetteIndex switch { 0 => "blue", 1 => "pink", _ => "both" }}";
 
         private string idleAnimationKey => $"{AnimationKeyPrefix}_idle";
         private string chargingAnimationKey => $"{AnimationKeyPrefix}_charging";
@@ -65,7 +65,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Collider = new Circle(6, Direction.X * 2, Direction.Y * 2);
 
             EmitterSprite = StrawberryJam2021Module.SpriteBank.Create("pelletEmitter");
-            EmitterSprite.Rotation = Orientation.Angle() - (float)Math.PI / 2f;
+            EmitterSprite.Rotation = Orientation.Angle() - (float) Math.PI / 2f;
             EmitterSprite.Effects = Orientation is Orientations.Left or Orientations.Down
                     ? SpriteEffects.FlipVertically
                     : SpriteEffects.None;
@@ -215,7 +215,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 base.Update();
 
                 // fast fail if the pooled shot is no longer alive
-                if (Dead) return;
+                if (Dead) {
+                    return;
+                }
 
                 // only show the impact sprite if it's animating
                 impactSprite.Visible = impactSprite.Animating;
@@ -323,7 +325,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             private void OnPlayerCollide(Player player) {
                 var direction = (player.Center - Position).SafeNormalize();
-                if (player.Die(direction) == null) return;
+                if (player.Die(direction) == null) {
+                    return;
+                }
+
                 Speed = Vector2.Zero;
                 travelSineWave.Active = false;
                 hitDir = direction;

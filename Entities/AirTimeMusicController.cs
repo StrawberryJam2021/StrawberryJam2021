@@ -24,16 +24,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Update();
 
             player ??= Scene.Tracker.GetEntity<Player>();
-            if (player is null)
+            if (player is null) {
                 return;
+            }
 
-            if (player.OnSafeGround)
+            if (player.OnSafeGround) {
                 lastGroundTime = Scene.TimeActive;
+            }
 
-            if (Scene.TimeActive - lastGroundTime > airtimeThreshold)
+            if (Scene.TimeActive - lastGroundTime > airtimeThreshold) {
                 Audio.SetMusicParam(param, 1);
-            else
+            } else {
                 Audio.SetMusicParam(param, 0);
+            }
         }
     }
 }

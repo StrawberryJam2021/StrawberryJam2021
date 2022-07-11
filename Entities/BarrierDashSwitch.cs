@@ -6,7 +6,6 @@ using MonoMod.Cil;
 using MonoMod.Utils;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/BarrierDashSwitch")]
@@ -46,7 +45,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public BarrierDashSwitch(EntityData data, Vector2 offset, EntityID id)
-            : this(data.Position + offset, SwitchSide(data.Enum("orientation", Sides.Left)), 
+            : this(data.Position + offset, SwitchSide(data.Enum("orientation", Sides.Left)),
                   data.Bool("persistent"), id, data.Attr("spritePath", "")) { }
 
         // bless FlagDashSwitch for already existing so i didn't have to figure this out on my own
@@ -66,7 +65,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void IL_Glider_OnCollideH(ILContext il) {
             ILCursor cursor = new ILCursor(il);
-            if (cursor.TryGotoNext(MoveType.After, 
+            if (cursor.TryGotoNext(MoveType.After,
                 instr => instr.MatchCallOrCallvirt<DashCollision>("Invoke"),
                 instr => instr.MatchPop())) {
                 cursor.Emit(OpCodes.Ldarg_0);

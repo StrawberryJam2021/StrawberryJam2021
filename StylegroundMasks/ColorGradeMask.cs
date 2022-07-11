@@ -1,6 +1,4 @@
-﻿using Celeste;
-using Celeste.Mod;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
@@ -10,8 +8,6 @@ using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [Tracked]
@@ -50,15 +46,21 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         public MTexture GetColorGrade(bool from = false) {
             var level = SceneAs<Level>();
-            var name = from ? ColorGradeFrom : ColorGradeTo;
+            string name = from ? ColorGradeFrom : ColorGradeTo;
 
             if (name == "(current)") {
                 name = from ? DynamicData.For(level).Get<string>("lastColorGrade") : level.Session.ColorGrade;
             } else if (name == "(core)") {
                 switch (level.CoreMode) {
-                    case Session.CoreModes.Cold: name = "cold"; break;
-                    case Session.CoreModes.Hot: name = "hot"; break;
-                    case Session.CoreModes.None: name = "none"; break;
+                    case Session.CoreModes.Cold:
+                        name = "cold";
+                        break;
+                    case Session.CoreModes.Hot:
+                        name = "hot";
+                        break;
+                    case Session.CoreModes.None:
+                        name = "none";
+                        break;
                 }
             }
 
@@ -85,18 +87,21 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 cursor.EmitDelegate<Action<Level>>(level => {
                     var masks = level.Tracker.GetEntities<ColorGradeMask>().OfType<ColorGradeMask>().Where(mask => mask.Fade == FadeType.Custom).ToArray();
                     if (FadeBuffers.Count > masks.Length) {
-                        for (var i = masks.Length; i < FadeBuffers.Count; i++)
+                        for (int i = masks.Length; i < FadeBuffers.Count; i++) {
                             FadeBuffers[i].Dispose();
+                        }
+
                         FadeBuffers.RemoveRange(masks.Length, FadeBuffers.Count - masks.Length);
                     } else {
-                        for (var i = FadeBuffers.Count; i < masks.Length; i++)
+                        for (int i = FadeBuffers.Count; i < masks.Length; i++) {
                             FadeBuffers.Add(VirtualContent.CreateRenderTarget($"colorgrademaskfade{i}", 320, 180));
+                        }
                     }
                     if (masks.Length > 0) {
                         var renderTargets = Engine.Graphics.GraphicsDevice.GetRenderTargets();
 
                         Draw.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, level.Camera.Matrix);
-                        for (var i = 0; i < masks.Length; i++) {
+                        for (int i = 0; i < masks.Length; i++) {
                             var mask = masks[i];
                             mask.BufferIndex = i;
 
@@ -106,8 +111,9 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                             mask.DrawFadeMask();
 
                             Engine.Graphics.GraphicsDevice.BlendState = Mask.DestinationAlphaBlend;
-                            foreach (var slice in mask.GetMaskSlices())
+                            foreach (var slice in mask.GetMaskSlices()) {
                                 Draw.SpriteBatch.Draw(GameplayBuffers.Level, slice.Position, slice.Source, Color.White);
+                            }
 
                             Engine.Graphics.GraphicsDevice.BlendState = BlendState.AlphaBlend;
                         }
@@ -130,25 +136,25 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 return;
             }
 
-            if (cursor.TryGotoNext(MoveType.Before, 
+            if (cursor.TryGotoNext(MoveType.Before,
                 instr => instr.MatchLdarg(0),
                 instr => instr.MatchLdfld<Level>("Pathfinder"))) {
 
                 cursor.Emit(OpCodes.Ldarg_0);
-                cursor.Emit(OpCodes.Ldloc_S, (byte)matrixLocal);
+                cursor.Emit(OpCodes.Ldloc_S, (byte) matrixLocal);
                 cursor.EmitDelegate<Action<Level, Matrix>>((level, matrix) => {
                     var colorGradeMasks = level.Tracker.GetEntities<ColorGradeMask>();
                     if (colorGradeMasks.Count > 0) {
                         var levelData = DynamicData.For(level);
                         var currentFrom = GFX.ColorGrades.GetOrDefault(levelData.Get<string>("lastColorGrade"), GFX.ColorGrades["none"]);
                         var currentTo = GFX.ColorGrades.GetOrDefault(level.Session.ColorGrade, GFX.ColorGrades["none"]);
-                        var currentValue = ColorGrade.Percent;
+                        float currentValue = ColorGrade.Percent;
 
                         var screenSize = new Vector2(320f, 180f);
                         var scaledScreen = screenSize / level.ZoomTarget;
                         var focusOffset = (level.ZoomTarget != 1f) ? ((level.ZoomFocusPoint - scaledScreen / 2f) / (screenSize - scaledScreen) * screenSize) : Vector2.Zero;
                         var paddingOffset = new Vector2(level.ScreenPadding, level.ScreenPadding * 0.5625f);
-                        var scale = level.Zoom * ((320f - level.ScreenPadding * 2f) / 320f);
+                        float scale = level.Zoom * ((320f - level.ScreenPadding * 2f) / 320f);
 
                         var zoomMatrix = Matrix.CreateTranslation(new Vector3(-focusOffset, 0f))
                                        * Matrix.CreateScale(scale)
@@ -168,7 +174,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
                             if (mask.Fade != FadeType.Custom) {
                                 foreach (var slice in mask.GetMaskSlices()) {
-                                    var value = Calc.Clamp(mask.FadeFrom + (slice.Value * (mask.FadeTo - mask.FadeFrom)), 0f, 1f);
+                                    float value = Calc.Clamp(mask.FadeFrom + (slice.Value * (mask.FadeTo - mask.FadeFrom)), 0f, 1f);
                                     if (value < 1f) {
                                         ColorGrade.Set(from, to, value);
                                     } else {
@@ -179,8 +185,10 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                                 }
                             } else {
                                 ColorGrade.Set(from, to, mask.FadeFrom);
-                                foreach (var slice in mask.GetMaskSlices())
+                                foreach (var slice in mask.GetMaskSlices()) {
                                     Draw.SpriteBatch.Draw(GameplayBuffers.Level, slice.Position, slice.Source, Color.White);
+                                }
+
                                 ColorGrade.Set(from, to, mask.FadeTo);
                                 Engine.Graphics.GraphicsDevice.BlendState = BetterAlphaBlend;
                                 Draw.SpriteBatch.Draw(FadeBuffers[mask.BufferIndex], level.Camera.Position, Color.White);

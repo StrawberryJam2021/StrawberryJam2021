@@ -16,7 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private DashSequenceDisplay display;
 
-        public DashSequenceController(EntityData data, Vector2 offset) 
+        public DashSequenceController(EntityData data, Vector2 offset)
             : base(data.Position + offset) {
             DashCode = data.Attr("dashCode", "*").ToUpper()
                 .Split(',').Select(s => s switch {
@@ -58,8 +58,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            if (display == null)
+            if (display == null) {
                 display = Scene.Tracker.GetEntity<DashSequenceDisplay>();
+            }
         }
 
         private void OnDash(Vector2 direction) {

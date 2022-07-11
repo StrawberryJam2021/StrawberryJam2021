@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
-using System.Collections;
+﻿using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
-using Mono.Cecil.Cil;
-using Microsoft.Xna.Framework;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public static class Utilities {
 
         public static void LoadContent() {
             //Loads in XNA Colors, fastest option is actually a manual dictionary but in the grand scheme of things it makes little difference when called once.
-            foreach(PropertyInfo prop in typeof(Color).GetProperties()) {
-                if(prop.PropertyType == typeof(Color) && !ColorHelper.ContainsKey(prop.Name)) {
-                    ColorHelper[prop.Name] = (Color)prop.GetValue(null);
+            foreach (PropertyInfo prop in typeof(Color).GetProperties()) {
+                if (prop.PropertyType == typeof(Color) && !ColorHelper.ContainsKey(prop.Name)) {
+                    ColorHelper[prop.Name] = (Color) prop.GetValue(null);
                 }
             }
         }
@@ -56,13 +51,16 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         //Code borrowed from VivHelper, permanent
         public static Color HexOrNameToColor(string hex) {
-            if (ColorHelper.ContainsKey(hex))
+            if (ColorHelper.ContainsKey(hex)) {
                 return ColorHelper[hex];
+            }
+
             string hexplus = hex.Trim('#');
-            if (hexplus.StartsWith("0x"))
+            if (hexplus.StartsWith("0x")) {
                 hexplus = hexplus.Substring(2);
-            int result;
-            if (hexplus.Length == 6 && int.TryParse(hexplus, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out result)) {
+            }
+
+            if (hexplus.Length == 6 && int.TryParse(hexplus, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out int result)) {
                 return Calc.HexToColor(result);
             } else if (hexplus.Length == 8 && hexplus.Substring(0, 2) == "00" && int.TryParse(hexplus.Substring(2), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out int _)) {
                 return Color.Transparent;
@@ -73,7 +71,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
         }
 
         public static Color AdvHexToColor(int hex) {
-            Color result = default(Color);
+            Color result = default;
             result.A = (byte) (hex >> 24);
             result.R = (byte) (hex >> 16);
             result.G = (byte) (hex >> 8);

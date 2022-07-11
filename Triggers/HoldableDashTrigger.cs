@@ -10,7 +10,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         public Modes Mode;
 
         public const string DashWithHoldableFlag = "sj2021_canDashWithHoldable";
-        
+
         public HoldableDashTrigger(EntityData data, Vector2 offset)
             : base(data, offset) {
             Mode = data.Enum("mode", Modes.EnableOnStay);

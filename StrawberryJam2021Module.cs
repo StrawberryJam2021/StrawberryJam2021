@@ -1,10 +1,10 @@
+using Celeste.Mod.Helpers;
+using Celeste.Mod.StrawberryJam2021.Effects;
 using Celeste.Mod.StrawberryJam2021.Entities;
-using Celeste.Mod.StrawberryJam2021.Triggers;
 using Celeste.Mod.StrawberryJam2021.StylegroundMasks;
+using Celeste.Mod.StrawberryJam2021.Triggers;
 using Monocle;
 using System;
-using Celeste.Mod.StrawberryJam2021.Effects;
-using Celeste.Mod.Helpers;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
@@ -143,7 +143,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
                 return new HexagonalGodray(child.Attr("color"), child.Attr("fadeColor"), child.AttrInt("numberOfRays"), child.AttrFloat("speedX"), child.AttrFloat("speedY"), child.AttrFloat("rotation"), child.AttrFloat("rotationRandomness"));
             }
             return null;
-		}
+        }
 
         //This occurs after all mods get initialized.
         public override void Initialize() {
@@ -157,8 +157,10 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         // Temporary code from vivhelper
         public static bool VivHelperGetFlags(Level l, string[] flags, string and_or) {
-            if (l == null)
+            if (l == null) {
                 return false;
+            }
+
             bool b = and_or == "and";
             if (flags.Length == 1 && flags[0] == "") { return true; }
             foreach (string flag in flags) {

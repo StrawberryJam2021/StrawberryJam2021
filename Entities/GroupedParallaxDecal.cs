@@ -5,21 +5,18 @@ using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using static Celeste.Mod.DecalRegistry;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class GroupedParallaxDecal : Entity {
-        
+
         private float parallaxAmount;
 
         // GroupedParallaxDecal class should have a constructor with params LevelData ld and DecalData dd,
         // And be placed in the center of the room
-        public GroupedParallaxDecal(DecalData dd, bool isFG, Rectangle roomBounds) : base(new Vector2(roomBounds.X + roomBounds.Width / 2, roomBounds.Y + roomBounds.Height / 2))  {
+        public GroupedParallaxDecal(DecalData dd, bool isFG, Rectangle roomBounds) : base(new Vector2(roomBounds.X + roomBounds.Width / 2, roomBounds.Y + roomBounds.Height / 2)) {
             string path = dd.Texture.Substring(0, dd.Texture.Length - 4).Trim();
             DecalInfo dInfo = DecalRegistry.RegisteredDecals[path]; //all decals in a group should have the same properties, so we can just load the details for the first one.
             Depth = isFG ? Depths.FGDecals : Depths.BGDecals; //Set this here incase there is no Depth value in the DecalRegistry
@@ -94,7 +91,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         cursor.Emit(OpCodes.Ldarg_0);
                         cursor.Emit(OpCodes.Ldloc, dIndex); //dIndex is absolutely set
                         cursor.Emit(OpCodes.Ldloc, lIndex); //lIndex is absolutely set by first if 
-                        cursor.Emit(OpCodes.Ldc_I4_1); 
+                        cursor.Emit(OpCodes.Ldc_I4_1);
                         cursor.EmitDelegate<Func<Level, DecalData, LevelData, bool, bool>>(MakeParallaxGroup);
                         cursor.Emit(OpCodes.Brtrue, target);
                     }
@@ -125,8 +122,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static bool MakeParallaxGroup(Level level, DecalData dd, LevelData ld, bool isFG) {
             //If the conditions are not met to add this to the Grouped Parallax Decal, return false, otherwise determine its group,
             //If its group is found in the ParallaxDecalByGroup dictionary already, run AddDecalToGroup, otherwise construct the GroupedParallaxDecal with that DecalData and add it to the Dictionary by group
-            if (!dd.Texture.Contains("sjgroupedparallaxdecals"))
+            if (!dd.Texture.Contains("sjgroupedparallaxdecals")) {
                 return false;
+            }
 
             string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 24); //len("sjgroupedparallaxdecals/") = 24
             groupName = groupName.Substring(0, groupName.LastIndexOf("/"));
@@ -138,7 +136,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 ParallaxDecalByGroup.Add(groupName, groupeddecal);
                 level.Add(groupeddecal);
             }
-            
+
             return true;
         }
     }
