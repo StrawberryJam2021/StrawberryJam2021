@@ -205,8 +205,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
 
+            player.Active = true;
             Audio.Play("event:/game/general/cassette_bubblereturn", level.Camera.Position + new Vector2(160f, 90f));
-            player.StartCassetteFly(nodes[1], nodes[2]);
+            player.StartCassetteFly(nodes[1], nodes[0]);
             yield return 0.5f;
             level.Frozen = false;
             yield return 0.25f;
@@ -270,7 +271,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
             yield return 0.25f;
-            player.Active = true;
             player.Depth = 0;
         }
     }
