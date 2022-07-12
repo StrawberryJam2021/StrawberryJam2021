@@ -254,7 +254,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
             message.sprite.Rate = 1f;
-            while (message.sprite.Animating) { Console.WriteLine(message.sprite.CurrentAnimationID + " " + message.sprite.CurrentAnimationFrame); yield return null; }
+            while (message.sprite.Animating) 
+                yield return null;
             message.RemoveSelf();
             level.FormationBackdrop.Alpha = 0f;
             level.FormationBackdrop.Display = false;
