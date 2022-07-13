@@ -31,7 +31,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             nodes = data.Nodes;
             fadeInProgress = 1;
 
-            base_Entity = new DynamicData(this);
+            base_Entity = new DynamicData(typeof(Cloud), this);
             Add(ghost = new Image(GFX.Game["objects/clouds/fragile00"]));
             ghost.CenterOrigin();
             ghost.Color = Color.Black;

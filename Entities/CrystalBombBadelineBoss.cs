@@ -28,7 +28,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static MethodInfo crystalBombExplodeHookInfo = typeof(CrystalBombBadelineBoss).GetMethod("On_CrystalBomb_Explode", BindingFlags.NonPublic | BindingFlags.Static);
 
         public CrystalBombBadelineBoss(EntityData data, Vector2 offset) : base(data, offset) {
-            baseData = new DynamicData(this);
+            baseData = new DynamicData(typeof(FinalBoss), this);
             // store original OnPlayer method so we can call it later...
             base_OnPlayer = Get<PlayerCollider>().OnCollide;
             // ...and then replace it for our boss

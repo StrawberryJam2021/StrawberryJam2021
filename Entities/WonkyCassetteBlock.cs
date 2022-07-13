@@ -31,7 +31,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             OnAtBeats = Regex.Split(moveSpec, @",\s*").Select(int.Parse).Select(i => i - 1).ToArray();
 
-            cassetteBlockData = new DynamicData(this);
+            cassetteBlockData = new DynamicData(typeof(CassetteBlock), this);
             cassetteBlockData.Set("color", color);
 
             this.textureDir = textureDir;
