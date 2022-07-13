@@ -15,7 +15,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly Sprite sprite;
 
         public DirectionalBooster(EntityData data, Vector2 offset) : base(data.Position + offset, true) {
-            boosterData = new DynamicData(this);
+            boosterData = new DynamicData(typeof(Booster), this);
 
             // replace sprite
             Remove(boosterData.Get<Sprite>("sprite"));

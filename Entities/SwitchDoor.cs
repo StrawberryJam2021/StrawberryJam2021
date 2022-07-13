@@ -12,7 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Sprite sprite;
 
         public SwitchDoor(EntityData data, Vector2 offset, EntityID id) : base(data, offset, id) {
-            gateData = new DynamicData(this);
+            gateData = new DynamicData(typeof(BatteryGate), this);
             Remove(gateData.Get<Sprite>("sprite"));
             Add(sprite = StrawberryJam2021Module.SpriteBank.Create("switchDoor"));
             gateData.Set("sprite", sprite);

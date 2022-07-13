@@ -15,7 +15,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public BarrierDashSwitch(Vector2 position, Sides side, bool persistent, EntityID id, string spritePath)
             : base(position, side, persistent, false, id, "default") {
             if (!string.IsNullOrEmpty(spritePath)) {
-                DynamicData baseData = new DynamicData(this);
+                DynamicData baseData = new DynamicData(typeof(DashSwitch), this);
                 Sprite sprite = baseData.Get<Sprite>("sprite");
                 Remove(sprite);
                 //sprites.xml cringe

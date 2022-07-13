@@ -42,7 +42,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.offset = offset;
             mult = speedMult;
 
-            selfData = new DynamicData(this);
+            selfData = new DynamicData(typeof(FireBall), this);
 
             // replace fireball sprites with bee sprites
             sprite = Get<Sprite>();

@@ -41,7 +41,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             displacementMask.Stop();
             displacementMask.Visible = false;
 
-            boosterData = new DynamicData(this);
+            boosterData = new DynamicData(typeof(Booster), this);
             Remove(boosterData.Get<Sprite>("sprite"));
             Add(sprite = StrawberryJam2021Module.SpriteBank.Create("WormholeBooster"));
             sprite.Color = color;
