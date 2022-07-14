@@ -20,20 +20,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         // GroupedParallaxDecal class should have a constructor with params LevelData ld and DecalData dd,
         // And be placed in the center of the room
         public GroupedParallaxDecal(DecalData dd, bool isFG, Rectangle roomBounds) : base(new Vector2(roomBounds.X + roomBounds.Width / 2, roomBounds.Y + roomBounds.Height / 2))  {
-            string path = dd.Texture.Substring(0, dd.Texture.Length - 4).Trim().ToLower();
-            DecalInfo dInfo = DecalRegistry.RegisteredDecals[path]; //all decals in a group should have the same properties, so we can just load the details for the first one.
             Depth = isFG ? Depths.FGDecals : Depths.BGDecals; //Set this here incase there is no Depth value in the DecalRegistry
+            
+            string path = dd.Texture.Substring(0, dd.Texture.Length - 4).Trim().ToLower();
+            //all decals in a group should have the same properties, so we can just load the details for the first one.
 
-            //there's two relevant attributes to parallaxing: depth and parallax amount
-            //most parallaxed decals have exactly two decal attributes, and we need both of them (and we only support those two anyway)
-            //which means looping through the list isn't a bad way to do this
-            foreach (KeyValuePair<string, XmlAttributeCollection> xmlAC in dInfo.CustomProperties) {
-                if (xmlAC.Key.Equals("parallax")) {
-                    parallaxAmount = float.Parse(xmlAC.Value["amount"].Value);
-                } else if (xmlAC.Key.Equals("depth")) {
-                    Depth = int.Parse(xmlAC.Value["value"].Value);
+            if (DecalRegistry.RegisteredDecals.TryGetValue(path, out DecalInfo dInfo)) {
+                //there's two relevant attributes to parallaxing: depth and parallax amount
+                //most parallaxed decals have exactly two decal attributes, and we need both of them (and we only support those two anyway)
+                //which means looping through the list isn't a bad way to do this
+                foreach (KeyValuePair<string, XmlAttributeCollection> xmlAC in dInfo.CustomProperties) {
+                    if (xmlAC.Key.Equals("parallax")) {
+                        parallaxAmount = float.Parse(xmlAC.Value["amount"].Value);
+                    } else if (xmlAC.Key.Equals("depth")) {
+                        Depth = int.Parse(xmlAC.Value["value"].Value);
+                    }
                 }
+            } else {
+                //if the decal registry info is missing just set it to zero and log the error
+                parallaxAmount = 0;
+                Logger.Log("Grouped Parrallax Decal", string.Format("Decal Registry data for {0} not found.", path));
             }
+
             AddDecalToGroup(this, dd, roomBounds);
         }
 
