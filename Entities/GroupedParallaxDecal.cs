@@ -20,7 +20,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         // GroupedParallaxDecal class should have a constructor with params LevelData ld and DecalData dd,
         // And be placed in the center of the room
         public GroupedParallaxDecal(DecalData dd, bool isFG, Rectangle roomBounds) : base(new Vector2(roomBounds.X + roomBounds.Width / 2, roomBounds.Y + roomBounds.Height / 2))  {
-            string path = dd.Texture.Substring(0, dd.Texture.Length - 4).Trim();
+            string path = dd.Texture.Substring(0, dd.Texture.Length - 4).Trim().ToLower();
             DecalInfo dInfo = DecalRegistry.RegisteredDecals[path]; //all decals in a group should have the same properties, so we can just load the details for the first one.
             Depth = isFG ? Depths.FGDecals : Depths.BGDecals; //Set this here incase there is no Depth value in the DecalRegistry
 
@@ -128,7 +128,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (!dd.Texture.Contains("sjgroupedparallaxdecals"))
                 return false;
 
-            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 24); //len("sjgroupedparallaxdecals/") = 24
+            string groupName = dd.Texture.Substring(dd.Texture.IndexOf("sjgroupedparallaxdecals/") + 24).ToLower(); //len("sjgroupedparallaxdecals/") = 24
             groupName = groupName.Substring(0, groupName.LastIndexOf("/"));
             if (ParallaxDecalByGroup.ContainsKey(groupName)) {
                 Rectangle roomBounds = ld.Bounds;
