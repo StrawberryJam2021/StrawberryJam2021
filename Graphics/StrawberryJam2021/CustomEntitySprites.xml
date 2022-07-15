@@ -295,4 +295,18 @@
         <Loop id="star" path="hit" delay="0.06" frames="10-15"/>
         <Anim id="recoverHit" path="hit" delay="0.06" frames="16-19" goto="idle"/>
     </crystalBombBadelineBoss>
+	<!--Pinball Machine-->
+	<pinballMachine path="objects/StrawberryJam2021/pinballMachine/" start="idle">
+		<Loop id="idle" path="idle" delay=".06" frames="0"/>
+		<Anim id="consoleLights" path="idle" delay=".3" frames="1-3" goto="wires"/>
+		<Anim id="wires" path="idle" delay=".03" frames="4-17" goto="screenInit"/>
+		<Anim id="screenInit" path="idle" delay=".1" frames="18-21" goto="letters"/>
+		<Anim id="letters" path="idle" delay=".1" frames="22-27" goto="consoleScreen"/>
+		<Anim id="consoleScreen" path="idle" delay=".1" frames="28-31" goto="idleOn"/>
+		<Loop id="idleOn" path="idle" delay=".1" frames="31"/>
+		<Loop id="glitchLoop" path="glitch" delay=".06" frames="0-6"/>
+		<Anim id="glitchEnd" path="glitch" delay=".06" frames="7-9" goto="glitchEndLoop"/>
+		<Loop id="glitchEndLoop" path="glitch" delay=".06" frames="10-12"/>
+
+	</pinballMachine>
 </Sprites>
