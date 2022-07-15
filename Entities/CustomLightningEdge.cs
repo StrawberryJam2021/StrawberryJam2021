@@ -16,7 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private Color[] _electricityColors;
 
-        private float Fade;
+        private float Fade = 0f;
         private Vector2 _start = Vector2.Zero;
         private Vector2 _end;
         private VertexPositionColor[] _edgeVerts = new VertexPositionColor[1024];
