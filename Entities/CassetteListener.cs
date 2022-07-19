@@ -70,8 +70,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (cursor.TryGotoNext(MoveType.AfterLabel,
                 instr => instr.MatchLdarg(0),
                 instr => instr.MatchLdfld<CassetteBlockManager>("leadBeats"),
-                instr => instr.MatchLdcI4(0),
-                instr => instr.MatchBle(out _))) {
+                instr => instr.MatchLdcI4(0))) {
                 cursor.Emit(OpCodes.Ldarg_0);
                 
                 cursor.EmitDelegate<Action<CassetteBlockManager>>(self => {
