@@ -97,12 +97,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        public override void Update() {
-            base.Update();
-
-            Visible = Collidable = !HideFinalTransition || targetNodeIndex != 0;
-        }
-
         private void TeleportTo(Vector2 to) {
             MoveStaticMovers(to - Position);
             Position = to;
@@ -137,6 +131,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         
                 if (targetNodeIndex == 0 && HideFinalTransition) {
                     block.TeleportTo(to);
+                    Visible = Collidable = false;
                 } else {
                     var tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeIn, time, true);
                     tween.OnUpdate = t => MoveTo(Vector2.Lerp(from, to, t.Eased));
@@ -158,6 +153,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         
                 yield return time;
                 sourceNodeIndex = targetNodeIndex;
+                Visible = Collidable = true;
             }
         }
 
