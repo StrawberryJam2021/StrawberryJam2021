@@ -12,6 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static char[] separators = { ',' };
 
         public Color[] StreakColors;
+        public bool Borders;
 
         private Color backgroundColor;
         private bool introLaunch;
@@ -25,6 +26,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             backgroundColor = Calc.HexToColor(data.Attr("backgroundColor", "75a0ab"));
             introLaunch = data.Bool("introLaunch");
+            Borders = data.Bool("borders", true);
             StreakColors = data.Attr("streakColors", "ffffff,e69ecb")
                 .Split(separators, StringSplitOptions.RemoveEmptyEntries)
                 .Select(str => Calc.HexToColor(str.Trim()))
@@ -231,8 +233,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Color color = alphaColors[particles[j].Color];
                     mtexture.DrawCentered(vector, color, scale2);
                 }
-                Draw.Rect(position.X - 10f, position.Y - 10f, 26f, 200f, alphaColors[0]);
-                Draw.Rect(position.X + 320f - 16f, position.Y - 10f, 26f, 200f, alphaColors[0]);
+                if (manager.Borders) {
+                    Draw.Rect(position.X - 10f, position.Y - 10f, 26f, 200f, alphaColors[0]);
+                    Draw.Rect(position.X + 320f - 16f, position.Y - 10f, 26f, 200f, alphaColors[0]);
+                }
             }
         }
 

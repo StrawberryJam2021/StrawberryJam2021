@@ -137,7 +137,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             into[tag].Insert(0, backdrop);
         }
 
-        public static StylegroundMaskRenderer GetRendererInLevel(Level level) => new DynData<Level>(level).Get<StylegroundMaskRenderer>(DynDataRendererName);
+        public static StylegroundMaskRenderer GetRendererInLevel(Level level) => DynamicData.For(level).Get<StylegroundMaskRenderer>(DynDataRendererName);
 
         private void ConsumeStylegroundsFrom(List<Backdrop> from, Dictionary<string, List<Backdrop>> into) {
             // reversed loop to allow removing items while iterating
@@ -274,7 +274,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         private static void HeatWave_Update(On.Celeste.HeatWave.orig_Update orig, HeatWave self, Scene scene) {
             if (self.Tags.Any(tag => tag.StartsWith(TagPrefix))) {
-                var levelData = new DynData<Level>(scene as Level);
+                var levelData = DynamicData.For(scene as Level);
                 var lastColorGrade = levelData.Get<string>("lastColorGrade");
                 var colorGradeEase = levelData.Get<float>("colorGradeEase");
                 var colorGradeEaseSpeed = levelData.Get<float>("colorGradeEaseSpeed");
@@ -294,7 +294,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
             if (isFromLoader) {
                 var renderer = new StylegroundMaskRenderer();
-                new DynData<Level>(self).Set(DynDataRendererName, renderer);
+                DynamicData.For(self).Set(DynDataRendererName, renderer);
                 self.Add(renderer);
                 renderer.ConsumeStylegrounds(self);
             }
@@ -310,7 +310,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchLdfld<Level>("Background"),
                 instr => instr.MatchLdarg(0),
                 instr => instr.MatchCallvirt<Renderer>("Render"))) {
-                Logger.Log("SJ2021/StylegroundMask", $"Adding background styleground mask render call at {cursor.Index} in IL for Level.Render");
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
                     GetRendererInLevel(level)?.RenderWith(level, false);
@@ -324,7 +323,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchLdfld<Level>("Foreground"),
                 instr => instr.MatchLdarg(0),
                 instr => instr.MatchCallvirt<Renderer>("Render"))) {
-                Logger.Log("SJ2021/StylegroundMask", $"Adding foreground styleground mask render behind call at {cursor.Index} in IL for Level.Render");
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>((level) => {
                     GetRendererInLevel(level)?.RenderWith(level, true, true);
@@ -352,8 +350,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
                 ILLabel breakLabel = null;
                 if (cursor.TryGotoPrev(MoveType.After, instr => instr.MatchBrfalse(out breakLabel))) {
-                    Logger.Log("SJ2021/StylegroundMask", $"Masking heat wave displacement rendering at {cursor.Index} in IL for DisplacementRenderer.BeforeRender");
-
                     cursor.Emit(OpCodes.Ldarg, levelArg);
                     cursor.Emit(OpCodes.Isinst, typeof(Level));
                     cursor.EmitDelegate<Func<Level, bool>>(level => {
@@ -362,7 +358,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                             var tags = heatWave.Tags;
                             if (tags.Any(tag => tag.StartsWith(TagPrefix))) {
                                 baseRendering = tags.Contains("nomaskhide");
-                                if (new DynData<HeatWave>(heatWave).Get<float>("heat") > 0f) {
+                                if (DynamicData.For(heatWave).Get<float>("heat") > 0f) {
                                     foreach (StylegroundMask mask in level.Tracker.GetEntities<StylegroundMask>()) {
                                         if (mask.RenderTags.Any(tag => heatWave.Tags.Contains(TagPrefix + tag))) {
                                             foreach (var slice in mask.GetMaskSlices()) {

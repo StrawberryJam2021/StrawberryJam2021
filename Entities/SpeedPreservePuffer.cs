@@ -40,8 +40,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void playerOrigUpdateHook(ILContext il) {
             ILCursor cursor = new ILCursor(il);
             if (cursor.TryGotoNext(MoveType.Before, instr => instr.MatchStfld<Vector2>("X"))) {
-                Logger.Log("SJ2021/SpeedPreservePuffer", $"Injecting call to un-hardcode super boost lenience at {cursor.Index} in IL for Player.orig_Update");
-
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Func<float, Player, float>>((orig, self) => {
                     // Normally the 1.2x launch speed is hardcoded when using lenience frames, so here we manually add the extra 0.2x launch speed
@@ -57,8 +55,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             ILCursor cursor = new ILCursor(il);
 
             while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCallvirt<SineWave>("Randomize"))) {
-                Logger.Log("SJ2021/SpeedPreservePuffer", $"Injecting call to unrandomize puffer sine wave at {cursor.Index} in IL for Puffer constructor");
-
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.Emit(OpCodes.Ldfld, typeof(Puffer).GetField("idleSine", BindingFlags.NonPublic | BindingFlags.Instance));
@@ -78,7 +74,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 instr => instr.MatchCallvirt<Entity>("get_Center"),
                 instr => instr.MatchCallvirt<Scene>("CollideCheck"),
                 instr => instr.MatchBrtrue(out _))) {
-                Logger.Log("SJ2021/SpeedPreservePuffer", $"Injecting call to store player speed before puffer explosion at {cursor.Index} in IL for Puffer.Explode");
 
                 cursor.EmitDelegate<Action>(() => {
                     Player player = Engine.Scene.Tracker.GetEntity<Player>();
@@ -86,8 +81,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 });
             }
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCallvirt<Player>("ExplodeLaunch"))) {
-                Logger.Log("SJ2021/SpeedPreservePuffer", $"Injecting call to add player speed to puffer explosion at {cursor.Index} in IL for Puffer.Explode");
-
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Puffer>>((self) => {
                     lastPuffer = self;

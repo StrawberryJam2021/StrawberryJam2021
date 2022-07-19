@@ -132,8 +132,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             // the last dash has ended so this should definitely be reset
             if (wasDashing && !(self.DashAttacking || self.StateMachine.State == Player.StDash)) {
-                DynamicData playerData = new DynamicData(self);
-                playerData.Set("dashBoosted", false);
+                DynamicData.For(self).Set("dashBoosted", false);
             }
         }
 
@@ -144,7 +143,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void On_Player_DashBegin(On.Celeste.Player.orig_DashBegin orig, Player self) {
-            DynamicData playerData = new DynamicData(self);
+            DynamicData playerData = DynamicData.For(self);
             DashBoostField boostField = self.CollideFirst<DashBoostField>();
             if (boostField != null && boostField.Active) {
                 playerData.Set("dashBoosted", true);
@@ -167,7 +166,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static float ModifySpeed(float speed, Player player) {
-            DynamicData playerData = new DynamicData(player);
+            DynamicData playerData = DynamicData.For(player);
             if (SafeGet(playerData, "dashBoosted", defaultValue: false)) {
                 speed *= SafeGet(playerData, "dashBoostSpeed", defaultValue: 1f);
             }
@@ -175,7 +174,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static Vector2 ModifySpeed(Vector2 speed, Player player) {
-            DynamicData playerData = new DynamicData(player);
+            DynamicData playerData = DynamicData.For(player);
             if (SafeGet(playerData, "dashBoosted", defaultValue: false)) {
                 speed *= SafeGet(playerData, "dashBoostSpeed", defaultValue: 1f);
             }

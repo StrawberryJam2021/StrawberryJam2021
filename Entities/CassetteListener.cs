@@ -62,7 +62,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         #region Private Fields
 
         private CassetteBlockManager cassetteBlockManager;
-        private DynData<CassetteBlockManager> cassetteBlockManagerData;
+        private DynamicData cassetteBlockManagerData;
 
         private static readonly FieldInfo currentIndexFieldInfo = typeof(CassetteBlockManager).GetField("currentIndex", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo beatIndexFieldInfo = typeof(CassetteBlockManager).GetField("beatIndex", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -105,7 +105,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             cassetteBlockManager = scene.Tracker.GetEntity<CassetteBlockManager>() ?? scene.Entities.ToAdd.OfType<CassetteBlockManager>().FirstOrDefault();
             if (cassetteBlockManager == null)
                 scene.Add(cassetteBlockManager = new CassetteBlockManager());
-            cassetteBlockManagerData = new DynData<CassetteBlockManager>(cassetteBlockManager);
+            cassetteBlockManagerData = new DynamicData(cassetteBlockManager);
         }
 
         public override void EntityRemoved(Scene scene) {
