@@ -1,6 +1,7 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Utils;
 using System;
 using System.Collections;
 using System.Linq;
@@ -19,12 +20,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int offsetNodeIndex;
         private int sourceNodeIndex;
         private int targetNodeIndex;
-        private Vector2 sourcePosition;
-        private Vector2 targetPosition;
-        private int initialNodeIndex;
-        private CassetteListener cassetteListener;
-
-        internal bool wait;
+        private readonly int initialNodeIndex;
 
         public CassetteBadelineBlock(CassetteBadelineBlock parent, int initialNodeIndex)
             : base(parent.Nodes[initialNodeIndex], parent.Width, parent.Height, false) {
@@ -36,13 +32,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             PlayImpactSounds = parent.PlayImpactSounds;
             EmitImpactParticles = parent.EmitImpactParticles;
 
-            this.initialNodeIndex = sourceNodeIndex = targetNodeIndex = initialNodeIndex;
-            sourcePosition = targetPosition = Position;
+            sourceNodeIndex = targetNodeIndex = this.initialNodeIndex = initialNodeIndex;
 
             Tag = Tags.FrozenUpdate;
 
             AddComponents();
-            wait = true;
         }
 
         public CassetteBadelineBlock(EntityData data, Vector2 offset)
@@ -62,12 +56,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 .Where(i => Math.Abs(i) < Nodes.Length)
                 .ToArray();
 
-            sourcePosition = targetPosition = Position;
-
             Tag = Tags.FrozenUpdate;
 
             AddComponents();
-            wait = true;
         }
 
         private void AddComponents() {
@@ -75,27 +66,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(sprite,
                 new TileInterceptor(sprite, false),
                 new LightOcclude(),
-                cassetteListener = new CassetteListener {
-                    OnBeat = state => {
-                        //This is a terrible solution but it worked first try.
-                        if (wait) {
-                            if (state.CurrentTick.Index == 0) 
-                                wait = false;
-                            else
-                                return;
-                        } 
-                        bool indexWillChange = state.NextTick.Index != state.CurrentTick.Index;
-                        if (sourceNodeIndex == targetNodeIndex && OffBeat != indexWillChange) {
-                            if (offsetNodeIndex < 0)
-                                offsetNodeIndex = initialNodeIndex;
-                            else
-                                offsetNodeIndex++;
-
-                            sourceNodeIndex = offsetNodeIndex % Nodes.Length;
-                            targetNodeIndex = (sourceNodeIndex + 1) % Nodes.Length;
-                            sourcePosition = Nodes[sourceNodeIndex];
-                            targetPosition = Nodes[targetNodeIndex];
-                        }
+                new CassetteListener(initialNodeIndex) {
+                    OnTick = (_, isSwap) => {
+                        if (isSwap != OffBeat) return;
+                        offsetNodeIndex++;
+                        targetNodeIndex = (initialNodeIndex + offsetNodeIndex) % Nodes.Length;
+                    },
+                    OnSilentUpdate = activated => {
+                        offsetNodeIndex = 0;
+                        if (initialNodeIndex < Nodes.Length)
+                            Position = Nodes[initialNodeIndex];
                     },
                 },
                 new Coroutine(MoveSequence())
@@ -117,12 +97,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        public override void Update() {
-            base.Update();
-
-            Visible = Collidable = !HideFinalTransition || targetNodeIndex != 0;
-        }
-
         private void TeleportTo(Vector2 to) {
             MoveStaticMovers(to - Position);
             Position = to;
@@ -130,17 +104,34 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private IEnumerator MoveSequence() {
             var block = this;
+            
+            if (Scene == null) yield break;
+
+            var time = -1f;
+            while (Scene != null && time < 0) {
+                var cbm = Scene.Tracker.GetEntity<CassetteBlockManager>();
+                if (cbm == null) {
+                    yield return null;
+                } else {
+                    var data = DynamicData.For(cbm);
+                    var beatsPerTick = data.Get<int>("beatsPerTick");
+                    var tempoMult = data.Get<float>("tempoMult");
+                    var beatLength = (10 / 60f) / tempoMult;
+                    time = beatLength * beatsPerTick;
+                }
+            }
+            
             while (Scene != null) {
                 while (sourceNodeIndex == targetNodeIndex) {
                     yield return null;
                 }
-
-                float time = block.cassetteListener.CurrentState.TickLength;
-                var to = block.targetPosition;
-                var from = block.sourcePosition;
-
+                
+                var to = block.Nodes[targetNodeIndex];
+                var from = block.Nodes[sourceNodeIndex];
+        
                 if (targetNodeIndex == 0 && HideFinalTransition) {
                     block.TeleportTo(to);
+                    Visible = Collidable = false;
                 } else {
                     var tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeIn, time, true);
                     tween.OnUpdate = t => MoveTo(Vector2.Lerp(from, to, t.Eased));
@@ -156,12 +147,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             block.StopParticles(to - from);
                         }
                     };
-
+        
                     block.Add(tween);
                 }
-
+        
                 yield return time;
                 sourceNodeIndex = targetNodeIndex;
+                Visible = Collidable = true;
             }
         }
 

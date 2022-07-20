@@ -1,7 +1,7 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Monocle;
+using MonoMod.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -67,10 +67,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly ColliderList activeColliderList;
         private readonly CassetteListener cassetteListener;
         private LaserState laserState;
-        private bool needsForcedUpdate;
 
         private const float chargeDelayFraction = 0.25f;
         private const float collisionDelaySeconds = 5f / 60f;
+        private const float burstTimeSeconds = 0.2f;
         private const int beamOffsetMultiplier = 4;
         private const int beamThickness = 12;
         private const float mediumRumbleEffectRange = 8f * 12;
@@ -78,6 +78,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private const int tileSize = 8;
 
         private float collisionDelayRemaining;
+        private float chargeDelayRemaining;
+        private float burstTimeRemaining;
 
         private static ParticleType blueCooldownParticle;
         private static ParticleType pinkCooldownParticle;
@@ -137,52 +139,53 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public LaserState State {
             get => laserState;
-            set {
-                if (laserState == value)
-                    return;
+            set => setState(value);
+        }
 
-                // var oldState = laserState;
-                laserState = value;
+        private void setState(LaserState state, bool force = false) {
+            if (!force && laserState == state) return;
+            laserState = state;
+            
+            switch (State) {
+                case LaserState.Idle:
+                case LaserState.Precharge:
+                    largeBrushSprite.Play(idleAnimation);
+                    Collider = inactiveColliderList;
+                    break;
 
-                switch (value) {
-                    case LaserState.Idle:
-                    case LaserState.Precharge:
-                        largeBrushSprite.Play(idleAnimation);
-                        Collider = inactiveColliderList;
-                        break;
+                case LaserState.Charging:
+                    largeBrushSprite.Play(chargingAnimation);
+                    paintParticlesSprite.Play(chargingAnimation);
+                    Collider = inactiveColliderList;
+                    break;
 
-                    case LaserState.Charging:
-                        largeBrushSprite.Play(chargingAnimation);
-                        paintParticlesSprite.Play(chargingAnimation);
-                        Collider = inactiveColliderList;
-                        break;
+                case LaserState.Burst:
+                    largeBrushSprite.Play(burstAnimation);
+                    paintParticlesSprite.Play(burstAnimation);
+                    beamSprite.Play(burstAnimation);
+                    Collider = inactiveColliderList;
+                    collisionDelayRemaining = collisionDelaySeconds;
+                    burstTimeRemaining = burstTimeSeconds;
+                    playNearbyEffects();
+                    break;
 
-                    case LaserState.Burst:
-                        largeBrushSprite.Play(burstAnimation);
-                        paintParticlesSprite.Play(burstAnimation);
-                        beamSprite.Play(burstAnimation);
-                        Collider = inactiveColliderList;
-                        collisionDelayRemaining = collisionDelaySeconds;
-                        playNearbyEffects();
-                        break;
+                case LaserState.Firing:
+                    largeBrushSprite.Play(firingAnimation);
+                    paintParticlesSprite.Play(firingAnimation);
+                    paintBackSprite.Play(firingAnimation);
+                    beamSprite.Play(firingAnimation);
+                    collisionDelayRemaining = 0;
+                    burstTimeRemaining = 0;
+                    Collider = activeColliderList;
+                    break;
 
-                    case LaserState.Firing:
-                        largeBrushSprite.Play(firingAnimation);
-                        paintParticlesSprite.Play(firingAnimation);
-                        paintBackSprite.Play(firingAnimation);
-                        beamSprite.Play(firingAnimation);
-                        collisionDelayRemaining = 0;
-                        Collider = activeColliderList;
-                        break;
-
-                    case LaserState.Cooldown:
-                        largeBrushSprite.Play(cooldownAnimation);
-                        paintParticlesSprite.Play(cooldownAnimation);
-                        paintBackSprite.Play(cooldownAnimation);
-                        Collider = inactiveColliderList;
-                        emitCooldownParticles();
-                        break;
-                }
+                case LaserState.Cooldown:
+                    largeBrushSprite.Play(cooldownAnimation);
+                    paintParticlesSprite.Play(cooldownAnimation);
+                    paintBackSprite.Play(cooldownAnimation);
+                    Collider = inactiveColliderList;
+                    emitCooldownParticles();
+                    break;
             }
         }
 
@@ -233,39 +236,33 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
 
-            Add(cassetteListener = new CassetteListener {
-                    OnBeat = state => {
-                        int beat = state.Beat % state.BeatsPerTick;
-                        float beatFraction = (float)beat / state.BeatsPerTick;
-
-                        switch (State) {
-                            case LaserState.Cooldown:
-                            case LaserState.Idle:
-                                if (beat == 0 && state.CurrentTick.Index != CassetteIndex && state.NextTick.Index == CassetteIndex) {
-                                    State = LaserState.Precharge;
-                                }
-                                break;
-
-                            case LaserState.Precharge:
-                                if (beatFraction >= chargeDelayFraction) {
-                                    setAnimationSpeed(chargingAnimation, state.TickLength * (1 - chargeDelayFraction));
-                                    State = LaserState.Charging;
-                                }
-                                break;
-
-                            case LaserState.Charging:
-                                if (beat == 0 && state.CurrentTick.Index == CassetteIndex) {
-                                    State = LaserState.Burst;
-                                }
-                                break;
-
-                            case LaserState.Firing:
-                                if (State == LaserState.Firing && beat == 0 && (state.CurrentTick.Index != CassetteIndex || HalfLength)) {
-                                    State = LaserState.Cooldown;
-                                }
-                                break;
+            Add(cassetteListener = new CassetteListener(CassetteIndex) {
+                    OnActivated = () => {
+                        State = LaserState.Burst;
+                    },
+                    OnDeactivated = () => {
+                        State = State == LaserState.Firing ? LaserState.Cooldown : LaserState.Idle;
+                    },
+                    OnSilentUpdate = activated => {
+                        cassetteListener.Activated = activated;
+                        setState(activated && !HalfLength ? LaserState.Firing : LaserState.Idle, true);
+                    },
+                    OnTick = (_, isSwap) => {
+                        if (isSwap) return;
+                        if (State == LaserState.Firing && HalfLength) {
+                            State = LaserState.Cooldown;
+                        } else if (State == LaserState.Idle && !cassetteListener.Activated) {
+                            var cbm = Scene.Tracker.GetEntity<CassetteBlockManager>();
+                            var data = DynamicData.For(cbm);
+                            var beatsPerTick = data.Get<int>("beatsPerTick");
+                            var tempoMult = data.Get<float>("tempoMult");
+                            var beatLength = (10 / 60f) / tempoMult;
+                            var tickLength = beatLength * beatsPerTick;
+                            chargeDelayRemaining = chargeDelayFraction * tickLength;
+                            setAnimationSpeed(chargingAnimation, tickLength * (1 - chargeDelayFraction));
+                            State = LaserState.Precharge;
                         }
-                    }
+                    },
                 },
                 new PlayerCollider(onPlayerCollide),
                 new LedgeBlocker(_ => KillPlayer),
@@ -331,30 +328,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(new Coroutine(impactParticlesSequence()));
         }
 
-        public override void Awake(Scene scene) {
-            base.Awake(scene);
-            needsForcedUpdate = true;
-        }
-
-        private void forceUpdate() {
-            if (!cassetteListener.UpdateState())
-                return;
-
-            needsForcedUpdate = false;
-
-            var cassetteState = cassetteListener.CurrentState;
-
-            if (cassetteState.CurrentTick.Index == CassetteIndex && (cassetteState.NextTick.Index == CassetteIndex || !HalfLength)) {
-                State = LaserState.Firing;
-            } else if (cassetteState.CurrentTick.Index != CassetteIndex && cassetteState.NextTick.Index == CassetteIndex) {
-                setAnimationSpeed(chargingAnimation, cassetteState.TickLength * (1 - chargeDelayFraction));
-                State = LaserState.Charging;
-            } else {
-                laserState = LaserState.Precharge;
-                State = LaserState.Idle;
-            }
-        }
-
         private void onPlayerCollide(Player player) {
             if (KillPlayer) {
                 Vector2 direction;
@@ -370,12 +343,21 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
 
-            if (needsForcedUpdate)
-                forceUpdate();
+            if (State == LaserState.Precharge && chargeDelayRemaining > 0) {
+                chargeDelayRemaining -= Engine.DeltaTime;
+                if (chargeDelayRemaining <= 0)
+                    State = LaserState.Charging;
+            }
 
-            if (State == LaserState.Burst && collisionDelayRemaining > 0) {
+            if (collisionDelayRemaining > 0) {
                 collisionDelayRemaining -= Engine.DeltaTime;
                 if (collisionDelayRemaining <= 0)
+                    Collider = activeColliderList;
+            }
+            
+            if (State == LaserState.Burst && burstTimeRemaining > 0) {
+                burstTimeRemaining -= Engine.DeltaTime;
+                if (burstTimeRemaining <= 0)
                     State = LaserState.Firing;
             }
 

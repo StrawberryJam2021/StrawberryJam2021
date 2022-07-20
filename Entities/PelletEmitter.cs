@@ -2,6 +2,7 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
+using MonoMod.Utils;
 using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
@@ -75,23 +76,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(EmitterSprite,
                 new LedgeBlocker(),
                 new PlayerCollider(OnPlayerCollide),
-                new CassetteListener {
-                    OnTick = state => {
-                        if (state.NextTick.Index != state.CurrentTick.Index &&
-                            (CassetteIndex < 0 || CassetteIndex == state.NextTick.Index)) {
+                new CassetteListener(CassetteIndex) {
+                    OnTick = (currentIndex, isSwap) => {
+                        if (!isSwap && (CassetteIndex < 0 || CassetteIndex != currentIndex)) {
                             string key = chargingAnimationKey;
                             var animation = EmitterSprite.Animations[key];
-                            animation.Delay = state.TickLength / animation.Frames.Length;
+                            animation.Delay = getTickLength() / animation.Frames.Length;
                             EmitterSprite.Play(key);
-                        }
-                    },
-                    OnSwap = state => {
-                        if (CassetteIndex < 0 || CassetteIndex == state.CurrentTick.Index) {
+                        } else if (isSwap && (CassetteIndex < 0 || CassetteIndex == currentIndex)) {
                             EmitterSprite.Play(firingAnimationKey);
-                            Fire(state.CurrentTick.Index);
+                            Fire(currentIndex);
                         }
                     },
                 });
+        }
+
+        private float getTickLength() {
+            var cbm = Scene.Tracker.GetEntity<CassetteBlockManager>();
+            var data = DynamicData.For(cbm);
+            var beatsPerTick = data.Get<int>("beatsPerTick");
+            var tempoMult = data.Get<float>("tempoMult");
+            var beatLength = (10 / 60f) / tempoMult;
+            return beatLength * beatsPerTick;
         }
 
         public void Fire(int? cassetteIndex = null, Action<PelletShot> action = null) {

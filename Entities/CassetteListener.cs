@@ -1,99 +1,36 @@
 using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
 using Monocle;
+using MonoMod.Cil;
 using MonoMod.Utils;
 using System;
 using System.Linq;
-using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-    /// <summary>
-    /// Allows an entity to subscribe to certain events from a <see cref="CassetteBlockManager"/>.
-    /// </summary>
-    /// <remarks>
-    /// Provided events are:
-    /// <list type="bullet">
-    /// <item><description><see cref="OnSwap"/> =&gt; Invoked when cassette blocks swap.</description></item>
-    /// <item><description><see cref="OnTick"/> =&gt; Invoked when a "click" sound is heard.</description></item>
-    /// <item><description><see cref="OnSixteenth"/> =&gt; Invoked the first frame of a sixteenth beat.</description></item>
-    /// </list>
-    /// </remarks>
+    [Tracked]
     public class CassetteListener : Component {
-        #region Events
-
-        /// <summary>
-        /// Invoked when a "click" sound is heard.
-        /// </summary>
-        public Action<CassetteState> OnTick;
-
-        /// <summary>
-        /// Invoked when cassette blocks swap.
-        /// </summary>
-        public Action<CassetteState> OnSwap;
-
-        /// <summary>
-        /// Invoked the first frame of a sixteenth beat.
-        /// </summary>
-        public Action<CassetteState> OnSixteenth;
-
-        public Action<CassetteState> OnBeat;
-
-        protected virtual void InvokeOnTick(CassetteState state) => OnTick?.Invoke(state);
-        protected virtual void InvokeOnSwap(CassetteState state) => OnSwap?.Invoke(state);
-        protected virtual void InvokeOnSixteenth(CassetteState state) => OnSixteenth?.Invoke(state);
-
-        protected virtual void InvokeOnBeat(CassetteState state) => OnBeat?.Invoke(state);
-
-        #endregion
-
-        #region Properties
-
-        public CassetteState CurrentState { get; private set; }
-
-        private int beatsPerTick => cassetteBlockManagerData?.Get<int>(nameof(beatsPerTick)) ?? 4;
-        private int ticksPerSwap => cassetteBlockManagerData?.Get<int>(nameof(ticksPerSwap)) ?? 2;
-        private int maxBeat => cassetteBlockManagerData?.Get<int>(nameof(maxBeat)) ?? 16;
-        private int beatIndex => cassetteBlockManagerData?.Get<int>(nameof(beatIndex)) ?? 0;
-        private int beatIndexMax => cassetteBlockManagerData?.Get<int>(nameof(beatIndexMax)) ?? 0;
-        private int currentIndex => cassetteBlockManagerData?.Get<int>(nameof(currentIndex)) ?? 0;
-        private float tempoMult => cassetteBlockManagerData?.Get<float>(nameof(tempoMult)) ?? 1f;
-
-        #endregion
-
-        #region Private Fields
-
+        public static Color ColorFromCassetteIndex(int index) => index switch {
+            0 => Calc.HexToColor("49aaf0"),
+            1 => Calc.HexToColor("f049be"),
+            2 => Calc.HexToColor("fcdc3a"),
+            3 => Calc.HexToColor("38e04e"),
+            _ => Color.White
+        };
+        
+        public Action OnFinish;
+        public Action OnWillToggle;
+        public Action OnActivated;
+        public Action OnDeactivated;
+        public Action<bool> OnSilentUpdate;
+        public Action<int, bool> OnTick;
+        
+        public int Index;
+        public bool Activated;
+        
         private CassetteBlockManager cassetteBlockManager;
-        private DynamicData cassetteBlockManagerData;
 
-        private static readonly FieldInfo currentIndexFieldInfo = typeof(CassetteBlockManager).GetField("currentIndex", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo beatIndexFieldInfo = typeof(CassetteBlockManager).GetField("beatIndex", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo beatIndexMaxFieldInfo = typeof(CassetteBlockManager).GetField("beatIndexMax", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo beatsPerTickFieldInfo = typeof(CassetteBlockManager).GetField("beatsPerTick", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo ticksPerSwapFieldInfo = typeof(CassetteBlockManager).GetField("ticksPerSwap", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo maxBeatFieldInfo = typeof(CassetteBlockManager).GetField("maxBeat", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo tempoMultFieldInfo = typeof(CassetteBlockManager).GetField("tempoMult", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        #endregion
-
-        private CassetteTick nextTick(CassetteTick tick) {
-            if (++tick.Offset >= ticksPerSwap) {
-                tick.Offset = 0;
-                if (++tick.Index >= maxBeat)
-                    tick.Index = 0;
-            }
-            return tick;
-        }
-
-        private CassetteTick previousTick(CassetteTick tick) {
-            if (--tick.Offset < 0) {
-                tick.Offset = ticksPerSwap - 1;
-                if (--tick.Index < 0)
-                    tick.Index = maxBeat - 1;
-            }
-            return tick;
-        }
-
-        public CassetteListener() : base(true, false)
-        {
+        public CassetteListener(int index) : base(false, false) {
+            Index = index;
         }
 
         public override void EntityAdded(Scene scene) {
@@ -105,94 +42,104 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             cassetteBlockManager = scene.Tracker.GetEntity<CassetteBlockManager>() ?? scene.Entities.ToAdd.OfType<CassetteBlockManager>().FirstOrDefault();
             if (cassetteBlockManager == null)
                 scene.Add(cassetteBlockManager = new CassetteBlockManager());
-            cassetteBlockManagerData = new DynamicData(cassetteBlockManager);
         }
 
         public override void EntityRemoved(Scene scene) {
             base.EntityRemoved(scene);
             cassetteBlockManager = null;
-            cassetteBlockManagerData = null;
+        }
+        
+        public static void Load() {
+            IL.Celeste.CassetteBlockManager.AdvanceMusic += CassetteBlockManager_AdvanceMusic;
+            On.Celeste.CassetteBlockManager.StopBlocks += CassetteBlockManager_StopBlocks;
+            On.Celeste.CassetteBlockManager.SilentUpdateBlocks += CassetteBlockManager_SilentUpdateBlocks;
+            On.Celeste.CassetteBlockManager.SetActiveIndex += CassetteBlockManager_SetActiveIndex;
+            On.Celeste.CassetteBlockManager.SetWillActivate += CassetteBlockManager_SetWillActivate;
         }
 
-        public bool UpdateState() {
-            if (beatsPerTick == 0 || ticksPerSwap == 0)
-                return false;
-
-            var currentTick = new CassetteTick {
-                Index = currentIndex,
-                Offset = (beatIndex / beatsPerTick) % ticksPerSwap,
-            };
-
-            CurrentState = new CassetteState {
-                BeatsPerTick = beatsPerTick,
-                TicksPerSwap = ticksPerSwap,
-                BeatCount = beatIndexMax,
-                BlockCount = maxBeat / (beatsPerTick * ticksPerSwap),
-                Sixteenth = cassetteBlockManager.GetSixteenthNote(),
-                TempoMultiplier = tempoMult,
-                Beat = beatIndex,
-                CurrentTick = currentTick,
-                NextTick = nextTick(currentTick),
-                PreviousTick = previousTick(currentTick),
-                BeatLength = (10f / 60f) / tempoMult, // apparently one beat is 10 frames
-            };
-
-            return true;
+        public static void Unload() {
+            IL.Celeste.CassetteBlockManager.AdvanceMusic -= CassetteBlockManager_AdvanceMusic;
+            On.Celeste.CassetteBlockManager.StopBlocks -= CassetteBlockManager_StopBlocks;
+            On.Celeste.CassetteBlockManager.SilentUpdateBlocks -= CassetteBlockManager_SilentUpdateBlocks;
+            On.Celeste.CassetteBlockManager.SetActiveIndex -= CassetteBlockManager_SetActiveIndex;
+            On.Celeste.CassetteBlockManager.SetWillActivate -= CassetteBlockManager_SetWillActivate;
         }
 
-        public override void Update() {
-            base.Update();
-            if (cassetteBlockManager == null) return;
-
-            var lastState = CurrentState;
-            UpdateState();
-
-            if (CurrentState.Sixteenth != lastState.Sixteenth) {
-                InvokeOnSixteenth(CurrentState);
-            }
-
-            if (CurrentState.CurrentTick.Index != lastState.CurrentTick.Index) {
-                InvokeOnSwap(CurrentState);
-            }
-
-            if (CurrentState.Beat != lastState.Beat) {
-                InvokeOnBeat(CurrentState);
-            }
-
-            if (CurrentState.CurrentTick.Index != lastState.CurrentTick.Index || CurrentState.CurrentTick.Offset != lastState.CurrentTick.Offset) {
-                InvokeOnTick(CurrentState);
+        private static void CassetteBlockManager_AdvanceMusic(ILContext il) {
+            var cursor = new ILCursor(il);
+            if (cursor.TryGotoNext(MoveType.AfterLabel,
+                instr => instr.MatchLdarg(0),
+                instr => instr.MatchLdfld<CassetteBlockManager>("leadBeats"),
+                instr => instr.MatchLdcI4(0))) {
+                cursor.Emit(OpCodes.Ldarg_0);
+                
+                cursor.EmitDelegate<Action<CassetteBlockManager>>(self => {
+                    var data = DynamicData.For(self);
+                    var beatIndex = data.Get<int>("beatIndex");
+                    var beatsPerTick = data.Get<int>("beatsPerTick");
+                    var ticksPerSwap = data.Get<int>("ticksPerSwap");
+                    var currentIndex = data.Get<int>("currentIndex");
+                    if (beatIndex % beatsPerTick == 0 &&
+                        beatIndex % (beatsPerTick * ticksPerSwap) != 0 &&
+                        self.Scene is not null) {
+                        var components = self.Scene.Tracker.GetComponents<CassetteListener>();
+                        foreach (CassetteListener component in components) {
+                            component.OnTick?.Invoke(currentIndex, false);
+                        }
+                    }
+                });
             }
         }
-
-        public static Color ColorFromCassetteIndex(int index) => index switch {
-            0 => Calc.HexToColor("49aaf0"),
-            1 => Calc.HexToColor("f049be"),
-            2 => Calc.HexToColor("fcdc3a"),
-            3 => Calc.HexToColor("38e04e"),
-            _ => Color.White
-        };
-
-        public struct CassetteTick {
-            public int Index;
-            public int Offset;
+        
+        private static void CassetteBlockManager_StopBlocks(On.Celeste.CassetteBlockManager.orig_StopBlocks orig, CassetteBlockManager self) {
+            orig(self);
+            if (self.Scene == null) return;
+            var components = self.Scene.Tracker.GetComponents<CassetteListener>();
+            foreach (CassetteListener component in components) {
+                component.OnFinish?.Invoke();
+            }
         }
-
-        public struct CassetteState {
-            public int BeatsPerTick;
-            public int TicksPerSwap;
-            public int BeatCount;
-            public int BlockCount;
-            public float BeatLength;
-            public float TempoMultiplier;
-            public int Sixteenth;
-            public int Beat;
-
-            public float TickLength => BeatLength * BeatsPerTick;
-            public float SwapLength => BeatLength * BeatsPerTick * TicksPerSwap;
-
-            public CassetteTick CurrentTick;
-            public CassetteTick NextTick;
-            public CassetteTick PreviousTick;
+        
+        private static void CassetteBlockManager_SilentUpdateBlocks(On.Celeste.CassetteBlockManager.orig_SilentUpdateBlocks orig, CassetteBlockManager self) {
+            orig(self);
+            if (self.Scene == null) return;
+            
+            var data = DynamicData.For(self);
+            var currentIndex = data.Get<int>("currentIndex");
+            var components = self.Scene.Tracker.GetComponents<CassetteListener>();
+            foreach (CassetteListener component in components) {
+                component.OnSilentUpdate?.Invoke(component.Index == currentIndex);
+            }
+        }
+        
+        private static void CassetteBlockManager_SetActiveIndex(On.Celeste.CassetteBlockManager.orig_SetActiveIndex orig, CassetteBlockManager self, int index) {
+            orig(self, index);
+            if (self.Scene == null) return;
+            
+            var components = self.Scene.Tracker.GetComponents<CassetteListener>();
+            foreach (CassetteListener component in components) {
+                if (component.Activated && component.Index != index) {
+                    component.Activated = false;
+                    component.OnDeactivated?.Invoke();
+                } else if (!component.Activated && component.Index == index) {
+                    component.Activated = true;
+                    component.OnActivated?.Invoke();
+                }
+                
+                component.OnTick?.Invoke(index, true);
+            }
+        }
+        
+        private static void CassetteBlockManager_SetWillActivate(On.Celeste.CassetteBlockManager.orig_SetWillActivate orig, CassetteBlockManager self, int index) {
+            orig(self, index);
+            if (self.Scene == null) return;
+            
+            var components = self.Scene.Tracker.GetComponents<CassetteListener>();
+            foreach (CassetteListener component in components) {
+                if (component.Index == index || component.Activated) {
+                    component.OnWillToggle?.Invoke();
+                }
+            }
         }
     }
 }
