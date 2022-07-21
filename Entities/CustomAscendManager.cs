@@ -13,10 +13,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public Color[] StreakColors;
         public bool Borders;
+        public bool Dark;
 
         private Color backgroundColor;
         private bool introLaunch;
         private float fade;
+        private bool launchStarted;
         private bool launchCompleted;
         private Level level;
 
@@ -27,6 +29,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             backgroundColor = Calc.HexToColor(data.Attr("backgroundColor", "75a0ab"));
             introLaunch = data.Bool("introLaunch");
             Borders = data.Bool("borders", true);
+            Dark = data.Bool("dark", false);
             StreakColors = data.Attr("streakColors", "ffffff,e69ecb")
                 .Split(separators, StringSplitOptions.RemoveEmptyEntries)
                 .Select(str => Calc.HexToColor(str.Trim()))
@@ -45,6 +48,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 player = Scene.Tracker.GetEntity<Player>();
                 yield return null;
             }
+
+            launchStarted = true;
 
             Scene.Add(new Streaks(this));
 
@@ -74,7 +79,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
 
-            Fader fader = new Fader();
+            Fader fader = new Fader(this);
             Scene.Add(fader);
             player.X = from.X;
             from = player.Position;
@@ -109,10 +114,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Removed(Scene scene) {
-            FadeSnapTo(0f);
+            if (launchStarted) {
+                FadeSnapTo(0f);
+            }
             if (launchCompleted) {
-                ScreenWipe.WipeColor = Color.White;
-                AreaData.Get(level.Session).DoScreenWipe(Scene, wipeIn: true);
+                ScreenWipe.WipeColor = Dark ? Color.Black : Color.White;
+                new MountainWipe(Scene, wipeIn: true);
                 ScreenWipe.WipeColor = Color.Black;
             }
             base.Removed(scene);
@@ -210,7 +217,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 base.Update();
                 for (int i = 0; i < particles.Length; i++) {
                     Particle particle = particles[i];
-                    particle.Position.Y = particle.Position.Y + particles[i].Speed * Engine.DeltaTime;
+                    particle.Position.Y += particles[i].Speed * Engine.DeltaTime;
                 }
             }
 
@@ -243,15 +250,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public class Fader : Entity {
 
             public float Fade;
+            private CustomAscendManager manager;
 
-            public Fader() {
+            public Fader(CustomAscendManager manager) {
+                this.manager = manager;
                 Depth = -1000010;
             }
 
             public override void Render() {
                 if (Fade > 0f) {
                     Vector2 position = (Scene as Level).Camera.Position;
-                    Draw.Rect(position.X - 10f, position.Y - 10f, 340f, 200f, Color.White * Fade);
+                    Draw.Rect(position.X - 10f, position.Y - 10f, 340f, 200f, (manager.Dark ? Color.Black : Color.White) * Fade);
                 }
             }
         }
