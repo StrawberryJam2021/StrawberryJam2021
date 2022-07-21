@@ -57,10 +57,6 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
-	
-  <ItemGroup>
-    <Folder Include="Cutscenes\" />
-  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Cutscenes\" />
