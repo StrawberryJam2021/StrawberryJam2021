@@ -3,13 +3,12 @@ module SJ2021LaunchPlatform
 using ..Ahorn, Maple
 
 @pardef LaunchPlatform(
-    x1::Integer, y1::Integer,
-    x2::Integer=x1, y2::Integer=y1-64,
+    x::Integer, y::Integer,
     width::Integer=40
 ) = Entity("SJ2021/LaunchPlatform",
-    x = x1, y = y1,
+    x = x, y = y,
     width = width,
-    nodes=Tuple{Int, Int}[(x2, y2)]
+    nodes=Tuple{Int, Int}[(0, 0)]
 )
 
 const placements = Ahorn.PlacementDict(
@@ -17,6 +16,8 @@ const placements = Ahorn.PlacementDict(
         LaunchPlatform
     )
 )
+
+const sprite = "objects/StrawberryJam2021/launchPlatform/default"
 
 Ahorn.nodeLimits(entity::LaunchPlatform) = 1, 1
 Ahorn.resizable(entity::LaunchPlatform) = true, false
@@ -29,16 +30,16 @@ function Ahorn.selection(entity::LaunchPlatform)
     return [Ahorn.Rectangle(startX, startY, width, 8), Ahorn.Rectangle(stopX, stopY, width, 8)]
 end
 
-function renderPlatform(ctx::Ahorn.Cairo.CairoContext, texture::String, x::Int, y::Int, width::Int)
+function renderPlatform(ctx::Ahorn.Cairo.CairoContext, x::Int, y::Int, width::Int)
     tilesWidth = div(width, 8)
 
     for i in 2:tilesWidth - 1
-        Ahorn.drawImage(ctx, "objects/woodPlatform/$texture", x + 8 * (i - 1), y, 8, 0, 8, 8)
+        Ahorn.drawImage(ctx, sprite, x + 8 * (i - 1), y, 8, 0, 8, 8)
     end
 
-    Ahorn.drawImage(ctx, "objects/woodPlatform/$texture", x, y, 0, 0, 8, 8)
-    Ahorn.drawImage(ctx, "objects/woodPlatform/$texture", x + tilesWidth * 8 - 8, y, 24, 0, 8, 8)
-    Ahorn.drawImage(ctx, "objects/woodPlatform/$texture", x + floor(Int, width / 2) - 4, y, 16, 0, 8, 8)
+    Ahorn.drawImage(ctx, sprite, x, y, 0, 0, 8, 8)
+    Ahorn.drawImage(ctx, sprite, x + tilesWidth * 8 - 8, y, 24, 0, 8, 8)
+    Ahorn.drawImage(ctx, sprite, x + floor(Int, width / 2) - 4, y, 16, 0, 8, 8)
 end
 
 outerColor = (30, 14, 25) ./ 255
@@ -77,16 +78,16 @@ function renderConnection(ctx::Ahorn.Cairo.CairoContext, x::Int, y::Int, nx::Int
     Ahorn.Cairo.restore(ctx)
 end
 
-function renderPlatform(ctx::Ahorn.Cairo.CairoContext, texture::String, x::Int, y::Int, width::Int)
+function renderPlatform(ctx::Ahorn.Cairo.CairoContext, x::Int, y::Int, width::Int)
     tilesWidth = div(width, 8)
 
     for i in 2:tilesWidth - 1
-        Ahorn.drawImage(ctx, "objects/woodPlatform/$texture", x + 8 * (i - 1), y, 8, 0, 8, 8)
+        Ahorn.drawImage(ctx, sprite, x + 8 * (i - 1), y, 8, 0, 8, 8)
     end
 
-    Ahorn.drawImage(ctx, "objects/woodPlatform/$texture", x, y, 0, 0, 8, 8)
-    Ahorn.drawImage(ctx, "objects/woodPlatform/$texture", x + tilesWidth * 8 - 8, y, 24, 0, 8, 8)
-    Ahorn.drawImage(ctx, "objects/woodPlatform/$texture", x + floor(Int, width / 2) - 4, y, 16, 0, 8, 8)
+    Ahorn.drawImage(ctx, sprite, x, y, 0, 0, 8, 8)
+    Ahorn.drawImage(ctx, sprite, x + tilesWidth * 8 - 8, y, 24, 0, 8, 8)
+    Ahorn.drawImage(ctx, sprite, x + floor(Int, width / 2) - 4, y, 16, 0, 8, 8)
 end
 
 function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::LaunchPlatform, room::Maple.Room)
@@ -95,10 +96,8 @@ function Ahorn.renderAbs(ctx::Ahorn.Cairo.CairoContext, entity::LaunchPlatform, 
     x, y = Int(entity.data["x"]), Int(entity.data["y"])
     nx, ny = Int.(entity.data["nodes"][1])
 
-    texture = get(entity.data, "texture", "default")
-
     renderConnection(ctx, x, y, nx, ny, width)
-    renderPlatform(ctx, texture, x, y, width)
+    renderPlatform(ctx, x, y, width)
 end
 
 function Ahorn.renderSelectedAbs(ctx::Ahorn.Cairo.CairoContext, entity::LaunchPlatform, room::Maple.Room)
@@ -107,10 +106,8 @@ function Ahorn.renderSelectedAbs(ctx::Ahorn.Cairo.CairoContext, entity::LaunchPl
     startX, startY = Int(entity.data["x"]), Int(entity.data["y"])
     stopX, stopY = Int.(entity.data["nodes"][1])
 
-    texture = get(entity.data, "texture", "default")
-
-    renderPlatform(ctx, texture, startX, startY, width)
-    renderPlatform(ctx, texture, stopX, stopY, width)
+    renderPlatform(ctx, startX, startY, width)
+    renderPlatform(ctx, stopX, stopY, width)
 
     Ahorn.drawArrow(ctx, startX + width / 2, startY, stopX + width / 2, stopY, Ahorn.colors.selection_selected_fc, headLength=6)
 end
