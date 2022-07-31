@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using MonoMod.Utils;
 using System;
+using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/PelletEmitterUp = LoadUp",
@@ -49,6 +50,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private string idleAnimationKey => $"{AnimationKeyPrefix}_idle";
         private string chargingAnimationKey => $"{AnimationKeyPrefix}_charging";
         private string firingAnimationKey => $"{AnimationKeyPrefix}_firing";
+        private string fireSound(int index) => $"event:/sj21_mosscairn_sfx/emitter_{index switch { 0 => "blue", _ => "pink" }}";
+
+        private SingletonAudioController sfx;
 
         protected PelletEmitter(EntityData data, Vector2 offset, Orientations orientation)
             : base(data, offset, orientation) {
@@ -91,6 +95,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 });
         }
 
+        public override void Added(Scene scene) {
+            base.Added(scene);
+            
+            sfx = SingletonAudioController.Ensure(scene);
+        }
+
         private float getTickLength() {
             var cbm = Scene.Tracker.GetEntity<CassetteBlockManager>();
             var data = DynamicData.For(cbm);
@@ -105,7 +115,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 var shot = Engine.Pooler.Create<PelletShot>().Init(this, i * Delay, cassetteIndex ?? CassetteIndex);
                 action?.Invoke(shot);
                 Scene.Add(shot);
+                if (i == 0) {
+                    PlayFireSound(cassetteIndex ?? CassetteIndex);
+                }
             }
+        }
+
+        public void PlayFireSound(int index) {
+            sfx?.Play(fireSound(index), this, 0.01f);
         }
 
         private void OnPlayerCollide(Player player) => player.Die((player.Center - Position).SafeNormalize());
@@ -134,8 +151,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             private ParticleType particleType;
             private Vector2 hitDir;
+            private int firedCassetteIndex;
 
             private float wiggleAmount = 2f;
+
+            private PelletEmitter parentEmitter;
+
+            private const string impactSound = "event:/sj21_mosscairn_sfx/emitter_impact";
 
             public static void LoadParticles() {
                 P_BlueTrail = new ParticleType {
@@ -171,6 +193,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             public PelletShot Init(PelletEmitter emitter, float delay, int cassetteIndex) {
+                parentEmitter = emitter;
                 delayTimeRemaining = delay;
                 Dead = false;
                 Speed = emitter.Direction * emitter.Speed;
@@ -184,6 +207,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 impactSprite.Rotation = projectileSprite.Rotation = emitter.EmitterSprite.Rotation;
                 impactSprite.Effects = projectileSprite.Effects = emitter.EmitterSprite.Effects;
 
+                firedCassetteIndex = cassetteIndex;
                 projectileAnimationKey = impactAnimationKey = cassetteIndex == 0 ? "blue" : "pink";
 
                 impactSprite.Visible = false;
@@ -211,6 +235,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             public void Destroy(float delay = 0) {
+                parentEmitter = null;
                 projectileSprite.Stop();
                 impactSprite.Stop();
                 Dead = true;
@@ -241,6 +266,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 killHitbox.Center = newCentre;
                 projectileSprite.Position = newCentre;
 
+                if (Scene is not Level level) return;
+                
                 // delayed init
                 if (delayTimeRemaining > 0) {
                     delayTimeRemaining -= Engine.DeltaTime;
@@ -250,19 +277,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                     projectileSprite.Visible = true;
                     projectileSprite.Play(projectileAnimationKey);
+                    parentEmitter?.PlayFireSound(firedCassetteIndex);
                 }
 
                 Move();
 
-                if (Scene is Level level) {
-                    if (level.OnInterval(0.05f)) {
-                        level.ParticlesBG.Emit(particleType, 1, Center, Vector2.One * 2f, (-Speed).Angle());
-                    }
+                if (level.OnInterval(0.05f)) {
+                    level.ParticlesBG.Emit(particleType, 1, Center, Vector2.One * 2f, (-Speed).Angle());
+                }
 
-                    // destroy the shot if it leaves the room bounds
-                    if (!level.IsInBounds(this)) {
-                        Destroy();
-                    }
+                // destroy the shot if it leaves the room bounds
+                if (!level.IsInBounds(this)) {
+                    Destroy();
                 }
             }
 
@@ -325,6 +351,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 impactSprite.Visible = true;
                 Collidable = false;
                 killHitbox.Center = projectileSprite.Position = Vector2.Zero;
+                
+                if (Scene is Level level && level.Camera.IsInBounds(this)) {
+                    Audio.Play(impactSound, Center);
+                }
             }
 
             private void OnPlayerCollide(Player player) {

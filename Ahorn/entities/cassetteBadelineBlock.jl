@@ -7,13 +7,13 @@ using ..Ahorn, Maple
     width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight,
     nodes=Tuple{Int,Int}[],
     tiletype::String="g", hideFinalTransition::Bool=true, ignoredNodes::String="", offBeat::Bool=false,
-    playImpactSounds::Bool=true, emitImpactParticles::Bool=true
+    emitImpactParticles::Bool=true
 )
 
 Ahorn.editingOrder(entity::CassetteBadelineBlock) = String[
     "x", "y", "width", "height",
     "tiletype", "ignoredNodes", "hideFinalTransition", "offBeat",
-    "playImpactSounds", "emitImpactParticles"
+    "emitImpactParticles"
 ]
 
 const placements = Ahorn.PlacementDict(

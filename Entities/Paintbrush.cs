@@ -53,12 +53,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Vector2 beamOffset => Orientation.Normal() * beamOffsetMultiplier;
         private Color telegraphColor => CassetteListener.ColorFromCassetteIndex(CassetteIndex);
         private Color beamFillColor => CassetteIndex == 0 ? Calc.HexToColor("73efe8") : Calc.HexToColor("ff8eae");
+        private string laserFireSound => $"event:/sj21_mosscairn_sfx/paintbrush_laser_{animationPrefix}";
 
         private readonly Sprite largeBrushSprite;
         private readonly Sprite smallBrushSprite;
         private readonly Sprite beamSprite;
         private readonly Sprite paintParticlesSprite;
         private readonly Sprite paintBackSprite;
+        private readonly SoundSource rampUpSource;
+        private readonly SoundSource fireSource;
         private readonly int[] smallBrushFrames;
 
         private readonly Collider[] brushHitboxes;
@@ -76,6 +79,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private const float mediumRumbleEffectRange = 8f * 12;
         private const float strongRumbleEffectRange = 8f * 8;
         private const int tileSize = 8;
+        private const string laserRampUpSound = "event:/sj21_mosscairn_sfx/paintbrush_laser_ramp_up";
 
         private float collisionDelayRemaining;
         private float chargeDelayRemaining;
@@ -85,7 +89,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static ParticleType pinkCooldownParticle;
         private static ParticleType blueImpactParticle;
         private static ParticleType pinkImpactParticle;
-
+        
         public static void LoadParticles() {
             blueCooldownParticle = new ParticleType(Booster.P_Burst) {
                 Source = GFX.Game["particles/blob"],
@@ -148,9 +152,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             
             switch (State) {
                 case LaserState.Idle:
+                    largeBrushSprite.Play(idleAnimation);
+                    Collider = inactiveColliderList;
+                    break;
+                
                 case LaserState.Precharge:
                     largeBrushSprite.Play(idleAnimation);
                     Collider = inactiveColliderList;
+                    PlayIfInBounds(rampUpSource, laserRampUpSound);
                     break;
 
                 case LaserState.Charging:
@@ -185,6 +194,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     paintBackSprite.Play(cooldownAnimation);
                     Collider = inactiveColliderList;
                     emitCooldownParticles();
+                    fireSource.Param("end", 1f);
                     break;
             }
         }
@@ -243,6 +253,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     OnDeactivated = () => {
                         State = State == LaserState.Firing ? LaserState.Cooldown : LaserState.Idle;
                     },
+                    OnWillToggle = () => {
+                        if (State == LaserState.Charging) {
+                            PlayIfInBounds(fireSource, laserFireSound);
+                        }
+                    },
                     OnSilentUpdate = activated => {
                         cassetteListener.Activated = activated;
                         setState(activated && !HalfLength ? LaserState.Firing : LaserState.Idle, true);
@@ -270,9 +285,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 paintBackSprite,
                 smallBrushSprite,
                 largeBrushSprite,
-                paintParticlesSprite
+                paintParticlesSprite,
+                rampUpSource = new SoundSource(),
+                fireSource = new SoundSource()
             );
-
+            
             var brushHitboxList = new List<Collider>();
             var colliderOffset = Orientation.Vertical() ? new Vector2(tileSize, 0) : new Vector2(0, tileSize);
             for (int i = 1; i < Tiles; i += 2) {
@@ -518,6 +535,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
 
                 yield return yieldValue;
+            }
+        }
+
+        private void PlayIfInBounds(SoundSource source, string path) {
+            if (SceneAs<Level>().Camera.IsInBounds(this)) {
+                source.Play(path);
             }
         }
 
