@@ -74,6 +74,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private const float chargeDelayFraction = 0.25f;
         private const float collisionDelaySeconds = 5f / 60f;
         private const float burstTimeSeconds = 0.2f;
+        private const float fireSoundDelaySeconds = 10f / 60f;
         private const int beamOffsetMultiplier = 4;
         private const int beamThickness = 12;
         private const float mediumRumbleEffectRange = 8f * 12;
@@ -84,6 +85,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float collisionDelayRemaining;
         private float chargeDelayRemaining;
         private float burstTimeRemaining;
+        private float fireSoundDelayRemaining;
 
         private static ParticleType blueCooldownParticle;
         private static ParticleType pinkCooldownParticle;
@@ -255,7 +257,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     },
                     OnWillToggle = () => {
                         if (State == LaserState.Charging) {
-                            PlayIfInBounds(fireSource, laserFireSound);
+                            fireSoundDelayRemaining = fireSoundDelaySeconds;
                         }
                     },
                     OnSilentUpdate = activated => {
@@ -370,6 +372,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 collisionDelayRemaining -= Engine.DeltaTime;
                 if (collisionDelayRemaining <= 0)
                     Collider = activeColliderList;
+            }
+
+            if (fireSoundDelayRemaining > 0) {
+                fireSoundDelayRemaining -= Engine.DeltaTime;
+                if (fireSoundDelayRemaining <= 0 && State >= LaserState.Charging && State <= LaserState.Firing) {
+                    PlayIfInBounds(fireSource, laserFireSound);
+                }
             }
             
             if (State == LaserState.Burst && burstTimeRemaining > 0) {
