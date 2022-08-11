@@ -105,6 +105,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                     yield return null;
                 }
+                
+                break;
             }
         }
     }
