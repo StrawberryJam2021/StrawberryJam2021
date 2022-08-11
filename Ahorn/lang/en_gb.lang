@@ -255,7 +255,6 @@ placements.entities.SJ2021/CassetteBadelineBlock.tooltips.tiletype=The tileset t
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.hideFinalTransition=If true, the transition between last and first nodes will be hidden (useful for conveyors).
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.ignoredNodes=A comma separated list of nodes which will not spawn a block, but are still part of the path. Negative indices indicate going backward from the end of list. For example, -1 indicates the final node. The first node cannot be ignored.
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.offBeat=If true, transitions will occur halfway between cassette swaps.
-placements.entities.SJ2021/CassetteBadelineBlock.tooltips.playImpactSounds=If true, blocks will make slamming sounds when hitting another solid. Disable this if using a conveyor.
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.emitImpactParticles=If true, blocks will emit dust particles when hitting another solid. Disable this if using a conveyor.
 
 # Airtime Music Controller
