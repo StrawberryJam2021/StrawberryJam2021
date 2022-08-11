@@ -23,6 +23,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly float _bloomRadius;
         private readonly Vector2 _bloomOffset;
 
+        private const string deathAnimationId = "death";
+        
         public GlowController(EntityData data, Vector2 offset)
             : base(data.Position + offset)
         {
@@ -65,31 +67,43 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     entity.Remove(entity.Components.GetAll<CustomBloom>().ToArray<Component>());
                 }
 
-                // gliders get a special coroutine that hides lights and blooms when they're vaporised
-                if (requiresRemovalRoutine && entity is Glider glider) {
-                    glider.Add(new Coroutine(GliderRoutine(glider)));
+                // some entities get a special coroutine that hides lights and blooms
+                // if it's a glider or otherwise has a sprite with a "death" animation
+                // note that this does not work with RespawningJellyfish since it removes the coroutine
+                if (requiresRemovalRoutine &&
+                    entity.Components.GetAll<Sprite>().FirstOrDefault(s => s.Has(deathAnimationId)) is { } sprite) {
+                    entity.Add(new Coroutine(DeathRemovalRoutine(entity, sprite)));
                 }
             }
         }
 
-        private IEnumerator GliderRoutine(Glider glider) {
-            var sprite = glider.Get<Sprite>();
-            while (glider.Scene != null && sprite.CurrentAnimationID != "death") {
-                yield return null;
+        private IEnumerator DeathRemovalRoutine(Entity entity, Sprite sprite) {
+            if (!sprite.Animations.TryGetValue(deathAnimationId, out var animation)) {
+                yield break;
             }
 
-            const float fadeTime = 0.5f;
-            var fadeRemaining = fadeTime;
-            
-            while (fadeRemaining > 0) {
-                fadeRemaining -= Engine.DeltaTime;
-                var alpha = Math.Max(fadeRemaining / fadeTime, 0f);
-                
-                foreach (VertexLight vertexLight in glider.Components.GetAll<VertexLight>()) {
-                    vertexLight.Alpha = alpha;
+            while (entity.Scene != null) {
+                // wait until the sprite plays the death animation
+                while (sprite.CurrentAnimationID != deathAnimationId) {
+                    yield return null;
                 }
-                foreach (BloomPoint bloomPoint in glider.Components.GetAll<BloomPoint>()) {
-                    bloomPoint.Alpha = alpha;
+                
+                // fade out over the length of that animation
+                var fadeTime = animation.Frames.Length * animation.Delay;
+                var fadeRemaining = fadeTime;
+            
+                while (fadeRemaining > 0) {
+                    fadeRemaining -= Engine.DeltaTime;
+                    var alpha = Math.Max(fadeRemaining / fadeTime, 0f);
+                
+                    foreach (VertexLight vertexLight in entity.Components.GetAll<VertexLight>()) {
+                        vertexLight.Alpha = alpha;
+                    }
+                    foreach (BloomPoint bloomPoint in entity.Components.GetAll<BloomPoint>()) {
+                        bloomPoint.Alpha = alpha;
+                    }
+
+                    yield return null;
                 }
             }
         }
