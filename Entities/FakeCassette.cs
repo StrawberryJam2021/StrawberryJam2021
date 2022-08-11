@@ -76,11 +76,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool collected;
 
-        private EventInstance remixSfx;
-
         private bool collecting;
 
-        private string remixEvent, unlockText, flagOnCollect;
+        private string collectAudioEvent, unlockText, flagOnCollect;
 
         private Vector2[] nodes;
 
@@ -92,9 +90,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public FakeCassette(EntityData data, Vector2 offset)
             : this(data.Position + offset) {
-            remixEvent = data.Attr("remixEvent");
-            if (remixEvent == "")
-                remixEvent = null;
+            collectAudioEvent = data.Attr("remixEvent");
             unlockText = data.Attr("unlockText");
             flagOnCollect = data.Attr("flagOnCollect");
             nodes = data.NodesOffset(offset);
@@ -123,16 +119,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             };
         }
 
-        public override void SceneEnd(Scene scene) {
-            base.SceneEnd(scene);
-            Audio.Stop(remixSfx);
-        }
-
-        public override void Removed(Scene scene) {
-            base.Removed(scene);
-            Audio.Stop(remixSfx);
-        }
-
         public override void Update() {
             base.Update();
             if (!collecting && base.Scene.OnInterval(0.1f)) {
@@ -143,7 +129,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void OnPlayer(Player player) {
             if (!collected) {
                 player?.RefillStamina();
-                Audio.Play("event:/game/general/cassette_get", Position);
+                Audio.Play(collectAudioEvent, Position);
                 collected = true;
                 global::Celeste.Celeste.Freeze(0.1f);
                 Add(new Coroutine(CollectRoutine(player)));
@@ -161,8 +147,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             level.Session.RespawnPoint = level.GetSpawnPoint(Position);
             level.Session.UpdateLevelStartDashes();
             SaveData.Instance.RegisterCassette(level.Session.Area);
-            foreach (CassetteBlock block in blocks)
-                block.SetActivatedSilently(false);
             Depth = -1000000;
             level.Shake();
             level.Flash(Color.White);
@@ -191,30 +175,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
             Visible = false;
-            remixSfx = remixEvent == null ? Audio.Play("event:/game/general/cassette_preview", "remix", level.Session.Area.ID) : Audio.Play(remixEvent);
             UnlockedBSide message = new UnlockedBSide();
             message.text = ActiveFont.FontSize.AutoNewline(Dialog.Clean(unlockText), 900);
             Scene.Add(message);
             yield return message.EaseIn();
             yield return DoFakeRoutine(player, message);
-            Audio.SetParameter(remixSfx, "end", 1f);
             duration2 = 0.25f;
             Add(new Coroutine(level.ZoomBack(duration2 - 0.05f)));
             for (float p3 = 0f; p3 < 1f; p3 += Engine.DeltaTime / duration2) {
                 level.Camera.Position = Vector2.Lerp(camTo, camWas, Ease.SineInOut(p3));
                 yield return null;
             }
-
+            yield return 0.1f;
             player.Active = true;
-            Audio.Play("event:/game/general/cassette_bubblereturn", level.Camera.Position + new Vector2(160f, 90f));
-            player.StartCassetteFly(nodes[1], nodes[0]);
             yield return 0.5f;
             level.Frozen = false;
             yield return 0.25f;
-            foreach(CassetteBlock block in blocks)
-                block.SetActivatedSilently(true);
             level.PauseLock = false;
-            level.Session.SetFlag(flagOnCollect);
             level.ResetZoom();
             level.EndCutscene();
             RemoveSelf();
@@ -260,11 +237,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             level.FormationBackdrop.Alpha = 0f;
             level.FormationBackdrop.Display = false;
             Engine.TimeRate = 1f;
-            for (int i = 0; i < 10; i++) {
-                Vector2 position = Position + new Vector2(0,96);
-                Vector2 value = Position + new Vector2(0, -180f);
-                Scene.Add(new AbsorbOrb(position, null, value));
-            }
+            level.Session.SetFlag(flagOnCollect);
             level.Shake();
             Glitch.Value = 0.8f;
             while (Glitch.Value > 0f) {
