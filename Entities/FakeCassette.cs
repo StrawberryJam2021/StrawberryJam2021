@@ -14,8 +14,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             public string text;
 
-            private bool waitForKeyPress;
-
             private float timer;
 
             public override void Added(Scene scene) {
@@ -54,9 +52,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Vector2 vector2 = Vector2.UnitY * 64f * (1f - num);
                 sprite.Texture.DrawJustified(vector - vector2 + new Vector2(0f, 32f), new Vector2(0.5f, 1f), Color.White * num);
                 ActiveFont.Draw(text, vector + vector2, new Vector2(0.5f, 0f), Vector2.One, Color.White * num);
-                if (waitForKeyPress) {
-                    GFX.Gui["textboxbutton"].DrawCentered(new Vector2(1824f, 984 + ((timer % 1f < 0.25f) ? 6 : 0)));
-                }
             }
         }
 
@@ -146,7 +141,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             level.Session.Cassette = true;
             level.Session.RespawnPoint = level.GetSpawnPoint(Position);
             level.Session.UpdateLevelStartDashes();
-            SaveData.Instance.RegisterCassette(level.Session.Area);
             Depth = -1000000;
             level.Shake();
             level.Flash(Color.White);
