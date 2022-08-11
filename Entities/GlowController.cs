@@ -82,31 +82,27 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield break;
             }
 
-            while (entity.Scene != null) {
-                // wait until the sprite plays the death animation
-                while (sprite.CurrentAnimationID != deathAnimationId) {
-                    yield return null;
-                }
-                
-                // fade out over the length of that animation
-                var fadeTime = animation.Frames.Length * animation.Delay;
-                var fadeRemaining = fadeTime;
-            
-                while (fadeRemaining > 0) {
-                    fadeRemaining -= Engine.DeltaTime;
-                    var alpha = Math.Max(fadeRemaining / fadeTime, 0f);
-                
-                    foreach (VertexLight vertexLight in entity.Components.GetAll<VertexLight>()) {
-                        vertexLight.Alpha = alpha;
-                    }
-                    foreach (BloomPoint bloomPoint in entity.Components.GetAll<BloomPoint>()) {
-                        bloomPoint.Alpha = alpha;
-                    }
+            // wait until the sprite plays the death animation
+            while (entity.Scene != null && sprite.CurrentAnimationID != deathAnimationId) {
+                yield return null;
+            }
 
-                    yield return null;
+            // fade out over the length of that animation
+            var fadeTime = animation.Frames.Length * animation.Delay;
+            var fadeRemaining = fadeTime;
+        
+            while (entity.Scene != null && fadeRemaining > 0) {
+                fadeRemaining -= Engine.DeltaTime;
+                var alpha = Math.Max(fadeRemaining / fadeTime, 0f);
+            
+                foreach (VertexLight vertexLight in entity.Components.GetAll<VertexLight>()) {
+                    vertexLight.Alpha = alpha;
                 }
-                
-                break;
+                foreach (BloomPoint bloomPoint in entity.Components.GetAll<BloomPoint>()) {
+                    bloomPoint.Alpha = alpha;
+                }
+
+                yield return null;
             }
         }
     }
