@@ -30,8 +30,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         
         private void Play(string path, Vector2 origin, Entity entity, float muffleTime = muffle_time_seconds, float playerRange = 320) {
             // try to get an existing component
-            if (Components.FirstOrDefault(c => c is SingletonComponent sc && sc.AudioPath == path)
-                is not SingletonComponent comp) {
+            if (Components.GetAll<SingletonComponent>().FirstOrDefault(c => c.AudioPath == path) is not { } comp) {
                 Add(comp = new SingletonComponent(path));
             }
 
@@ -47,13 +46,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void SetParam(string path, string param, float value) {
-            if (Components.FirstOrDefault(c => c is SingletonComponent sc && sc.AudioPath == path) is SingletonComponent comp) {
+            if (Components.GetAll<SingletonComponent>().FirstOrDefault(c => c.AudioPath == path) is { } comp) {
                 comp.SetParam(param, value);
             }
         }
         
         public void Stop(string path) {
-            if (Components.FirstOrDefault(c => c is SingletonComponent sc && sc.AudioPath == path) is SingletonComponent comp) {
+            if (Components.GetAll<SingletonComponent>().FirstOrDefault(c => c.AudioPath == path) is { } comp) {
                 comp.Stop();
             }
         }
