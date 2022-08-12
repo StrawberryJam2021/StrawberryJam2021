@@ -24,6 +24,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly Vector2 _bloomOffset;
 
         private const string deathAnimationId = "death";
+        private const string respawnAnimationId = "respawn";
         
         public GlowController(EntityData data, Vector2 offset)
             : base(data.Position + offset)
@@ -69,7 +70,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 // some entities get a special coroutine that hides lights and blooms
                 // if it's a glider or otherwise has a sprite with a "death" animation
-                // note that this does not work with RespawningJellyfish since it removes the coroutine
                 if (requiresRemovalRoutine &&
                     entity.Components.GetAll<Sprite>().FirstOrDefault(s => s.Has(deathAnimationId)) is { } sprite) {
                     entity.Add(new Coroutine(DeathRemovalRoutine(entity, sprite)));
@@ -78,31 +78,50 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private IEnumerator DeathRemovalRoutine(Entity entity, Sprite sprite) {
-            if (!sprite.Animations.TryGetValue(deathAnimationId, out var animation)) {
-                yield break;
-            }
-
-            // wait until the sprite plays the death animation
-            while (entity.Scene != null && sprite.CurrentAnimationID != deathAnimationId) {
-                yield return null;
-            }
-
-            // fade out over the length of that animation
-            var fadeTime = animation.Frames.Length * animation.Delay;
-            var fadeRemaining = fadeTime;
-        
-            while (entity.Scene != null && fadeRemaining > 0) {
-                fadeRemaining -= Engine.DeltaTime;
-                var alpha = Math.Max(fadeRemaining / fadeTime, 0f);
-            
+            void SetAlpha(float alpha) {
                 foreach (VertexLight vertexLight in entity.Components.GetAll<VertexLight>()) {
                     vertexLight.Alpha = alpha;
                 }
                 foreach (BloomPoint bloomPoint in entity.Components.GetAll<BloomPoint>()) {
                     bloomPoint.Alpha = alpha;
                 }
+            }
+            
+            if (!sprite.Animations.TryGetValue(deathAnimationId, out var deathAnimation)) {
+                yield break;
+            }
 
-                yield return null;
+            while (entity.Scene != null) {
+                // wait until the sprite plays the death animation
+                while (entity.Scene != null && sprite.CurrentAnimationID != deathAnimationId) {
+                    yield return null;
+                }
+                
+                // fade out over the length of that animation
+                var fadeTime = deathAnimation.Frames.Length * deathAnimation.Delay;
+                var fadeRemaining = fadeTime;
+        
+                while (entity.Scene != null && sprite.CurrentAnimationID == deathAnimationId && fadeRemaining > 0) {
+                    fadeRemaining -= Engine.DeltaTime;
+                    SetAlpha(Math.Max(fadeRemaining / fadeTime, 0f));
+                    yield return null;
+                }
+                
+                // if it's a respawning jelly, wait until the sprite is playing the respawn animation
+                if (!sprite.Animations.TryGetValue(respawnAnimationId, out var respawnAnimation)) break;
+                while (entity.Scene != null && sprite.CurrentAnimationID != respawnAnimationId) {
+                    yield return null;
+                }
+                
+                // fade in over the length of that animation
+                fadeTime = respawnAnimation.Frames.Length * respawnAnimation.Delay;
+                fadeRemaining = fadeTime;
+
+                while (entity.Scene != null && sprite.CurrentAnimationID == respawnAnimationId && fadeRemaining > 0) {
+                    fadeRemaining -= Engine.DeltaTime;
+                    SetAlpha(1f - Math.Max(fadeRemaining / fadeTime, 0f));
+                    yield return null;
+                }
             }
         }
     }
