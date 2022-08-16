@@ -21,7 +21,7 @@ using ..Ahorn, Maple
 @mapdef Entity "SJ2021/AllInOneMask" AllInOneMask(x::Integer, y::Integer, width::Integer=8, height::Integer=8,
     scrollX::Number=0.0, scrollY::Number=0.0, fade::String="None", customFade::String="circle", flag::String="", notFlag::Bool=false,
     stylemaskTag::String="", styleAlphaFrom::Number=0.0, styleAlphaTo::Number=1.0, entityRenderer::Bool=false, styleBehindFg::Bool=true,
-    colorGradeFrom::String="(current)", colorGradeTo::String="(current)",
+    colorGradeFrom::String="(current)", colorGradeTo::String="(current)", colorGradeFadeFrom::Number=0.0, colorGradeFadeTo::Number=1.0,
     bloomBaseFrom::Number=-1.0, bloomBaseTo::Number=-1.0, bloomStrengthFrom::Number=-1.0, bloomStrengthTo::Number=-1.0,
     lightingFrom::Number=-1.0, lightingTo::Number=-1.0, addBaseLight::Bool=true)
 
@@ -79,7 +79,7 @@ Ahorn.editingOrder(entity::StylegroundMask) = ["x", "y", "width", "height", "scr
 Ahorn.editingOrder(entity::BloomMask) = ["x", "y", "width", "height", "scrollX", "scrollY", "baseFrom", "baseTo", "strengthFrom", "strengthTo", "flag", "customFade"]
 Ahorn.editingOrder(entity::LightingMask) = ["x", "y", "width", "height", "scrollX", "scrollY", "lightingFrom", "lightingTo", "flag", "customFade"]
 Ahorn.editingOrder(entity::ColorGradeMask) = ["x", "y", "width", "height", "scrollX", "scrollY", "colorGradeFrom", "colorGradeTo", "fadeFrom", "fadeTo", "flag", "customFade"]
-Ahorn.editingOrder(entity::AllInOneMask) = ["x", "y", "width", "height", "scrollX", "scrollY", "bloomBaseFrom", "bloomBaseTo", "bloomStrengthFrom", "bloomStrengthTo", "lightingFrom", "lightingTo", "colorGradeFrom", "colorGradeTo", "styleAlphaFrom", "styleAlphaTo", "stylemaskTag", "flag", "fade", "customFade"]
+Ahorn.editingOrder(entity::AllInOneMask) = ["x", "y", "width", "height", "scrollX", "scrollY", "bloomBaseFrom", "bloomBaseTo", "bloomStrengthFrom", "bloomStrengthTo", "lightingFrom", "lightingTo", "colorGradeFrom", "colorGradeTo", "colorGradeFadeFrom", "colorGradeFadeTo", "styleAlphaFrom", "styleAlphaTo", "stylemaskTag", "flag", "fade", "customFade"]
 
 Ahorn.selection(entity::masksUnion) = Ahorn.getEntityRectangle(entity)
 
