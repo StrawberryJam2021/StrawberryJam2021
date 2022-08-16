@@ -2,18 +2,28 @@ module SJ2021LaunchPlatform
 
 using ..Ahorn, Maple
 
+const DEFAULT_WIDTH = 40
+const DEFAULT_OFFSET = -80
+
 @pardef LaunchPlatform(
-    x::Integer, y::Integer,
-    width::Integer=40
+    x1::Integer, y1::Integer,
+    x2::Integer=x1, y2::Integer=y1+DEFAULT_OFFSET,
+    width::Integer=DEFAULT_WIDTH
 ) = Entity("SJ2021/LaunchPlatform",
-    x = x, y = y,
-    width = width,
-    nodes=Tuple{Int, Int}[(0, 0)]
+    x=x1, y=y1,
+    nodes=Tuple{Int, Int}[(x2, y2)],
+    width=width
 )
 
 const placements = Ahorn.PlacementDict(
     "Launch Platform (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
-        LaunchPlatform
+        LaunchPlatform,
+        "rectangle", 
+        Dict{String, Any}(),
+        function(entity)
+            x, y = Int(entity.data["x"]), Int(entity.data["y"])
+            entity.data["nodes"] = [(x, y + DEFAULT_OFFSET)]
+        end
     )
 )
 
