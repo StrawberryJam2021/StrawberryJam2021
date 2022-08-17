@@ -16,7 +16,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public LaunchPlatform(Vector2 position, int width, Vector2 node) : base(position, width, false) {
             start = Position;
             end = node;
-            SurfaceSoundIndex = 5;
+            SurfaceSoundIndex = SurfaceIndex.Wood;
             
             Add(sfx = new SoundSource());
             Add(new LightOcclude(0.2f));
