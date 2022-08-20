@@ -445,3 +445,6 @@ placements.entities.SJ2021/CustomAscendManager.tooltips.streakColors=Hex colors 
 placements.entities.SJ2021/CustomAscendManager.tooltips.introLaunch=Use to match the camera and fade-in settings of the first launch in Summit (where you spawn into it).
 placements.entities.SJ2021/CustomAscendManager.tooltips.borders=Whether or not to render the cloud borders on the edges of the screen.
 placements.entities.SJ2021/CustomAscendManager.tooltips.dark=If true, the fade and screen wipe color will be black instead of white.
+
+# Launch Platform
+placements.entities.SJ2021/LaunchPlatform.tooltips.width=The width of the platform in pixels.
