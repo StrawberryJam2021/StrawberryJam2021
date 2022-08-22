@@ -81,6 +81,16 @@ namespace Celeste.Mod.StrawberryJam2021 {
             return result;
         }
 
+        public static bool IsInBounds(this Camera self, Entity entity, float extend = 32f) =>
+            entity.Right >= self.Left - extend &&
+            entity.Left <= self.Right + extend &&
+            entity.Bottom >= self.Top - extend &&
+            entity.Top <= self.Bottom + extend;
 
+        public static bool Contains(this Camera self, Vector2 point, float extend = 32f) =>
+            point.X >= self.Left - extend &&
+            point.X <= self.Right + extend &&
+            point.Y >= self.Top - extend &&
+            point.Y <= self.Bottom + extend;
     }
 }
