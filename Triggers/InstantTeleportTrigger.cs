@@ -16,9 +16,9 @@ using System.Reflection;
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [TrackedAs(typeof(Trigger))]
     [CustomEntity(
-        "VivHelperTEMP/BasicInstantTeleportTrigger = Basic",
-        "VivHelperTEMP/MainInstantTeleportTrigger = Main",
-        "VivHelperTEMP/CustomInstantTeleportTrigger = Custom")]
+        "SJ2021/BasicInstantTeleportTrigger = Basic",
+        "SJ2021/MainInstantTeleportTrigger = Main",
+        "SJ2021/CustomInstantTeleportTrigger = Custom")]
     public class InstantTeleportTrigger : Trigger
     {
         public enum TransitionType
