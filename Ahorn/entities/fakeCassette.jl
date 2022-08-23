@@ -2,7 +2,7 @@
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/FakeCassette" FakeCassette(x::Integer, y::Integer, remixEvent::String="", spriteName::String="cassette", flagOnCollect::String="")
+@mapdef Entity "SJ2021/FakeCassette" FakeCassette(x::Integer, y::Integer, remixEvent::String="", flagOnCollect::String="")
 
 const placements = Ahorn.PlacementDict(
     "Fake Cassette (Strawberry Jam 2021)" => Ahorn.EntityPlacement(

@@ -420,5 +420,4 @@ placements.triggers.SJ2021/ShowHitboxTrigger.tooltips.typeNames=A comma-separate
 # Fake Cassette
 placements.entities.SJ2021/FakeCassette.names.remixEvent=Collect Audio
 placements.entities.SJ2021/FakeCassette.tooltips.remixEvent=The Audio event played upon collecting the Cassette.
-placements.entities.SJ2021/FakeCassette.tooltips.spriteName=The name of the sprite in Sprites.xml used for the cassette entity.
 placements.entities.SJ2021/FakeCassette.tooltips.flagOnCollect=Sets a flag when the Cassette breaks in the cutscene
