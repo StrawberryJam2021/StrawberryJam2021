@@ -12,8 +12,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private class UnlockedBSide : Entity {
             public Sprite sprite;
 
-            public string text;
-
             private float timer;
 
             public override void Added(Scene scene) {
@@ -51,7 +49,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Vector2 vector = global::Celeste.Celeste.TargetCenter + new Vector2(0f, 64f);
                 Vector2 vector2 = Vector2.UnitY * 64f * (1f - num);
                 sprite.Texture.DrawJustified(vector - vector2 + new Vector2(0f, 32f), new Vector2(0.5f, 1f), Color.White * num);
-                ActiveFont.Draw(text, vector + vector2, new Vector2(0.5f, 0f), Vector2.One, Color.White * num);
             }
         }
 
@@ -73,7 +70,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool collecting;
 
-        private string collectAudioEvent, unlockText, flagOnCollect;
+        private string collectAudioEvent, flagOnCollect;
 
         private Vector2[] nodes;
 
@@ -86,7 +83,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public FakeCassette(EntityData data, Vector2 offset)
             : this(data.Position + offset) {
             collectAudioEvent = data.Attr("remixEvent");
-            unlockText = data.Attr("unlockText");
             flagOnCollect = data.Attr("flagOnCollect");
             nodes = data.NodesOffset(offset);
             if(nodes.Length < 2) {
@@ -170,7 +166,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             Visible = false;
             UnlockedBSide message = new UnlockedBSide();
-            message.text = ActiveFont.FontSize.AutoNewline(Dialog.Clean(unlockText), 900);
             Scene.Add(message);
             yield return message.EaseIn();
             yield return DoFakeRoutine(player, message);
@@ -219,7 +214,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Engine.TimeRate = 0f;
             level.Frozen = false;
             player.Active = false;
-            player.StateMachine.State = 11;
+            player.StateMachine.State = Player.StDummy;
             while (Engine.TimeRate != 1f) {
                 Engine.TimeRate = Calc.Approach(Engine.TimeRate, 1f, 0.5f * Engine.RawDeltaTime);
                 yield return null;
@@ -227,11 +222,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             message.sprite.Rate = 1f;
             while (message.sprite.Animating) 
                 yield return null;
+            level.Session.SetFlag(flagOnCollect);
             message.RemoveSelf();
             level.FormationBackdrop.Alpha = 0f;
             level.FormationBackdrop.Display = false;
             Engine.TimeRate = 1f;
-            level.Session.SetFlag(flagOnCollect);
             level.Shake();
             Glitch.Value = 0.8f;
             while (Glitch.Value > 0f) {

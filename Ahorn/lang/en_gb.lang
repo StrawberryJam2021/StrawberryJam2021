@@ -416,3 +416,9 @@ placements.entities.SJ2021/CoreToggleNoFlash.tooltips.persistent=Whether the cor
 
 # Show Hitbox Trigger
 placements.triggers.SJ2021/ShowHitboxTrigger.tooltips.typeNames=A comma-separated list of class names of the entities to show hitboxes when player is inside the trigger.\nExample: Celeste.Player,Celeste.CrystalStaticSpinner,Refill
+
+# Fake Cassette
+placements.entities.SJ2021/FakeCassette.names.remixEvent=Collect Audio
+placements.entities.SJ2021/FakeCassette.tooltips.remixEvent=The Audio event played upon collecting the Cassette.
+placements.entities.SJ2021/FakeCassette.tooltips.spriteName=The name of the sprite in Sprites.xml used for the cassette entity.
+placements.entities.SJ2021/FakeCassette.tooltips.flagOnCollect=Sets a flag when the Cassette breaks in the cutscene
