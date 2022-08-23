@@ -1,19 +1,19 @@
-module VivHelperInstantTeleportTrigger
+module SJ2021InstantTeleportTrigger
 using ..Ahorn, Maple
 
-@mapdef Trigger "VivHelperTEMP/BasicInstantTeleportTrigger" BasicInstantTeleportTrigger(
+@mapdef Trigger "SJ2021/BasicInstantTeleportTrigger" BasicInstantTeleportTrigger(
 	x::Integer, y::Integer, width::Integer=8, height::Integer=8,
 	WarpRoom::String="", newPosX::Integer=-1, newPosY::Integer=-1,
 	TransitionType::String="None", AddTriggerOffset::Bool=false, CameraType::Integer=2
 )
-@mapdef Trigger "VivHelperTEMP/MainInstantTeleportTrigger" MainInstantTeleportTrigger(
+@mapdef Trigger "SJ2021/MainInstantTeleportTrigger" MainInstantTeleportTrigger(
 	x::Integer, y::Integer, width::Integer=8, height::Integer=8,
 	WarpRoom::String="", newPosX::Integer=-1, newPosY::Integer=-1,
 	AddTriggerOffset::Bool=false,
 	VelocityModifier::Bool=false, ExitVelocityX::Number=0.0, ExitVelocityY::Number=0.0, Dreaming::Bool=false,
 	TransitionType::String="None", TimeBeforeTeleport::Number=0.0, CameraType::Integer=3
 )
-@mapdef Trigger "VivHelperTEMP/CustomInstantTeleportTrigger" CustomInstantTeleportTrigger(
+@mapdef Trigger "SJ2021/CustomInstantTeleportTrigger" CustomInstantTeleportTrigger(
 	x::Integer, y::Integer, width::Integer=8, height::Integer=8,
 	WarpRoom::String="", newPosX::Integer=-1, newPosY::Integer=-1,
 	VelocityModifier::Bool=false, ExitVelocityX::Number=0.0, ExitVelocityY::Number=0.0, ExitVelocityS::Number=0.0, Dreaming::Bool=false,
@@ -24,15 +24,15 @@ using ..Ahorn, Maple
 )
 
 const placements = Ahorn.PlacementDict(
-    "Instant Teleport Trigger (Simple) (Viv's Helper TEMP)" => Ahorn.EntityPlacement(
+    "Instant Teleport Trigger (Simple) (SJ2021)" => Ahorn.EntityPlacement(
         BasicInstantTeleportTrigger,
         "rectangle"
     ),
-	 "Instant Teleport Trigger (Advanced) (Viv's Helper TEMP)" => Ahorn.EntityPlacement(
+	 "Instant Teleport Trigger (Advanced) (SJ2021)" => Ahorn.EntityPlacement(
         MainInstantTeleportTrigger,
         "rectangle"
     ),
-	 "Instant Teleport Trigger (Fully Customizable) (Viv's Helper TEMP)" => Ahorn.EntityPlacement(
+	 "Instant Teleport Trigger (Fully Customizable) (SJ2021)" => Ahorn.EntityPlacement(
         CustomInstantTeleportTrigger,
         "rectangle"
     )
