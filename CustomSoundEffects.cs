@@ -33,5 +33,14 @@
 
         //Dark Matter Ambient Electrical Audio
         public const string env_darkMatter = "event:/strawberry_jam_2021/env/darkMatter";
+
+        // Mosscairn SFX, included in a separate bank (sj21_mosscairn_sfx.bank)
+        public const string mosscairn_sfx_cassette_crusher_snap = "event:/sj21_mosscairn_sfx/cassette_crusher_snap";
+        public const string mosscairn_sfx_emitter_blue = "event:/sj21_mosscairn_sfx/emitter_blue";
+        public const string mosscairn_sfx_emitter_impact = "event:/sj21_mosscairn_sfx/emitter_impact";
+        public const string mosscairn_sfx_emitter_pink = "event:/sj21_mosscairn_sfx/emitter_pink";
+        public const string mosscairn_sfx_paintbrush_laser_blue = "event:/sj21_mosscairn_sfx/paintbrush_laser_blue";
+        public const string mosscairn_sfx_paintbrush_laser_pink = "event:/sj21_mosscairn_sfx/paintbrush_laser_pink";
+        public const string mosscairn_sfx_paintbrush_laser_ramp_up = "event:/sj21_mosscairn_sfx/paintbrush_laser_ramp_up";
     }
 }

@@ -80,7 +80,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private const float mediumRumbleEffectRange = 8f * 12;
         private const float strongRumbleEffectRange = 8f * 8;
         private const int tileSize = 8;
-        private const string laserRampUpSound = "event:/sj21_mosscairn_sfx/paintbrush_laser_ramp_up";
 
         private float collisionDelayRemaining;
         private float chargeDelayRemaining;
@@ -161,7 +160,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 case LaserState.Precharge:
                     largeBrushSprite.Play(idleAnimation);
                     Collider = inactiveColliderList;
-                    PlayIfInBounds(rampUpSource, laserRampUpSound);
+                    PlayIfInBounds(rampUpSource, CustomSoundEffects.mosscairn_sfx_paintbrush_laser_ramp_up);
                     break;
 
                 case LaserState.Charging:

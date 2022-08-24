@@ -15,8 +15,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public bool OffBeat { get; }
         public char TileType { get; }
         public bool EmitImpactParticles { get; }
-
-        private const string moveSound = "event:/sj21_mosscairn_sfx/cassette_crusher_snap";
         
         private int offsetNodeIndex;
         private int sourceNodeIndex;
@@ -146,7 +144,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         } else {
                             block.StopParticles(to - from);
                         }
-                        sfx?.Play(moveSound, block);
+                        sfx?.Play(CustomSoundEffects.mosscairn_sfx_cassette_crusher_snap, block);
                     };
         
                     block.Add(tween);
