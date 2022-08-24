@@ -157,8 +157,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             private PelletEmitter parentEmitter;
 
-            private const string impactSound = "event:/sj21_mosscairn_sfx/emitter_impact";
-
             public static void LoadParticles() {
                 P_BlueTrail = new ParticleType {
                     Source = GFX.Game["particles/blob"],
@@ -353,7 +351,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 killHitbox.Center = projectileSprite.Position = Vector2.Zero;
                 
                 if (Scene is Level level && level.Camera.IsInBounds(this)) {
-                    Audio.Play(impactSound, Center);
+                    Audio.Play(CustomSoundEffects.mosscairn_sfx_emitter_impact, Center);
                 }
             }
 
