@@ -67,7 +67,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             var hintController = level.Entities.FindFirst<HintController>();
 
             if (hintController != null) {
-                menu.Insert(retryIndex + 1, new TextMenu.Button(Dialog.Clean("sj2021_menu_hint")) {
+                menu.Insert(retryIndex + 1, new TextMenu.Button(Dialog.Clean("StrawberryJam2021_Menu_Hint")) {
                     OnPressed = () => {
                         menu.OnCancel();
                         hintController.ShowHint();
