@@ -9,6 +9,7 @@ using System.Collections.Generic;
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/FakeCassette")]
     public class FakeCassette : Entity {
+
         private class UnlockedBSide : Entity {
             public Sprite sprite;
 
@@ -74,13 +75,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private Vector2[] nodes;
 
+        internal EntityID id;
+
         public FakeCassette(Vector2 position)
             : base(position) {
             base.Collider = new Hitbox(16f, 16f, -8f, -8f);
             Add(new PlayerCollider(OnPlayer));
         }
 
-        public FakeCassette(EntityData data, Vector2 offset)
+        public FakeCassette(EntityData data, Vector2 offset, EntityID id)
             : this(data.Position + offset) {
             collectAudioEvent = data.Attr("remixEvent");
             flagOnCollect = data.Attr("flagOnCollect");
@@ -88,9 +91,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if(nodes.Length < 2) {
                 nodes = new Vector2[] { Position, Position };
             }
+            this.id = id;
         }
 
         public override void Added(Scene scene) {
+            if ((scene as Level).Session.DoNotLoad.Contains(id)) {
+                RemoveSelf();
+                return;
+            }
             base.Added(scene);
             Add(sprite = GFX.SpriteBank.Create("cassette"));
             sprite.Play("idle");
@@ -134,7 +142,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             level.PauseLock = true;
             level.Frozen = true;
             Tag = Tags.FrozenUpdate;
-            level.Session.Cassette = true;
+            level.Session.DoNotLoad.Add(id);
             level.Session.RespawnPoint = level.GetSpawnPoint(Position);
             level.Session.UpdateLevelStartDashes();
             Depth = -1000000;
@@ -181,6 +189,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             level.Frozen = false;
             yield return 0.25f;
             level.PauseLock = false;
+            player.StateMachine.State = 0;
             level.ResetZoom();
             level.EndCutscene();
             RemoveSelf();
