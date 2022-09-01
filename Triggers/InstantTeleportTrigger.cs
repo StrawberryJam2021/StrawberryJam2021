@@ -76,7 +76,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             timeSlowDown = data.Float("TimeSlowDown", 0f);
             delay = data.Float("TimeBeforeTeleport", 0f);
             legacyCamera = data.Int("CameraType", -1);
-            resetDashes = false;
+            resetDashes = data.Bool("ResetDashes", true);
             onExit = data.Bool("OnExit", false);
             differentSide = data.Bool("DifferentSide", false);
             if (legacyCamera == -1) legacyCamera = 1;
@@ -156,12 +156,12 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 Vector2 prevTopRight = player.TopRight - player.Speed; //TopLeft, TopRight, BottomLeft, BottomRight
                 Vector2 prevBottomLeft = player.BottomLeft - player.Speed;
                 // Check if the segment prevLoc -> curLoc crosses any of the boundaries
-                sides[0] *= (Left > prevTopRight.X && Left <= player.TopRight.X) ? 1 : 0;
-                sides[1] *= (Right < prevBottomLeft.X && Right >= player.BottomLeft.X) ? 1 : 0;
-                sides[2] *= (Top > prevBottomLeft.Y && Top <= player.BottomLeft.Y) ? 1 : 0;
-                sides[3] *= (Bottom < prevTopRight.Y && Bottom >= player.TopRight.Y) ? 1 : 0;
+                sides[0] *= (this.Left > prevTopRight.X && this.Left <= player.TopRight.X) ? 1 : 0;
+                sides[1] *= (this.Right < prevBottomLeft.X && this.Right >= player.BottomLeft.X) ? 1 : 0;
+                sides[2] *= (this.Top > prevBottomLeft.Y && this.Top <= player.BottomLeft.Y) ? 1 : 0;
+                sides[3] *= (this.Bottom < prevTopRight.Y && this.Bottom >= player.TopRight.Y) ? 1 : 0;
                 int maxValue = sides.Max();
-                direction = Array.IndexOf(sides, maxValue);
+                this.direction = Array.IndexOf(sides, maxValue);
             }
             else
             {
@@ -190,13 +190,13 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     Vector2 prevTopRight = player.TopRight - player.Speed; //TopLeft, TopRight, BottomLeft, BottomRight
                     Vector2 prevBottomLeft = player.BottomLeft - player.Speed;
                     // Check if the segment prevLoc -> curLoc crosses any of the boundaries
-                    sides[0] *= (Left < prevTopRight.X && Left >= player.TopRight.X) ? 1 : 0;
-                    sides[1] *= (Right > prevBottomLeft.X && Right <= player.BottomLeft.X) ? 1 : 0;
-                    sides[2] *= (Top < prevBottomLeft.Y && Top >= player.BottomLeft.Y) ? 1 : 0;
-                    sides[3] *= (Bottom > prevTopRight.Y && Bottom <= player.TopRight.Y) ? 1 : 0;
+                    sides[0] *= (this.Left < prevTopRight.X && this.Left >= player.TopRight.X) ? 1 : 0;
+                    sides[1] *= (this.Right > prevBottomLeft.X && this.Right <= player.BottomLeft.X) ? 1 : 0;
+                    sides[2] *= (this.Top < prevBottomLeft.Y && this.Top >= player.BottomLeft.Y) ? 1 : 0;
+                    sides[3] *= (this.Bottom > prevTopRight.Y && this.Bottom <= player.TopRight.Y) ? 1 : 0;
                     int maxValue = sides.Max();
                     int exitDirection = Array.IndexOf(sides, maxValue);
-                    trigger = exitDirection != direction;
+                    trigger = exitDirection != this.direction;
                 }
                 if (trigger)
                 {
@@ -273,7 +273,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     player.CleanUpTriggers();
                     player.CameraAnchorIgnoreX = true;
                     player.CameraAnchorIgnoreY = true;
-                    int pDashes = 0; //This should be player.Dashes if resetDashes is false, if it's true it's unused.
+                    int pDashes = 0; //This should be player.Dashes if resetDashes is true, if it's false it's unused.
                     Vector2 pDashDir = Vector2.Zero;
                     if (!resetDashes) { pDashes = player.Dashes; }
                     if (MatchDashState(player.StateMachine.State)) { pDashDir = player.DashDir; }
