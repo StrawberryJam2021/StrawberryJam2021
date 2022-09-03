@@ -49,7 +49,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 float num = Ease.CubeOut((Scene as Level).FormationBackdrop.Alpha);
                 Vector2 vector = global::Celeste.Celeste.TargetCenter + new Vector2(0f, 64f);
                 Vector2 vector2 = Vector2.UnitY * 64f * (1f - num);
-                sprite.Texture.DrawJustified(vector - vector2 + new Vector2(0f, 32f), new Vector2(0.5f, 1f), Color.White * num);
+                sprite.Texture.DrawJustified(vector - vector2 + new Vector2(0f, 32f), new Vector2(0.5f, 0.75f), Color.White * num, 1.5f);
             }
         }
 
@@ -186,12 +186,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             yield return 0.1f;
             player.Active = true;
             yield return 0.5f;
+
+            if (!player.Dead && nodes != null && nodes.Length >= 2)
+            {
+                Audio.Play("event:/game/general/cassette_bubblereturn", level.Camera.Position + new Vector2(160f, 90f));
+                player.StartCassetteFly(nodes[1], nodes[0]);
+            }
+
             level.Frozen = false;
             yield return 0.25f;
             level.PauseLock = false;
-            player.StateMachine.State = 0;
             level.ResetZoom();
-            level.EndCutscene();
             RemoveSelf();
 
         }
@@ -229,9 +234,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
             message.sprite.Rate = 1f;
-            while (message.sprite.Animating) 
+            while (message.sprite.Animating) {
+                if (message.sprite.CurrentAnimationFrame == 12) {
+                    level.Session.SetFlag(flagOnCollect);
+                }
                 yield return null;
-            level.Session.SetFlag(flagOnCollect);
+            }
             message.RemoveSelf();
             level.FormationBackdrop.Alpha = 0f;
             level.FormationBackdrop.Display = false;
