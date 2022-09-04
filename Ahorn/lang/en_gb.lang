@@ -447,3 +447,39 @@ placements.entities.SJ2021/CustomAscendManager.tooltips.dark=If true, the fade a
 
 # Launch Platform
 placements.entities.SJ2021/LaunchPlatform.tooltips.width=The width of the platform in pixels.
+
+# Oppenheimer Teleporter
+placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.newPosX= The X coordinate of the teleport location in the room "WarpRoom"\nSetting to -1 sets the "default" which is usually the same (X,Y) but in the new room.
+placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.newPosY= The Y coordinate of the teleport location in the room "WarpRoom"\nSetting to -1 sets the "default" which is usually the same (X,Y) but in the new room.
+placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.WarpRoom= Select or type in the name of the room you want to teleport to.
+placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.TransitionType= Selects a Visual to overlay when teleporting.
+placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.AddTriggerOffset= Sets the player to the new position plus their (vector) distance from the top left of the trigger.\nTurn this off if you're having issues with the position or are setting New Pos X and Y to -1.
+placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.CameraType= Sets the Camera to have the details listed in the Dropdown. Don't put in a custom number, it just can crash the game.
+
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.newPosX= The X coordinate of the teleport location in the room "WarpRoom"\nSetting to -1 sets the "default" which is usually the same (X,Y) but in the new room.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.newPosY= The Y coordinate of the teleport location in the room "WarpRoom"\nSetting to -1 sets the "default" which is usually the same (X,Y) but in the new room.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.WarpRoom= Select or type in the name of the room you want to teleport to.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.TransitionType= Selects a Visual to overlay when teleporting.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.AddTriggerOffset= Sets the player to the new position plus their (vector) distance from the top left of the trigger.\nTurn this off if you're having issues with the position or are setting New Pos X and Y to -1.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.ExitVelocityX= Modifies the player's X speed. VelocityModifier determines in what way it is modified.\nA point of reference if you use Add, a dash is "240" speed.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.ExitVelocityY= Modifies the player's Y speed. VelocityModifier determines in what way it is modified.\nA point of reference if you use Add, a dash is "240" speed.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.VelocityModifier= Changes the way that ExitVelocityX and ExitVelocityY modify the player's speed.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.Dreaming= Sets the Dreaming state on or off.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.CameraType= Sets the Camera to have the details listed in the Dropdown. Don't put in a custom number, it just can crash the game.
+
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.newPosX= The X coordinate of the teleport location in the room "WarpRoom"\nSetting this to -1 sets the "default" - the player's old (X,Y) but in the new room.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.newPosY= The Y coordinate of the teleport location in the room "WarpRoom"\nSetting this to -1 sets the "default" - the player's old (X,Y) but in the new room.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.WarpRoom= Select or type in the name of the room you want to teleport to.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.TransitionType= Selects a Visual to overlay when teleporting.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.AddTriggerOffset= Sets the player to the new position plus their (vector) distance from the top left of the trigger.\nTurn this off if you're having issues with the position or are setting New Pos X and Y to -1.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.ExitVelocityX= Modifies the player's X speed. VelocityModifier determines in what way it is modified.\nA point of reference if you use Add, a dash is "240" speed.\nIf using ExitVelocityS, do not use this.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.ExitVelocityY= Modifies the player's Y speed. VelocityModifier determines in what way it is modified.\nA point of reference if you use Add, a dash is "240" speed.\nIf using ExitVelocityS, do not use this.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.VelocityModifier= Changes the way that ExitVelocityX/Y/S modify the player's speed.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.Dreaming= Sets the Dreaming state on or off.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.ExitVelocityS= Modifies the total player speed regardless of the direction.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.ZFlagsData= The set of flags needed to turn on or off this teleporter. If all flags are in a state to leave the list on, then the teleporter will turn on.\nExample: "flag1,!flag2,flag3" = if flag1 and flag3 are triggered and flag2 isn't, then activate the teleporter.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.RotationActor= The number (in degrees) used by the Rotation Modifier to change the player's direction. See Rotation Modifier for more info, or this example:\n Rotation Actor: Right, Rotation Modifier: Rotate To Direction = > the player's velocity will be all going to the right.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.names.RotationType= Rotation Modifier
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.RotationType= Rotates the player's movement exiting the portal. Setting to "Rotate To Direction" will change the player's velocity to the Rotation Actor's direction.\nSetting to "Rotate Degrees from Direction" will rotate the player's potential velocity by {Rotation Actor} degrees (clockwise)
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.CameraType= Sets the Camera to have the details listed in the Dropdown. Don't put in a custom number, it just can crash the game.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.OnExit= If true, the teleport occurs when leaving the trigger.
