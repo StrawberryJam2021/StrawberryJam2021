@@ -5,6 +5,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
         public bool DisplayDashSequence { get; set; } = false;
 
         [DefaultButtonBinding(Buttons.Back, Keys.Tab)]
-        public ButtonBinding TogglePlaybacks { get; set; } = new ButtonBinding();
+        public ButtonBinding TogglePlaybacks { get; set; }
     }
 }
