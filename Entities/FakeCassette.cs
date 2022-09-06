@@ -77,6 +77,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         internal EntityID id;
 
+        private UnlockedBSide message;
         public FakeCassette(Vector2 position)
             : base(position) {
             base.Collider = new Hitbox(16f, 16f, -8f, -8f);
@@ -174,10 +175,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
             Visible = false;
-            UnlockedBSide message = new UnlockedBSide();
+            message = new UnlockedBSide();
             Scene.Add(message);
             yield return message.EaseIn();
-            yield return DoFakeRoutine(player, message);
+            yield return DoFakeRoutine(player);
             duration2 = 0.25f;
             Add(new Coroutine(level.ZoomBack(duration2 - 0.05f)));
             for (float p3 = 0f; p3 < 1f; p3 += Engine.DeltaTime / duration2) {
@@ -201,7 +202,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         }
 
-        private IEnumerator DoFakeRoutine(Player player, UnlockedBSide message) {
+        private IEnumerator DoFakeRoutine(Player player) {
             Level level = Scene as Level;
             yield return 1f;
             Glitch.Value = 0.75f;
@@ -236,7 +237,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
             message.RemoveSelf();
-            level.FormationBackdrop.Alpha = 0f;
+            level.FormationBackdrop.Alpha = 1f;
             level.FormationBackdrop.Display = false;
             Engine.TimeRate = 1f;
             level.Shake();
@@ -251,9 +252,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public void SkipCutscene(Level level, Player player) {
             level.Session.SetFlag(flagOnCollect, true);
+            level.Frozen = false;
+            level.Paused = false;
+            level.FormationBackdrop.Alpha = 1f;
+            level.FormationBackdrop.Display = false;
             player.Speed = Vector2.Zero;
             player.Position = nodes.Length < 2 ? Position : nodes[1];
             player.StateMachine.State = Player.StNormal;
+            message?.RemoveSelf();
             level.Camera.Zoom = 1f;
             level.Session.DoNotLoad.Add(id);
             RemoveSelf();
