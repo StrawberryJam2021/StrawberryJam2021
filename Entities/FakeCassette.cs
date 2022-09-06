@@ -17,7 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             public override void Added(Scene scene) {
                 base.Added(scene);
-                base.Tag = (int) Tags.HUD | (int) Tags.PauseUpdate;
+                base.Tag = (int) TagsExt.SubHUD | (int) Tags.PauseUpdate;
                 base.Depth = -10000;
                 sprite = new Sprite(GFX.Gui, "StrawberryJam2021/fakeCassette/shatter");
                 sprite.Add("shatter", "", 0.07f, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22); //this wasn't working for some reason so this was my fix
@@ -30,7 +30,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 _ = Scene;
                 Level level = Scene as Level;
                 level.FormationBackdrop.Display = true;
-                while ((level.FormationBackdrop.Alpha += Engine.DeltaTime / 0.5f) < 1f) {
+                while ((level.FormationBackdrop.Alpha += Engine.DeltaTime / 0.75f) < 1f) {
                     yield return null;
                 }
                 level.FormationBackdrop.Alpha = 1;
@@ -131,6 +131,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Audio.Play(collectAudioEvent, Position);
                 collected = true;
                 global::Celeste.Celeste.Freeze(0.1f);
+                (Scene as Level).StartCutscene((level) => SkipCutscene(level, player), fadeInOnSkip: false);
                 Add(new Coroutine(CollectRoutine(player)));
             }
         }
@@ -139,7 +140,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             collecting = true;
             Level level = Scene as Level;
             List<Entity> blocks = Scene.Tracker.GetEntities<CassetteBlock>();
-            level.PauseLock = true;
             level.Frozen = true;
             Tag = Tags.FrozenUpdate;
             level.Session.DoNotLoad.Add(id);
@@ -149,6 +149,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             level.Shake();
             level.Flash(Color.White);
             level.Displacement.Clear();
+            level.FormationBackdrop.Alpha = 0f;
             Vector2 camWas = level.Camera.Position;
             Vector2 camTo = (Position - new Vector2(160f, 90f)).Clamp(level.Bounds.Left - 64, level.Bounds.Top - 32, level.Bounds.Right + 64 - 320, level.Bounds.Bottom + 32 - 180);
             level.Camera.Position = camTo;
@@ -195,7 +196,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             level.Frozen = false;
             yield return 0.25f;
-            level.PauseLock = false;
             level.ResetZoom();
             RemoveSelf();
 
@@ -203,12 +203,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private IEnumerator DoFakeRoutine(Player player, UnlockedBSide message) {
             Level level = Scene as Level;
-            int panAmount = 64;
-            Vector2 panFrom = level.Camera.Position;
-            Vector2 panTo = level.Camera.Position + new Vector2(-panAmount, 0f);
-            Vector2 birdFrom = new Vector2(panTo.X - 16f, player.Y - 20f);
-            Vector2 birdTo = new Vector2(panFrom.X + 320f + 16f, player.Y - 20f);
-            yield return 2f;
+            yield return 1f;
             Glitch.Value = 0.75f;
             while (Glitch.Value > 0f) {
                 Glitch.Value = Calc.Approach(Glitch.Value, 0f, Engine.RawDeltaTime * 4f);
@@ -253,5 +248,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             yield return 0.25f;
             player.Depth = 0;
         }
+
+        public void SkipCutscene(Level level, Player player) {
+            level.Session.SetFlag(flagOnCollect, true);
+            player.Speed = Vector2.Zero;
+            player.Position = nodes.Length < 2 ? Position : nodes[1];
+            player.StateMachine.State = Player.StNormal;
+            level.Camera.Zoom = 1f;
+            level.Session.DoNotLoad.Add(id);
+            RemoveSelf();
+        }
+
     }
 }
