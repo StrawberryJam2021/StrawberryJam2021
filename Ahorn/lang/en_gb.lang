@@ -268,6 +268,10 @@ placements.triggers.SJ2021/RainDensityTrigger.tooltips.duration=The time (in sec
 # Require Dashless Trigger
 placements.triggers.SJ2021/RequireDashlessTrigger.tooltips.entityNames=The class names of the entities to remove if the player has dashed as a comma-separated list.
 
+# Sprite Swap Trigger
+placements.triggers.SJ2021/SpriteSwapTrigger.tooltips.fromIds=The list of original sprite XML IDs as a comma-separated list. Should match the order of the "to" list.
+placements.triggers.SJ2021/SpriteSwapTrigger.tooltips.toIds=The list of swapped sprite XML IDs as a comma-separated list. Should match the order of the  "from" list.
+
 # Set Metadata Trigger
 placements.triggers.SJ2021/SetMetadataTrigger.tooltips.theoInBooster=Whether player is allowed to hold crystal Theo while in a booster or not.
 
