@@ -178,6 +178,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             message = new UnlockedBSide();
             Scene.Add(message);
             yield return message.EaseIn();
+            level.PauseLock = true;
             yield return DoFakeRoutine(player);
             duration2 = 0.25f;
             Add(new Coroutine(level.ZoomBack(duration2 - 0.05f)));
@@ -196,6 +197,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             level.EndCutscene();
             level.Frozen = false;
+            level.PauseLock = false;
             yield return 0.25f;
             level.ResetZoom();
             RemoveSelf();
@@ -254,6 +256,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             level.Session.SetFlag(flagOnCollect, true);
             level.Frozen = false;
             level.Paused = false;
+            level.PauseLock = false;
+            Glitch.Value = 0f;
             level.FormationBackdrop.Alpha = 1f;
             level.FormationBackdrop.Display = false;
             player.Speed = Vector2.Zero;
