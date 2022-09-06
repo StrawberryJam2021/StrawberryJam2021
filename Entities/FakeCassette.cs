@@ -194,7 +194,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Audio.Play("event:/game/general/cassette_bubblereturn", level.Camera.Position + new Vector2(160f, 90f));
                 player.StartCassetteFly(nodes[1], nodes[0]);
             }
-
+            level.EndCutscene();
             level.Frozen = false;
             yield return 0.25f;
             level.ResetZoom();
