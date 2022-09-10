@@ -23,6 +23,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             paramName = data.Attr("paramName");
             paramOff = data.Float("paramOff");
             paramOn = data.Float("paramOn");
+            Tag = Tags.Global | Tags.Persistent;
         }
 
         public override void Update() {
