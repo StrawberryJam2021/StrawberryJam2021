@@ -2,7 +2,7 @@ module SJ2021WormholeBooster
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/WormholeBooster" WormholeBooster(x::Integer, y::Integer)
+@mapdef Entity "SJ2021/WormholeBooster" WormholeBooster(x::Integer, y::Integer, deathColor::String="61010c", instantCamera::Bool=false)
 
 
 const placements = Ahorn.PlacementDict(

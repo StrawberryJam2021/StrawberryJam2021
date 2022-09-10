@@ -154,12 +154,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             Vector2 self_carryOffsetTarget = new Vector2(0f, -12f); // not the """correct""" way to do it but it never gets changed soo....why not
-            DynData<Player> dyndata_player = new DynData<Player>(self);
+            DynamicData dyndata_player = DynamicData.For(self);
 
             Func<float> get_self_gliderBoosterTimer = new Func<float>(() => { return dyndata_player.Get<float>("gliderBoostTimer"); });
             Action<float> set_self_gliderBoosterTimer = new Action<float>((x) => dyndata_player.Set("gliderBoostTimer", x));
 
-            Vector2 self_gliderBoostDir = new DynData<Player>(self).Get<Vector2>("gliderBoostDir");
+            Vector2 self_gliderBoostDir = dyndata_player.Get<Vector2>("gliderBoostDir");
 
             Func<float> get_self_varJumpTimer = new Func<float>(() => { return dyndata_player.Get<float>("varJumpTimer"); });
             Action<float> set_self_varJumpTimer = new Action<float>((x) => dyndata_player.Set("varJumpTimer", x));
@@ -203,7 +203,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 } else if (self.Speed.Y > 0f && (get_self_gliderBoosterTimer() <= 0)) {
                     float pickupTimeDiff = self.Scene.TimeActive - jelly.lastDroppedTime;
                     if (pickupTimeDiff < 1.5f) {
-                        Logger.Log("SJ2021/AntiGravJelly", $"Anticheese, pickup time diff: {self.Scene.TimeActive - jelly.lastDroppedTime}");
                         self.Speed.Y = -self.Speed.Y * 1.2f;
                     } else {
                         self.Speed.Y = Math.Max(self.Speed.Y, -105f);

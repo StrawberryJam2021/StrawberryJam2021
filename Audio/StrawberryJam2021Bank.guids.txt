@@ -9,4 +9,5 @@
 {6dd46c75-ede3-47bd-985a-3ef45f0b8f9c} event:/strawberry_jam_2021/game/eatgirl/greg
 {190f0a5c-2230-4bb6-9f0d-9bb0c984b272} event:/strawberry_jam_2021/game/jars/open_demo
 {6ecab556-6965-434c-9578-f5f41ae1d298} event:/strawberry_jam_2021/game/loop_block/sideboost
+{1a503070-8bfc-4a43-a9eb-df7f86193450} event:/strawberry_jam_2021/game/maya/pumber
 {449c0225-4aa9-4151-b834-588cedee088a} bank:/StrawberryJam2021Bank

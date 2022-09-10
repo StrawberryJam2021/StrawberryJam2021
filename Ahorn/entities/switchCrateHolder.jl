@@ -24,9 +24,9 @@ function Ahorn.selection(entity::SwitchCrateHolder)
     x, y = Ahorn.position(entity)
     dir = get(entity.data, "direction", "Up")
     if dir == "Up"
-        return Ahorn.Rectangle(x, y - 4, 16, 12)
+        return Ahorn.Rectangle(x, y - 4, 16, 10)
     elseif dir == "Down"
-        return Ahorn.Rectangle(x, y, 16, 12)
+        return Ahorn.Rectangle(x, y, 16, 10)
     elseif dir == "Left"
         return Ahorn.Rectangle(x - 2, y, 10, 16)
     elseif dir == "Right"
@@ -38,13 +38,13 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::SwitchCrateHolder, 
     texture = "objects/StrawberryJam2021/SwitchCrate/switch"
     dir = get(entity.data, "direction", "Up")
     if dir == "Up"
-        Ahorn.drawSprite(ctx, texture, 28, -2, rot=pi / 2)
+        Ahorn.drawSprite(ctx, texture, 28, 6, rot=pi / 2)
     elseif dir == "Down"
-        Ahorn.drawSprite(ctx, texture, 8, 30, rot=-pi / 2)
+        Ahorn.drawSprite(ctx, texture, 4, 24, rot=-pi / 2)
     elseif dir == "Left"
-        Ahorn.drawSprite(ctx, texture, -2, 8)
+        Ahorn.drawSprite(ctx, texture, 4, 8)
     elseif dir == "Right"
-        Ahorn.drawSprite(ctx, texture, 30, 28, rot=pi)
+        Ahorn.drawSprite(ctx, texture, 20, 32, rot=pi)
     end
 end
 

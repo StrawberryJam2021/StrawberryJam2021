@@ -1,0 +1,8 @@
+{92a703b7-fca9-4fc4-ba14-3b1175492e88} event:/sj21_mosscairn_sfx/cassette_crusher_snap
+{a2e01461-93fd-42fc-a5c4-81fe300eba8f} event:/sj21_mosscairn_sfx/emitter_blue
+{3e84a202-8137-48fd-b6e0-c236ef428936} event:/sj21_mosscairn_sfx/emitter_impact
+{40be28b3-00b7-4636-95db-3e32bc0004f2} event:/sj21_mosscairn_sfx/emitter_pink
+{7ea7625f-f771-4b75-ae68-a6c77bcf88c2} event:/sj21_mosscairn_sfx/paintbrush_laser_blue
+{b72efaec-521e-4484-8bc9-966b08e41edc} event:/sj21_mosscairn_sfx/paintbrush_laser_pink
+{cd277c43-74a5-45a7-a6a8-a05e19d52897} event:/sj21_mosscairn_sfx/paintbrush_laser_ramp_up
+{2fadab36-aba0-41cc-8f9e-97c78e598a9d} bank:/sj21_mosscairn_sfx
