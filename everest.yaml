@@ -20,5 +20,7 @@
       Version: 1.5.1
     - Name: CollabUtils2
       Version: 1.5.12
+    - Name: CrystallineHelper
+      Version: 1.12.3
     - Name: GravityHelper
       Version: 1.1.10

@@ -20,7 +20,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public bool prevValue;
 
         public CrystallineHelperTimeFreezeMusicController(EntityData data, Vector2 offset) : base(data.Position + offset) {
-            paramName = data.Attr("musicParam");
+            paramName = data.Attr("paramName");
             paramOff = data.Float("paramOff");
             paramOn = data.Float("paramOn");
         }
