@@ -24,7 +24,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int collectAmount;
         private Vector2[] nodes;
 
-        private DynData<Refill> refillData;
+        private DynamicData refillData;
         private bool finished;
 
         public RefillShardController(EntityData data, Vector2 offset) 
@@ -60,7 +60,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Refill.Collidable = false;
                 Refill.Depth = Depths.BGDecals - 1;
 
-                refillData = new DynData<Refill>(Refill);
+                refillData = new DynamicData(Refill);
                 refillData.Get<Sprite>("sprite").Visible = false;
                 refillData.Get<Sprite>("flash").Visible = false;
                 refillData.Get<Image>("outline").Visible = true;

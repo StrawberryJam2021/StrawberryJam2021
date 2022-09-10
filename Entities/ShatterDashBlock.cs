@@ -111,7 +111,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private DashCollisionResults OnDashed(Player player, Vector2 direction) {
-            Console.WriteLine(direction + "\t" + (0 - direction.Angle()));
             if (Math.Abs(player.Speed.X) > speedReq) {
                 Break(player, direction, true);
                 return DashCollisionResults.Ignore;

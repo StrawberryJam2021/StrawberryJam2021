@@ -1,6 +1,7 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Utils;
 using System;
 using System.Collections;
 using System.Linq;
@@ -13,17 +14,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public int[] IgnoredNodes { get; }
         public bool OffBeat { get; }
         public char TileType { get; }
-        public bool PlayImpactSounds { get; }
         public bool EmitImpactParticles { get; }
-
+        
         private int offsetNodeIndex;
         private int sourceNodeIndex;
         private int targetNodeIndex;
-        private Vector2 sourcePosition;
-        private Vector2 targetPosition;
-
         private readonly int initialNodeIndex;
-        private CassetteListener cassetteListener;
+
+        private SingletonAudioController sfx;
 
         public CassetteBadelineBlock(CassetteBadelineBlock parent, int initialNodeIndex)
             : base(parent.Nodes[initialNodeIndex], parent.Width, parent.Height, false) {
@@ -32,11 +30,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             IgnoredNodes = parent.IgnoredNodes;
             HideFinalTransition = parent.HideFinalTransition;
             OffBeat = parent.OffBeat;
-            PlayImpactSounds = parent.PlayImpactSounds;
             EmitImpactParticles = parent.EmitImpactParticles;
 
-            this.initialNodeIndex = sourceNodeIndex = targetNodeIndex = initialNodeIndex;
-            sourcePosition = targetPosition = Position;
+            sourceNodeIndex = targetNodeIndex = this.initialNodeIndex = initialNodeIndex;
 
             Tag = Tags.FrozenUpdate;
 
@@ -49,7 +45,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             TileType = data.Char("tiletype", 'g');
             OffBeat = data.Bool("offBeat");
             HideFinalTransition = data.Bool("hideFinalTransition");
-            PlayImpactSounds = data.Bool("playImpactSounds", true);
             EmitImpactParticles = data.Bool("emitImpactParticles", true);
 
             string ignoredNodesString = data.Attr("ignoredNodes") ?? string.Empty;
@@ -59,8 +54,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 .Select(s => int.TryParse(s, out int value) ? value : int.MaxValue)
                 .Where(i => Math.Abs(i) < Nodes.Length)
                 .ToArray();
-
-            sourcePosition = targetPosition = Position;
 
             Tag = Tags.FrozenUpdate;
 
@@ -72,20 +65,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(sprite,
                 new TileInterceptor(sprite, false),
                 new LightOcclude(),
-                cassetteListener = new CassetteListener {
-                    OnBeat = state => {
-                        bool indexWillChange = state.NextTick.Index != state.CurrentTick.Index;
-                        if (sourceNodeIndex == targetNodeIndex && OffBeat != indexWillChange) {
-                            if (offsetNodeIndex < 0)
-                                offsetNodeIndex = initialNodeIndex;
-                            else
-                                offsetNodeIndex++;
-
-                            sourceNodeIndex = offsetNodeIndex % Nodes.Length;
-                            targetNodeIndex = (sourceNodeIndex + 1) % Nodes.Length;
-                            sourcePosition = Nodes[sourceNodeIndex];
-                            targetPosition = Nodes[targetNodeIndex];
-                        }
+                new CassetteListener(initialNodeIndex) {
+                    OnTick = (_, isSwap) => {
+                        if (isSwap != OffBeat) return;
+                        offsetNodeIndex++;
+                        targetNodeIndex = (initialNodeIndex + offsetNodeIndex) % Nodes.Length;
+                    },
+                    OnSilentUpdate = activated => {
+                        offsetNodeIndex = 0;
+                        if (initialNodeIndex < Nodes.Length)
+                            Position = Nodes[initialNodeIndex];
                     },
                 },
                 new Coroutine(MoveSequence())
@@ -95,8 +84,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Added(Scene scene) {
             base.Added(scene);
 
-            offsetNodeIndex = -1;
+            sfx = SingletonAudioController.Ensure(scene);
 
+            offsetNodeIndex = -1;
             if (initialNodeIndex == 0) {
                 for (int i = 1; i < Nodes.Length; i++) {
                     if (!IgnoredNodes.Contains(i) && !IgnoredNodes.Contains(i - Nodes.Length))
@@ -108,12 +98,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        public override void Update() {
-            base.Update();
-
-            Visible = Collidable = !HideFinalTransition || targetNodeIndex != 0;
-        }
-
         private void TeleportTo(Vector2 to) {
             MoveStaticMovers(to - Position);
             Position = to;
@@ -121,38 +105,54 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private IEnumerator MoveSequence() {
             var block = this;
+            
+            if (Scene == null) yield break;
+
+            var time = -1f;
+            while (Scene != null && time < 0) {
+                var cbm = Scene.Tracker.GetEntity<CassetteBlockManager>();
+                if (cbm == null) {
+                    yield return null;
+                } else {
+                    var data = DynamicData.For(cbm);
+                    var beatsPerTick = data.Get<int>("beatsPerTick");
+                    var tempoMult = data.Get<float>("tempoMult");
+                    var beatLength = (10 / 60f) / tempoMult;
+                    time = beatLength * beatsPerTick;
+                }
+            }
+            
             while (Scene != null) {
                 while (sourceNodeIndex == targetNodeIndex) {
                     yield return null;
                 }
-
-                float time = block.cassetteListener.CurrentState.TickLength;
-                var to = block.targetPosition;
-                var from = block.sourcePosition;
-
+                
+                var to = block.Nodes[targetNodeIndex];
+                var from = block.Nodes[sourceNodeIndex];
+        
                 if (targetNodeIndex == 0 && HideFinalTransition) {
                     block.TeleportTo(to);
+                    Visible = Collidable = false;
                 } else {
                     var tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeIn, time, true);
                     tween.OnUpdate = t => MoveTo(Vector2.Lerp(from, to, t.Eased));
                     tween.OnComplete = _ => {
                         if (block.CollideCheck<SolidTiles>(block.Position + (to - from).SafeNormalize() * 2f)) {
-                            if (block.PlayImpactSounds) {
-                                Audio.Play("event:/game/06_reflection/fallblock_boss_impact", block.Center);
-                            }
                             if (block.EmitImpactParticles) {
                                 block.ImpactParticles(to - from);
                             }
                         } else {
                             block.StopParticles(to - from);
                         }
+                        sfx?.Play(CustomSoundEffects.mosscairn_sfx_cassette_crusher_snap, block);
                     };
-
+        
                     block.Add(tween);
                 }
-
+        
                 yield return time;
                 sourceNodeIndex = targetNodeIndex;
+                Visible = Collidable = true;
             }
         }
 

@@ -53,7 +53,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             var name = from ? ColorGradeFrom : ColorGradeTo;
 
             if (name == "(current)") {
-                name = from ? new DynData<Level>(level).Get<string>("lastColorGrade") : level.Session.ColorGrade;
+                name = from ? DynamicData.For(level).Get<string>("lastColorGrade") : level.Session.ColorGrade;
             } else if (name == "(core)") {
                 switch (level.CoreMode) {
                     case Session.CoreModes.Cold: name = "cold"; break;
@@ -80,8 +80,6 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             if (cursor.TryGotoNext(MoveType.Before,
                 instr => instr.MatchLdnull(),
                 instr => instr.MatchCallOrCallvirt<GraphicsDevice>("SetRenderTarget"))) {
-
-                Logger.Log("SJ2021/ColorGradeMask", $"Adding color grade fade mask rendering at {cursor.Index} in IL for Level.Render");
 
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Level>>(level => {
@@ -136,14 +134,12 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchLdarg(0),
                 instr => instr.MatchLdfld<Level>("Pathfinder"))) {
 
-                Logger.Log("SJ2021/ColorGradeMask", $"Adding color grade mask rendering at {cursor.Index} in IL for Level.Render");
-
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.Emit(OpCodes.Ldloc_S, (byte)matrixLocal);
                 cursor.EmitDelegate<Action<Level, Matrix>>((level, matrix) => {
                     var colorGradeMasks = level.Tracker.GetEntities<ColorGradeMask>();
                     if (colorGradeMasks.Count > 0) {
-                        var levelData = new DynData<Level>(level);
+                        var levelData = DynamicData.For(level);
                         var currentFrom = GFX.ColorGrades.GetOrDefault(levelData.Get<string>("lastColorGrade"), GFX.ColorGrades["none"]);
                         var currentTo = GFX.ColorGrades.GetOrDefault(level.Session.ColorGrade, GFX.ColorGrades["none"]);
                         var currentValue = ColorGrade.Percent;

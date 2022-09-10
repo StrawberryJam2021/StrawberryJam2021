@@ -28,7 +28,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static void Load() {
             On.Celeste.Player.ctor += Player_ctor;
             IL.Celeste.LevelLoader.LoadingThread += LevelLoader_LoadingThread;
-            IL.Celeste.Level.Begin += Level_Begin; 
+            On.Celeste.GameplayBuffers.Create += onGameplayBuffersCreate;
+            On.Celeste.GameplayBuffers.Unload += onGameplayBuffersUnload;
         }
 
         public static void LoadContent(bool firstLoad) {
@@ -40,14 +41,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static void Unload() {
             On.Celeste.Player.ctor -= Player_ctor;
             IL.Celeste.LevelLoader.LoadingThread -= LevelLoader_LoadingThread;
-            IL.Celeste.Level.Begin -= Level_Begin;
+            On.Celeste.GameplayBuffers.Create -= onGameplayBuffersCreate;
+            On.Celeste.GameplayBuffers.Unload -= onGameplayBuffersUnload;
         }
 
-        private static void Level_Begin(ILContext il) {
-            ILCursor cursor = new ILCursor(il);
-            if(cursor.TryGotoNext(instr=>instr.MatchLdarg(0), instr => instr.MatchCall<Scene>("Begin"))) {
-                cursor.EmitDelegate<Action>(() => { DarkMatterRenderer.DarkMatterLightning = VirtualContent.CreateRenderTarget("gameplay-buffer-dark-matter", 160, 160); });
-            }
+        private static void onGameplayBuffersCreate(On.Celeste.GameplayBuffers.orig_Create orig) {
+            orig();
+            DarkMatterRenderer.DarkMatterLightning = VirtualContent.CreateRenderTarget("SJ2021-buffer-dark-matter", 160, 160);
+            DarkMatterRenderer.BlurTempBuffer = VirtualContent.CreateRenderTarget("SJ2021-temp-blur-buffer", 320, 180);
+        }
+
+        private static void onGameplayBuffersUnload(On.Celeste.GameplayBuffers.orig_Unload orig) {
+            orig();
+            DarkMatterRenderer.DarkMatterLightning?.Dispose();
+            DarkMatterRenderer.DarkMatterLightning = null;
+            DarkMatterRenderer.BlurTempBuffer?.Dispose();
+            DarkMatterRenderer.BlurTempBuffer = null;
         }
 
         //Because DarkMatterRenderer is a Global object it must be loaded on LoadingThread.
@@ -133,10 +142,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         //Particles are renderer from the StrawberryJamDarkMatterRenderer, operating on the List of rectangles.
         public const string Flag = "disable_lightning";
 
-        public float Fade;
-        
-        private bool disappearing;
-        
         private float toggleOffset;
         
         public int VisualWidth;
@@ -196,7 +201,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void OnPlayer(Player player) {
             if (renderer.mode == DarkMatterRenderer.Mode.Kill) {
-                if (!disappearing && !SaveData.Instance.Assists.Invincible) {
+                if (!SaveData.Instance.Assists.Invincible) {
                     int num = Math.Sign(player.X - base.X);
                     if (num == 0) {
                         num = -1;
@@ -224,7 +229,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             BloomRenderer bloom = level.Bloom;
             DarkMatterRenderer entity = level.Tracker.GetEntity<DarkMatterRenderer>();
             Glitch.Value = MathHelper.Lerp(0f, 0.075f, t);
-            bloom.Strength = MathHelper.Lerp(1f, 1.2f, t);
+            bloom.Strength = MathHelper.Lerp(1f, 0.8f, t);
             entity.Fade = t * 0.2f;
         }
     }

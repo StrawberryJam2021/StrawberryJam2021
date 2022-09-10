@@ -10,22 +10,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked]
     [CustomEntity("SJ2021/DirectionalBooster")]
     public class DirectionalBooster : Booster {
-        private readonly DynData<Booster> boosterData;
+        private readonly DynamicData boosterData;
         private readonly ParticleType appearParticleType;
         private readonly Sprite sprite;
 
         public DirectionalBooster(EntityData data, Vector2 offset) : base(data.Position + offset, true) {
-            boosterData = new DynData<Booster>(this);
+            boosterData = new DynamicData(typeof(Booster), this);
 
             // replace sprite
             Remove(boosterData.Get<Sprite>("sprite"));
             sprite = StrawberryJam2021Module.SpriteBank.Create("directionalBooster");
-            boosterData["sprite"] = sprite;
+            boosterData.Set("sprite", sprite);
             Add(sprite);
 
             // replace particle type
             var boosterColor = data.HexColor("boosterColor", Calc.HexToColor("e6a434"));
-            boosterData["particleType"] = new ParticleType(P_BurstRed) {Color = boosterColor, Color2 = boosterColor};
+            boosterData.Set("particleType", new ParticleType(P_BurstRed) {Color = boosterColor, Color2 = boosterColor});
             appearParticleType = new ParticleType(P_RedAppear) {Color = boosterColor, Color2 = boosterColor};
         }
 

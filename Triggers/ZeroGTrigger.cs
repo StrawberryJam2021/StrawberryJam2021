@@ -73,13 +73,14 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         public void SetZeroG(bool on) {
+            ExtendedVariants.ExtendedVariantTriggerManager manager = ExtendedVariants.Module.ExtendedVariantsModule.Instance.TriggerManager;
             if (on) {
-                ExtendedVariants.Module.ExtendedVariantsModule.Settings.Gravity = 0;
-                ExtendedVariants.Module.ExtendedVariantsModule.Settings.AirFriction = -1;
+                manager.OnEnteredInTrigger(ExtendedVariants.Module.ExtendedVariantsModule.Variant.Gravity, 0f, false, false, false, false);
+                manager.OnEnteredInTrigger(ExtendedVariants.Module.ExtendedVariantsModule.Variant.AirFriction, 0f, false, false, false, false);
                 StrawberryJam2021Module.Session.ZeroG = true;
             } else {
-                ExtendedVariants.Module.ExtendedVariantsModule.Settings.Gravity = 10;
-                ExtendedVariants.Module.ExtendedVariantsModule.Settings.AirFriction = 10;
+                manager.OnEnteredInTrigger(ExtendedVariants.Module.ExtendedVariantsModule.Variant.Gravity, 1f, false, false, false, false);
+                manager.OnEnteredInTrigger(ExtendedVariants.Module.ExtendedVariantsModule.Variant.AirFriction, 1f, false, false, false, false);
                 StrawberryJam2021Module.Session.ZeroG = false;
             }
         }

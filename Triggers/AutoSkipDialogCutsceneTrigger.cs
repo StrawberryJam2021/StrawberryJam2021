@@ -66,12 +66,12 @@ namespace Celeste.Mod.Entities {
             }
 
             private IEnumerator startSkipping() {
-                new DynData<Textbox>(Scene.Tracker.GetEntity<Textbox>())["autoPressContinue"] = true;
+                DynamicData.For(Scene.Tracker.GetEntity<Textbox>()).Set("autoPressContinue", true);
                 yield break;
             }
 
             private IEnumerator stopSkipping() {
-                new DynData<Textbox>(Scene.Tracker.GetEntity<Textbox>())["autoPressContinue"] = false;
+                DynamicData.For(Scene.Tracker.GetEntity<Textbox>()).Set("autoPressContinue", false);
                 yield break;
             }
 

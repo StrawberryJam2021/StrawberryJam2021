@@ -22,7 +22,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Holdable hold;
         private Collision onCollideH, onCollideV;
         private Player player;
-        private DynData<Player> playerDynData;
+        private DynamicData playerDynData;
         private Level level;
         private Sprite sprite;
 
@@ -309,7 +309,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             player = hold.Holder;
             AddTag(Tags.Persistent);
             lastFacing = (int) player.Facing;
-            playerDynData = new DynData<Player>(player);
+            playerDynData = DynamicData.For(player);
             playerDynData.Set("CarryOffsetTarget", customCarryOffset);// + (Vector2.UnitX * (int) player.Facing * 4f));
         }
 

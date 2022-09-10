@@ -53,7 +53,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
         }
 
         private static void BloomRenderer_Apply(On.Celeste.BloomRenderer.orig_Apply orig, BloomRenderer self, VirtualRenderTarget target, Scene scene) {
-            new DynData<BloomRenderer>(self).Set("bloomMaskLastStrength", self.Strength);
+            DynamicData.For(self).Set("bloomMaskLastStrength", self.Strength);
             if (scene.Tracker.GetEntity<BloomMask>() != null)
                 self.Strength = 1f;
             orig(self, target, scene);
@@ -78,14 +78,12 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 if (cursor.TryGotoPrev(MoveType.AfterLabel,
                     instr => instr.MatchCall(typeof(Draw), "get_SpriteBatch"))) {
 
-                    Logger.Log("SJ2021/BloomMask", $"Adding bloom mask rendering at {cursor.Index} in IL for BloomRenderer.Apply");
-
                     cursor.Emit(OpCodes.Ldarg_0);
                     cursor.Emit(OpCodes.Ldarg_1);
                     cursor.Emit(OpCodes.Ldarg_2);
                     cursor.Emit(OpCodes.Ldloc_S, (byte)textureLoc);
                     cursor.EmitDelegate<Action<BloomRenderer, VirtualRenderTarget, Scene, Texture2D>>((self, target, scene, texture) => {
-                        var selfData = new DynData<BloomRenderer>(self);
+                        var selfData = DynamicData.For(self);
                         var sliceRects = new List<Rectangle>();
                         var renderedMask = false;
                         var lastTargets = Engine.Graphics.GraphicsDevice.GetRenderTargets();
@@ -139,12 +137,10 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 instr => instr.MatchCallvirt<Game>("get_GraphicsDevice"),
                 instr => instr.MatchLdarg(1))) {
 
-                Logger.Log("SJ2021/BloomMask", $"Cutting bloom mask slices at {cursor.Index} in IL for BloomRenderer.Apply");
-
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.Emit(OpCodes.Ldarg_2);
                 cursor.EmitDelegate<Action<BloomRenderer, Scene>>((self, scene) => {
-                    var selfData = new DynData<BloomRenderer>(self);
+                    var selfData = DynamicData.For(self);
                     var slices = selfData.Get<List<Rectangle>>("bloomMaskRects");
                     if (slices.Count > 0) {
                         //Engine.Instance.GraphicsDevice.SetRenderTarget(GameplayBuffers.TempA);
