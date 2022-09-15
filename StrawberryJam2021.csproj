@@ -16,9 +16,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
-    <PackageReference Include="MonoMod" Version="21.3.1.1" PrivateAssets="all" ExcludeAssets="runtime" />
-    <PackageReference Include="MonoMod.RuntimeDetour" Version="21.3.1.1" PrivateAssets="all" ExcludeAssets="runtime" />
-    <PackageReference Include="MonoMod.Utils" Version="21.3.1.1" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="MonoMod" Version="22.1.4.3" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="MonoMod.RuntimeDetour" Version="22.1.4.3" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="MonoMod.Utils" Version="22.1.4.3" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="YamlDotNet" Version="8.1.2" PrivateAssets="all" ExcludeAssets="runtime" />
 
@@ -29,7 +29,7 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="Batteries">
-      <HintPath>..\Batteries\Batteries.dll</HintPath>
+      <HintPath>lib-stripped\Batteries.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="CavernHelper">
@@ -42,6 +42,10 @@
     </Reference>
     <Reference Include="ExtendedVariantMode">
       <HintPath>lib-stripped\ExtendedVariantMode.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="FactoryHelper">
+      <HintPath>lib-stripped\FactoryHelper.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="MaxHelpingHand">

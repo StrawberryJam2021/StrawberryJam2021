@@ -2,7 +2,12 @@ module SJ2021HintController
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/HintController" HintController(x::Integer, y::Integer, dialogId::String="", singleUse::Bool=false)
+@mapdef Entity "SJ2021/HintController" HintController(
+    x::Integer, y::Integer,
+    dialogId1::String="", dialogId2::String="",
+    singleUse1::Bool=false, singleUse2::Bool=false,
+    toggleFlag::String=""
+)
 
 const placements = Ahorn.PlacementDict(
     "Hint Controller (Strawberry Jam 2021)" => Ahorn.EntityPlacement(

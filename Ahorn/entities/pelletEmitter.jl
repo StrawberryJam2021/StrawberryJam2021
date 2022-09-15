@@ -4,6 +4,8 @@ using ..Ahorn, Maple
 
 const DEFAULT_PELLET_SPEED = 100.0
 const DEFAULT_PELLET_DELAY = 0.25
+const DEFAULT_WIGGLE_AMOUNT = 2.0
+const DEFAULT_WIGGLE_FREQUENCY = 2.0
 
 const width = 16.0
 const length = 16.0
@@ -12,28 +14,32 @@ const length = 16.0
     x::Integer, y::Integer,
     pelletSpeed::Real=DEFAULT_PELLET_SPEED, pelletCount::Integer=1,
     pelletDelay::Real=DEFAULT_PELLET_DELAY,
-    cassetteIndex::Int=0, collideWithSolids::Bool=true
+    cassetteIndex::Int=0, collideWithSolids::Bool=true,
+    wiggleAmount::Real=DEFAULT_WIGGLE_AMOUNT, wiggleFrequency::Real=DEFAULT_WIGGLE_FREQUENCY
 )
 
 @mapdef Entity "SJ2021/PelletEmitterDown" PelletEmitterDown(
     x::Integer, y::Integer,
     pelletSpeed::Real=DEFAULT_PELLET_SPEED, pelletCount::Integer=1,
     pelletDelay::Real=DEFAULT_PELLET_DELAY,
-    cassetteIndex::Int=0, collideWithSolids::Bool=true
+    cassetteIndex::Int=0, collideWithSolids::Bool=true,
+    wiggleAmount::Real=DEFAULT_WIGGLE_AMOUNT, wiggleFrequency::Real=DEFAULT_WIGGLE_FREQUENCY
 )
 
 @mapdef Entity "SJ2021/PelletEmitterLeft" PelletEmitterLeft(
     x::Integer, y::Integer,
     pelletSpeed::Real=DEFAULT_PELLET_SPEED, pelletCount::Integer=1,
     pelletDelay::Real=DEFAULT_PELLET_DELAY,
-    cassetteIndex::Int=0, collideWithSolids::Bool=true
+    cassetteIndex::Int=0, collideWithSolids::Bool=true,
+    wiggleAmount::Real=DEFAULT_WIGGLE_AMOUNT, wiggleFrequency::Real=DEFAULT_WIGGLE_FREQUENCY
 )
 
 @mapdef Entity "SJ2021/PelletEmitterRight" PelletEmitterRight(
     x::Integer, y::Integer,
     pelletSpeed::Real=DEFAULT_PELLET_SPEED, pelletCount::Integer=1,
     pelletDelay::Real=DEFAULT_PELLET_DELAY,
-    cassetteIndex::Int=0, collideWithSolids::Bool=true
+    cassetteIndex::Int=0, collideWithSolids::Bool=true,
+    wiggleAmount::Real=DEFAULT_WIGGLE_AMOUNT, wiggleFrequency::Real=DEFAULT_WIGGLE_FREQUENCY
 )
 
 const placements = Ahorn.PlacementDict(

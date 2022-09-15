@@ -59,8 +59,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static int On_Player_NormalUpdate(On.Celeste.Player.orig_NormalUpdate orig, Player self) {
             int origResult = orig(self);
             if (self.Holding != null && CanDashWithHoldable(self) && self.CanDash) {
-                DynData<Player> playerData = new DynData<Player>(self);
-                self.Speed += playerData.Get<Vector2>("LiftBoost");
+                self.Speed += DynamicData.For(self).Get<Vector2>("LiftBoost");
                 return self.StartDash();
             } else {
                 return origResult;

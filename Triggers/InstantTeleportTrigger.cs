@@ -16,9 +16,9 @@ using System.Reflection;
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [TrackedAs(typeof(Trigger))]
     [CustomEntity(
-        "VivHelperTEMP/BasicInstantTeleportTrigger = Basic",
-        "VivHelperTEMP/MainInstantTeleportTrigger = Main",
-        "VivHelperTEMP/CustomInstantTeleportTrigger = Custom")]
+        "SJ2021/BasicInstantTeleportTrigger = Basic",
+        "SJ2021/MainInstantTeleportTrigger = Main",
+        "SJ2021/CustomInstantTeleportTrigger = Custom")]
     public class InstantTeleportTrigger : Trigger
     {
         public enum TransitionType
@@ -76,7 +76,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             timeSlowDown = data.Float("TimeSlowDown", 0f);
             delay = data.Float("TimeBeforeTeleport", 0f);
             legacyCamera = data.Int("CameraType", -1);
-            resetDashes = data.Bool("ResetDashes", true);
+            resetDashes = false;
             onExit = data.Bool("OnExit", false);
             differentSide = data.Bool("DifferentSide", false);
             if (legacyCamera == -1) legacyCamera = 1;
@@ -156,12 +156,12 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 Vector2 prevTopRight = player.TopRight - player.Speed; //TopLeft, TopRight, BottomLeft, BottomRight
                 Vector2 prevBottomLeft = player.BottomLeft - player.Speed;
                 // Check if the segment prevLoc -> curLoc crosses any of the boundaries
-                sides[0] *= (this.Left > prevTopRight.X && this.Left <= player.TopRight.X) ? 1 : 0;
-                sides[1] *= (this.Right < prevBottomLeft.X && this.Right >= player.BottomLeft.X) ? 1 : 0;
-                sides[2] *= (this.Top > prevBottomLeft.Y && this.Top <= player.BottomLeft.Y) ? 1 : 0;
-                sides[3] *= (this.Bottom < prevTopRight.Y && this.Bottom >= player.TopRight.Y) ? 1 : 0;
+                sides[0] *= (Left > prevTopRight.X && Left <= player.TopRight.X) ? 1 : 0;
+                sides[1] *= (Right < prevBottomLeft.X && Right >= player.BottomLeft.X) ? 1 : 0;
+                sides[2] *= (Top > prevBottomLeft.Y && Top <= player.BottomLeft.Y) ? 1 : 0;
+                sides[3] *= (Bottom < prevTopRight.Y && Bottom >= player.TopRight.Y) ? 1 : 0;
                 int maxValue = sides.Max();
-                this.direction = Array.IndexOf(sides, maxValue);
+                direction = Array.IndexOf(sides, maxValue);
             }
             else
             {
@@ -190,13 +190,13 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     Vector2 prevTopRight = player.TopRight - player.Speed; //TopLeft, TopRight, BottomLeft, BottomRight
                     Vector2 prevBottomLeft = player.BottomLeft - player.Speed;
                     // Check if the segment prevLoc -> curLoc crosses any of the boundaries
-                    sides[0] *= (this.Left < prevTopRight.X && this.Left >= player.TopRight.X) ? 1 : 0;
-                    sides[1] *= (this.Right > prevBottomLeft.X && this.Right <= player.BottomLeft.X) ? 1 : 0;
-                    sides[2] *= (this.Top < prevBottomLeft.Y && this.Top >= player.BottomLeft.Y) ? 1 : 0;
-                    sides[3] *= (this.Bottom > prevTopRight.Y && this.Bottom <= player.TopRight.Y) ? 1 : 0;
+                    sides[0] *= (Left < prevTopRight.X && Left >= player.TopRight.X) ? 1 : 0;
+                    sides[1] *= (Right > prevBottomLeft.X && Right <= player.BottomLeft.X) ? 1 : 0;
+                    sides[2] *= (Top < prevBottomLeft.Y && Top >= player.BottomLeft.Y) ? 1 : 0;
+                    sides[3] *= (Bottom > prevTopRight.Y && Bottom <= player.TopRight.Y) ? 1 : 0;
                     int maxValue = sides.Max();
                     int exitDirection = Array.IndexOf(sides, maxValue);
-                    trigger = exitDirection != this.direction;
+                    trigger = exitDirection != direction;
                 }
                 if (trigger)
                 {
@@ -320,7 +320,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     catch
                     {
                         level.Session.RespawnPoint = player.Position;
-                        Console.WriteLine("No Respawn Point found, made one. Please be aware."); //Test
                     }
                     if (MatchDashState(player.StateMachine.State)) { player.DashDir = pDashDir.RotateTowards(player.Speed.Angle(), 6.3f); }
                     if (state == 10) { player.SummitLaunch(player.Position.X); }

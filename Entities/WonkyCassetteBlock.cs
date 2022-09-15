@@ -1,6 +1,8 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
 using Monocle;
+using MonoMod.Cil;
 using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
@@ -19,7 +21,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly int OverrideBoostFrames;
         public int boostFrames = 0;
 
-        private DynData<CassetteBlock> cassetteBlockData;
+        private DynamicData cassetteBlockData;
 
         private string textureDir;
 
@@ -29,8 +31,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             OnAtBeats = Regex.Split(moveSpec, @",\s*").Select(int.Parse).Select(i => i - 1).ToArray();
 
-            cassetteBlockData = new DynData<CassetteBlock>(this);
-            cassetteBlockData["color"] = color;
+            cassetteBlockData = new DynamicData(typeof(CassetteBlock), this);
+            cassetteBlockData.Set("color", color);
 
             this.textureDir = textureDir;
 
@@ -52,7 +54,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static readonly MethodInfo m_CassetteBlock_CreateImage = typeof(CassetteBlock).GetMethod("CreateImage", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly FieldInfo _groupField = typeof(CassetteBlock).GetField("group", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static readonly FieldInfo _sideField = typeof(CassetteBlock).GetField("side", BindingFlags.NonPublic | BindingFlags.Instance);
 
         private static void NewFindInGroup(On.Celeste.CassetteBlock.orig_FindInGroup orig, CassetteBlock self, CassetteBlock block) {
             if (self is not WonkyCassetteBlock) {
@@ -107,14 +108,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        public override void Awake(Scene scene) {
-            base.Awake(scene);
-
-            // Remove the box side, as transparency makes it look very weird
-            // This needs to be delayed to the end of the frame, otherwise RemoveSelf does nothing here
-            scene.OnEndOfFrame += () => (_sideField.GetValue(this) as Entity).RemoveSelf();
-        }
-
         private static bool NewCheckForSame(On.Celeste.CassetteBlock.orig_CheckForSame origCheckForSame, CassetteBlock self, float x, float y) {
             if (!(self is WonkyCassetteBlock))
                 return origCheckForSame(self, x, y);
@@ -142,16 +135,42 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 orig(self, x, y, tx, ty);
         }
 
+        private static void CassetteBlock_Awake(ILContext il) {
+            ILCursor cursor = new(il);
+
+            // Don't add the BoxSide, as it breaks rendering due to transparency
+            if (cursor.TryGotoNext(MoveType.Before, instr => instr.MatchCallvirt<Scene>("Add"))) {
+                ILLabel afterAdd = cursor.DefineLabel();
+
+                // skip the Add call if this is a wonky cassette
+                cursor.Emit(OpCodes.Ldarg_0); // this
+                cursor.EmitDelegate<Func<Scene, object, CassetteBlock, bool>>(IsWonky);
+                cursor.Emit(OpCodes.Brtrue, afterAdd);
+
+                // restore the args for the Add call
+                cursor.Emit(OpCodes.Ldarg_1); // Scene
+                cursor.Emit(OpCodes.Ldloc_2); // side
+                // Scene.Add will be called here
+
+                cursor.Index++;
+                cursor.MarkLabel(afterAdd);
+            }
+        }
+
+        private static bool IsWonky(Scene scene, object side, CassetteBlock self) => self is WonkyCassetteBlock;
+
         public static void Load() {
             On.Celeste.CassetteBlock.FindInGroup += NewFindInGroup;
             On.Celeste.CassetteBlock.CheckForSame += NewCheckForSame;
             On.Celeste.CassetteBlock.SetImage += CassetteBlock_SetImage;
+            IL.Celeste.CassetteBlock.Awake += CassetteBlock_Awake;
         }
 
         public static void Unload() {
             On.Celeste.CassetteBlock.FindInGroup -= NewFindInGroup;
             On.Celeste.CassetteBlock.CheckForSame -= NewCheckForSame;
             On.Celeste.CassetteBlock.SetImage -= CassetteBlock_SetImage;
+            IL.Celeste.CassetteBlock.Awake -= CassetteBlock_Awake;
         }
     }
 }

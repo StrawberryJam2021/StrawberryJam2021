@@ -81,8 +81,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                         }
                 */
 
-                Logger.Log("SJ2021/ShowHitboxTrigger", $"Adding IL hook at {cursor.Index} to draw hitboxes");
-
                 ILLabel beforeGameplayRendererEnd = cursor.DefineLabel();
                 cursor.Emit(OpCodes.Br, beforeGameplayRendererEnd);
 
@@ -90,6 +88,9 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 cursor.Emit(OpCodes.Ldarg_0); // self
                 cursor.Emit(OpCodes.Ldarg_1); // scene
                 cursor.EmitDelegate<Action<GameplayRenderer, Scene>>((self, scene) => {
+                    if (EnabledTypeNames.Count == 0) {
+                        return;
+                    }
                     foreach (Entity entity in scene.Entities) {
                         if (EnabledTypeNames.Contains(entity.GetType().FullName) || EnabledTypeNames.Contains(entity.GetType().Name)) {
                             entity.DebugRender(self.Camera);

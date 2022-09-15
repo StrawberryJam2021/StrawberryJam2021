@@ -141,6 +141,7 @@ placements.entities.SJ2021/FlagBreakerBox.tooltips.music_session=Whether or not 
 
 # Bullet Time Controller
 placements.entities.SJ2021/BTController.tooltips.speed=The speed the game will run at when the player has dashes remaining, relative to regular game speed.
+placements.entities.SJ2021/BTController.tooltips.flag=(Optional) The flag that will activate this controller. If no flag is given, the controller will always be active.
 
 # Dash Boost Field / Nyom Buble
 placements.entities.SJ2021/DashBoostField.tooltips.color=The color of the field.
@@ -198,6 +199,12 @@ placements.entities.SJ2021/ToggleSwapBlock.tooltips.allowDashSliding=When unchec
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStartAudio=Custom audio to play when the block starts moving. If blank, vanilla swap block sound is used.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStopAudio=Custom audio to play when the block stops moving. If blank, vanilla swap block sound is used.
 
+# Wind Tunnel
+placements.entities.SJ2021/WindTunnelNoParticles.tooltips.activationId=String value of the entity's Activation Id. When a factory activator with this Id is turned on the entity will toggle state.
+placements.entities.SJ2021/WindTunnelNoParticles.tooltips.startActive=If `true` the entity will initially be active.
+placements.entities.SJ2021/WindTunnelNoParticles.tooltips.direction=The direction the wind blows inside the wind tunnel.
+placements.entities.SJ2021/WindTunnelNoParticles.tooltips.strength=This value determines the wind strength. Experiment with these values to find the strength you desire.\nSome familiar values from the base game are:\n	* Weak horizontal: 400\n	* Strong horizontal: 800\n	* Crazy horizontal: 1200\n	* Summit updraft: 300\n	* Summit downdraft: 400
+
 # Wonky Cassette Block
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.onAtBeats=A list of integers (separated by a comma) corresponding to the beats on which this block should activate, being deactivated on all other beats not included in this list.\nExample: 1, 2, 4
 placements.entities.SJ2021/WonkyCassetteBlock.tooltips.color=The hexadecimal colour code of this block (without the hash # symbol).
@@ -232,16 +239,22 @@ placements.entities.SJ2021/NodedCloud.tooltips.moveTime=How much time the cloud 
 # Directional Booster
 placements.entities.SJ2021/DirectionalBooster.tooltips.boosterColor=The colour to use for booster particles. Defaults to a honeyish yellow.
 
+# Wormhole Booster
+placements.entities.SJ2021/WormholeBooster.tooltips.deathColor=The color to use for the booster when it becomes deadly.
+placements.entities.SJ2021/WormholeBooster.tooltips.instantCamera=Whether the camera should transition instantly or not.
+
 # Hint Controller
-placements.entities.SJ2021/HintController.tooltips.dialogId=The identifier of the dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
-placements.entities.SJ2021/HintController.tooltips.singleUse=Whether the hint may only be viewed a single time per session.
+placements.entities.SJ2021/HintController.tooltips.dialogId1=The identifier of the first dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
+placements.entities.SJ2021/HintController.tooltips.dialogId2=The identifier of the second dialog to display. This should match an entry in your Dialog/(Language).txt file(s).
+placements.entities.SJ2021/HintController.tooltips.singleUse1=Whether the first hint may only be viewed a single time per session.
+placements.entities.SJ2021/HintController.tooltips.singleUse2=Whether the second hint may only be viewed a single time per session.
+placements.entities.SJ2021/HintController.tooltips.toggleFlag=When this flag is set, the second dialog will be displayed rather than the first.
 
 # Cassette Badeline Block
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.tiletype=The tileset to use when rendering the block.
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.hideFinalTransition=If true, the transition between last and first nodes will be hidden (useful for conveyors).
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.ignoredNodes=A comma separated list of nodes which will not spawn a block, but are still part of the path. Negative indices indicate going backward from the end of list. For example, -1 indicates the final node. The first node cannot be ignored.
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.offBeat=If true, transitions will occur halfway between cassette swaps.
-placements.entities.SJ2021/CassetteBadelineBlock.tooltips.playImpactSounds=If true, blocks will make slamming sounds when hitting another solid. Disable this if using a conveyor.
 placements.entities.SJ2021/CassetteBadelineBlock.tooltips.emitImpactParticles=If true, blocks will emit dust particles when hitting another solid. Disable this if using a conveyor.
 
 # Airtime Music Controller
@@ -254,6 +267,10 @@ placements.triggers.SJ2021/RainDensityTrigger.tooltips.duration=The time (in sec
 
 # Require Dashless Trigger
 placements.triggers.SJ2021/RequireDashlessTrigger.tooltips.entityNames=The class names of the entities to remove if the player has dashed as a comma-separated list.
+
+# Sprite Swap Trigger
+placements.triggers.SJ2021/SpriteSwapTrigger.tooltips.fromIds=The list of original sprite XML IDs as a comma-separated list. Should match the order of the "to" list.
+placements.triggers.SJ2021/SpriteSwapTrigger.tooltips.toIds=The list of swapped sprite XML IDs as a comma-separated list. Should match the order of the  "from" list.
 
 # Set Metadata Trigger
 placements.triggers.SJ2021/SetMetadataTrigger.tooltips.theoInBooster=Whether player is allowed to hold crystal Theo while in a booster or not.
@@ -340,6 +357,8 @@ placements.entities.SJ2021/AllInOneMask.tooltips.bloomStrengthFrom=The bloom str
 placements.entities.SJ2021/AllInOneMask.tooltips.bloomStrengthTo=The bloom strength at the end of the fade. (-1 for current value)
 placements.entities.SJ2021/AllInOneMask.tooltips.colorGradeFrom=The color grading to use at the start of the fade.
 placements.entities.SJ2021/AllInOneMask.tooltips.colorGradeTo=The color grading to use at the end of the fade.
+placements.entities.SJ2021/AllInOneMask.tooltips.colorGradeFadeFrom=How much the From color grade should start faded in.
+placements.entities.SJ2021/AllInOneMask.tooltips.colorGradeFadeTo=How much the To Color grade should end faded in.
 placements.entities.SJ2021/AllInOneMask.tooltips.lightingFrom=The lighting of the region at the start of the fade. (-1 for current value)
 placements.entities.SJ2021/AllInOneMask.tooltips.lightingTo=The lighting of the region at the end of the fade. (-1 for current value)
 placements.entities.SJ2021/AllInOneMask.tooltips.addBaseLight=Whether the level's darkness alpha will be added to the mask's darkness.
@@ -350,6 +369,8 @@ placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletCount=The number of pe
 placements.entities.SJ2021/PelletEmitterUp.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
 placements.entities.SJ2021/PelletEmitterUp.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
 placements.entities.SJ2021/PelletEmitterUp.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.wiggleFrequency=The number of times the pellet should wiggle back and forth per second. Defaults to 2.
+placements.entities.SJ2021/PelletEmitterUp.tooltips.wiggleAmount=The amplitude of the wiggle. Defaults to 2. Set to 0 to disable wiggling, causing pellets to travel in a straight line.
 
 # Pellet Emitter (Down)
 placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
@@ -357,6 +378,8 @@ placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletCount=The number of 
 placements.entities.SJ2021/PelletEmitterDown.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
 placements.entities.SJ2021/PelletEmitterDown.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
 placements.entities.SJ2021/PelletEmitterDown.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.wiggleFrequency=The number of times the pellet should wiggle back and forth per second. Defaults to 2.
+placements.entities.SJ2021/PelletEmitterDown.tooltips.wiggleAmount=The amplitude of the wiggle. Defaults to 2. Set to 0 to disable wiggling, causing pellets to travel in a straight line.
 
 # Pellet Emitter (Left)
 placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
@@ -364,6 +387,8 @@ placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletCount=The number of 
 placements.entities.SJ2021/PelletEmitterLeft.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
 placements.entities.SJ2021/PelletEmitterLeft.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
 placements.entities.SJ2021/PelletEmitterLeft.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.wiggleFrequency=The number of times the pellet should wiggle back and forth per second. Defaults to 2.
+placements.entities.SJ2021/PelletEmitterLeft.tooltips.wiggleAmount=The amplitude of the wiggle. Defaults to 2. Set to 0 to disable wiggling, causing pellets to travel in a straight line.
 
 # Pellet Emitter (Right)
 placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletSpeed=The speed at which pellets will travel, in pixels per second. Defaults to 100.
@@ -371,6 +396,8 @@ placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletCount=The number of
 placements.entities.SJ2021/PelletEmitterRight.tooltips.pelletDelay=The delay in seconds between each shot, if pelletCount is greater than 1. Defaults to 0.25.
 placements.entities.SJ2021/PelletEmitterRight.tooltips.cassetteIndex=The cassette swap index on which to fire. Defaults to 0.
 placements.entities.SJ2021/PelletEmitterRight.tooltips.collideWithSolids=Whether or not shots should collide with solids. Defaults to true.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.wiggleFrequency=The number of times the pellet should wiggle back and forth per second. Defaults to 2.
+placements.entities.SJ2021/PelletEmitterRight.tooltips.wiggleAmount=The amplitude of the wiggle. Defaults to 2. Set to 0 to disable wiggling, causing pellets to travel in a straight line.
 
 # Auto-Skip Dialog Cutscene Trigger (Everest)
 placements.triggers.SJ2021/AutoSkipDialogCutsceneTrigger.tooltips.onlyOnce=Whether the dialogue should only trigger once.
@@ -409,11 +436,6 @@ placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.disableSpawnOffset=Whet
 placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.flag=The name of the flag that will activate the block.
 placements.entities.SJ2021/FlagFloatySpaceBlock.tooltips.moveTime=The time in seconds for the block to move to a new position.
 
-# Core Toggle No Flash
-placements.entities.SJ2021/CoreToggleNoFlash.tooltips.onlyIce=Whether the switch can only turn the core mode to ice.
-placements.entities.SJ2021/CoreToggleNoFlash.tooltips.onlyFire=Whether the switch can only turn the core mode to fire.
-placements.entities.SJ2021/CoreToggleNoFlash.tooltips.persistent=Whether the core mode persists after death instead of resetting to initial room entry state.
-
 # Show Hitbox Trigger
 placements.triggers.SJ2021/ShowHitboxTrigger.tooltips.typeNames=A comma-separated list of class names of the entities to show hitboxes when player is inside the trigger.\nExample: Celeste.Player,Celeste.CrystalStaticSpinner,Refill
 
@@ -421,3 +443,52 @@ placements.triggers.SJ2021/ShowHitboxTrigger.tooltips.typeNames=A comma-separate
 placements.entities.SJ2021/FakeCassette.names.remixEvent=Collect Audio
 placements.entities.SJ2021/FakeCassette.tooltips.remixEvent=The Audio event played upon collecting the Cassette.
 placements.entities.SJ2021/FakeCassette.tooltips.flagOnCollect=Sets a flag when the Cassette breaks in the cutscene
+
+# Core Mode Trigger (No Flash)
+placements.triggers.SJ2021/CoreModeTriggerNoFlash.tooltips.mode=The core mode that should be used when the trigger is entered.
+
+# Custom Summit Background Manager
+placements.entities.SJ2021/CustomAscendManager.tooltips.backgroundColor=Hex color of the background. Vanilla options are:\nNormal: 75a0ab\nDark: 000000
+placements.entities.SJ2021/CustomAscendManager.tooltips.streakColors=Hex colors of the cloud streaks, as a comma-separated list. Vanilla options are:\nNormal: ffffff,e69ecb\nDark: 041b44,011230
+placements.entities.SJ2021/CustomAscendManager.tooltips.introLaunch=Use to match the camera and fade-in settings of the first launch in Summit (where you spawn into it).
+placements.entities.SJ2021/CustomAscendManager.tooltips.borders=Whether or not to render the cloud borders on the edges of the screen.
+placements.entities.SJ2021/CustomAscendManager.tooltips.dark=If true, the fade and screen wipe color will be black instead of white.
+
+# Launch Platform
+placements.entities.SJ2021/LaunchPlatform.tooltips.width=The width of the platform in pixels.
+
+# Oppenheimer Teleporter
+placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.newPosX= The X coordinate of the teleport location in the room "WarpRoom"\nSetting to -1 sets the "default" which is usually the same (X,Y) but in the new room.
+placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.newPosY= The Y coordinate of the teleport location in the room "WarpRoom"\nSetting to -1 sets the "default" which is usually the same (X,Y) but in the new room.
+placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.WarpRoom= Select or type in the name of the room you want to teleport to.
+placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.TransitionType= Selects a Visual to overlay when teleporting.
+placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.AddTriggerOffset= Sets the player to the new position plus their (vector) distance from the top left of the trigger.\nTurn this off if you're having issues with the position or are setting New Pos X and Y to -1.
+placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.CameraType= Sets the Camera to have the details listed in the Dropdown. Don't put in a custom number, it just can crash the game.
+
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.newPosX= The X coordinate of the teleport location in the room "WarpRoom"\nSetting to -1 sets the "default" which is usually the same (X,Y) but in the new room.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.newPosY= The Y coordinate of the teleport location in the room "WarpRoom"\nSetting to -1 sets the "default" which is usually the same (X,Y) but in the new room.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.WarpRoom= Select or type in the name of the room you want to teleport to.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.TransitionType= Selects a Visual to overlay when teleporting.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.AddTriggerOffset= Sets the player to the new position plus their (vector) distance from the top left of the trigger.\nTurn this off if you're having issues with the position or are setting New Pos X and Y to -1.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.ExitVelocityX= Modifies the player's X speed. VelocityModifier determines in what way it is modified.\nA point of reference if you use Add, a dash is "240" speed.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.ExitVelocityY= Modifies the player's Y speed. VelocityModifier determines in what way it is modified.\nA point of reference if you use Add, a dash is "240" speed.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.VelocityModifier= Changes the way that ExitVelocityX and ExitVelocityY modify the player's speed.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.Dreaming= Sets the Dreaming state on or off.
+placements.triggers.SJ2021/MainInstantTeleportTrigger.tooltips.CameraType= Sets the Camera to have the details listed in the Dropdown. Don't put in a custom number, it just can crash the game.
+
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.newPosX= The X coordinate of the teleport location in the room "WarpRoom"\nSetting this to -1 sets the "default" - the player's old (X,Y) but in the new room.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.newPosY= The Y coordinate of the teleport location in the room "WarpRoom"\nSetting this to -1 sets the "default" - the player's old (X,Y) but in the new room.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.WarpRoom= Select or type in the name of the room you want to teleport to.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.TransitionType= Selects a Visual to overlay when teleporting.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.AddTriggerOffset= Sets the player to the new position plus their (vector) distance from the top left of the trigger.\nTurn this off if you're having issues with the position or are setting New Pos X and Y to -1.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.ExitVelocityX= Modifies the player's X speed. VelocityModifier determines in what way it is modified.\nA point of reference if you use Add, a dash is "240" speed.\nIf using ExitVelocityS, do not use this.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.ExitVelocityY= Modifies the player's Y speed. VelocityModifier determines in what way it is modified.\nA point of reference if you use Add, a dash is "240" speed.\nIf using ExitVelocityS, do not use this.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.VelocityModifier= Changes the way that ExitVelocityX/Y/S modify the player's speed.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.Dreaming= Sets the Dreaming state on or off.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.ExitVelocityS= Modifies the total player speed regardless of the direction.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.ZFlagsData= The set of flags needed to turn on or off this teleporter. If all flags are in a state to leave the list on, then the teleporter will turn on.\nExample: "flag1,!flag2,flag3" = if flag1 and flag3 are triggered and flag2 isn't, then activate the teleporter.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.RotationActor= The number (in degrees) used by the Rotation Modifier to change the player's direction. See Rotation Modifier for more info, or this example:\n Rotation Actor: Right, Rotation Modifier: Rotate To Direction = > the player's velocity will be all going to the right.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.names.RotationType= Rotation Modifier
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.RotationType= Rotates the player's movement exiting the portal. Setting to "Rotate To Direction" will change the player's velocity to the Rotation Actor's direction.\nSetting to "Rotate Degrees from Direction" will rotate the player's potential velocity by {Rotation Actor} degrees (clockwise)
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.CameraType= Sets the Camera to have the details listed in the Dropdown. Don't put in a custom number, it just can crash the game.
+placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.OnExit= If true, the teleport occurs when leaving the trigger.

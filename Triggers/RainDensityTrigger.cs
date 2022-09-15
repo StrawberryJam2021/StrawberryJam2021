@@ -46,7 +46,6 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static void modRainRender(ILContext il) {
             ILCursor cursor = new ILCursor(il);
             while (cursor.TryGotoNext(MoveType.After, instr => instr.MatchConvI4())) {
-                Logger.Log("SJ2021/RainDensityTrigger", $"Adding IL hook at {cursor.Index} to be able to customize rain density");
                 cursor.EmitDelegate<Func<int, int>>(len => (int)(len * SessionData.Density));
             }
         }
