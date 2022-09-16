@@ -14,6 +14,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             public Sprite sprite;
 
             private float timer;
+            private bool shaking;
+            private Vector2 shakeVector;
+            private float shakeTimer;
 
             public override void Added(Scene scene) {
                 base.Added(scene);
@@ -42,14 +45,27 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 timer += Engine.DeltaTime;
                 base.Update();
                 sprite.Update();
-                
+                if (shaking) {
+                    shakeTimer += Engine.DeltaTime;
+                    shakeVector = Calc.Random.ShakeVector() * (shakeTimer > 1 ? (float) Math.Pow(shakeTimer, 0.33) : shakeTimer);
+                }
             }
 
             public override void Render() {
                 float num = Ease.CubeOut((Scene as Level).FormationBackdrop.Alpha);
                 Vector2 vector = global::Celeste.Celeste.TargetCenter + new Vector2(0f, 64f);
                 Vector2 vector2 = Vector2.UnitY * 64f * (1f - num);
-                sprite.Texture.DrawJustified(vector - vector2 + new Vector2(0f, 32f), new Vector2(0.5f, 0.75f), Color.White * num, 1.5f);
+                sprite.Texture.DrawJustified(vector - vector2 + new Vector2(0f, 32f), new Vector2(0.5f + 0.01F * shakeVector.X, 0.75f + 0.01F * shakeVector.Y), Color.White * num, 1.5f);
+            }
+
+            public void Shake() {
+                shaking = true;
+            }
+
+            public void StopShake() {
+                shaking = false;
+                shakeTimer = 0;
+                shakeVector = Vector2.Zero;
             }
         }
 
@@ -177,6 +193,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Visible = false;
             message = new UnlockedBSide();
             Scene.Add(message);
+            message.Shake();
             yield return message.EaseIn();
             level.PauseLock = true;
             yield return DoFakeRoutine(player);
@@ -221,8 +238,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
             yield return 0.4f;
-            
-            
+
+
             Engine.TimeRate = 0f;
             level.Frozen = false;
             player.Active = false;
@@ -231,6 +248,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Engine.TimeRate = Calc.Approach(Engine.TimeRate, 1f, 0.5f * Engine.RawDeltaTime);
                 yield return null;
             }
+
+            message.StopShake();
             message.sprite.Rate = 1f;
             while (message.sprite.Animating) {
                 if (message.sprite.CurrentAnimationFrame == 12) {
