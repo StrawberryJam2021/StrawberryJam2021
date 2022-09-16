@@ -47,7 +47,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 sprite.Update();
                 if (shaking) {
                     shakeTimer += Engine.DeltaTime;
-                    shakeVector = Calc.Random.ShakeVector() * (shakeTimer > 1 ? (float) Math.Pow(shakeTimer, 0.33) : shakeTimer);
+                    //magnitude of the shake vector determined by a cube root function, because they ramp up slowly and cleanly and have f(1) = 1 which lets us use a different function for t < 1 and t > 1
+                    //use linear function for values of time below 1, cube root function ramps too fast.
+                    shakeVector = 0.01F * Calc.Random.ShakeVector() * (shakeTimer > 1 ? (float) Math.Pow(shakeTimer, 0.33) : shakeTimer); 
                 }
             }
 
@@ -55,7 +57,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 float num = Ease.CubeOut((Scene as Level).FormationBackdrop.Alpha);
                 Vector2 vector = global::Celeste.Celeste.TargetCenter + new Vector2(0f, 64f);
                 Vector2 vector2 = Vector2.UnitY * 64f * (1f - num);
-                sprite.Texture.DrawJustified(vector - vector2 + new Vector2(0f, 32f), new Vector2(0.5f + 0.01F * shakeVector.X, 0.75f + 0.01F * shakeVector.Y), Color.White * num, 1.5f);
+                sprite.Texture.DrawJustified(vector - vector2 + new Vector2(0f, 32f), new Vector2(0.5f + shakeVector.X, 0.75f + shakeVector.Y), Color.White * num, 1.5f);
             }
 
             public void Shake() {
@@ -193,7 +195,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Visible = false;
             message = new UnlockedBSide();
             Scene.Add(message);
-            message.Shake();
             yield return message.EaseIn();
             level.PauseLock = true;
             yield return DoFakeRoutine(player);
@@ -225,11 +226,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Level level = Scene as Level;
             yield return 1f;
             Glitch.Value = 0.75f;
+            message.Shake();
             while (Glitch.Value > 0f) {
                 Glitch.Value = Calc.Approach(Glitch.Value, 0f, Engine.RawDeltaTime * 4f);
                 level.Shake();
+                    
                 yield return null;
             }
+
             yield return 1.1f;
             Glitch.Value = 0.75f;
             while (Glitch.Value > 0f) {
