@@ -208,10 +208,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             player.Active = true;
             yield return 0.5f;
 
-            if (!player.Dead && nodes != null && nodes.Length >= 2)
-            {
-                Audio.Play("event:/game/general/cassette_bubblereturn", level.Camera.Position + new Vector2(160f, 90f));
-                player.StartCassetteFly(nodes[1], nodes[0]);
+            player.StateMachine.ForceState(Player.StTempleFall);
+            while (!player.Dead && !player.OnGround()) {
+                yield return null;
             }
             level.EndCutscene();
             level.Frozen = false;
