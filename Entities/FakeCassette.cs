@@ -208,10 +208,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             player.Active = true;
             yield return 0.5f;
 
-            player.StateMachine.ForceState(Player.StTempleFall);
             while (!player.Dead && !player.OnGround()) {
                 yield return null;
             }
+
+            player.StateMachine.ForceState(Player.StTempleFall);
             level.EndCutscene();
             level.Frozen = false;
             level.PauseLock = false;
