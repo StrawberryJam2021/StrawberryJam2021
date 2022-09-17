@@ -213,6 +213,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             player.StateMachine.ForceState(Player.StTempleFall);
+            level.Session.SetFlag(flagOnCollect);
             level.EndCutscene();
             level.Frozen = false;
             level.PauseLock = false;
@@ -256,9 +257,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             message.StopShake();
             message.sprite.Rate = 1f;
             while (message.sprite.Animating) {
+                if (message.sprite.CurrentAnimationFrame == 12) {
+                    level.Session.SetFlag(flagOnCollect);
+                }
                 yield return null;
             }
-            level.Session.SetFlag(flagOnCollect);
             message.RemoveSelf();
             level.FormationBackdrop.Alpha = 1f;
             level.FormationBackdrop.Display = false;
