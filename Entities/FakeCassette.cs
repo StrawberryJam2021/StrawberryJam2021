@@ -89,9 +89,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool collecting;
 
-        private string collectAudioEvent, flagOnCollect;
+        private string collectAudioEventName, flagOnCollect;
 
-        private Vector2[] nodes;
+        private EventInstance collectAudioEvent;
 
         internal EntityID id;
 
@@ -104,12 +104,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public FakeCassette(EntityData data, Vector2 offset, EntityID id)
             : this(data.Position + offset) {
-            collectAudioEvent = data.Attr("remixEvent");
+            collectAudioEventName = data.Attr("remixEvent");
             flagOnCollect = data.Attr("flagOnCollect");
-            nodes = data.NodesOffset(offset);
-            if(nodes.Length < 2) {
-                nodes = new Vector2[] { Position, Position };
-            }
             this.id = id;
         }
 
@@ -147,7 +143,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void OnPlayer(Player player) {
             if (!collected) {
                 player?.RefillStamina();
-                Audio.Play(collectAudioEvent, Position);
+                collectAudioEvent = Audio.Play(collectAudioEventName, Position);
                 collected = true;
                 global::Celeste.Celeste.Freeze(0.1f);
                 (Scene as Level).StartCutscene((level) => SkipCutscene(level, player), fadeInOnSkip: false);
@@ -285,8 +281,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             level.FormationBackdrop.Alpha = 1f;
             level.FormationBackdrop.Display = false;
             player.Speed = Vector2.Zero;
-            player.Position = nodes.Length < 2 ? Position : nodes[1];
-            player.StateMachine.State = Player.StNormal;
+            Audio.Stop(collectAudioEvent);
+            player.StateMachine.ForceState(Player.StTempleFall);
             message?.RemoveSelf();
             level.Camera.Zoom = 1f;
             level.Session.DoNotLoad.Add(id);
