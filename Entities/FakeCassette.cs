@@ -204,11 +204,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             player.Active = true;
             yield return 0.5f;
 
-            while (!player.Dead && !player.OnGround()) {
-                yield return null;
-            }
+            yield return GroundPound(player);
 
-            player.StateMachine.ForceState(Player.StTempleFall);
             level.Session.SetFlag(flagOnCollect);
             level.EndCutscene();
             level.Frozen = false;
@@ -272,6 +269,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             player.Depth = 0;
         }
 
+        private IEnumerator GroundPound(Player player) {
+            while (!player.Dead && !player.OnGround()) {
+                yield return null;
+            }
+            player.StateMachine.ForceState(Player.StTempleFall);
+        }
+
         public void SkipCutscene(Level level, Player player) {
             level.Session.SetFlag(flagOnCollect, true);
             level.Frozen = false;
@@ -282,7 +286,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             level.FormationBackdrop.Display = false;
             player.Speed = Vector2.Zero;
             Audio.Stop(collectAudioEvent);
-            player.StateMachine.ForceState(Player.StTempleFall);
+            player.StateMachine.State = Player.StDummy;
+            player.Add(new Coroutine(GroundPound(player)));
             message?.RemoveSelf();
             level.Camera.Zoom = 1f;
             level.Session.DoNotLoad.Add(id);
