@@ -93,8 +93,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private EventInstance collectAudioEvent;
 
-        internal EntityID id;
-
         private UnlockedBSide message;
         public FakeCassette(Vector2 position)
             : base(position) {
@@ -102,15 +100,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(new PlayerCollider(OnPlayer));
         }
 
-        public FakeCassette(EntityData data, Vector2 offset, EntityID id)
+        public FakeCassette(EntityData data, Vector2 offset)
             : this(data.Position + offset) {
             collectAudioEventName = data.Attr("remixEvent");
             flagOnCollect = data.Attr("flagOnCollect");
-            this.id = id;
         }
 
         public override void Added(Scene scene) {
-            if ((scene as Level).Session.DoNotLoad.Contains(id)) {
+            if ((scene as Level).Session.GetFlag(flagOnCollect)) {
                 RemoveSelf();
                 return;
             }
@@ -135,7 +132,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            if (!collecting && base.Scene.OnInterval(0.1f)) {
+            if (!collecting && Scene != null && Scene.OnInterval(0.1f)) {
                 SceneAs<Level>().Particles.Emit(P_Shine, 1, base.Center, new Vector2(12f, 10f));
             }
         }
@@ -157,7 +154,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             List<Entity> blocks = Scene.Tracker.GetEntities<CassetteBlock>();
             level.Frozen = true;
             Tag = Tags.FrozenUpdate;
-            level.Session.DoNotLoad.Add(id);
             level.Session.RespawnPoint = level.GetSpawnPoint(Position);
             level.Session.UpdateLevelStartDashes();
             Depth = -1000000;
@@ -206,7 +202,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             yield return GroundPound(player);
 
-            level.Session.SetFlag(flagOnCollect);
             level.EndCutscene();
             level.Frozen = false;
             level.PauseLock = false;
@@ -269,28 +264,30 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             player.Depth = 0;
         }
 
+        // Also sets flag as a fallback / for effect on skip cutscene
         private IEnumerator GroundPound(Player player) {
+            player.StateMachine.State = Player.StDummy;
             while (!player.Dead && !player.OnGround()) {
                 yield return null;
             }
+
             player.StateMachine.ForceState(Player.StTempleFall);
+            player.SceneAs<Level>().Session.SetFlag(flagOnCollect, true);
         }
 
         public void SkipCutscene(Level level, Player player) {
-            level.Session.SetFlag(flagOnCollect, true);
             level.Frozen = false;
             level.Paused = false;
             level.PauseLock = false;
             Glitch.Value = 0f;
             level.FormationBackdrop.Alpha = 1f;
             level.FormationBackdrop.Display = false;
-            player.Speed = Vector2.Zero;
             Audio.Stop(collectAudioEvent);
-            player.StateMachine.State = Player.StDummy;
+
             player.Add(new Coroutine(GroundPound(player)));
+
             message?.RemoveSelf();
             level.Camera.Zoom = 1f;
-            level.Session.DoNotLoad.Add(id);
             RemoveSelf();
         }
 
