@@ -14,6 +14,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             public Sprite sprite;
 
             private float timer;
+            private bool shaking;
+            private Vector2 shakeVector;
+            private float shakeTimer;
 
             public override void Added(Scene scene) {
                 base.Added(scene);
@@ -42,14 +45,29 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 timer += Engine.DeltaTime;
                 base.Update();
                 sprite.Update();
-                
+                if (shaking) {
+                    shakeTimer += Engine.DeltaTime;
+                    //magnitude of the shake vector determined by a cube root function, because they ramp up slowly and cleanly and have f(1) = 1 which lets us use a different function for t < 1 and t > 1
+                    //use linear function for values of time below 1, cube root function ramps too fast.
+                    shakeVector = 0.01F * Calc.Random.ShakeVector() * (shakeTimer > 1 ? (float) Math.Pow(shakeTimer, 0.33) : shakeTimer); 
+                }
             }
 
             public override void Render() {
                 float num = Ease.CubeOut((Scene as Level).FormationBackdrop.Alpha);
                 Vector2 vector = global::Celeste.Celeste.TargetCenter + new Vector2(0f, 64f);
                 Vector2 vector2 = Vector2.UnitY * 64f * (1f - num);
-                sprite.Texture.DrawJustified(vector - vector2 + new Vector2(0f, 32f), new Vector2(0.5f, 0.75f), Color.White * num, 1.5f);
+                sprite.Texture.DrawJustified(vector - vector2 + new Vector2(0f, 32f), new Vector2(0.5f + shakeVector.X, 0.75f + shakeVector.Y), Color.White * num, 1.5f);
+            }
+
+            public void Shake() {
+                shaking = true;
+            }
+
+            public void StopShake() {
+                shaking = false;
+                shakeTimer = 0;
+                shakeVector = Vector2.Zero;
             }
         }
 
@@ -71,11 +89,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private bool collecting;
 
-        private string collectAudioEvent, flagOnCollect;
+        private string collectAudioEventName, flagOnCollect;
 
-        private Vector2[] nodes;
-
-        internal EntityID id;
+        private EventInstance collectAudioEvent;
 
         private UnlockedBSide message;
         public FakeCassette(Vector2 position)
@@ -84,19 +100,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(new PlayerCollider(OnPlayer));
         }
 
-        public FakeCassette(EntityData data, Vector2 offset, EntityID id)
+        public FakeCassette(EntityData data, Vector2 offset)
             : this(data.Position + offset) {
-            collectAudioEvent = data.Attr("remixEvent");
+            collectAudioEventName = data.Attr("remixEvent");
             flagOnCollect = data.Attr("flagOnCollect");
-            nodes = data.NodesOffset(offset);
-            if(nodes.Length < 2) {
-                nodes = new Vector2[] { Position, Position };
-            }
-            this.id = id;
         }
 
         public override void Added(Scene scene) {
-            if ((scene as Level).Session.DoNotLoad.Contains(id)) {
+            if ((scene as Level).Session.GetFlag(flagOnCollect)) {
                 RemoveSelf();
                 return;
             }
@@ -121,7 +132,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            if (!collecting && base.Scene.OnInterval(0.1f)) {
+            if (!collecting && Scene != null && Scene.OnInterval(0.1f)) {
                 SceneAs<Level>().Particles.Emit(P_Shine, 1, base.Center, new Vector2(12f, 10f));
             }
         }
@@ -129,7 +140,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private void OnPlayer(Player player) {
             if (!collected) {
                 player?.RefillStamina();
-                Audio.Play(collectAudioEvent, Position);
+                collectAudioEvent = Audio.Play(collectAudioEventName, Position);
                 collected = true;
                 global::Celeste.Celeste.Freeze(0.1f);
                 (Scene as Level).StartCutscene((level) => SkipCutscene(level, player), fadeInOnSkip: false);
@@ -143,7 +154,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             List<Entity> blocks = Scene.Tracker.GetEntities<CassetteBlock>();
             level.Frozen = true;
             Tag = Tags.FrozenUpdate;
-            level.Session.DoNotLoad.Add(id);
             level.Session.RespawnPoint = level.GetSpawnPoint(Position);
             level.Session.UpdateLevelStartDashes();
             Depth = -1000000;
@@ -190,11 +200,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             player.Active = true;
             yield return 0.5f;
 
-            if (!player.Dead && nodes != null && nodes.Length >= 2)
-            {
-                Audio.Play("event:/game/general/cassette_bubblereturn", level.Camera.Position + new Vector2(160f, 90f));
-                player.StartCassetteFly(nodes[1], nodes[0]);
-            }
+            yield return GroundPound(player);
+
             level.EndCutscene();
             level.Frozen = false;
             level.PauseLock = false;
@@ -208,11 +215,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Level level = Scene as Level;
             yield return 1f;
             Glitch.Value = 0.75f;
+            message.Shake();
             while (Glitch.Value > 0f) {
                 Glitch.Value = Calc.Approach(Glitch.Value, 0f, Engine.RawDeltaTime * 4f);
                 level.Shake();
+                    
                 yield return null;
             }
+
             yield return 1.1f;
             Glitch.Value = 0.75f;
             while (Glitch.Value > 0f) {
@@ -221,8 +231,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return null;
             }
             yield return 0.4f;
-            
-            
+
+
             Engine.TimeRate = 0f;
             level.Frozen = false;
             player.Active = false;
@@ -231,6 +241,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Engine.TimeRate = Calc.Approach(Engine.TimeRate, 1f, 0.5f * Engine.RawDeltaTime);
                 yield return null;
             }
+
+            message.StopShake();
             message.sprite.Rate = 1f;
             while (message.sprite.Animating) {
                 if (message.sprite.CurrentAnimationFrame == 12) {
@@ -252,20 +264,30 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             player.Depth = 0;
         }
 
+        // Also sets flag as a fallback / for effect on skip cutscene
+        private IEnumerator GroundPound(Player player) {
+            player.StateMachine.State = Player.StDummy;
+            while (!player.Dead && !player.OnGround()) {
+                yield return null;
+            }
+
+            player.StateMachine.ForceState(Player.StTempleFall);
+            player.SceneAs<Level>().Session.SetFlag(flagOnCollect, true);
+        }
+
         public void SkipCutscene(Level level, Player player) {
-            level.Session.SetFlag(flagOnCollect, true);
             level.Frozen = false;
             level.Paused = false;
             level.PauseLock = false;
             Glitch.Value = 0f;
             level.FormationBackdrop.Alpha = 1f;
             level.FormationBackdrop.Display = false;
-            player.Speed = Vector2.Zero;
-            player.Position = nodes.Length < 2 ? Position : nodes[1];
-            player.StateMachine.State = Player.StNormal;
+            Audio.Stop(collectAudioEvent);
+
+            player.Add(new Coroutine(GroundPound(player)));
+
             message?.RemoveSelf();
             level.Camera.Zoom = 1f;
-            level.Session.DoNotLoad.Add(id);
             RemoveSelf();
         }
 
