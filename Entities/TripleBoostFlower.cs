@@ -26,6 +26,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Level level;
         private Sprite sprite;
 
+        private readonly SoundSource boostSfx;
+
         public float FallSpeed { get; private set; }
         public float FastFallSpeed { get; private set; }
         public float SlowFallSpeed { get; private set; }
@@ -72,7 +74,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hold.OnPickup = new Action(onPickup);
             hold.OnRelease = new Action<Vector2>(onRelease);
             hold.OnHitSpring = new Func<Spring, bool>(onHitSpring);
-            
+
+            Add(boostSfx = new());
         }
 
         public static void Load() {
@@ -217,6 +220,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 charges--;
                 boostDuration = boostDurationMax;
                 Input.Dash.ConsumeBuffer();
+
+                //sfx
+                boostSfx.Play("event:/strawberry_jam_2021/game/triple_boost_flower/boost_" + (3 - charges));
             } else if (shouldBeDestroyed()) {
                 destroySelf();
                 Input.Dash.ConsumeBuffer();

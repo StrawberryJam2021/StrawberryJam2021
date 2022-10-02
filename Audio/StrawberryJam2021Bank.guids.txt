@@ -10,4 +10,7 @@
 {190f0a5c-2230-4bb6-9f0d-9bb0c984b272} event:/strawberry_jam_2021/game/jars/open_demo
 {6ecab556-6965-434c-9578-f5f41ae1d298} event:/strawberry_jam_2021/game/loop_block/sideboost
 {1a503070-8bfc-4a43-a9eb-df7f86193450} event:/strawberry_jam_2021/game/maya/pumber
+{9da507c8-cc25-4705-a459-e33895ce8d87} event:/strawberry_jam_2021/game/triple_boost_flower/boost_1
+{a10e2a35-627a-43fc-8c50-e5fe86e46968} event:/strawberry_jam_2021/game/triple_boost_flower/boost_2
+{29dd7664-d0c3-4bc5-9224-597a497beb36} event:/strawberry_jam_2021/game/triple_boost_flower/boost_3
 {449c0225-4aa9-4151-b834-588cedee088a} bank:/StrawberryJam2021Bank
