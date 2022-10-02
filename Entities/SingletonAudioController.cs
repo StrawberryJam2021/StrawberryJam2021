@@ -95,7 +95,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             public void Move(Vector2 target) {
-                if (instance == null || Scene.Tracker.GetEntity<Player>() is not { } player) return;
+                if (instance == null || Scene?.Tracker.GetEntity<Player>() is not { } player) return;
                 if ((lastOrigin - player.Center).LengthSquared() > (target - player.Center).LengthSquared()) {
                     Audio.Position(instance, target);
                     lastOrigin = target;
