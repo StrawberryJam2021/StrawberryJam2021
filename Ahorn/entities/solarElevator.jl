@@ -2,13 +2,19 @@ module SJ2021SolarElevator
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/SolarElevator" SolarElevator(x::Integer, y::Integer, distance::Integer=128, time=3.0)
+@mapdef Entity "SJ2021/SolarElevator" SolarElevator(x::Integer, y::Integer, distance::Integer=128, time=3.0, oneWay::Bool=false, startPosition::String="Closest")
 
 const placements = Ahorn.PlacementDict(
     "Solar Elevator (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         SolarElevator,
         "point",
     ),
+)
+
+const startPositions = String["Closest", "Top", "Bottom"]
+
+Ahorn.editingOptions(entity::SolarElevator) = Dict{String, Any}(
+    "startPosition" => startPositions,
 )
 
 function Ahorn.selection(entity::SolarElevator)

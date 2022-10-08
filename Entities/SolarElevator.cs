@@ -26,6 +26,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
+        public enum StartPosition {
+            Closest,
+            Top,
+            Bottom,
+        }
+
         private readonly ColliderList OpenCollider = new(
             new Hitbox(3, 16, -24, -54),
             new Hitbox(3, 16, 21, -54),
@@ -45,6 +51,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public readonly float StartY;
         public readonly float Distance;
         private readonly float time;
+        private readonly bool oneWay;
+        private readonly StartPosition startPosition;
 
         private bool enabled = false;
         private bool atGroundFloor = true;
@@ -54,9 +62,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly DynamicData data;
 
         public SolarElevator(EntityData data, Vector2 offset)
-            : this(data.Position + offset, data.Int("distance", 128), data.Float("time", 3.0f)) { }
+            : this(data.Position + offset, data.Int("distance", 128), data.Float("time", 3.0f), data.Bool("oneWay", false), data.Enum("startPosition", StartPosition.Closest)) { }
 
-        public SolarElevator(Vector2 position, int distance, float time)
+        public SolarElevator(Vector2 position, int distance, float time, bool oneWay = false, StartPosition startPosition = StartPosition.Closest)
             : base(position, 56, 80, safe: true) {
             Depth = Depths.FGDecals;
             SurfaceSoundIndex = SurfaceIndex.MoonCafe;
@@ -64,6 +72,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             StartY = Y;
             Distance = distance;
             this.time = time;
+            this.oneWay = oneWay;
+            this.startPosition = startPosition;
 
             UpdateCollider(open: true);
 
@@ -82,15 +92,27 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Awake(Scene scene) {
             base.Awake(scene);
 
-            Player player = scene.Tracker.GetEntity<Player>();
-            if (player is null)
-                return;
+            switch (startPosition) {
+                case StartPosition.Bottom:
+                    break;
 
-            float distanceFromStart = Vector2.DistanceSquared(player.Center, Position);
-            float distanceFromEnd = Vector2.DistanceSquared(player.Center, Position - Vector2.UnitY * Distance);
-            if (distanceFromStart > distanceFromEnd) {
-                Y -= Distance;
-                atGroundFloor = false;
+                case StartPosition.Top:
+                    Y -= Distance;
+                    atGroundFloor = false;
+                    break;
+
+                default:
+                case StartPosition.Closest:
+                    Player player = scene.Tracker.GetEntity<Player>();
+                    if (player is null)
+                        return;
+                    float distanceFromStart = Vector2.DistanceSquared(player.Center, Position);
+                    float distanceFromEnd = Vector2.DistanceSquared(player.Center, Position - Vector2.UnitY * Distance);
+                    if (distanceFromStart > distanceFromEnd) {
+                        Y -= Distance;
+                        atGroundFloor = false;
+                    }
+                    break;
             }
         }
 
@@ -114,6 +136,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private IEnumerator Sequence() {
+            Level level = SceneAs<Level>();
+
             enabled = true;
             interaction.Enabled = false;
             Audio.Play(SFX.game_10_ppt_mouseclick, Position);
@@ -122,7 +146,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             yield return 1f;
 
             moveSfx.Play(CustomSoundEffects.game_solar_elevator_elevate);
-            SceneAs<Level>().DirectionalShake(Vector2.UnitY, 0.15f);
+            level.DirectionalShake(Vector2.UnitY, 0.15f);
 
             float start = Y;
             float end = atGroundFloor ? (start - Distance) : (start + Distance);
@@ -137,13 +161,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             MoveToY(end);
-            moveSfx.Play(CustomSoundEffects.game_solar_elevator_halt);
-            SceneAs<Level>().DirectionalShake(Vector2.UnitY, 0.2f);
+            moveSfx.Stop();
+            Audio.Play(CustomSoundEffects.game_solar_elevator_halt, Position);
+            level.DirectionalShake(Vector2.UnitY, 0.2f);
+
+            UpdateCollider(open: true);
+            atGroundFloor = !atGroundFloor;
+
+            if (oneWay)
+                yield break;
 
             enabled = false;
             interaction.Enabled = true;
-            atGroundFloor = !atGroundFloor;
-            UpdateCollider(open: true);
         }
 
         // Fix wrong collision resolution against collider lists.
