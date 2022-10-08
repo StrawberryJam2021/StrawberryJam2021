@@ -52,7 +52,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public readonly float StartY;
         public readonly float Distance;
-        private readonly float time;
+        private readonly float time, delay;
         private readonly bool oneWay;
         private readonly StartPosition startPosition;
         private readonly string moveSfx, haltSfx;
@@ -74,6 +74,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                   data.Position + offset,
                   data.Int("distance", 128),
                   data.Float("time", 3.0f),
+                  data.Float("delay", 1.0f),
                   data.Bool("oneWay", false),
                   data.Enum("startPosition", StartPosition.Closest),
                   data.Attr("moveSfx", CustomSoundEffects.game_solar_elevator_elevate),
@@ -85,6 +86,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public SolarElevator(Vector2 position,
             int distance,
             float time,
+            float delay,
             bool oneWay = false,
             StartPosition startPosition = StartPosition.Closest,
             string moveSfx = CustomSoundEffects.game_solar_elevator_elevate,
@@ -98,6 +100,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             StartY = Y;
             Distance = distance;
             this.time = time;
+            this.delay = delay;
             this.oneWay = oneWay;
             this.startPosition = startPosition;
             this.moveSfx = moveSfx;
@@ -198,7 +201,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             interaction.Enabled = false;
             UpdateCollider(open: false);
 
-            yield return 1f;
+            yield return delay;
 
             sfx.Play(moveSfx);
             level.DirectionalShake(Vector2.UnitY, 0.15f);
