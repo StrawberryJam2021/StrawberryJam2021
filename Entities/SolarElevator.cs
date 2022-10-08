@@ -1,7 +1,9 @@
 ﻿using Celeste.Mod.Entities;
+using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -55,8 +57,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly StartPosition startPosition;
         private readonly string moveSfx, haltSfx;
 
-        private bool enabled = false;
-        private bool atGroundFloor = true;
+        public const string DefaultHintDialog = "StrawberryJam2021_Entities_SolarElevator_DefaultHint";
+        public readonly string HoldableHintDialog;
+        public readonly bool RequiresHoldable;
+
+        public bool Moving = false;
+        public bool AtGroundFloor = true;
+        public bool IsCarryingHoldable = false;
 
         private Background bg;
 
@@ -70,7 +77,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                   data.Bool("oneWay", false),
                   data.Enum("startPosition", StartPosition.Closest),
                   data.Attr("moveSfx", CustomSoundEffects.game_solar_elevator_elevate),
-                  data.Attr("haltSfx", CustomSoundEffects.game_solar_elevator_halt)
+                  data.Attr("haltSfx", CustomSoundEffects.game_solar_elevator_halt),
+                  data.Bool("requiresHoldable", false),
+                  data.Attr("holdableHintDialog", DefaultHintDialog)
             ) { }
 
         public SolarElevator(Vector2 position,
@@ -79,7 +88,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             bool oneWay = false,
             StartPosition startPosition = StartPosition.Closest,
             string moveSfx = CustomSoundEffects.game_solar_elevator_elevate,
-            string haltSfx = CustomSoundEffects.game_solar_elevator_halt)
+            string haltSfx = CustomSoundEffects.game_solar_elevator_halt,
+            bool requiresHoldable = false,
+            string holdableHintDialog = DefaultHintDialog)
             : base(position, 56, 80, safe: true) {
             Depth = Depths.FGDecals;
             SurfaceSoundIndex = SurfaceIndex.MoonCafe;
@@ -92,11 +103,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.moveSfx = moveSfx;
             this.haltSfx = haltSfx;
 
+            HoldableHintDialog = holdableHintDialog;
+            RequiresHoldable = requiresHoldable;
+
             UpdateCollider(open: true);
 
             Add(sfx = new());
-
-            Add(interaction = new TalkComponent(new Rectangle(-12, -8, 24, 8), Vector2.UnitY * -16, Activate));
+            Add(interaction = new TalkComponent(new Rectangle(-12, -8, 24, 8), Vector2.UnitY * -24, Activate));
 
             Image img = new(GFX.Game["objects/StrawberryJam2021/solarElevator/elevator"]);
             img.JustifyOrigin(0.5f, 1.0f);
@@ -115,7 +128,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 case StartPosition.Top:
                     Y -= Distance;
-                    atGroundFloor = false;
+                    AtGroundFloor = false;
                     break;
 
                 default:
@@ -127,7 +140,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     float distanceFromEnd = Vector2.DistanceSquared(player.Center, Position - Vector2.UnitY * Distance);
                     if (distanceFromStart > distanceFromEnd) {
                         Y -= Distance;
-                        atGroundFloor = false;
+                        AtGroundFloor = false;
                     }
                     break;
             }
@@ -148,16 +161,41 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void Activate(Player player) {
-            if (!enabled)
-                Add(new Coroutine(Sequence()));
+            Audio.Play(SFX.game_10_ppt_mouseclick, Position);
+
+            if (Moving || (RequiresHoldable && !IsCarryingHoldable))
+                return;
+
+            Add(new Coroutine(Sequence()));
+        }
+
+        private bool HoldableCheck() {
+            foreach (Holdable holdable in Scene.Tracker.GetComponents<Holdable>()) {
+                if (holdable.Entity is not Actor actor)
+                    continue;
+
+                if (holdable.Holder?.IsRiding(this) ?? false)
+                    return true;
+
+                if (!actor.IsRiding(this))
+                    continue;
+
+                if (actor.Left >= Left + 3 && actor.Right <= Right - 3)
+                    return true;
+            }
+            return false;
+        }
+
+        public override void Update() {
+            base.Update();
+            IsCarryingHoldable = HoldableCheck();
         }
 
         private IEnumerator Sequence() {
             Level level = SceneAs<Level>();
 
-            enabled = true;
+            Moving = true;
             interaction.Enabled = false;
-            Audio.Play(SFX.game_10_ppt_mouseclick, Position);
             UpdateCollider(open: false);
 
             yield return 1f;
@@ -166,7 +204,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             level.DirectionalShake(Vector2.UnitY, 0.15f);
 
             float start = Y;
-            float end = atGroundFloor ? (start - Distance) : (start + Distance);
+            float end = AtGroundFloor ? (start - Distance) : (start + Distance);
             float t = 0.0f;
             while (t < time) {
                 float percent = t / time;
@@ -183,12 +221,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             level.DirectionalShake(Vector2.UnitY, 0.2f);
 
             UpdateCollider(open: true);
-            atGroundFloor = !atGroundFloor;
+            AtGroundFloor = !AtGroundFloor;
 
             if (oneWay)
                 yield break;
 
-            enabled = false;
+            Moving = false;
             interaction.Enabled = true;
         }
 
@@ -243,6 +281,83 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
             riders.Clear();
+        }
+
+        #region Hooks
+
+        internal static void Load() {
+            On.Celeste.TalkComponent.Update += TalkComponent_Update;
+        }
+
+        internal static void Unload() {
+            On.Celeste.TalkComponent.Update -= TalkComponent_Update;
+        }
+
+        private static void TalkComponent_Update(On.Celeste.TalkComponent.orig_Update orig, TalkComponent self) {
+            if (self.Entity is SolarElevator elevator && elevator.RequiresHoldable && self.UI is null)
+                self.Scene.Add(self.UI = new HintTalkComponentUI(self, elevator));
+            orig(self);
+        }
+
+        #endregion
+    }
+
+    public class HintTalkComponentUI : TalkComponent.TalkComponentUI {
+        private readonly DynamicData data;
+
+        private readonly SolarElevator elevator;
+        private readonly string text;
+        private float lerp, prev, timer;
+
+        public HintTalkComponentUI(TalkComponent handler, SolarElevator elevator)
+            : base(handler) {
+            data = new(typeof(TalkComponent.TalkComponentUI), this);
+            this.elevator = elevator;
+            text = Dialog.Clean(elevator.HoldableHintDialog);
+        }
+
+        public override void Update() {
+            base.Update();
+
+            bool show = Highlighted && !elevator.IsCarryingHoldable && !elevator.Moving;
+            timer = show ? Calc.Approach(timer, 0f, Engine.DeltaTime) : 0.75f;
+
+            prev = lerp;
+            lerp = Calc.Approach(lerp, show && timer <= 0 ? 1f : 0f, Engine.DeltaTime * 6f);
+
+            EventInstance sfx = null;
+            if (prev == 1f && lerp < 1f)
+                sfx = Audio.Play(SFX.ui_game_textbox_other_out, elevator.Position);
+            else if (prev == 0 && lerp > 0)
+                sfx = Audio.Play(SFX.ui_game_textbox_other_in, elevator.Position);
+
+            if (sfx is not null)
+                sfx.setPitch(1.75f);
+        }
+
+        public override void Render() {
+            base.Render();
+
+            float timer = data.Get<float>("timer");
+            float slide = data.Get<float>("slide");
+            float alpha = data.Get<float>("alpha");
+            Wiggler wiggler = data.Get<Wiggler>("wiggler");
+
+            Level level = Scene as Level;
+            if (level.FrozenOrPaused || slide <= 0 || Handler.Entity is null)
+                return;
+
+            Vector2 pos = Handler.Entity.Position + Handler.DrawAt - level.Camera.Position.Floor();
+            if (SaveData.Instance != null && SaveData.Instance.Assists.MirrorMode)
+                pos.X = 320f - pos.X;
+            pos *= 6f;
+            pos.Y += (float) Math.Sin(timer * 4f) * 12f + 64f * (1f - Ease.CubeOut(slide)) + 12f;
+
+            float transparence = Ease.CubeInOut(slide) * alpha * lerp;
+            float wigglerMask = timer > 0 ? 1 : 0f;
+            float scale = Math.Max(wiggler.Value * wigglerMask * lerp * 0.1f + Ease.CubeOut(lerp) * 0.65f, 0);
+
+            ActiveFont.DrawOutline(text, pos, Vector2.One * 0.5f, Vector2.One * scale, Color.White * transparence, 2f, Color.Black);
         }
     }
 }
