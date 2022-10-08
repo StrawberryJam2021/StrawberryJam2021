@@ -31,7 +31,11 @@
         // Dash Sequence Controller Fail Jingle
         public const string game_dash_seq_fail = "event:/strawberry_jam_2021/game/dash_seq/fail";
 
-        //Dark Matter Ambient Electrical Audio
+        // Solar Elevator
+        public const string game_solar_elevator_elevate = "event:/strawberry_jam_2021/game/solar_elevator/elevate";
+        public const string game_solar_elevator_halt = "event:/strawberry_jam_2021/game/solar_elevator/halt";
+
+        // Dark Matter Ambient Electrical Audio
         public const string env_darkMatter = "event:/strawberry_jam_2021/env/darkMatter";
 
         // Mosscairn SFX, included in a separate bank (sj21_mosscairn_sfx.bank)

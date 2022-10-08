@@ -121,7 +121,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             yield return 1f;
 
-            moveSfx.Play(SFX.game_04_gondola_cliffmechanism_start);
+            moveSfx.Play(CustomSoundEffects.game_solar_elevator_elevate);
             SceneAs<Level>().DirectionalShake(Vector2.UnitY, 0.15f);
 
             float start = Y;
@@ -137,7 +137,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             MoveToY(end);
-            moveSfx.Stop();
+            moveSfx.Play(CustomSoundEffects.game_solar_elevator_halt);
+            SceneAs<Level>().DirectionalShake(Vector2.UnitY, 0.2f);
 
             enabled = false;
             interaction.Enabled = true;
