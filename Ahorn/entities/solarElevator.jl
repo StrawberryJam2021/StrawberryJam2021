@@ -2,7 +2,16 @@ module SJ2021SolarElevator
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/SolarElevator" SolarElevator(x::Integer, y::Integer, distance::Integer=128, time=3.0, oneWay::Bool=false, startPosition::String="Closest")
+@mapdef Entity "SJ2021/SolarElevator" SolarElevator(
+    x::Integer,
+    y::Integer,
+    distance::Integer=128,
+    time=3.0,
+    oneWay::Bool=false,
+    startPosition::String="Closest",
+    moveSfx::String="event:/strawberry_jam_2021/game/solar_elevator/elevate",
+    haltSfx::String="event:/strawberry_jam_2021/game/solar_elevator/halt",
+)
 
 const placements = Ahorn.PlacementDict(
     "Solar Elevator (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
