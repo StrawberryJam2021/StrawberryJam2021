@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Monocle;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
@@ -76,7 +73,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hold.OnHitSpring = new Func<Spring, bool>(onHitSpring);
 
             Add(boostSfx = new()); 
-            Add(moveSfx = new SoundSource().Play(CustomSoundEffects.game_triple_boost_flower_glider_movement).Pause());
+            Add(moveSfx = new SoundSource().Play(CustomSoundEffects.game_triple_boost_flower_glider_movement));
         }
 
         public static void Load() {
@@ -146,14 +143,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         return;
                 }
 
-                if (!moveSfx.Playing)
-                    moveSfx.Resume();
-                moveSfx.Param("fadeout", 0);
-
                 float intensity = hold.Holder.OnGround() ? 0 : Calc.ClampedMap(hold.Holder.Speed.Length(), 0, 160);
-                moveSfx.Param("glider_speed", intensity);
+                moveSfx.Param("speed", intensity);
+                moveSfx.Param("fadeout", 0);
             } else {
-                  moveSfx.Param("fadeout", 1);
+                moveSfx.Param("fadeout", 1);
 
                 if (highFrictionTimer >= 0) {
                     highFrictionTimer -= Engine.DeltaTime;
