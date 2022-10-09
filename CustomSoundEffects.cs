@@ -46,5 +46,6 @@
         public const string game_triple_boost_flower_boost_1 = "event:/strawberry_jam_2021/game/triple_boost_flower/boost_1";
         public const string game_triple_boost_flower_boost_2 = "event:/strawberry_jam_2021/game/triple_boost_flower/boost_2";
         public const string game_triple_boost_flower_boost_3 = "event:/strawberry_jam_2021/game/triple_boost_flower/boost_3";
+        public const string game_triple_boost_flower_glider_movement = "event:/strawberry_jam_2021/game/triple_boost_flower/glider_movement";
     }
 }

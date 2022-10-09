@@ -26,7 +26,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Level level;
         private Sprite sprite;
 
-        private readonly SoundSource boostSfx;
+        private readonly SoundSource boostSfx, moveSfx;
 
         public float FallSpeed { get; private set; }
         public float FastFallSpeed { get; private set; }
@@ -75,7 +75,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hold.OnRelease = new Action<Vector2>(onRelease);
             hold.OnHitSpring = new Func<Spring, bool>(onHitSpring);
 
-            Add(boostSfx = new());
+            Add(boostSfx = new()); 
+            Add(moveSfx = new SoundSource().Play(CustomSoundEffects.game_triple_boost_flower_glider_movement).Pause());
         }
 
         public static void Load() {
@@ -126,6 +127,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
+
             if (boostCooldown > 0)
                 boostCooldown -= Engine.DeltaTime;
             if (boostDuration > 0 && hold.IsHeld) {
@@ -143,7 +145,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     if (destroyed)
                         return;
                 }
+
+                if (!moveSfx.Playing)
+                    moveSfx.Resume();
+                moveSfx.Param("fadeout", 0);
+
+                float intensity = hold.Holder.OnGround() ? 0 : Calc.ClampedMap(hold.Holder.Speed.Length(), 0, 160);
+                moveSfx.Param("glider_speed", intensity);
             } else {
+                  moveSfx.Param("fadeout", 1);
+
                 if (highFrictionTimer >= 0) {
                     highFrictionTimer -= Engine.DeltaTime;
                 }
