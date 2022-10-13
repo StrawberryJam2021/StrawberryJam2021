@@ -2,10 +2,10 @@
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/DashThroughSpikesUp" DashThroughSpikesUp(x::Integer, y::Integer, width::Integer=Maple.defaultSpikeWidth)
-@mapdef Entity "SJ2021/DashThroughSpikesDown" DashThroughSpikesDown(x::Integer, y::Integer, width::Integer=Maple.defaultSpikeWidth)
-@mapdef Entity "SJ2021/DashThroughSpikesLeft" DashThroughSpikesLeft(x::Integer, y::Integer, height::Integer=Maple.defaultSpikeHeight)
-@mapdef Entity "SJ2021/DashThroughSpikesRight" DashThroughSpikesRight(x::Integer, y::Integer, height::Integer=Maple.defaultSpikeHeight)
+@mapdef Entity "SJ2021/DashThroughSpikesUp" DashThroughSpikesUp(x::Integer, y::Integer, width::Integer=Maple.defaultSpikeWidth, spikeType::String="objects/StrawberryJam2021/dashThroughSpikes/dream")
+@mapdef Entity "SJ2021/DashThroughSpikesDown" DashThroughSpikesDown(x::Integer, y::Integer, width::Integer=Maple.defaultSpikeWidth, spikeType::String="objects/StrawberryJam2021/dashThroughSpikes/dream")
+@mapdef Entity "SJ2021/DashThroughSpikesLeft" DashThroughSpikesLeft(x::Integer, y::Integer, height::Integer=Maple.defaultSpikeHeight, spikeType::String="objects/StrawberryJam2021/dashThroughSpikes/dream")
+@mapdef Entity "SJ2021/DashThroughSpikesRight" DashThroughSpikesRight(x::Integer, y::Integer, height::Integer=Maple.defaultSpikeHeight, spikeType::String="objects/StrawberryJam2021/dashThroughSpikes/dream")
 
 entities = Dict{String,Type}(
     "up" => DashThroughSpikesUp,
@@ -100,12 +100,13 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::spikesUnion)
     
         width = get(entity.data, "width", 8)
         height = get(entity.data, "height", 8)
+        spikeType = get(entity.data, "spikeType", "objects/StrawberryJam2021/dashThroughSpikes/dream")
 
         for ox in 0:8:width - 8, oy in 0:8:height - 8
             drawX = ox + offsets[direction][1]
             drawY = oy + offsets[direction][2]
 
-            Ahorn.drawSprite(ctx, "objects/StrawberryJam2021/dashThroughSpikes/dream_$(direction)00", drawX, drawY)
+            Ahorn.drawSprite(ctx, "$(spikeType)_$(direction)00", drawX, drawY)
         end
     end
 end
