@@ -20,7 +20,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 if (listener != null) {
                     listener.OnOut = (time) => {
-                        manager.Update();
+                        if (manager.Scene != null) {
+                            manager.Update();
+                        }
                     };
                 }
             }
