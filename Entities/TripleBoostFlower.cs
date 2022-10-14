@@ -143,6 +143,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         return;
                 }
 
+                // SFX might be stopped by room transition
+                if (!moveSfx.Playing)
+                    moveSfx.Play(CustomSoundEffects.game_triple_boost_flower_glider_movement);
+
                 float intensity = hold.Holder.OnGround() ? 0 : Calc.ClampedMap(hold.Holder.Speed.Length(), 0, 160);
                 moveSfx.Param("speed", intensity);
                 moveSfx.Param("fadeout", 0);
