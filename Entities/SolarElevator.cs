@@ -12,8 +12,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     public class SolarElevator : Solid {
         private class Background : Entity {
             private readonly SolarElevator elevator;
-            private readonly MTexture rail = GFX.Game["objects/StrawberryJam2021/solarElevator/rails"];
-            private readonly MTexture back = GFX.Game["objects/StrawberryJam2021/solarElevator/elevatorback"];
 
             public Background(SolarElevator elevator) {
                 Depth = Depths.BGDecals;
@@ -21,10 +19,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             public override void Render() {
-                for (int y = 0; y < elevator.Distance + 60; y += rail.Height)
-                    rail.DrawJustified(new(elevator.X, elevator.StartY - y), new(0.5f, 1.0f));
+                for (int y = 0; y < elevator.Distance + 60; y += elevator.rails.Height)
+                    elevator.rails.DrawJustified(new(elevator.X, elevator.StartY - y), new(0.5f, 1.0f));
 
-                back.DrawJustified(elevator.Position + Vector2.UnitY * 10, new(0.5f, 1.0f));
+                elevator.back.DrawJustified(elevator.Position + Vector2.UnitY * 10, new(0.5f, 1.0f));
             }
         }
 
@@ -57,6 +55,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly StartPosition startPosition;
         private readonly string moveSfx, haltSfx;
 
+        private readonly MTexture back, rails;
+
         public const string DefaultHintDialog = "StrawberryJam2021_Entities_SolarElevator_DefaultHint";
         public readonly string HoldableHintDialog;
         public readonly bool RequiresHoldable;
@@ -80,7 +80,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                   data.Attr("moveSfx", CustomSoundEffects.game_solar_elevator_elevate),
                   data.Attr("haltSfx", CustomSoundEffects.game_solar_elevator_halt),
                   data.Bool("requiresHoldable", false),
-                  data.Attr("holdableHintDialog", DefaultHintDialog)
+                  data.Attr("holdableHintDialog", DefaultHintDialog),
+                  data.Attr("reskinDirectory", "")
             ) { }
 
         public SolarElevator(Vector2 position,
@@ -92,7 +93,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             string moveSfx = CustomSoundEffects.game_solar_elevator_elevate,
             string haltSfx = CustomSoundEffects.game_solar_elevator_halt,
             bool requiresHoldable = false,
-            string holdableHintDialog = DefaultHintDialog)
+            string holdableHintDialog = DefaultHintDialog,
+            string reskinDirectory = "")
             : base(position, 56, 80, safe: true) {
             Depth = Depths.FGDecals;
             SurfaceSoundIndex = SurfaceIndex.MoonCafe;
@@ -114,7 +116,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(sfx = new());
             Add(interaction = new TalkComponent(new Rectangle(-12, -8, 24, 8), Vector2.UnitY * -24, Activate));
 
-            Image img = new(GFX.Game["objects/StrawberryJam2021/solarElevator/elevator"]);
+            string dir = reskinDirectory.Trim().TrimEnd('/');
+            string path = string.IsNullOrEmpty(dir) ? "objects/StrawberryJam2021/solarElevator/" : (dir + "/");
+
+            GFX.Game.PushFallback(GFX.Game["objects/StrawberryJam2021/solarElevator/front"]);
+            MTexture front = GFX.Game[path + "front"];
+            GFX.Game.PopFallback();
+
+            GFX.Game.PushFallback(GFX.Game["objects/StrawberryJam2021/solarElevator/back"]);
+            back = GFX.Game[path + "back"];
+            GFX.Game.PopFallback();
+
+            GFX.Game.PushFallback(GFX.Game["objects/StrawberryJam2021/solarElevator/rails"]);
+            rails = GFX.Game[path + "rails"];
+            GFX.Game.PopFallback();
+
+            Image img = new(front);
             img.JustifyOrigin(0.5f, 1.0f);
             img.Position.Y = 10;
             Add(img);

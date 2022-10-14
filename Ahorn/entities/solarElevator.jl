@@ -13,7 +13,8 @@ using ..Ahorn, Maple
     moveSfx::String="event:/strawberry_jam_2021/game/solar_elevator/elevate",
     haltSfx::String="event:/strawberry_jam_2021/game/solar_elevator/halt",
     requiresHoldable::Bool=false,
-    holdableHintDialog::String="StrawberryJam2021_Entities_SolarElevator_DefaultHint"
+    holdableHintDialog::String="StrawberryJam2021_Entities_SolarElevator_DefaultHint",
+    reskinDirectory::String="",
 )
 
 const placements = Ahorn.PlacementDict(
@@ -46,8 +47,8 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::SolarElevator, room
         y += rail.height
     end
     
-    front = Ahorn.getSprite("objects/StrawberryJam2021/solarElevator/elevator", "Gameplay")
-    back = Ahorn.getSprite("objects/StrawberryJam2021/solarElevator/elevatorback", "Gameplay")
+    front = Ahorn.getSprite("objects/StrawberryJam2021/solarElevator/front", "Gameplay")
+    back = Ahorn.getSprite("objects/StrawberryJam2021/solarElevator/back", "Gameplay")
 
     oxf, oyf = -floor(front.width / 2), -front.height
     oxb, oyb = -floor(back.width / 2), -back.height
