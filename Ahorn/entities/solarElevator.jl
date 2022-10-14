@@ -45,12 +45,18 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::SolarElevator, room
         Ahorn.drawImage(ctx, rail, railOffsetX, -rail.height - y)
         y += rail.height
     end
+    
+    front = Ahorn.getSprite("objects/StrawberryJam2021/solarElevator/elevator", "Gameplay")
+    back = Ahorn.getSprite("objects/StrawberryJam2021/solarElevator/elevatorback", "Gameplay")
 
-    Ahorn.drawImage(ctx, "objects/StrawberryJam2021/solarElevator/elevatorback", -28, -70)
-    Ahorn.drawImage(ctx, "objects/StrawberryJam2021/solarElevator/elevator", -28, -70)
+    oxf, oyf = -floor(front.width / 2), -front.height
+    oxb, oyb = -floor(back.width / 2), -back.height
 
-    Ahorn.drawImage(ctx, "objects/StrawberryJam2021/solarElevator/elevatorback", -28, -70 - distance, tint=transparentTint)
-    Ahorn.drawImage(ctx, "objects/StrawberryJam2021/solarElevator/elevator", -28, -70 - distance, tint=transparentTint)
+    Ahorn.drawImage(ctx, back, oxb, oyb + 10)
+    Ahorn.drawImage(ctx, front, oxf, oyf + 10)
+
+    Ahorn.drawImage(ctx, back, oxb, oyb + 10 - distance, tint=transparentTint)
+    Ahorn.drawImage(ctx, front, oxf, oyf + 10 - distance, tint=transparentTint)
 end
 
 end
