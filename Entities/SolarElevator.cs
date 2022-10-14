@@ -13,6 +13,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private class Background : Entity {
             private readonly SolarElevator elevator;
             private readonly MTexture rail = GFX.Game["objects/StrawberryJam2021/solarElevator/rails"];
+            private readonly MTexture back = GFX.Game["objects/StrawberryJam2021/solarElevator/elevatorback"];
 
             public Background(SolarElevator elevator) {
                 Depth = Depths.BGDecals;
@@ -23,8 +24,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 for (int y = 0; y < elevator.Distance + 60; y += rail.Height)
                     rail.DrawJustified(new(elevator.X, elevator.StartY - y), new(0.5f, 1.0f));
 
-                GFX.Game["objects/StrawberryJam2021/solarElevator/elevatorback"]
-                    .DrawJustified(elevator.Position + Vector2.UnitY * 10, new(0.5f, 1.0f));
+                back.DrawJustified(elevator.Position + Vector2.UnitY * 10, new(0.5f, 1.0f));
             }
         }
 
