@@ -198,8 +198,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             yield return 0.1f;
             player.Active = true;
-            yield return 0.5f;
-
             yield return GroundPound(player);
 
             level.EndCutscene();
