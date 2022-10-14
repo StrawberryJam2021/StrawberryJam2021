@@ -14,33 +14,35 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static Entity LoadUp(Level level, LevelData levelData, Vector2 offset, EntityData data) {
             Spikes.Directions dir = Spikes.Directions.Up;
-            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir);
+            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir, data.Attr("spikeType", "objects/StrawberryJam2021/dashThroughSpikes/dream"));
         }
         public static Entity LoadDown(Level level, LevelData levelData, Vector2 offset, EntityData data) {
             Spikes.Directions dir = Spikes.Directions.Down;
-            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir);
+            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir, data.Attr("spikeType", "objects/StrawberryJam2021/dashThroughSpikes/dream"));
         }
         public static Entity LoadLeft(Level level, LevelData levelData, Vector2 offset, EntityData data) {
             Spikes.Directions dir = Spikes.Directions.Left;
-            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir);
+            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir, data.Attr("spikeType", "objects/StrawberryJam2021/dashThroughSpikes/dream"));
         }
         public static Entity LoadRight(Level level, LevelData levelData, Vector2 offset, EntityData data) {
             Spikes.Directions dir = Spikes.Directions.Right;
-            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir);
+            return new DashThroughSpikes(data.Position + offset, GetSize(data, dir), dir, data.Attr("spikeType", "objects/StrawberryJam2021/dashThroughSpikes/dream"));
         }
 
         public Spikes.Directions Direction;
         private Vector2 directionVector;
         private Vector2 imageOffset;
         private int size;
+        private string spikeType;
 
-        public DashThroughSpikes(Vector2 position, int size, Spikes.Directions direction) :
+        public DashThroughSpikes(Vector2 position, int size, Spikes.Directions direction, string spikeType) :
             base(position) {
 
             Depth = Depths.Player - 1;
             Direction = direction;
             directionVector = SpikeDirToVector(direction);
             this.size = size;
+            this.spikeType = spikeType;
             switch (direction) {
                 case Spikes.Directions.Up:
                     Collider = new Hitbox(size, 3f, 0f, -3f);
@@ -74,7 +76,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             string dir = Direction.ToString().ToLower();
 
             for (int i = 0; i < size / 8; i++) {
-                Image image = new Image(GFX.Game[$"objects/StrawberryJam2021/dashThroughSpikes/dream_{dir}00"]);
+                Image image = new Image(GFX.Game[$"{spikeType}_{dir}00"]);
 
                 switch (Direction) {
                     case Spikes.Directions.Up:

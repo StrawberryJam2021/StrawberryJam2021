@@ -457,6 +457,12 @@ placements.entities.SJ2021/CustomAscendManager.tooltips.dark=If true, the fade a
 # Launch Platform
 placements.entities.SJ2021/LaunchPlatform.tooltips.width=The width of the platform in pixels.
 
+# Dash-Through Spikes
+placements.entities.SJ2021/DashThroughSpikesUp.tooltips.spikeType=The path to the spike type relative to the Gameplay atlas. For default spikes, use "danger/spikes/default".
+placements.entities.SJ2021/DashThroughSpikesDown.tooltips.spikeType=The path to the spike type relative to the Gameplay atlas. For default spikes, use "danger/spikes/default".
+placements.entities.SJ2021/DashThroughSpikesLeft.tooltips.spikeType=The path to the spike type relative to the Gameplay atlas. For default spikes, use "danger/spikes/default".
+placements.entities.SJ2021/DashThroughSpikesRight.tooltips.spikeType=The path to the spike type relative to the Gameplay atlas. For default spikes, use "danger/spikes/default".
+
 # Oppenheimer Teleporter
 placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.newPosX= The X coordinate of the teleport location in the room "WarpRoom"\nSetting to -1 sets the "default" which is usually the same (X,Y) but in the new room.
 placements.triggers.SJ2021/BasicInstantTeleportTrigger.tooltips.newPosY= The Y coordinate of the teleport location in the room "WarpRoom"\nSetting to -1 sets the "default" which is usually the same (X,Y) but in the new room.
