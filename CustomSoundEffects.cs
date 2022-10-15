@@ -42,5 +42,10 @@
         public const string mosscairn_sfx_paintbrush_laser_blue = "event:/sj21_mosscairn_sfx/paintbrush_laser_blue";
         public const string mosscairn_sfx_paintbrush_laser_pink = "event:/sj21_mosscairn_sfx/paintbrush_laser_pink";
         public const string mosscairn_sfx_paintbrush_laser_ramp_up = "event:/sj21_mosscairn_sfx/paintbrush_laser_ramp_up";
+
+        public const string game_triple_boost_flower_boost_1 = "event:/strawberry_jam_2021/game/triple_boost_flower/boost_1";
+        public const string game_triple_boost_flower_boost_2 = "event:/strawberry_jam_2021/game/triple_boost_flower/boost_2";
+        public const string game_triple_boost_flower_boost_3 = "event:/strawberry_jam_2021/game/triple_boost_flower/boost_3";
+        public const string game_triple_boost_flower_glider_movement = "event:/strawberry_jam_2021/game/triple_boost_flower/glider_movement";
     }
 }
