@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Monocle;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
@@ -25,6 +22,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private DynamicData playerDynData;
         private Level level;
         private Sprite sprite;
+
+        private readonly SoundSource boostSfx, moveSfx;
 
         public float FallSpeed { get; private set; }
         public float FastFallSpeed { get; private set; }
@@ -72,7 +71,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hold.OnPickup = new Action(onPickup);
             hold.OnRelease = new Action<Vector2>(onRelease);
             hold.OnHitSpring = new Func<Spring, bool>(onHitSpring);
-            
+
+            Add(boostSfx = new()); 
+            Add(moveSfx = new SoundSource().Play(CustomSoundEffects.game_triple_boost_flower_glider_movement));
         }
 
         public static void Load() {
@@ -123,6 +124,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
+
             if (boostCooldown > 0)
                 boostCooldown -= Engine.DeltaTime;
             if (boostDuration > 0 && hold.IsHeld) {
@@ -140,7 +142,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     if (destroyed)
                         return;
                 }
+
+                // SFX might be stopped by room transition
+                if (!moveSfx.Playing)
+                    moveSfx.Play(CustomSoundEffects.game_triple_boost_flower_glider_movement);
+
+                float intensity = hold.Holder.OnGround() ? 0 : Calc.ClampedMap(hold.Holder.Speed.Length(), 0, 160);
+                moveSfx.Param("speed", intensity);
+                moveSfx.Param("fadeout", 0);
             } else {
+                moveSfx.Param("fadeout", 1);
+
                 if (highFrictionTimer >= 0) {
                     highFrictionTimer -= Engine.DeltaTime;
                 }
@@ -217,6 +229,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 charges--;
                 boostDuration = boostDurationMax;
                 Input.Dash.ConsumeBuffer();
+
+                //sfx
+                boostSfx.Play("event:/strawberry_jam_2021/game/triple_boost_flower/boost_" + (3 - charges));
             } else if (shouldBeDestroyed()) {
                 destroySelf();
                 Input.Dash.ConsumeBuffer();
