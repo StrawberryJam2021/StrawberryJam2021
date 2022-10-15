@@ -70,6 +70,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             TogglePlaybackHandler.Load();
             CassetteListener.Load();
             CrystallineHelperTimeFreezeMusicController.Load();
+            SolarElevator.Load();
+
             Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
         }
 
@@ -115,6 +117,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             TogglePlaybackHandler.Unload();
             CassetteListener.Unload();
             CrystallineHelperTimeFreezeMusicController.Unload();
+            SolarElevator.Unload();
 
             Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
         }

@@ -2,3 +2,5 @@
 modname_StrawberryJam2021= Strawberry Jam 2021
 
 StrawberryJam2021_Menu_Hint= Hint
+
+StrawberryJam2021_Entities_SolarElevator_DefaultHint=This elevator requires a holdable entity.

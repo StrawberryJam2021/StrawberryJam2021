@@ -498,3 +498,15 @@ placements.triggers.SJ2021/CustomInstantTeleportTrigger.names.RotationType= Rota
 placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.RotationType= Rotates the player's movement exiting the portal. Setting to "Rotate To Direction" will change the player's velocity to the Rotation Actor's direction.\nSetting to "Rotate Degrees from Direction" will rotate the player's potential velocity by {Rotation Actor} degrees (clockwise)
 placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.CameraType= Sets the Camera to have the details listed in the Dropdown. Don't put in a custom number, it just can crash the game.
 placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.OnExit= If true, the teleport occurs when leaving the trigger.
+
+# Solar Elevator
+placements.entities.SJ2021/SolarElevator.tooltips.distance=The height at which this elevator goes. 
+placements.entities.SJ2021/SolarElevator.tooltips.time=The time in seconds this elevator takes to move from one floor to the other.
+placements.entities.SJ2021/SolarElevator.tooltips.delay=The time in seconds waited before movement.
+placements.entities.SJ2021/SolarElevator.tooltips.oneWay=Whether this elevator is only used once.
+placements.entities.SJ2021/SolarElevator.tooltips.startPosition=Determines which of the two floors is the default.\n- Closest: the default floor is the one closest to the player when the entity is created.\n- Bottom: the default floor is always the bottom one.\n- Top: the default floor is always the top one.
+placements.entities.SJ2021/SolarElevator.tooltips.moveSfx=The sound played during movement. Preferably a looped sound for arbitrary duration.
+placements.entities.SJ2021/SolarElevator.tooltips.haltSfx=The sound played when the elevator stops.
+placements.entities.SJ2021/SolarElevator.tooltips.requiresHoldable=Whether this elevator can only be activated if it can carry a holdable object (for instance, a Theo crystal). If this option is activated, the bubble UI will display a message to indicate that this elevator requires a holdable. 
+placements.entities.SJ2021/SolarElevator.tooltips.holdableHintDialog=The dialog ID of the shown message, only useful if this elevator requires a holdable.
+placements.entities.SJ2021/SolarElevator.tooltips.reskinDirectory=The path to the directory that contains custom textures for this elevator, starting from "Graphics/Atlases/Gameplay/". Leave empty for default appearance.\nThe directory must contain a "front.png", "back.png", and "rails.png". Missing textures will fall back to the default textures. If something isn't working, check the Celeste console or log.txt for missing texture warnings.
