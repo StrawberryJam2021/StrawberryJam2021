@@ -160,6 +160,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     yield return nextCode.Value == null ? 1f : 0.3f;
                 }
 
+                currentCodeArrows = null;
                 if (nextCode.Value != null) {
                     if (!changedLength) {
                         lengthPrev = lengthTarget;
