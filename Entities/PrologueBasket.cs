@@ -27,7 +27,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void Interact(Player player) {
-            Scene.Add(new CS_PrologueOutro(player));
+            Scene.Add(new CS_PrologueOutro(player, this));
         }
     }
 }
