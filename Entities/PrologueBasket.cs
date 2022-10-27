@@ -1,9 +1,5 @@
 ﻿using Monocle;
-using System;
-using Celeste;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections;
 using Celeste.Mod.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
