@@ -106,15 +106,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Player player;
         private PrologueBasket basket;
         private TitleLogo logo;
-        private int state; // TEMP, allows me to restart the cutscene when it finishes
+        private MTexture confirmButton;
+        private bool buttonToggled;
+        private Vector2 buttonTarget = new Vector2(1728, 972);
+        private Vector2 buttonOffScreen = new Vector2(1728, 1188);
+        private Vector2 buttonPos;
 
         public CS_PrologueOutro(Player player, PrologueBasket basket) {
             this.player = player;
             this.basket = basket;
+            Tag = Tags.HUD;
+            confirmButton = Input.GuiButton(Input.MenuConfirm, "controls/keyboard/oemquestion");
+            buttonToggled = false;
+            buttonPos = buttonOffScreen;
         }
 
-        public override void Update() {
-            base.Update();
+        public override void Render() {
+            base.Render();
+            confirmButton.DrawCentered(buttonPos, Color.White, 1f);
         }
 
         public override void OnBegin(Level level) {
@@ -122,7 +131,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private IEnumerator Cutscene(Level level) {
-            state = player.StateMachine.State; // TEMP
             player.StateMachine.State = 11;
             player.Dashes = 1;
             yield return 0.5f;
@@ -137,16 +145,30 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             yield return 3f;
             logo = new TitleLogo();
             Scene.Add(logo);
-            yield return logo.EaseIn(); // don't know if should be yield return, should people be able to confirm before the logo is fully formed?
+            yield return logo.EaseIn();
+            float timer = 0f;
             while (!Input.MenuConfirm.Pressed) {
+                timer += Engine.DeltaTime;
+                if (!buttonToggled && timer > 3f) {
+                    Add(new Coroutine(ShowConfirmButton()));
+                }
                 yield return null;
             }
             EndCutscene(level);
         }
 
+        private IEnumerator ShowConfirmButton() {
+            Vector2 src = buttonPos;
+            Vector2 dest = buttonTarget;
+            for (float p = 0f; p < 1f; p += Engine.DeltaTime * 3) {
+                buttonPos = (dest - src) * Ease.CubeOut(p) + src;
+                yield return null;
+            }
+        }
+
         private IEnumerator PanCamera(Level level) {
             float from = level.Camera.Position.Y;
-            float to = from - 5000f;
+            float to = from - 3000f;
             for (float p = 0f; p < 1f; p += Engine.DeltaTime / 4) {
                 level.Camera.Position = new Vector2(level.Camera.Position.X, from + (to - from) * Ease.CubeInOut(p));
                 yield return null;
@@ -154,9 +176,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void OnEnd(Level level) {
-            player.StateMachine.State = state; // TEMP
-            Scene.Remove(logo);
-            //level.CompleteArea(false, false, true);
+            level.CompleteArea(false, false, true);
         }
     }
 }
