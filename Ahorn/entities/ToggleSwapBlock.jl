@@ -4,7 +4,7 @@ using ..Ahorn, Maple
 
 @mapdef Entity "SJ2021/ToggleSwapBlock" ToggleBlock(width::Integer=16, height::Integer=16, travelSpeed::Number=5.0, oscillate::Bool=false, stopAtEnd::Bool=false,
     directionIndicator::Bool=false, constantSpeed::Bool=false, customTexturePath::String="", customIndicatorPath::String="", disableTracks::Bool=false, allowDashSliding::Bool=false,
-    accelerate::Bool=false, customStartAudio::String="", customStopAudio::String="")
+    accelerate::Bool=false, customStartAudio::String="", customStopAudio::String="", onColor::String="9370db", offColor::String="a9a9a9", endColor::String="a56666")
 
 function getXYWidthHeight(entity::ToggleBlock)
     x, y = Ahorn.position(entity)

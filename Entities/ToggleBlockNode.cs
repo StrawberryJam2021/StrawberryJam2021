@@ -7,8 +7,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 	internal class ToggleBlockNode : Entity {
 		private MTexture nodeTexture;
 
-		private MTexture nodeCrystalTexture;
-
 		public Color color = Color.Red;
 
 		private SineWave sine;
@@ -17,7 +15,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
 		public ToggleBlockNode() : base() {
 			nodeTexture = GFX.Game["objects/StrawberryJam2021/toggleSwapBlock/node"];
-			nodeCrystalTexture = GFX.Game["objects/StrawberryJam2021/toggleSwapBlock/nodeCrystal"];
 			Depth = Depths.BGDecals - 1;
 			Add(sine = new SineWave(0.6f, 0f));
 		}
@@ -33,7 +30,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		}
 
 		public override void Render() {
-			nodeCrystalTexture.DrawCentered(Position + Vector2.UnitY * positionOffset, Color.White);
 			nodeTexture.DrawCentered(Position + Vector2.UnitY * positionOffset, color);
 		}
 	}
