@@ -2,45 +2,32 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Cil;
+using MonoMod.Utils;
 using System;
+using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked]
     [CustomEntity("SJ2021/LightSourceLimitController")]
     public class LightSourceLimitController : Entity {
-        private bool lightingRendererReplaced = false;
-
         public const int VanillaLightLimit = 64;
         public const int VanillaVertexCount = 11520;
         public const int VanillaResultVertexCount = 384;
         public const int VanillaRenderTargetBufferSize = 1024;
         public const int VanillaLightsPerChannel = VanillaLightLimit / 4;
         public const int VanillaTextureSplit = 4;
-        public const float VanillaMatrixScale = 0.0009765625f;
+        public const float VanillaMatrixScale = 0.0009765625f; // 1 / 1024
         public const float Radius = 128f;
 
-        public LightSourceLimitController(EntityData data, Vector2 offset) : base(data.Position + offset) {
-            Tag = Tags.Global;
-        }
+        private static bool controllerInMap;
 
-        public override void Awake(Scene scene) {
-            base.Awake(scene);
-            if (scene.Tracker.CountEntities<LightSourceLimitController>() > 1) {
-                RemoveSelf();
-                return;
-            }
-
-            if (!lightingRendererReplaced) {
-                StrawberryJam2021Module.Session.IncreaseLightSourceLimit = true;
-                Level level = SceneAs<Level>();
-                level.Remove(level.Lighting);
-                level.Add(level.Lighting = new LightingRenderer());
-                lightingRendererReplaced = true;
-            }
+        public LightSourceLimitController(EntityData data, Vector2 offset)
+            : base(data.Position + offset) {
         }
 
         public static void Load() {
             IL.Celeste.GameplayBuffers.Create += GameplayBuffersCreateHook;
+            On.Celeste.LevelLoader.LoadingThread += LevelLoader_LoadingThread;
             IL.Celeste.LightingRenderer.ctor += LightingRendererCtorHook;
             IL.Celeste.LightingRenderer.BeforeRender += LightingRendererBeforeRenderHook;
             IL.Celeste.LightingRenderer.ClearDirtyLights += GeneralLightLimitOverrideHook;
@@ -53,6 +40,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void Unload() {
             IL.Celeste.GameplayBuffers.Create -= GameplayBuffersCreateHook;
+            On.Celeste.LevelLoader.LoadingThread -= LevelLoader_LoadingThread;
             IL.Celeste.LightingRenderer.ctor -= LightingRendererCtorHook;
             IL.Celeste.LightingRenderer.BeforeRender -= LightingRendererBeforeRenderHook;
             IL.Celeste.LightingRenderer.ClearDirtyLights -= GeneralLightLimitOverrideHook;
@@ -61,6 +49,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             IL.Celeste.LightingRenderer.DrawLight -= LightingRendererDrawLightHook;
             On.Celeste.LightingRenderer.GetCenter -= LightingRendererGetCenterHook;
             On.Celeste.LightingRenderer.GetMask -= LightingRendererGetMaskHook;
+        }
+
+        private static void LevelLoader_LoadingThread(On.Celeste.LevelLoader.orig_LoadingThread orig, LevelLoader self) {
+            MapData mapData = DynamicData.For(self).Get<Session>("session").MapData;
+            controllerInMap = mapData.Levels.Any(l => l.Entities.Any(e => e.Name == "SJ2021/LightSourceLimitController"));
+            orig(self);
         }
 
         #region Hooks
@@ -123,7 +117,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         // Change appropriate constants for changes in light count and texture size
         private static Vector3 LightingRendererGetCenterHook(On.Celeste.LightingRenderer.orig_GetCenter orig, LightingRenderer self, int index) {
-            if (StrawberryJam2021Module.Session.IncreaseLightSourceLimit) {
+            if (controllerInMap) {
                 int num = index % (VanillaLightsPerChannel * 4);
                 return new Vector3(Radius * ((num % (VanillaTextureSplit * 2)) + 0.5f) * 2f, Radius * ((num / (VanillaTextureSplit * 2)) + 0.5f) * 2f, 0f);
             }
@@ -131,7 +125,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static Color LightingRendererGetMaskHook(On.Celeste.LightingRenderer.orig_GetMask orig, LightingRenderer self, int index, float maskOn, float maskOff) {
-            if (StrawberryJam2021Module.Session.IncreaseLightSourceLimit) {
+            if (controllerInMap) {
                 int num = index / (VanillaLightsPerChannel * 4);
                 return new Color((num == 0) ? maskOn : maskOff, (num == 1) ? maskOn : maskOff, (num == 2) ? maskOn : maskOff, (num == 3) ? maskOn : maskOff);
             }
@@ -142,7 +136,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         // Double our lighting render target size from 1024x1024 to 2048x2048
         private static int GetLightBufferSize(int orig) {
-            if (StrawberryJam2021Module.Session.IncreaseLightSourceLimit) {
+            if (controllerInMap) {
                 return orig * 2;
             }
             return orig;
@@ -150,7 +144,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         // Since we doubled both dimensions of the lighting texture, our light source count/associated arrays increases by 4x
         private static int GetArraySize(int orig) {
-            if (StrawberryJam2021Module.Session.IncreaseLightSourceLimit) {
+            if (controllerInMap) {
                 return orig * 4;
             }
             return orig;
@@ -158,7 +152,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         // Scaling matrix is 1/1024, patch to 1/2048
         private static float GetMatrixScalingFactor(float orig) {
-            if (StrawberryJam2021Module.Session.IncreaseLightSourceLimit) {
+            if (controllerInMap) {
                 return orig / 2f;
             }
             return orig;
@@ -166,7 +160,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         // Double our lighting texture size from 1024x1024 to 2048x2048
         private static float GetLightTextureSize(float orig) {
-            if (StrawberryJam2021Module.Session.IncreaseLightSourceLimit) {
+            if (controllerInMap) {
                 return orig * 2f;
             }
             return orig;
