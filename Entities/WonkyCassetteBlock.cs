@@ -80,7 +80,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Update() {
-            bool activating = Activated && !Collidable;
+            bool groupLeader = cassetteBlockData.Get<bool>("groupLeader");
+            bool activating = groupLeader && Activated && !Collidable;
 
             base.Update();
 
@@ -94,6 +95,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         if (controller != null) {
                             boostFrames = controller.ExtraBoostFrames;
                         }
+                    }
+
+                    var group = cassetteBlockData.Get<List<CassetteBlock>>("group");
+                    foreach (CassetteBlock cassetteBlock in group) {
+                        ((WonkyCassetteBlock) cassetteBlock).boostFrames = boostFrames;
                     }
 
                 } else if (boostFrames > 0) {
