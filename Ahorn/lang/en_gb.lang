@@ -198,6 +198,9 @@ placements.entities.SJ2021/ToggleSwapBlock.tooltips.disableTracks=Disables the t
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.allowDashSliding=When unchecked, the behavior is the same as vanilla swap blocks: if the player is on top of the block or grabbing the side and dashes in the horizontal direction of the block's movement, they remain fixed in place on the block. When checked, the behavior is the same as Frost Helper ToggleSwapBlocks, and the player slides along the block instead.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStartAudio=Custom audio to play when the block starts moving. If blank, vanilla swap block sound is used.
 placements.entities.SJ2021/ToggleSwapBlock.tooltips.customStopAudio=Custom audio to play when the block stops moving. If blank, vanilla swap block sound is used.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.onColor=The hex color code of the active node.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.offColor=The hex color code of the inactive nodes.
+placements.entities.SJ2021/ToggleSwapBlock.tooltips.endColor=The hex color code of the last node in the path.
 
 # Wind Tunnel
 placements.entities.SJ2021/WindTunnelNoParticles.tooltips.activationId=String value of the entity's Activation Id. When a factory activator with this Id is turned on the entity will toggle state.

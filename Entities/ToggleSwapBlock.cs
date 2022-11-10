@@ -87,9 +87,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 		private static readonly string defaultStopAudio = "event:/game/05_mirror_temple/swapblock_move_end";
 		private DashListener dashListener;
 		private EventInstance moveSfx;
-		private Color offColor = Color.DarkGray;
-		private Color onColor = Color.MediumPurple;
-		private Color endColor = new Color(0.65f, 0.4f, 0.4f);
+		private readonly Color offColor;
+		private readonly Color onColor;
+		private readonly Color endColor;
 		private ToggleBlockLaser[] lasers;
 		private readonly int laserCount;
 		//private Sprite middleRed;
@@ -143,7 +143,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 			startAudio = GetDefaultIfEmpty(data, "customStartAudio", defaultStartAudio);
 			stopAudio = GetDefaultIfEmpty(data, "customStopAudio", defaultStopAudio);
 			indicatorPath = GetDefaultIfEmpty(data, "customIndicatorPath", defaultIndicatorPath);
-			if (indicatorPath.Last() != '/') {
+            onColor = Calc.HexToColor(data.Attr("onColor", "9370db")); // Color.MediumPurple
+            offColor = Calc.HexToColor(data.Attr("offColor", "a9a9a9")); // Color.DarkGray
+            endColor = Calc.HexToColor(data.Attr("endColor", "a56666")); // Color(0.65f, 0.4f, 0.4f)
+            if (indicatorPath.Last() != '/') {
 				indicatorPath += '/';
 			}
 			Add(dashListener = new DashListener());
