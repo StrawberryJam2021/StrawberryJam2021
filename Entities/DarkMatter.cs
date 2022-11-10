@@ -200,16 +200,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void OnPlayer(Player player) {
-            if (renderer.mode == DarkMatterRenderer.Mode.Kill) {
-                if (!SaveData.Instance.Assists.Invincible) {
-                    int num = Math.Sign(player.X - base.X);
-                    if (num == 0) {
-                        num = -1;
-                    }
-                    player.Die(Vector2.UnitX * num);
+            if (!SaveData.Instance.Assists.Invincible) {
+                int num = Math.Sign(player.X - base.X);
+                if (num == 0) {
+                    num = -1;
                 }
-            } else {
-                player.StateMachine.State = DarkMatterHooks.DarkMatterPlayerState;
+                player.Die(Vector2.UnitX * num);
             }
         }
 

@@ -155,8 +155,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public enum Mode {
-            Kill = 0,
-            Zoomies = 1
+            Normal = 0,
+            Heartside = 1,
         }
 
         private List<DarkMatter> list = new List<DarkMatter>();
@@ -180,8 +180,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public Mode mode;
 
         private static Dictionary<Mode, Color[]> colorSets = new Dictionary<Mode, Color[]> {
-            { Mode.Kill, new Color[2] { Calc.HexToColor("7800b5"), Calc.HexToColor("663fA0") } },
-            { Mode.Zoomies, new Color[2] { Calc.HexToColor("3b0c5c"), Calc.HexToColor("5e0864") } },
+            { Mode.Normal, new Color[2] { Calc.HexToColor("7800b5"), Calc.HexToColor("663fA0") } },
+            { Mode.Heartside, new Color[2] { Calc.HexToColor("c92cff"), Calc.HexToColor("9877ca") } },
         };
 
 
@@ -286,7 +286,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if(level == null && Scene is Level) {
                 level = Scene as Level;
             }
-            mode = level.Session.GetFlag("SJ2021/DarkMatterRenderer") ? Mode.Zoomies : Mode.Kill;
+            mode = level.Session.Area.GetSID() == "StrawberryJam2021/3-Advanced/ZZ-HeartSide" ? Mode.Heartside : Mode.Normal;
         }
 
         public void ToggleEdges(bool immediate = false) {
