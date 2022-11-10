@@ -20,6 +20,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private readonly int OverrideBoostFrames;
         public int boostFrames = 0;
+        public bool boostActive = false;
 
         private DynamicData cassetteBlockData;
 
@@ -80,7 +81,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Update() {
-            bool activating = Activated && !Collidable;
+            bool groupLeader = cassetteBlockData.Get<bool>("groupLeader");
+            bool activating = groupLeader && Activated && !Collidable;
 
             base.Update();
 
@@ -96,6 +98,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         }
                     }
 
+                    boostActive = true;
+
+                    var group = cassetteBlockData.Get<List<CassetteBlock>>("group");
+                    foreach (CassetteBlock cassetteBlock in group) {
+                        WonkyCassetteBlock wonkyBlock = (WonkyCassetteBlock) cassetteBlock;
+                        wonkyBlock.boostFrames = boostFrames;
+                        wonkyBlock.boostActive = true;
+                    }
+                }
+
+                if (boostActive) {
+                    // Vanilla lift boost is active this frame, do nothing
+                    boostActive = false;
                 } else if (boostFrames > 0) {
                     // Provide an extra boost for the duration of the extra boost frames
                     this.LiftSpeed.Y = -1 / Engine.DeltaTime;

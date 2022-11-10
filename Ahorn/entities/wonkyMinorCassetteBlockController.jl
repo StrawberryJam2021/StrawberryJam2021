@@ -1,4 +1,4 @@
-module SJ2021WonkyCassetteBlockController
+module SJ2021WonkyMinorCassetteBlockController
 
 using ..Ahorn, Maple
 
