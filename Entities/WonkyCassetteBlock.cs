@@ -37,9 +37,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             this.textureDir = textureDir;
 
-            if (overrideBoostFrames < 0)
-                throw new ArgumentException($"Boost Frames must be 0 or greater, but is set to {overrideBoostFrames}.");
-
             OverrideBoostFrames = overrideBoostFrames;
 
             if (controllerIndex < 0)
@@ -49,7 +46,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public WonkyCassetteBlock(EntityData data, Vector2 offset, EntityID id)
-            : this(data.Position + offset, id, data.Width, data.Height, data.Int("index"), data.Attr("onAtBeats"), data.HexColor("color"), data.Attr("textureDirectory", "objects/cassetteblock").TrimEnd('/'), data.Int("boostFrames", 0), data.Int("controllerIndex", 0)) { }
+            : this(data.Position + offset, id, data.Width, data.Height, data.Int("index"), data.Attr("onAtBeats"), data.HexColor("color"), data.Attr("textureDirectory", "objects/cassetteblock").TrimEnd('/'), data.Int("boostFrames", -1), data.Int("controllerIndex", 0)) { }
 
         // We need to reimplement some of our parent's methods because they refer directly to CassetteBlock when fetching entities
 
@@ -89,7 +86,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (Activated && Collidable) {
                 if (activating) {
                     // Block has activated, Cassette boost is possible this frame
-                    if (OverrideBoostFrames > 0) {
+                    if (OverrideBoostFrames >= 0) {
                         boostFrames = OverrideBoostFrames;
                     } else {
                         WonkyCassetteBlockController controller = this.Scene.Tracker.GetEntity<WonkyCassetteBlockController>();
@@ -172,13 +169,36 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
+        private static void CassetteBlock_ShiftSize(ILContext il) {
+            ILCursor cursor = new(il);
+            if (cursor.TryGotoNext(MoveType.Before, instr => instr.MatchCallOrCallvirt<Platform>("MoveV"))) {
+                ILLabel beforeMoveV = cursor.DefineLabel();
+                ILLabel afterMoveV = cursor.DefineLabel();
+
+                cursor.Emit(OpCodes.Ldarg_0); // this
+                cursor.EmitDelegate<Func<CassetteBlock, bool>>(IsWonkyWithoutBoost);
+                cursor.Emit(OpCodes.Brfalse, beforeMoveV); // Only run if boostless
+
+                cursor.EmitDelegate<Action<CassetteBlock, float>>(MoveVWithoutBoost);
+                cursor.Emit(OpCodes.Br, afterMoveV);
+
+                cursor.MarkLabel(beforeMoveV);
+                cursor.GotoNext(MoveType.After, instr => instr.MatchCallOrCallvirt<Platform>("MoveV"));
+                cursor.MarkLabel(afterMoveV);
+            }
+        }
+
         private static bool IsWonky(Scene scene, object side, CassetteBlock self) => self is WonkyCassetteBlock;
+        private static bool IsWonkyWithoutBoost(CassetteBlock self) => self is WonkyCassetteBlock block && block.OverrideBoostFrames == 0;
+
+        private static void MoveVWithoutBoost(CassetteBlock self, float amount) => self.MoveV(amount, 0);
 
         public static void Load() {
             On.Celeste.CassetteBlock.FindInGroup += NewFindInGroup;
             On.Celeste.CassetteBlock.CheckForSame += NewCheckForSame;
             On.Celeste.CassetteBlock.SetImage += CassetteBlock_SetImage;
             IL.Celeste.CassetteBlock.Awake += CassetteBlock_Awake;
+            IL.Celeste.CassetteBlock.ShiftSize += CassetteBlock_ShiftSize;
         }
 
         public static void Unload() {
@@ -186,6 +206,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             On.Celeste.CassetteBlock.CheckForSame -= NewCheckForSame;
             On.Celeste.CassetteBlock.SetImage -= CassetteBlock_SetImage;
             IL.Celeste.CassetteBlock.Awake -= CassetteBlock_Awake;
+            IL.Celeste.CassetteBlock.ShiftSize -= CassetteBlock_ShiftSize;
         }
     }
 }
