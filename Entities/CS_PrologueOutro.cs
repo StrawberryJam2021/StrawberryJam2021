@@ -64,11 +64,16 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             private float opacity;
             private float size;
 
+            public Vector2 pos;
+            private Vector2 initPos;
+
             public TitleLogo() {
                 sprite = new Sprite(GFX.Gui, "StrawberryJam2021/logo/");
                 sprite.AddLoop("idle", "logo", 0.07f);
                 sprite.Play("idle");
                 Tag = Tags.HUD;
+                initPos = new Vector2(960, 0);
+                pos = initPos;
                 opacity = 0f;
                 size = 0f;
                 particles = new ArrayList();
@@ -78,7 +83,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             public override void Render() {
-                sprite.Texture.DrawCentered(Celeste.TargetCenter, Color.White * opacity, size);
+                sprite.Texture.DrawCentered(pos, Color.White * opacity, size);
                 foreach (Particle particle in particles) {
                     particle.texture.DrawCentered(Celeste.TargetCenter + (particle.offset * size), Color.White * particle.opacity * opacity, particle.size * size * 0.15f);
                 }
@@ -94,6 +99,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             public IEnumerator EaseIn() {
                 for (float p = 0f; p < 1f; p += Engine.DeltaTime / 2.5f) {
+                    pos = initPos + (Celeste.TargetCenter - initPos) * Ease.CubeOut(p);
                     opacity = Ease.CubeOut(p);
                     size = (Ease.CubeOut(p) / 2) + (1 / 2f);
                     yield return null;
@@ -106,8 +112,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Player player;
         private PrologueBasket basket;
         private TitleLogo logo;
-        private MTexture confirmButton;
-        private bool buttonToggled;
         private Vector2 buttonTarget = new Vector2(1728, 972);
         private Vector2 buttonOffScreen = new Vector2(1728, 1188);
         private Vector2 buttonPos;
@@ -116,13 +120,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             this.player = player;
             this.basket = basket;
             Tag = Tags.HUD;
-            confirmButton = Input.GuiButton(Input.MenuConfirm, "controls/keyboard/oemquestion");
-            buttonToggled = false;
             buttonPos = buttonOffScreen;
         }
 
         public override void Render() {
             base.Render();
+            MTexture confirmButton = Input.GuiButton(Input.MenuConfirm, "controls/keyboard/oemquestion");
             confirmButton.DrawCentered(buttonPos, Color.White, 1f);
         }
 
@@ -133,6 +136,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private IEnumerator Cutscene(Level level) {
             player.StateMachine.State = 11;
             player.Dashes = 1;
+            Audio.SetMusicParam("outro", 1);
             yield return 0.5f;
             yield return player.DummyWalkTo(basket.X - 12f);
             yield return 0.4f;
@@ -146,12 +150,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             logo = new TitleLogo();
             Scene.Add(logo);
             yield return logo.EaseIn();
-            float timer = 0f;
+            yield return 4f;
+            yield return ShowConfirmButton();
             while (!Input.MenuConfirm.Pressed) {
-                timer += Engine.DeltaTime;
-                if (!buttonToggled && timer > 3f) {
-                    Add(new Coroutine(ShowConfirmButton()));
-                }
                 yield return null;
             }
             EndCutscene(level);
@@ -169,7 +170,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private IEnumerator PanCamera(Level level) {
             float from = level.Camera.Position.Y;
             float to = from - 3000f;
-            for (float p = 0f; p < 1f; p += Engine.DeltaTime / 4) {
+            for (float p = 0f; p < 1f; p += Engine.DeltaTime / 4.5f) {
                 level.Camera.Position = new Vector2(level.Camera.Position.X, from + (to - from) * Ease.CubeInOut(p));
                 yield return null;
             }
