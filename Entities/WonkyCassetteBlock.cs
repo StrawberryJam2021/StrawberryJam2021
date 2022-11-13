@@ -86,22 +86,22 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (Activated && Collidable) {
                 if (activating) {
                     // Block has activated, Cassette boost is possible this frame
-                    if (OverrideBoostFrames >= 0) {
-                        boostFrames = OverrideBoostFrames;
-                    } else {
+                    if (OverrideBoostFrames > 0) {
+                        boostFrames = OverrideBoostFrames - 1;
+                        boostActive = true;
+                    } else if (OverrideBoostFrames < 0) {
                         WonkyCassetteBlockController controller = this.Scene.Tracker.GetEntity<WonkyCassetteBlockController>();
                         if (controller != null) {
                             boostFrames = controller.ExtraBoostFrames;
+                            boostActive = true;
                         }
                     }
-
-                    boostActive = true;
 
                     var group = cassetteBlockData.Get<List<CassetteBlock>>("group");
                     foreach (CassetteBlock cassetteBlock in group) {
                         WonkyCassetteBlock wonkyBlock = (WonkyCassetteBlock) cassetteBlock;
                         wonkyBlock.boostFrames = boostFrames;
-                        wonkyBlock.boostActive = true;
+                        wonkyBlock.boostActive = boostActive;
                     }
                 }
 
