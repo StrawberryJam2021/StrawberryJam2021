@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Celeste;
-using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
