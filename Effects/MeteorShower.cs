@@ -70,6 +70,11 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
                 for (int i = meteors.Count; i < MeteorCount; i++) {
                     meteors.Add(newMeteor());
                 }
+                for (int i = MeteorCount; i >= meteors.Count; i--) {
+                    if (meteors[i].Timer >= meteors[i].ResetTime) {
+                        meteors.RemoveAt(i);
+                    }
+                }
             }
         }
 
