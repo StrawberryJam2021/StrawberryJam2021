@@ -50,15 +50,11 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
             base.Update(scene);
 
             if (Visible) {
-                for (int i = 0; i < MeteorCount; i++) {
+                for (int i = 0; i < meteors.Count; i++) {
                     float newTimer = meteors[i].Timer + Engine.DeltaTime;
 
                     if (newTimer > meteors[i].ResetTime) {
-                        if (i >= meteors.Count) {
-                            meteors.Add(newMeteor());
-                        } else {
-                            meteors[i] = newMeteor();
-                        }
+                        meteors[i] = newMeteor();
                     } else {
                         meteors[i] = new Meteor {
                             Position = meteors[i].Position,
@@ -71,8 +67,8 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
                     }
                 }
 
-                for (int j = MeteorCount; j > meteors.Count; j--) {
-                    meteors.RemoveAt(j);
+                for (int i = meteors.Count; i < MeteorCount; i++) {
+                    meteors.Add(newMeteor());
                 }
             }
         }
