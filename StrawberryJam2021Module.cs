@@ -151,6 +151,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
             if (child.Name.Equals("SJ2021/HexagonalGodray", StringComparison.OrdinalIgnoreCase)) {
                 return new HexagonalGodray(child.Attr("color"), child.Attr("fadeColor"), child.AttrInt("numberOfRays"), child.AttrFloat("speedX"), child.AttrFloat("speedY"), child.AttrFloat("rotation"), child.AttrFloat("rotationRandomness"));
             }
+            if (child.Name.Equals("SJ2021/HeartComet", StringComparison.OrdinalIgnoreCase)) {
+                return new HeartComet(child.AttrInt("cometX"), child.AttrInt("cometY"));
+            }
             return null;
 		}
 
