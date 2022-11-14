@@ -17,7 +17,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         public MeteorShowerCountTrigger(EntityData data, Vector2 offset) : base (data, offset) {
             setAmnt = data.Int("NumberOfMeteors", 1);
-            onlyOnce = data.Bool("only_once", false);
+            onlyOnce = data.Bool("OnlyOnce", false);
         }
 
         public override void OnEnter(Player player) {
