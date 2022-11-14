@@ -16,7 +16,6 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
 
         private List<Meteor> meteors;
         public int MeteorCount;
-        private Vector2 center;
 
         private List<List<MTexture>> textures;
 
@@ -26,7 +25,6 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
                 GFX.Game.GetAtlasSubtextures("bgs/StrawberryJam2021/meteors/arcComet"),
                 GFX.Game.GetAtlasSubtextures("bgs/StrawberryJam2021/meteors/slantComet")
             };
-            center = new Vector2(textures[0][0].Width, textures[0][0].Height) / 2;
             meteors = new List<Meteor>();
             for (int i = 0; i < MeteorCount; i++) {
                 meteors.Add(newMeteor());
@@ -84,7 +82,7 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
 
                 if (textAnimId < textures[m.TextureSet].Count) {
                     MTexture texture = textures[m.TextureSet][textAnimId];
-                    texture.Draw(m.Position, center, Color.White, 1f, m.Rotation);
+                    texture.DrawCentered(m.Position, Color.White, 1f, m.Rotation);
                 }
             }
         }
