@@ -27,11 +27,9 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
             };
             meteors = new List<Meteor>();
 
-            Calc.PushRandom(Calc.Random.Next());
             for (int i = 0; i < MeteorCount; i++) {
                 meteors.Add(newMeteor());
             }
-            Calc.PopRandom();
         }
 
         private Meteor newMeteor() {
