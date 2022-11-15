@@ -26,9 +26,12 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
                 GFX.Game.GetAtlasSubtextures("bgs/StrawberryJam2021/meteors/slantComet")
             };
             meteors = new List<Meteor>();
+
+            Calc.PushRandom(Calc.Random.Next());
             for (int i = 0; i < MeteorCount; i++) {
                 meteors.Add(newMeteor());
             }
+            Calc.PopRandom();
         }
 
         private Meteor newMeteor() {
