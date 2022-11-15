@@ -36,7 +36,7 @@ namespace Celeste.Mod.StrawberryJam2021.Effects {
 
         private Meteor newMeteor() {
             return new Meteor {
-                Position = new Vector2(Calc.Random.NextFloat(320f), Calc.Random.NextFloat(180f)),
+                Position = new Vector2(Calc.Random.NextFloat(320f), Calc.Random.NextFloat(180f) - 20f),
                 Timer = 0f,
                 RateFPS = 12.5f + Calc.Random.NextFloat(7.5f),
                 TextureSet = Calc.Random.Next(textures.Count),
