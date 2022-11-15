@@ -154,6 +154,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
             if (child.Name.Equals("SJ2021/HeartComet", StringComparison.OrdinalIgnoreCase)) {
                 return new HeartComet(child.AttrInt("cometX"), child.AttrInt("cometY"));
             }
+            if (child.Name.Equals("SJ2021/MeteorShower", StringComparison.OrdinalIgnoreCase)) {
+                return new MeteorShower(child.AttrInt("numberOfMeteors"));
+            }
             return null;
 		}
 
