@@ -515,5 +515,5 @@ placements.entities.SJ2021/SolarElevator.tooltips.holdableHintDialog=The dialog 
 placements.entities.SJ2021/SolarElevator.tooltips.reskinDirectory=The path to the directory that contains custom textures for this elevator, starting from "Graphics/Atlases/Gameplay/". Leave empty for default appearance.\nThe directory must contain a "front.png", "back.png", and "rails.png". Missing textures will fall back to the default textures. If something isn't working, check the Celeste console or log.txt for missing texture warnings.
 
 # Heart Comet
-placements.entities.SJ2021/HeartComet.tooltips.cometX=The X position the comet will appear at.
-placements.entities.SJ2021/HeartComet.tooltips.cometY=The Y position the comet will appear at.
+placements.effects.SJ2021/HeartComet.tooltips.cometX=The X position the comet will appear at.
+placements.effects.SJ2021/HeartComet.tooltips.cometY=The Y position the comet will appear at.
