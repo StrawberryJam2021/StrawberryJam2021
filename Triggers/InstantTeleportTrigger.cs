@@ -287,6 +287,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
                         //Sets the future values of the player. This code is modified from the Teleport Trigger to accommodate more things.
                         level.Session.Level = newRoom;
+                        level.Session.Dreaming = dreaming;
                         level.Session.FirstLevel = false;
 
                         level.Add(player);
@@ -296,8 +297,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     {
                         // triggered is set to false on load, because we're skipping reloading entities, we need to manually reset triggered
                         triggered = false;
+                        level.Session.Dreaming = dreaming;
                     }
-                    level.Session.Dreaming = dreaming;
 
                     if (!resetDashes) { player.Dashes = pDashes; }
                     if (newPos.X >= 0 && newPos.X <= level.Bounds.X + level.Bounds.Width - level.LevelOffset.X &&
