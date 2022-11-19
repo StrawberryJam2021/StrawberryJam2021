@@ -277,17 +277,29 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                     Vector2 pDashDir = Vector2.Zero;
                     if (!resetDashes) { pDashes = player.Dashes; }
                     if (MatchDashState(player.StateMachine.State)) { pDashDir = player.DashDir; }
-                    //Removes the current level we are in without breaking everything
-                    level.Remove(player);
-                    level.UnloadLevel();
-                    level.Entities.Remove(level.Entities.FindAll<FlingBird>()); //Apparently Awake is called in a FlingBird to save it to the EntityList and we don't want that.
-                    
-                    //Sets the future values of the player. This code is modified from the Teleport Trigger to accommodate more things.
-                    level.Session.Level = newRoom;
-                    level.Session.Dreaming = dreaming;
-                    level.Session.FirstLevel = false;
-                    level.Add(player);
-                    level.LoadLevel(Player.IntroTypes.Transition);
+
+                    // For use in GMHS, we don't want to reload the room if teleporting to the same room to avoid loading lag when loading entities
+                    if (newRoom != currentRoom) {
+                        //Removes the current level we are in without breaking everything
+                        level.Remove(player);
+                        level.UnloadLevel();
+                        level.Entities.Remove(level.Entities.FindAll<FlingBird>()); //Apparently Awake is called in a FlingBird to save it to the EntityList and we don't want that.
+
+                        //Sets the future values of the player. This code is modified from the Teleport Trigger to accommodate more things.
+                        level.Session.Level = newRoom;
+                        level.Session.Dreaming = dreaming;
+                        level.Session.FirstLevel = false;
+
+                        level.Add(player);
+                        level.LoadLevel(Player.IntroTypes.Transition);
+                    }
+                    else 
+                    {
+                        // triggered is set to false on load, because we're skipping reloading entities, we need to manually reset triggered
+                        triggered = false;
+                        level.Session.Dreaming = dreaming;
+                    }
+
                     if (!resetDashes) { player.Dashes = pDashes; }
                     if (newPos.X >= 0 && newPos.X <= level.Bounds.X + level.Bounds.Width - level.LevelOffset.X &&
                         newPos.Y >= 0 && newPos.Y <= level.Bounds.Y + level.Bounds.Height - level.LevelOffset.Y)
