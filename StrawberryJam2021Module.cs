@@ -5,6 +5,7 @@ using Monocle;
 using System;
 using Celeste.Mod.StrawberryJam2021.Effects;
 using Celeste.Mod.Helpers;
+using Celeste.Mod.StrawberryJam2021.Cutscenes;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     public class StrawberryJam2021Module : EverestModule {
@@ -72,6 +73,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             CrystallineHelperTimeFreezeMusicController.Load();
             SolarElevator.Load();
             SpriteSwapTrigger.Load();
+            CS_Credits.Load();
+            CreditsPlayback.Load();
 
             Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
         }
@@ -120,6 +123,8 @@ namespace Celeste.Mod.StrawberryJam2021 {
             CrystallineHelperTimeFreezeMusicController.Unload();
             SolarElevator.Unload();
             SpriteSwapTrigger.Unload();
+            CS_Credits.Unload();
+            CreditsPlayback.Unload();
 
             Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
         }
