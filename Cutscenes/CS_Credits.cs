@@ -1,3 +1,4 @@
+using Celeste.Mod.CollabUtils2.Entities;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
@@ -22,7 +23,9 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             { "StrawberryJam2021/5-Grandmaster/ZZ-HeartSide", "StrawberryJam2021/0-Lobbies/5-Grandmaster" }
         };
 
+        internal static Type lobbyMapControllerType;
         private static ILHook areaCompleteHook;
+
         private readonly SortedDictionary<string, CreditsPlayback> playbacks = new(StringComparer.OrdinalIgnoreCase);
         private readonly MTexture gradient;
         private readonly bool fromHeartside;
@@ -34,7 +37,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             : base(true, false) {
             this.fromHeartside = fromHeartside;
             gradient = GFX.Gui["creditsgradient"].GetSubtexture(0, 1, 1920, 1);
-            Tag = Tags.Global | Tags.HUD;
+            Tag = TagsExt.SubHUD;
         }
 
         public override void OnBegin(Level level) {
@@ -60,20 +63,25 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 Input.Pause.ConsumeBuffer();
                 Input.ESC.ConsumeBuffer();
                 Level.Pause(minimal: true);
+            } else if (credits != null) {
+                // DEBUG
+                if (Input.MenuDown.Check) {
+                    credits.scrollSpeed = credits.BaseScrollSpeed * 10f;
+                } else if (Input.MenuUp.Check) {
+                    credits.scrollSpeed = credits.BaseScrollSpeed * -10f;
+                } else {
+                    credits.scrollSpeed = credits.BaseScrollSpeed;
+                }
             }
 
-            credits?.Update();
             MInput.Disabled = true;
-
             base.Update();
         }
 
         public override void Render() {
-            bool mirror = SaveData.Instance.Assists.MirrorMode;
-            float creditsX = !fromHeartside ? Celeste.TargetCenter.X : mirror ? 50f : 1570f;
-
-            if (fromHeartside && !Level.Paused) {
-                if (mirror) {
+            base.Render();
+            if (fromHeartside) {
+                if (SaveData.Instance.Assists.MirrorMode) {
                     gradient.Draw(new Vector2(1720f, -10f), Vector2.Zero, Color.White * 0.6f, new Vector2(-1f, 1100f));
                 } else {
                     gradient.Draw(new Vector2(200f, -10f), Vector2.Zero, Color.White * 0.6f, new Vector2(1f, 1100f));
@@ -83,17 +91,12 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             if (fade > 0f) {
                 Draw.Rect(-10f, -10f, 1940f, 1100f, Color.Black * Ease.CubeInOut(fade));
             }
-
-            if (!Level.Paused) {
-                credits?.Render(new Vector2(creditsX, 0f));
-            }
-
-            base.Render();
         }
 
         public override void OnEnd(Level level) {
             Audio.BusMuted(Buses.GAMEPLAY, mute: false);
             MInput.Disabled = false;
+            credits?.RemoveSelf();
 
             if (fromHeartside) {
                 Level.CompleteArea(skipScreenWipe: true, skipCompleteScreen: true);
@@ -104,6 +107,9 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 Level.Add(new GameplayStats());
                 Level.Session.Audio = previousAudio;
                 Level.Session.Audio.Apply();
+                if (Level.Tracker.GetEntity<CreditsTalker>()?.Get<TalkComponent>() is TalkComponent talker) {
+                    talker.Enabled = true;
+                }
             }
         }
 
@@ -116,6 +122,11 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         private IEnumerator MovieRoutine() {
             previousAudio = Level.Session.Audio.Clone();
             Audio.SetMusic(null);
+
+            if (Level.Tracker.GetEntity<CreditsTalker>()?.Get<TalkComponent>() is TalkComponent talker) {
+                talker.Enabled = false;
+            }
+
             yield return FadeTo(1f);
 
             Level.Session.Audio.Music.Event = CreditsSong;
@@ -123,16 +134,18 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
             yield return 0.5f;
 
-            credits = new Credits();
+            Level.Add(credits = new Credits(Celeste.TargetCenter));
 
             while (credits.BottomTimer < 2f) {
                 yield return null;
             }
 
-            yield return new FadeWipe(Level, wipeIn: false).Wait();
+            yield return new FadeWipe(Level, wipeIn: false) {
+                Duration = 3f,
+                OnUpdate = (percent) => Audio.SetMusicParam("fade", 1 - percent)
+            }.Wait();
 
-            Audio.SetMusic(null);
-            credits = null;
+            credits.RemoveSelf();
 
             yield return FadeTo(0f);
 
@@ -141,6 +154,11 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
         private IEnumerator LobbyRoutine() {
             yield return null;
+
+            Level.Entities.OfType<RainbowBerry>().FirstOrDefault()?.RemoveSelf();
+            if (lobbyMapControllerType != null) {
+                Level.Tracker.Entities[lobbyMapControllerType].FirstOrDefault()?.RemoveSelf();
+            }
 
             foreach (CustomBirdTutorial tutorial in Level.Tracker.GetEntities<CustomBirdTutorial>()) {
                 tutorial.TriggerHideTutorial();
@@ -161,7 +179,8 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
             yield return 0.5f;
 
-            credits = new Credits(scale: 0.6f);
+            float creditsX = SaveData.Instance.Assists.MirrorMode ? 50f : 1870f;
+            Level.Add(credits = new Credits(new Vector2(creditsX, 0f), alignment: 1f, scale: 0.6f, doubleColumns: false));
 
             yield return 1f;
             if (playbacks.Count > 0) {
@@ -180,14 +199,20 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                     //yield return transitionTime;
                 }
             } else {
+                // TEMP so people can see things are working in lobbies lol
                 yield return FadeTo(0f);
+                yield return 3f;
+                yield return FadeTo(1f);
             }
 
             while (credits.BottomTimer < 2f) {
                 yield return null;
             }
 
-            yield return new FadeWipe(Level, wipeIn: false).Wait();
+            yield return new FadeWipe(Level, wipeIn: false) {
+                Duration = 3f,
+                OnUpdate = (percent) => Audio.SetMusicParam("fade", 1 - percent)
+            }.Wait();
 
             Audio.SetMusic(null);
 
