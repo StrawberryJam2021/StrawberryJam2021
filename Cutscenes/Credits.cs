@@ -116,7 +116,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 new Team("SJ2021_Credits_Category_Playtesting", "SJ2021_Credits_Names_Teams_Playtesting", split: doubleColumns),
                 new Team("SJ2021_Credits_Category_Special", "SJ2021_Credits_Names_Special"),
 
-                new Thanks("SJ2021_Credits_Thanks", GFX.Gui["SJ2021/Credits/sj_logo_joke"])
+                new Thanks("SJ2021_Credits_Thanks", GFX.Gui["SJ2021/Credits/thanks"])
             };
 
             return list;
