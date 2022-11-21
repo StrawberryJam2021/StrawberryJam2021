@@ -4,77 +4,70 @@ using System;
 using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
-    public class Credits {
+    public class Credits : Entity {
         public static readonly Color BorderColor = Color.Black;
         public const float CreditSpacing = 64f;
         public const float SongLength = 174f;
-        public const float ScrollSpeed = 200f;
 
         public float BottomTimer;
-        public bool Enabled;
+        public float BaseScrollSpeed;
 
         private readonly List<CreditNode> credits;
         private readonly float height;
         private readonly float alignment;
         private readonly float scale;
-        private float scrollSpeed;
+        internal float scrollSpeed;
         private float scroll;
 
-        public Credits(float alignment = 0.5f, float scale = 1f) {
-            Enabled = true;
+        public Credits(Vector2 position, float alignment = 0.5f, float scale = 1f, bool doubleColumns = true)
+            : base(position) {
             this.alignment = alignment;
             this.scale = scale;
-            credits = CreateCredits();
+            credits = CreateCredits(doubleColumns);
             height = 0f;
             foreach (CreditNode creditNode in credits) {
                 height += creditNode.Height(scale) + CreditSpacing * scale;
             }
+
+            BaseScrollSpeed = scrollSpeed = height / (SongLength * scale);
+
+            Depth = Depths.FormationSequences;
+            Tag = TagsExt.SubHUD;
         }
 
-        public float Duration => height / (ScrollSpeed * scale);
+        public override void Update() {
+            base.Update();
+            scroll += scrollSpeed * Engine.DeltaTime * scale;
 
-        public void Update() {
-            if (Enabled) {
-                scroll += scrollSpeed * Engine.DeltaTime * scale;
-
-                // DEBUG
-                if (Input.MenuDown.Check) {
-                    scrollSpeed = ScrollSpeed * 10f;
-                } else if (Input.MenuUp.Check) {
-                    scrollSpeed = ScrollSpeed * -10f;
-                } else {
-                    scrollSpeed = ScrollSpeed;
-                }
-
-                if (scroll < 0f || scroll > height) {
-                    scrollSpeed = 0f;
-                }
-                scroll = Calc.Clamp(scroll, 0f, height);
-                if (scroll >= height) {
-                    BottomTimer += Engine.DeltaTime;
-                } else {
-                    BottomTimer = 0f;
-                }
+            if (scroll < 0f || scroll > height) {
+                scrollSpeed = 0f;
+            }
+            scroll = Calc.Clamp(scroll, 0f, height);
+            if (scroll >= height) {
+                BottomTimer += Engine.DeltaTime;
+            } else {
+                BottomTimer = 0f;
             }
         }
 
-        public void Render(Vector2 position) {
-            Vector2 nodePos = position + new Vector2(0f, 1080f - scroll).Floor();
+        public override void Render() {
+            base.Render();
+            Vector2 nodePos = new Vector2(Position.X, Celeste.TargetHeight - scroll).Floor();
             foreach (CreditNode creditNode in credits) {
                 float nodeHeight = creditNode.Height(scale);
-                if (nodePos.Y > -nodeHeight && nodePos.Y < 1080f) {
+
+                if (nodePos.Y > -nodeHeight && nodePos.Y < Celeste.TargetHeight) {
                     creditNode.Render(nodePos, alignment, scale);
                 }
                 nodePos.Y += nodeHeight + CreditSpacing * scale;
             }
         }
 
-        private static List<CreditNode> CreateCredits() {
+        private List<CreditNode> CreateCredits(bool doubleColumns) {
             List<CreditNode> list = new() {
                 new Heading("SJ2021_Credits_Heading_Captains"),
 
                 new Team("SJ2021_Credits_Category_Hosts", "SJ2021_Credits_Names_Captains_Hosts"),
-
                 new Team("SJ2021_Credits_Category_Mapping",
                     new Team.Section("SJ2021_Credits_Category_Beginner", "SJ2021_Credits_Names_Captains_Mapping_Beginner"),
                     new Team.Section("SJ2021_Credits_Category_Intermediate", "SJ2021_Credits_Names_Captains_Mapping_Intermediate"),
@@ -103,23 +96,27 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 new Team("SJ2021_Credits_Category_Localization", "SJ2021_Credits_Names_Captains_Localization"),
                 new Team("SJ2021_Credits_Category_Accessibility", "SJ2021_Credits_Names_Captains_Accessibility"),
 
+                new Break(180f),
+
                 new Heading("SJ2021_Credits_Heading_Teams"),
 
                 new Team("SJ2021_Credits_Category_Gameplay",
-                    new Team.Section("SJ2021_Credits_Category_Beginner", "SJ2021_Credits_Names_Teams_Gameplay_Beginner"),
-                    new Team.Section("SJ2021_Credits_Category_Intermediate", "SJ2021_Credits_Names_Teams_Gameplay_Intermediate"),
-                    new Team.Section("SJ2021_Credits_Category_Advanced", "SJ2021_Credits_Names_Teams_Gameplay_Advanced"),
-                    new Team.Section("SJ2021_Credits_Category_Expert", "SJ2021_Credits_Names_Teams_Gameplay_Expert"),
-                    new Team.Section("SJ2021_Credits_Category_Grandmaster", "SJ2021_Credits_Names_Teams_Gameplay_Grandmaster"),
-                    new Team.Section("SJ2021_Credits_Category_Gym", "SJ2021_Credits_Names_Teams_Gameplay_Gym")
+                    new Team.Section("SJ2021_Credits_Category_Beginner", "SJ2021_Credits_Names_Teams_Gameplay_Beginner", split: doubleColumns),
+                    new Team.Section("SJ2021_Credits_Category_Intermediate", "SJ2021_Credits_Names_Teams_Gameplay_Intermediate", split: doubleColumns),
+                    new Team.Section("SJ2021_Credits_Category_Advanced", "SJ2021_Credits_Names_Teams_Gameplay_Advanced", split: doubleColumns),
+                    new Team.Section("SJ2021_Credits_Category_Expert", "SJ2021_Credits_Names_Teams_Gameplay_Expert", split: doubleColumns),
+                    new Team.Section("SJ2021_Credits_Category_Grandmaster", "SJ2021_Credits_Names_Teams_Gameplay_Grandmaster", split: doubleColumns),
+                    new Team.Section("SJ2021_Credits_Category_Gym", "SJ2021_Credits_Names_Teams_Gameplay_Gym", split: doubleColumns)
                 ),
 
-                new Team("SJ2021_Credits_Category_Coding", "SJ2021_Credits_Names_Teams_Coding"),
-                new Team("SJ2021_Credits_Category_Art", "SJ2021_Credits_Names_Teams_Art"),
-                new Team("SJ2021_Credits_Category_Music", "SJ2021_Credits_Names_Teams_Music"),
-                new Team("SJ2021_Credits_Category_Decoration", "SJ2021_Credits_Names_Teams_Decoration"),
-                new Team("SJ2021_Credits_Category_Playtesting", "SJ2021_Credits_Names_Teams_Playtesting"),
-                new Team("SJ2021_Credits_Category_Special", "SJ2021_Credits_Names_Special")
+                new Team("SJ2021_Credits_Category_Coding", "SJ2021_Credits_Names_Teams_Coding", split: doubleColumns),
+                new Team("SJ2021_Credits_Category_Art", "SJ2021_Credits_Names_Teams_Art", split: doubleColumns),
+                new Team("SJ2021_Credits_Category_Music", "SJ2021_Credits_Names_Teams_Music", split: doubleColumns),
+                new Team("SJ2021_Credits_Category_Decoration", "SJ2021_Credits_Names_Teams_Decoration", split : doubleColumns),
+                new Team("SJ2021_Credits_Category_Playtesting", "SJ2021_Credits_Names_Teams_Playtesting", split: doubleColumns),
+                new Team("SJ2021_Credits_Category_Special", "SJ2021_Credits_Names_Special"),
+
+                new Thanks("SJ2021_Credits_Thanks", GFX.Gui["SJ2021/Credits/sj_logo_joke"])
             };
 
             return list;
@@ -128,10 +125,11 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         public abstract class CreditNode {
             public abstract void Render(Vector2 position, float alignment = 0.5f, float scale = 1f);
             public abstract float Height(float scale = 1f);
+            public float LineHeight => ActiveFont.LineHeight;
         }
 
         public class Heading : CreditNode {
-            public const float HeadingScale = 3f;
+            public const float HeadingScale = 2.5f;
 
             public readonly Color HeadingColor;
             public string HeadingString;
@@ -146,7 +144,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             }
 
             public override float Height(float scale = 1f) {
-                return ActiveFont.LineHeight * HeadingScale * scale;
+                return LineHeight * HeadingScale * scale;
             }
         }
 
@@ -154,7 +152,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             public const float TitleScale = 1.7f;
             public const float CreditsScale = 1.15f;
             public const float Spacing = 8f;
-            public const float SubtitleScale = 0.85f;
+            public const float SubtitleScale = 0.9f;
             public const float SectionSpacing = 32f;
 
             public static readonly Color TitleColor = Color.White;
@@ -173,40 +171,38 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 : this(titleKey, new Section(null, creditsKey, split)) {
             }
 
-            private float LineHeight => ActiveFont.LineHeight;
-
             public override void Render(Vector2 position, float alignment = 0.5f, float scale = 1f) {
+                Vector2 renderPos = position.Floor();
                 Vector2 justify = new(alignment, 0f);
                 Vector2 leftAlign = Vector2.Zero;
                 Vector2 rightAlign = new(1f, 0f);
-                Vector2 margin = new(ActiveFont.LineHeight * CreditsScale * scale / 3, 0f);
+                Vector2 margin = new(LineHeight * CreditsScale * scale / 3, 0f);
 
-                ActiveFont.DrawOutline(Title, position.Floor(), justify, Vector2.One * TitleScale * scale, TitleColor, 2f, BorderColor);
-                position.Y += (LineHeight * TitleScale + Spacing) * scale;
+                ActiveFont.DrawOutline(Title, renderPos, justify, Vector2.One * TitleScale * scale, TitleColor, 2f, BorderColor);
+                renderPos.Y += (LineHeight * TitleScale + Spacing) * scale;
 
                 for (int i = 0; i < Sections.Length; i++) {
                     if (!string.IsNullOrEmpty(Sections[i].Subtitle)) {
-                        ActiveFont.DrawOutline(Sections[i].Subtitle, position.Floor(), justify, Vector2.One * SubtitleScale * scale, SubtitleColor, 2f, BorderColor);
-                        position.Y += LineHeight * SubtitleScale * scale;
+                        ActiveFont.DrawOutline(Sections[i].Subtitle, renderPos, justify, Vector2.One * SubtitleScale * scale, SubtitleColor, 2f, BorderColor);
+                        renderPos.Y += LineHeight * SubtitleScale * scale;
                     }
                     for (int j = 0; j < Sections[i].Credits.Length; j++) {
                         if (!Sections[i].Split) {
-                            ActiveFont.DrawOutline(Sections[i].Credits[j], position.Floor(), justify, Vector2.One * CreditsScale * scale, CreditsColor, 2f, BorderColor);
+                            ActiveFont.DrawOutline(Sections[i].Credits[j], renderPos, justify, Vector2.One * CreditsScale * scale, CreditsColor, 2f, BorderColor);
                         } else {
-                            ActiveFont.DrawOutline(Sections[i].Credits[j], position.Floor() - margin, rightAlign, Vector2.One * CreditsScale * scale, CreditsColor, 2f, BorderColor);
+                            ActiveFont.DrawOutline(Sections[i].Credits[j], renderPos - margin, rightAlign, Vector2.One * CreditsScale * scale, CreditsColor, 2f, BorderColor);
                             if (j < Sections[i].Credits.Length - 1) {
-                                ActiveFont.DrawOutline(Sections[i].Credits[j + 1], position.Floor() + margin, leftAlign, Vector2.One * CreditsScale * scale, CreditsColor, 2f, BorderColor);
+                                ActiveFont.DrawOutline(Sections[i].Credits[j + 1], renderPos + margin, leftAlign, Vector2.One * CreditsScale * scale, CreditsColor, 2f, BorderColor);
                                 j++;
                             }
                         }
-                        position.Y += LineHeight * CreditsScale * scale;
+                        renderPos.Y += LineHeight * CreditsScale * scale;
                     }
-                    position.Y += SectionSpacing * scale;
+                    renderPos.Y += SectionSpacing * scale;
                 }
             }
 
             public override float Height(float scale = 1f) {
-                float lineHeight = ActiveFont.LineHeight;
                 float height = 0f;
                 height += LineHeight * TitleScale + Spacing;
                 for (int i = 0; i < Sections.Length; i++) {
@@ -230,6 +226,42 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                     Credits = Dialog.Clean(creditsKey).Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                     Split = split;
                 }
+            }
+        }
+
+        public class Thanks : CreditNode {
+            public const float ThanksScale = 1.5f;
+
+            private readonly MTexture texture;
+            private readonly string message;
+
+            public Thanks(string dialogKey, MTexture texture) {
+                message = Dialog.Clean(dialogKey);
+                this.texture = texture;
+            }
+
+            public override void Render(Vector2 position, float alignment = 0.5f, float scale = 1f) {
+                texture.DrawCentered(new(Celeste.TargetCenter.X, position.Y + Celeste.TargetCenter.Y), Color.White);
+                ActiveFont.DrawOutline(message, new Vector2(Celeste.TargetCenter.X, position.Y + Celeste.TargetCenter.Y + texture.Height / 2f + CreditSpacing), new Vector2(0.5f, 0.5f), Vector2.One * ThanksScale, Color.White, 2f, BorderColor);
+            }
+
+            public override float Height(float scale = 1f) {
+                return Celeste.TargetHeight;
+            }
+        }
+
+        private class Break : CreditNode {
+            public float Size;
+
+            public Break(float size = 64f) {
+                Size = size;
+            }
+
+            public override void Render(Vector2 position, float alignment = 0.5f, float scale = 1f) {
+            }
+
+            public override float Height(float scale = 1f) {
+                return Size * scale;
             }
         }
     }

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
+    [Tracked]
     [CustomEntity("SJ2021/CreditsTalker")]
     public class CreditsTalker : Entity {
         public CreditsTalker(EntityData data, Vector2 offset)
