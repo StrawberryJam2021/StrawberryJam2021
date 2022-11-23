@@ -454,8 +454,17 @@ placements.triggers.SJ2021/CoreModeTriggerNoFlash.tooltips.mode=The core mode th
 placements.entities.SJ2021/CustomAscendManager.tooltips.backgroundColor=Hex color of the background. Vanilla options are:\nNormal: 75a0ab\nDark: 000000
 placements.entities.SJ2021/CustomAscendManager.tooltips.streakColors=Hex colors of the cloud streaks, as a comma-separated list. Vanilla options are:\nNormal: ffffff,e69ecb\nDark: 041b44,011230
 placements.entities.SJ2021/CustomAscendManager.tooltips.introLaunch=Use to match the camera and fade-in settings of the first launch in Summit (where you spawn into it).
+placements.entities.SJ2021/CustomAscendManager.tooltips.finalLaunch=Use to let the ascent manager manage a SJ2021 Custom Badeline Boost final launch.
 placements.entities.SJ2021/CustomAscendManager.tooltips.borders=Whether or not to render the cloud borders on the edges of the screen.
 placements.entities.SJ2021/CustomAscendManager.tooltips.dark=If true, the fade and screen wipe color will be black instead of white.
+
+# Custom Badeline Boost
+placements.entities.SJ2021/CustomBadelineBoost.tooltips.spawnPointX=The X coordinate of the closest spawn point after teleport transition.
+placements.entities.SJ2021/CustomBadelineBoost.tooltips.spawnPointY=The Y coordinate of the closest spawn point after teleport transition.
+placements.entities.SJ2021/CustomBadelineBoost.tooltips.room=The room that will be teleported to after the final launch.
+placements.entities.SJ2021/CustomBadelineBoost.tooltips.colorGrade=Sets the color grade after teleport transition.
+placements.entities.SJ2021/CustomBadelineBoost.tooltips.transitionType=The type of transition into the 
+placements.entities.SJ2021/CustomBadelineBoost.tooltips.wipeColor=Hex color of the transition wipe.
 
 # Launch Platform
 placements.entities.SJ2021/LaunchPlatform.tooltips.width=The width of the platform in pixels.

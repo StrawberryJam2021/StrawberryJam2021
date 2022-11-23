@@ -2,7 +2,7 @@ module SJ2021CustomAscendManager
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/CustomAscendManager" CustomAscendManager(x::Integer, y::Integer, backgroundColor::String="75a0ab", streakColors::String="ffffff,e69ecb", introLaunch::Bool=false, borders::Bool=true, dark::Bool=false)
+@mapdef Entity "SJ2021/CustomAscendManager" CustomAscendManager(x::Integer, y::Integer, backgroundColor::String="75a0ab", streakColors::String="ffffff,e69ecb", introLaunch::Bool=false, finalLaunch::Bool=false, borders::Bool=true, dark::Bool=false)
 
 const placements = Ahorn.PlacementDict(
     "Custom Summit Background Manager (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
