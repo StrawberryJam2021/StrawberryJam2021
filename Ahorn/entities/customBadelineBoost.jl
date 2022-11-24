@@ -2,7 +2,7 @@ module SJ2021CustomBadelineBoost
 
 using ..Ahorn, Maple
 
-@mapdef Entity "SJ2021/CustomBadelineBoost" CustomBadelineBoost(x::Integer, y::Integer, spawnPointX::Integer=0, spawnPointY::Integer=0, room::String="", colorGrade::String="none", transitionType::String="Transition", wipeColor::String="ffffff", nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
+@mapdef Entity "SJ2021/CustomBadelineBoost" CustomBadelineBoost(x::Integer, y::Integer, spawnPointX::Integer=0, spawnPointY::Integer=0, room::String="", colorGrade::String="none", transitionType::String="Transition", wipeColor::String="ffffff", forceCameraUpdate::Bool=false, nodes::Array{Tuple{Integer, Integer}, 1}=Tuple{Integer, Integer}[])
 
 const placements = Ahorn.PlacementDict(
 	"Custom Badeline Boost (Strawberry Jam 2021)" => Ahorn.EntityPlacement(

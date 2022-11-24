@@ -24,6 +24,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private string colorGrade;
         private Player.IntroTypes transitionType;
         private Color wipeColor;
+		private bool forceCameraUpdate;
 
         public EventInstance FinalBoostSfx;
 
@@ -57,6 +58,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             wipeColor = Calc.HexToColor(data.Attr("wipeColor", "ffffff"));
             spawnPoint = new Vector2(data.Int("spawnPointX"), data.Int("spawnPointY"));
             transitionType = data.Enum("transitionType", Player.IntroTypes.Transition);
+			forceCameraUpdate = data.Bool("forceCameraUpdate");
         }
 
         public override void Awake(Scene scene) {
@@ -88,6 +90,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 player.Drop();
             }
             player.StateMachine.State = 11;
+			if (forceCameraUpdate) {
+				player.forceCameraUpdate = true;
+			}
             player.DummyAutoAnimate = false;
             player.DummyGravity = false;
             if (player.Inventory.Dashes > 1) {
@@ -198,6 +203,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Engine.TimeRate = 1f;
                 Finish();
             }
+			if (forceCameraUpdate) {
+				player.forceCameraUpdate = false;
+			}
         }
 
         public override void Update() {

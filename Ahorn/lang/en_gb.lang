@@ -465,6 +465,7 @@ placements.entities.SJ2021/CustomBadelineBoost.tooltips.room=The room that will 
 placements.entities.SJ2021/CustomBadelineBoost.tooltips.colorGrade=Sets the color grade after teleport transition.
 placements.entities.SJ2021/CustomBadelineBoost.tooltips.transitionType=The type of transition into the selected room.
 placements.entities.SJ2021/CustomBadelineBoost.tooltips.wipeColor=Hex color of the transition wipe.
+placements.entities.SJ2021/CustomBadelineBoost.tooltips.forceCameraUpdate=Forces camera to update, following the player during launches.
 
 # Launch Platform
 placements.entities.SJ2021/LaunchPlatform.tooltips.width=The width of the platform in pixels.
