@@ -91,7 +91,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             player.StateMachine.State = 11;
 			if (forceCameraUpdate) {
-				player.forceCameraUpdate = true;
+				player.ForceCameraUpdate = true;
 			}
             player.DummyAutoAnimate = false;
             player.DummyGravity = false;
@@ -204,7 +204,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Finish();
             }
 			if (forceCameraUpdate) {
-				player.forceCameraUpdate = false;
+				player.ForceCameraUpdate = false;
 			}
         }
 
