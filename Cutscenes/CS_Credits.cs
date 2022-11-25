@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
     public class CS_Credits : CutsceneEntity {
-        public const float FadeTime = 0.5f;
+        public const float FadeTime = 2f;
         public const string CreditsSong = "event:/sj21_credits";
 
         public static readonly Dictionary<string, string> HeartsidesToLobbies = new() {
@@ -165,9 +165,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             }
 
             foreach (Entity entity in Level.Entities) {
-                if (entity.Get<TalkComponent>() is TalkComponent talker && talker.UI != null) {
-                    talker.UI.Visible = false;
-                }
+                entity.Get<TalkComponent>()?.RemoveSelf();
             }
 
             Level.Wipe.Cancel();
@@ -194,7 +192,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                     }
                     Level.Add(playback);
                     yield return FadeTo(0f);
-                    yield return playback.Wait();
+                    yield return playback.Wait(buffer: FadeTime);
                     yield return FadeTo(1f);
                     //yield return transitionTime;
                 }
@@ -221,7 +219,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
         private IEnumerator FadeTo(float value) {
             while (fade != value) {
-                fade = Calc.Approach(fade, value, Engine.DeltaTime * FadeTime);
+                fade = Calc.Approach(fade, value, Engine.DeltaTime / FadeTime);
                 yield return null;
             }
         }
