@@ -86,6 +86,24 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             session.CassetteBlocksDisabled = true;
         }
 
+        public void PrepareEnable(Scene scene, StrawberryJam2021Session session) {
+            var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>();
+
+            foreach (WonkyCassetteBlock wonkyBlock in wonkyBlocks) {
+                if (wonkyBlock.ControllerIndex == 0) {
+                    if (wonkyBlock.OnAtBeats.Contains(session.CassetteWonkyBeatIndex / (16 / beatLength) % barLength) != wonkyBlock.Activated) {
+                        wonkyBlock.WillToggle();
+                    }
+                } else {
+                    foreach (WonkyMinorCassetteBlockController minorController in Scene.Tracker.GetEntities<WonkyMinorCassetteBlockController>()) {
+                        if (wonkyBlock.ControllerIndex == minorController.ControllerIndex && wonkyBlock.OnAtBeats.Contains(minorController.CassetteWonkyBeatIndex / (16 / minorController.beatLength) % minorController.barLength) != wonkyBlock.Activated) {
+                            wonkyBlock.WillToggle();
+                        }
+                    }
+                }
+            }
+        }
+
         public override void Awake(Scene scene) {
             base.Awake(scene);
 
@@ -146,6 +164,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             } else if (session.CassetteBlocksDisabled && !shouldDisable) {
                 session.CassetteBlocksDisabled = false;
+
+                PrepareEnable(level, session);
             }
         }
 
