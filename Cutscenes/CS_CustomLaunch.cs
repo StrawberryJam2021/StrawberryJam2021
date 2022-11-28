@@ -81,7 +81,9 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             for (p2 = 0f; p2 < 1f; p2 += Engine.DeltaTime / 12f) {
                 fadeToColor = p2;
                 streaks.Alpha = p2;
-                manager.SetFade(p2);
+                if (manager != null) {
+                    manager.SetFade(p2);
+                }
                 foreach (Parallax item in Level.Foreground.GetEach<Parallax>("blackhole")) {
                     item.FadeAlphaMultiplier = 1f - p2;
                 }

@@ -250,9 +250,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Color color = alphaColors[particles[j].Color];
                     mtexture.DrawCentered(vector, color, scale2);
                 }
-                if (manager.Borders) {
-                    Draw.Rect(position.X - 10f, position.Y - 10f, 26f, 200f, alphaColors[0]);
-                    Draw.Rect(position.X + 320f - 16f, position.Y - 10f, 26f, 200f, alphaColors[0]);
+
+                if (manager != null) {
+                    if (manager.Borders) {
+                        Draw.Rect(position.X - 10f, position.Y - 10f, 26f, 200f, alphaColors[0]);
+                        Draw.Rect(position.X + 320f - 16f, position.Y - 10f, 26f, 200f, alphaColors[0]);
+                    }
                 }
             }
         }
