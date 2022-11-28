@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
+    [Tracked]
     [CustomEntity("SJ2021/CustomAscendManager")]
     public class CustomAscendManager : Entity {
         private static char[] separators = { ',' };
@@ -21,11 +22,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private bool launchStarted;
         private bool launchCompleted;
         private Level level;
+        private bool finalLaunch;
 
         public CustomAscendManager(EntityData data, Vector2 offset) : base(data.Position + offset) {
             Tag = Tags.TransitionUpdate;
             Depth = 8900;
 
+            finalLaunch = data.Bool("finalLaunch");
             backgroundColor = Calc.HexToColor(data.Attr("backgroundColor", "75a0ab"));
             introLaunch = data.Bool("introLaunch");
             Borders = data.Bool("borders", true);
@@ -39,7 +42,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Added(Scene scene) {
             base.Added(scene);
             level = SceneAs<Level>();
-            Add(new Coroutine(Routine(), true));
+            if (!finalLaunch) {
+                Add(new Coroutine(Routine(), true));
+            }
         }
 
         private IEnumerator Routine() {
@@ -123,6 +128,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 ScreenWipe.WipeColor = Color.Black;
             }
             base.Removed(scene);
+        }
+
+        // Used for Custom Badeline Boost cutscene to create streaks
+        public void SetFade(float target) {
+            fade = target;
         }
 
         private IEnumerator FadeTo(float target, float duration = 0.8f) {
@@ -240,9 +250,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Color color = alphaColors[particles[j].Color];
                     mtexture.DrawCentered(vector, color, scale2);
                 }
-                if (manager.Borders) {
-                    Draw.Rect(position.X - 10f, position.Y - 10f, 26f, 200f, alphaColors[0]);
-                    Draw.Rect(position.X + 320f - 16f, position.Y - 10f, 26f, 200f, alphaColors[0]);
+
+                if (manager != null) {
+                    if (manager.Borders) {
+                        Draw.Rect(position.X - 10f, position.Y - 10f, 26f, 200f, alphaColors[0]);
+                        Draw.Rect(position.X + 320f - 16f, position.Y - 10f, 26f, 200f, alphaColors[0]);
+                    }
                 }
             }
         }
