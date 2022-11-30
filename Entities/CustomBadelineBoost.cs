@@ -106,7 +106,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (num == 0) {
                 num = -1;
             }
-            BadelineDummy badeline = new BadelineDummy(Position);
+            LightOptionBadelineDummy badeline = new LightOptionBadelineDummy(Position, !finalBoost);
             Scene.Add(badeline);
             player.Facing = (Facings) (-num);
             badeline.Sprite.Scale.X = num;
