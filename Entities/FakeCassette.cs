@@ -264,24 +264,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         // Also sets flag as a fallback / for effect on skip cutscene
         private IEnumerator GroundPound(Player player) {
+            Level level = player.SceneAs<Level>();
+            level.PauseLock = true;
+
             player.StateMachine.State = Player.StDummy;
             while (!player.Dead && !player.OnGround()) {
+                player.Position.X = Calc.Clamp(player.Position.X, Left - Width, Right + Width);
                 yield return null;
             }
 
             player.StateMachine.ForceState(Player.StTempleFall);
-            player.SceneAs<Level>().Session.SetFlag(flagOnCollect, true);
+            level.Session.SetFlag(flagOnCollect, true);
+            level.PauseLock = false;
         }
 
         public void SkipCutscene(Level level, Player player) {
             level.Frozen = false;
             level.Paused = false;
-            level.PauseLock = false;
             Glitch.Value = 0f;
             level.FormationBackdrop.Alpha = 1f;
             level.FormationBackdrop.Display = false;
             Audio.Stop(collectAudioEvent);
-
+            
             player.Add(new Coroutine(GroundPound(player)));
 
             message?.RemoveSelf();
