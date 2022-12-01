@@ -74,7 +74,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SolarElevator.Load();
             SpriteSwapTrigger.Load();
             CS_Credits.Load();
-            CreditsPlayback.Load();
+            TasHelper.Load();
 
             Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
         }
@@ -124,7 +124,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SolarElevator.Unload();
             SpriteSwapTrigger.Unload();
             CS_Credits.Unload();
-            CreditsPlayback.Unload();
+            TasHelper.Unload();
 
             Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
         }

@@ -12,8 +12,8 @@ using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
     public class CS_Credits : CutsceneEntity {
-        public const float FadeTime = 2f;
-        public const string CreditsSong = "event:/sj21_credits";
+        private const float FadeTime = 2f;
+        private const string CreditsSong = "event:/sj21_credits";
 
         public static readonly Dictionary<string, string> HeartsidesToLobbies = new() {
             { "StrawberryJam2021/1-Beginner/ZZ-HeartSide", "StrawberryJam2021/0-Lobbies/1-Beginner" },
@@ -44,11 +44,8 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             Audio.BusMuted(Buses.GAMEPLAY, mute: true);
             MInput.UpdateNull();
             MInput.Disabled = true;
-
             Level.InCredits = true;
             Level.TimerHidden = true;
-            Level.Entities.FindFirst<TotalStrawberriesDisplay>()?.RemoveSelf();
-            Level.Entities.FindFirst<GameplayStats>()?.RemoveSelf();
 
             if (fromHeartside) {
                 Add(new Coroutine(LobbyRoutine()));
@@ -58,24 +55,18 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         }
 
         public override void Update() {
-            MInput.Disabled = false;
-            if (Level.CanPause && (Input.Pause.Pressed || Input.ESC.Pressed)) {
-                Input.Pause.ConsumeBuffer();
-                Input.ESC.ConsumeBuffer();
-                Level.Pause(minimal: true);
-            } else if (credits != null) {
-                // DEBUG
-                if (Input.MenuDown.Check) {
-                    credits.scrollSpeed = credits.BaseScrollSpeed * 10f;
-                } else if (Input.MenuUp.Check) {
-                    credits.scrollSpeed = credits.BaseScrollSpeed * -10f;
-                } else {
-                    credits.scrollSpeed = credits.BaseScrollSpeed;
-                }
-            }
-
-            MInput.Disabled = true;
             base.Update();
+            Audio.MusicUnderwater = false;
+
+            if (!TasHelper.Active) {
+                MInput.Disabled = false;
+                if (Level.CanPause && (Input.Pause.Pressed || Input.ESC.Pressed)) {
+                    Input.Pause.ConsumeBuffer();
+                    Input.ESC.ConsumeBuffer();
+                    Level.Pause(minimal: true);
+                }
+                MInput.Disabled = true;
+            }
         }
 
         public override void Render() {
@@ -123,6 +114,8 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             previousAudio = Level.Session.Audio.Clone();
             Audio.SetMusic(null);
 
+            Level.Entities.FindFirst<TotalStrawberriesDisplay>()?.RemoveSelf();
+            Level.Entities.FindFirst<GameplayStats>()?.RemoveSelf();
             if (Level.Tracker.GetEntity<CreditsTalker>()?.Get<TalkComponent>() is TalkComponent talker) {
                 talker.Enabled = false;
             }
@@ -155,6 +148,8 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         private IEnumerator LobbyRoutine() {
             yield return null;
 
+            Level.Entities.FindFirst<TotalStrawberriesDisplay>()?.RemoveSelf();
+            Level.Entities.FindFirst<GameplayStats>()?.RemoveSelf();
             Level.Entities.OfType<RainbowBerry>().FirstOrDefault()?.RemoveSelf();
             if (lobbyMapControllerType != null) {
                 Level.Tracker.Entities[lobbyMapControllerType].FirstOrDefault()?.RemoveSelf();
@@ -181,23 +176,22 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             Level.Add(credits = new Credits(new Vector2(creditsX, 0f), alignment: 1f, scale: 0.6f, doubleColumns: false));
 
             yield return 1f;
+
             if (playbacks.Count > 0) {
-                //float playbackDuration = playbacks.Values.Sum(p => p.Duration);
-                //float transitionTime = (credits.Duration - playbackDuration - 1f - (playbacks.Count * FadeTime * 2)) / playbacks.Count;
                 foreach (CreditsPlayback playback in playbacks.Values) {
                     if (Level.Tracker.GetEntity<Player>() is Player player) {
                         player.Position = playback.Position;
-                        Level.Camera.Position = Level.GetFullCameraTargetAt(player, playback.Position);
+                        Level.Camera.Position = player.CameraTarget;
                         yield return 1f;
                     }
-                    Level.Add(playback);
+
+                    TasHelper.Play(playback.Inputs);
                     yield return FadeTo(0f);
-                    yield return playback.Wait(buffer: FadeTime);
+                    yield return TasHelper.Wait(buffer: FadeTime);
                     yield return FadeTo(1f);
-                    //yield return transitionTime;
                 }
             } else {
-                // TEMP so people can see things are working in lobbies lol
+                // DEBUG (show lobby so we can verify things work)
                 yield return FadeTo(0f);
                 yield return 3f;
                 yield return FadeTo(1f);
@@ -224,6 +218,18 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             }
         }
 
+        public struct CreditsPlayback {
+            public Vector2 Position;
+            public List<TasInput> Inputs;
+
+            public CreditsPlayback(Vector2 position, List<TasInput> inputs) {
+                Position = position;
+                Inputs = inputs;
+            }
+        }
+
+        #region Hooks
+
         internal static void Load() {
             Everest.Events.Level.OnLoadEntity += Level_OnLoadEntity;
             areaCompleteHook = new ILHook(typeof(AreaComplete).GetMethod("orig_Update"), AreaCompleteUpdateHook);
@@ -238,8 +244,18 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         private static bool Level_OnLoadEntity(Level level, LevelData levelData, Vector2 offset, EntityData entityData) {
             if (entityData.Name == "playbackTutorial" && HeartsidesToLobbies.Values.Contains(level.Session.Area.SID)) {
                 if (level.Entities.ToAdd.OfType<CS_Credits>().FirstOrDefault() is CS_Credits credits) {
-                    credits.playbacks[entityData.Attr("tutorial")] = new CreditsPlayback(entityData, offset);
-                }                
+                    string name = entityData.Attr("tutorial");
+                    string path = $"Tutorials/{name}.tas";
+                    if (TasHelper.TryParse(path, out List<TasInput> inputs)) {
+                        if (inputs.Count > 0) {
+                            credits.playbacks[name] = new CreditsPlayback(entityData.Position + offset, inputs);
+                        } else {
+                            LevelEnter.ErrorMessage = "[SJ] Could not find a TAS file at {#ff1144}" + path + "{#}";
+                        }                        
+                    } else {
+                        LevelEnter.ErrorMessage = "[SJ] Could not parse any inputs in {#ff1144}" + path + "{#}";
+                    }
+                }
                 
                 return true;
             }
@@ -316,5 +332,6 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 Engine.Commands.Log($"Could not find {lobbySID}");
             }
         }
+        #endregion
     }
 }
