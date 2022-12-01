@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Celeste;
 using Monocle;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -156,7 +152,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public enum Mode {
             Normal = 0,
-            Heartside = 1,
+            HeartsideTransitionAbuse = 1,
+            HeartsideViv = 2,
         }
 
         private List<DarkMatter> list = new List<DarkMatter>();
@@ -181,7 +178,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static Dictionary<Mode, Color[]> colorSets = new Dictionary<Mode, Color[]> {
             { Mode.Normal, new Color[2] { Calc.HexToColor("7800b5"), Calc.HexToColor("663fA0") } },
-            { Mode.Heartside, new Color[2] { Calc.HexToColor("c92cff"), Calc.HexToColor("9877ca") } },
+            { Mode.HeartsideTransitionAbuse, new Color[2] { Calc.HexToColor("fcf579"), Calc.HexToColor("8cf7e2") } },
+            { Mode.HeartsideViv, new Color[2] { Calc.HexToColor("c92cd0"), Calc.HexToColor("9857aa") } },
         };
 
 
@@ -213,15 +211,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 bolts.Add(new Bolt(this, 1, 0.35f, 160, 160));
             }
             UpdateMode(scene as Level);
-        }
-        public void StartAmbience() {
-            if (!AmbientSfx.Playing) {
-                AmbientSfx.Play("event:/strawberry_jam_2021/env/darkMatter");
-            }
-        }
-
-        public void StopAmbience() {
-            AmbientSfx.Stop();
         }
 
         public void Reset() {
@@ -286,7 +275,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if(level == null && Scene is Level) {
                 level = Scene as Level;
             }
-            mode = level.Session.Area.GetSID() == "StrawberryJam2021/3-Advanced/ZZ-HeartSide" ? Mode.Heartside : Mode.Normal;
+
+            if (level.Session.Area.GetSID() == "StrawberryJam2021/3-Advanced/ZZ-HeartSide") {
+                mode = (level.Session.Level == "heartside_Viv") ? Mode.HeartsideViv : Mode.HeartsideTransitionAbuse;
+            } else {
+                mode = Mode.Normal;
+            }
         }
 
         public void ToggleEdges(bool immediate = false) {
@@ -365,7 +359,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 return;
             }
             Engine.Graphics.GraphicsDevice.SetRenderTarget(DarkMatterLightning);
-            Engine.Graphics.GraphicsDevice.Clear(Color.Lerp(Calc.HexToColor("470076") * 0.125f, Color.Black, Fade));
+            Engine.Graphics.GraphicsDevice.Clear(mode == Mode.HeartsideTransitionAbuse ? Color.White * (0.1f + 0.9f * Fade) : Color.Lerp(Calc.HexToColor("470076") * 0.125f, Color.Black, Fade));
             Draw.SpriteBatch.Begin();
             foreach (Bolt bolt in bolts) {
                 bolt.Render();
