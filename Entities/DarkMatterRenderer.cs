@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Celeste;
 using Monocle;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -279,7 +275,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if(level == null && Scene is Level) {
                 level = Scene as Level;
             }
-            mode = level.Session.Area.GetSID() == "StrawberryJam2021/3-Advanced/ZZ-HeartSide" ? level.Session.Level == "heartside_Viv" ? Mode.HeartsideViv : Mode.HeartsideTransitionAbuse : Mode.Normal;
+
+            if (level.Session.Area.GetSID() == "StrawberryJam2021/3-Advanced/ZZ-HeartSide") {
+                mode = (level.Session.Level == "heartside_Viv") ? Mode.HeartsideViv : Mode.HeartsideTransitionAbuse;
+            } else {
+                mode = Mode.Normal;
+            }
         }
 
         public void ToggleEdges(bool immediate = false) {
