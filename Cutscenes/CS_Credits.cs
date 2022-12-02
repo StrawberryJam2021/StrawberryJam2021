@@ -52,6 +52,13 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             } else {
                 Add(new Coroutine(MovieRoutine()));
             }
+
+            foreach (EntityData data in Level.Session.LevelData.Entities) {
+                if (data.Name == "CollabUtils2/MiniHeartDoor") {
+                    Level.Session.SetFlag("opened_mini_heart_door_" + new EntityID(Level.Session.Level, data.ID), true);
+                    break;
+                }
+            }
         }
 
         public override void Update() {
