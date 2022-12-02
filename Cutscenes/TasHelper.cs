@@ -36,7 +36,24 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             { "Grab", CreateBinding(Grab) },
             { "Jump", CreateBinding(Jump, Jump2) },
             { "Dash", CreateBinding(Dash, Dash2) },
-            { "DemoDash", CreateBinding(DemoDash, DemoDash2) }
+            { "DemoDash", CreateBinding(DemoDash, DemoDash2) },
+            { "MenuLeft", new Binding() },
+            { "MenuRight", new Binding() },
+            { "MenuDown", new Binding() },
+            { "MenuUp", new Binding() },
+            { "Pause", new Binding() },
+            { "Confirm", new Binding() },
+            { "Cancel", new Binding() },
+            { "Journal", new Binding() },
+            { "QuickRestart", new Binding() },
+            { "LeftDashOnly", new Binding() },
+            { "RightDashOnly", new Binding() },
+            { "UpDashOnly", new Binding() },
+            { "DownDashOnly", new Binding() },
+            { "LeftMoveOnly", new Binding() },
+            { "RightMoveOnly", new Binding() },
+            { "DownMoveOnly", new Binding() },
+            { "UpMoveOnly", new Binding() },
         };
 
         private static List<TasInput> inputs;
