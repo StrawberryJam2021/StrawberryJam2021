@@ -270,6 +270,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         }
 
         private static void Level_EndPauseEffects(On.Celeste.Level.orig_EndPauseEffects orig, Level self) {
+            orig(self);
             if (Active) {
                 Resume();
             }
