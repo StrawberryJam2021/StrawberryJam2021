@@ -516,6 +516,7 @@ placements.triggers.SJ2021/CustomInstantTeleportTrigger.tooltips.OnExit= If true
 placements.entities.SJ2021/SolarElevator.tooltips.distance=The height at which this elevator goes. 
 placements.entities.SJ2021/SolarElevator.tooltips.time=The time in seconds this elevator takes to move from one floor to the other.
 placements.entities.SJ2021/SolarElevator.tooltips.delay=The time in seconds waited before movement.
+placements.entities.SJ2021/SolarElevator.tooltips.bgDepth=The depth that the background of the elevator will be displayed at.
 placements.entities.SJ2021/SolarElevator.tooltips.oneWay=Whether this elevator is only used once.
 placements.entities.SJ2021/SolarElevator.tooltips.startPosition=Determines which of the two floors is the default.\n- Closest: the default floor is the one closest to the player when the entity is created.\n- Bottom: the default floor is always the bottom one.\n- Top: the default floor is always the top one.
 placements.entities.SJ2021/SolarElevator.tooltips.moveSfx=The sound played during movement. Preferably a looped sound for arbitrary duration.
