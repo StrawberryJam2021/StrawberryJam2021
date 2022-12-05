@@ -13,8 +13,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private class Background : Entity {
             private readonly SolarElevator elevator;
 
-            public Background(SolarElevator elevator) {
-                Depth = Depths.BGDecals;
+            public Background(SolarElevator elevator, int depth) {
+                Depth = depth;
                 this.elevator = elevator;
             }
 
@@ -50,6 +50,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public readonly float StartY;
         public readonly float Distance;
+        private readonly int bgDepth;
         private readonly float time, delay;
         private readonly bool oneWay;
         private readonly StartPosition startPosition;
@@ -73,6 +74,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             : this(
                   data.Position + offset,
                   data.Int("distance", 128),
+                  data.Int("bgDepth", Depths.BGDecals),
                   data.Float("time", 3.0f),
                   data.Float("delay", 1.0f),
                   data.Bool("oneWay", false),
@@ -86,6 +88,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public SolarElevator(Vector2 position,
             int distance,
+            int bgDepth,
             float time,
             float delay,
             bool oneWay = false,
@@ -101,6 +104,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             StartY = Y;
             Distance = distance;
+            this.bgDepth = bgDepth;
             this.time = time;
             this.delay = delay;
             this.oneWay = oneWay;
@@ -168,7 +172,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Added(Scene scene) {
             base.Added(scene);
-            scene.Add(bg = new Background(this));
+            scene.Add(bg = new Background(this, bgDepth));
         }
 
         public override void Removed(Scene scene) {

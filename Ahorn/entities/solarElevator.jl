@@ -6,6 +6,7 @@ using ..Ahorn, Maple
     x::Integer,
     y::Integer,
     distance::Integer=128,
+	bgDepth::Integer=9000,
     time::Number=3.0,
     delay::Number=1.0,
     oneWay::Bool=false,
