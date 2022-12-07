@@ -45,8 +45,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             _bloomOffset = new Vector2(data.Int("bloomOffsetX"), data.Int("bloomOffsetY", -10));
         }
 
-        public override void Added(Scene scene) {
-            base.Added(scene);
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
             var allEntities = scene.Entities.Concat(scene.Entities.GetToAdd());
             foreach (var entity in allEntities) {
                 var type = entity.GetType();
