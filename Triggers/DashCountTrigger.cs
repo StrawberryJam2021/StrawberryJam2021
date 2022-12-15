@@ -65,7 +65,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         private static Color ModPlayerGetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index) {
-            if (self.Entity is Player player && player.Scene.Tracker.GetEntity<DashCountTrigger>() != null) {
+            if (self.Entity is Player player && player.Scene?.Tracker.GetEntity<DashCountTrigger>() != null) {
                 return player.Dashes > 0 ? Player.NormalHairColor : Player.UsedHairColor;
             }
 
@@ -73,7 +73,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         private static Color ModPlayerGetTrailColor(On.Celeste.Player.orig_GetCurrentTrailColor orig, Player self) {
-            if (self.Dashes > 0 && self.Scene.Tracker.GetEntity<DashCountTrigger>() != null) {
+            if (self.Dashes > 0 && self.Scene?.Tracker.GetEntity<DashCountTrigger>() != null) {
                 return Player.NormalHairColor;
             }
 
@@ -81,7 +81,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         private static PlayerDeadBody ModDie(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible = false, bool registerDeathInStats = true) {
-            if (self.Scene.Tracker.GetEntity<DashCountTrigger>() != null) {
+            if (self.Scene?.Tracker.GetEntity<DashCountTrigger>() != null) {
                 PlayerDeadBody Deadbody = orig(self, direction, evenIfInvincible, registerDeathInStats);
                 if (Deadbody != null) {
                     Color hairColor = (self.Dashes > 0) ? Player.NormalHairColor : Player.UsedHairColor;
