@@ -535,3 +535,6 @@ placements.effects.SJ2021/MeteorShower.tooltips.numberOfMeteors=The number of me
 # Meteor Shower Count Trigger
 placements.triggers.SJ2021/MeteorShowerCountTrigger.tooltips.NumberOfMeteors=Sets the number of meteors to be rendered by the Meteor Shower Effect at once.
 placements.triggers.SJ2021/MeteorShowerCountTrigger.tooltips.OnlyOnce=Whether the trigger should activate only once.
+
+# Photosensitive Flag Controller
+placements.entities.SJ2021/PhotosensitiveFlagController.tooltips.flag=The flag to set to the photosensitive mode.
