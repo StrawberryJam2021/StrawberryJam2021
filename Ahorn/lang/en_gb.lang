@@ -161,6 +161,9 @@ placements.entities.SJ2021/TripleBoostFlower.tooltips.normalFallSpeed=Falling sp
 # Theo Respawn
 placements.entities.SJ2021/TheoRespawn.tooltips.flag=The flag that must be active for this Theo Respawn to activate.
 
+# Ivory Boat
+placements.entities.SJ2021/IvoryBoat.tooltips.flag=The flag that will be set once the cutscene is complete.
+
 # Crystal Bomb Badeline Boss
 placements.entities.SJ2021/CrystalBombBadelineBoss.tooltips.music=The music event that should be triggered if "Can Change Music" is checked.
 # (these are copied from the original finalBoss)

@@ -8,6 +8,7 @@ const placements = Ahorn.PlacementDict(
     "Credits Talker (Strawberry Jam 2021)" => Ahorn.EntityPlacement(
         CreditsTalker,
         "rectangle",
+        Dict{String, Any}(),
         function(entity)
             entity.data["nodes"] = [(Int(entity.data["x"]) + Int(entity.data["width"]) + 8, Int(entity.data["y"]))]
         end
