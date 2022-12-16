@@ -1,4 +1,5 @@
 using Celeste.Mod.Entities;
+using Celeste.Mod.Helpers;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using Monocle;
@@ -118,6 +119,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     boostFrames -= 1;
                 }
             }
+        }
+
+        public override void Render() {
+            if (Utilities.IsRectangleVisible(Position.X, Position.Y, Width, Height))
+                base.Render();
         }
 
         private static bool NewCheckForSame(On.Celeste.CassetteBlock.orig_CheckForSame origCheckForSame, CassetteBlock self, float x, float y) {
