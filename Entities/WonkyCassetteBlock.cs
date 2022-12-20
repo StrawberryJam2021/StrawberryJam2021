@@ -1,14 +1,10 @@
 using Celeste.Mod.Entities;
-using Celeste.Mod.Helpers;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
-using MonoMod.Utils;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
@@ -23,8 +19,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public int boostFrames = 0;
         public bool boostActive = false;
 
-        private DynamicData cassetteBlockData;
-
         private string textureDir;
 
         public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, string moveSpec, Color color, string textureDir, int overrideBoostFrames, int controllerIndex)
@@ -33,8 +27,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             OnAtBeats = Regex.Split(moveSpec, @",\s*").Select(int.Parse).Select(i => i - 1).ToArray();
 
-            cassetteBlockData = new DynamicData(typeof(CassetteBlock), this);
-            cassetteBlockData.Set("color", color);
+            base.color = color;
 
             this.textureDir = textureDir;
 
@@ -51,9 +44,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         // We need to reimplement some of our parent's methods because they refer directly to CassetteBlock when fetching entities
 
-        private static readonly MethodInfo m_CassetteBlock_CreateImage = typeof(CassetteBlock).GetMethod("CreateImage", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static readonly FieldInfo _groupField = typeof(CassetteBlock).GetField("group", BindingFlags.NonPublic | BindingFlags.Instance);
-
         private static void NewFindInGroup(On.Celeste.CassetteBlock.orig_FindInGroup orig, CassetteBlock self, CassetteBlock block) {
             if (self is not WonkyCassetteBlock) {
                 orig(self, block);
@@ -63,23 +53,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             WonkyCassetteBlock selfCast = (WonkyCassetteBlock) self;
 
-            var group = (List<CassetteBlock>) _groupField.GetValue(self);
-
             foreach (WonkyCassetteBlock entity in self.Scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>()) {
                 if (entity != self && entity != block && entity.Index == self.Index &&
                     entity.ControllerIndex == selfCast.ControllerIndex &&
                     (entity.CollideRect(new Rectangle((int) block.X - 1, (int) block.Y, (int) block.Width + 2, (int) block.Height))
                         || entity.CollideRect(new Rectangle((int) block.X, (int) block.Y - 1, (int) block.Width, (int) block.Height + 2))) &&
-                    !group.Contains(entity) && entity.OnAtBeats.SequenceEqual(selfCast.OnAtBeats)) {
-                    group.Add(entity);
+                    !self.group.Contains(entity) && entity.OnAtBeats.SequenceEqual(selfCast.OnAtBeats)) {
+                    self.group.Add(entity);
                     NewFindInGroup(orig, self, entity);
-                    _groupField.SetValue(entity, group);
                 }
             }
         }
 
         public override void Update() {
-            bool groupLeader = cassetteBlockData.Get<bool>("groupLeader");
             bool activating = groupLeader && Activated && !Collidable;
 
             base.Update();
@@ -98,7 +84,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         }
                     }
 
-                    var group = cassetteBlockData.Get<List<CassetteBlock>>("group");
                     foreach (CassetteBlock cassetteBlock in group) {
                         WonkyCassetteBlock wonkyBlock = (WonkyCassetteBlock) cassetteBlock;
                         wonkyBlock.boostFrames = boostFrames;
@@ -143,11 +128,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void CassetteBlock_SetImage(On.Celeste.CassetteBlock.orig_SetImage orig, CassetteBlock self, float x, float y, int tx, int ty) {
             if (self is WonkyCassetteBlock block) {
                 GFX.Game.PushFallback(GFX.Game["objects/cassetteblock/pressed00"]);
-                block.cassetteBlockData.Get<List<Image>>("pressed").Add((Image) m_CassetteBlock_CreateImage.Invoke(block, new object[] { x, y, tx, ty, GFX.Game[block.textureDir + "/pressed"] }));
+                self.pressed.Add(self.CreateImage(x, y, tx, ty, GFX.Game[block.textureDir + "/pressed"]));
                 GFX.Game.PopFallback();
 
                 GFX.Game.PushFallback(GFX.Game["objects/cassetteblock/solid"]);
-                block.cassetteBlockData.Get<List<Image>>("solid").Add((Image) m_CassetteBlock_CreateImage.Invoke(block, new object[] { x, y, tx, ty, GFX.Game[block.textureDir + "/solid"] }));
+                self.solid.Add(self.CreateImage(x, y, tx, ty, GFX.Game[block.textureDir + "/solid"]));
                 GFX.Game.PopFallback();
             } else
                 orig(self, x, y, tx, ty);

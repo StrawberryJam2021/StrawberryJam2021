@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Monocle;
+﻿using Monocle;
 using Microsoft.Xna.Framework;
-using MonoMod.Utils;
 
 namespace Celeste.Mod.StrawberryJam2021 {
     internal static class TogglePlaybackHandler {
-        private static System.Reflection.MethodInfo Playback_Restart = typeof(PlayerPlayback).GetMethod("Restart", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-
         public static void Load() {
             On.Celeste.PlayerPlayback.ctor_EntityData_Vector2 += PlayerPlayback_ctor_EntityData_Vector2;
         }
@@ -21,7 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
 
         private static void PlayerPlayback_ctor_EntityData_Vector2(On.Celeste.PlayerPlayback.orig_ctor_EntityData_Vector2 orig, PlayerPlayback self, EntityData e, Vector2 offset) {
             orig(self, e, offset);
-            (self as Entity).PreUpdate += _PreUpdate;
+            self.PreUpdate += _PreUpdate;
         }
 
         //Is always called regardless of Active state so this just works.
@@ -32,7 +23,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
                     obj.Visible = false;
                 } else {
                     obj.Active = true;
-                    Playback_Restart.Invoke(obj, new object[] { });
+                    (obj as PlayerPlayback).Restart();
                 }
             }
         }

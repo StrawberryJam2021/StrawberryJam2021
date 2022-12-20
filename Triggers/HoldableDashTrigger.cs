@@ -1,7 +1,6 @@
 ﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [CustomEntity("SJ2021/HoldableDashTrigger")]
@@ -59,7 +58,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         private static int On_Player_NormalUpdate(On.Celeste.Player.orig_NormalUpdate orig, Player self) {
             int origResult = orig(self);
             if (self.Holding != null && CanDashWithHoldable(self) && self.CanDash) {
-                self.Speed += DynamicData.For(self).Get<Vector2>("LiftBoost");
+                self.Speed += self.LiftBoost;
                 return self.StartDash();
             } else {
                 return origResult;

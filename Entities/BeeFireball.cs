@@ -1,16 +1,11 @@
 ﻿using Celeste.Mod.Entities;
-using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod;
-using MonoMod.Utils;
-using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/BeeFireball")]
     public class BeeFireball : FireBall {
-        private static MethodInfo fireballGetPercentPosition = typeof(FireBall).GetMethod("GetPercentPosition", BindingFlags.NonPublic | BindingFlags.Instance);
-
         private static ParticleType P_Noop;
 
         public static void LoadContent() {
@@ -20,32 +15,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             };
         }
 
-        private Sprite sprite;
         private bool isFacingLeft;
         private bool isFacingLeftAtStartOfTrack;
 
-        private DynamicData selfData;
-
-        private readonly Vector2[] nodes;
-        private readonly int amount;
-        private readonly int index;
-        private readonly float offset;
-        private readonly float mult;
-
         public BeeFireball(EntityData data, Vector2 offset) : this(data.NodesWithPosition(offset), data.Int("amount", 1), 0, data.Float("offset"), data.Float("speed", 1f)) { }
 
-        public BeeFireball(Vector2[] nodes, int amount, int index, float offset, float speedMult) : base(nodes, amount, index, offset, speedMult, notCoreMode: true) {
-            // save all parameters to be able to reuse it for other fireballs we will instantiate.
-            this.nodes = nodes;
-            this.amount = amount;
-            this.index = index;
-            this.offset = offset;
-            mult = speedMult;
-
-            selfData = new DynamicData(typeof(FireBall), this);
-
+        public BeeFireball(Vector2[] nodes, int amount, int index, float offset, float speedMult): base(nodes, amount, index, offset, speedMult, notCoreMode: true) {
             // replace fireball sprites with bee sprites
-            sprite = Get<Sprite>();
             StrawberryJam2021Module.SpriteBank.CreateOn(sprite, "beeFireball");
             sprite.Play("idle", restart: false, randomizeFrame: true);
 
@@ -63,13 +39,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Added(scene);
         }
 
-
         // Added method similar to vanilla, except iceMode is forced to false, and amount > 1 instantiates more bee fireballs.
         public override void Added(Scene scene) {
             base_Added(scene);
 
-            selfData.Set("iceMode", false);
-            selfData.Set("speedMult", 1f);
+            iceMode = false;
+            speedMult = 1f;
 
             if (index == 0) {
                 for (int i = 1; i < amount; i++) {
@@ -77,17 +52,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
             }
 
-            selfData.Get<SoundSource>("trackSfx")?.RemoveSelf();
+            trackSfx?.RemoveSelf();
         }
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
 
             // what will be the initial facing? determine it by computing (position at percent + 0.01) - (position at percent).
-            float initPercent = selfData.Get<float>("percent");
-            float firstMoveX = ((Vector2) fireballGetPercentPosition.Invoke(this, new object[] { (initPercent + 0.01f) % 1f })).X
-                - ((Vector2) fireballGetPercentPosition.Invoke(this, new object[] { initPercent })).X;
-
+            float firstMoveX = GetPercentPosition((percent + 0.01f) % 1f).X - GetPercentPosition(percent).X;
             if (firstMoveX < 0) {
                 // facing left!
                 sprite.Scale.X = -1;
@@ -95,13 +67,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             // check if the bee is facing left at the start of the track (if it is moving left between 0% and 1% of the track).
-            isFacingLeftAtStartOfTrack = ((Vector2) fireballGetPercentPosition.Invoke(this, new object[] { 0f })).X
-                > ((Vector2) fireballGetPercentPosition.Invoke(this, new object[] { 0.01f })).X;
+            isFacingLeftAtStartOfTrack = GetPercentPosition(0f).X > GetPercentPosition(0.01f).X;
         }
 
         public override void Update() {
             Vector2 prev = Position;
-            float prevPercent = selfData.Get<float>("percent");
+            float prevPercent = percent;
 
             // modify the fire particles
             ParticleType prevFireTrail = P_FireTrail;
@@ -122,7 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             // if the percentage was reset, this means we teleported back to the start of the track...
-            if (selfData.Get<float>("percent") < prevPercent) {
+            if (percent < prevPercent) {
                 // ... so we need to adjust the facing immediately.
                 sprite.Play("idle");
                 sprite.Scale.X = isFacingLeftAtStartOfTrack ? -1 : 1;

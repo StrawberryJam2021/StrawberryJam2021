@@ -3,7 +3,6 @@ using System.Collections;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/NodedCloud")]
@@ -12,7 +11,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static byte BaseGhostOpacity = 0x62; // (0.385 * 255)
 
         private readonly Vector2[] nodes;
-        private readonly DynamicData base_Entity;
         private readonly Vector2 RoomOffset;
         private Image ghost;
         private float GhostAlphaOffset { get => 1 + 0.2f * (float) Math.Sin(timer * 4); }
@@ -21,17 +19,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private float moveTime;
         private float fadeInProgress;
 
-        private float timer { get => base_Entity.Get<float>("timer"); }
-        private float startY { set => base_Entity.Set("startY", value); }
-        private float respawnTimer { set => base_Entity.Set("respawnTimer", value); get => base_Entity.Get<float>("respawnTimer"); }
-
         public NodedCloud(EntityData data, Vector2 offset) : base(data.Position + offset, true) {
             RoomOffset = offset;
             moveTime = data.Float("moveTime", 0.5f);
             nodes = data.Nodes;
             fadeInProgress = 1;
 
-            base_Entity = new DynamicData(typeof(Cloud), this);
             Add(ghost = new Image(GFX.Game["objects/clouds/fragile00"]));
             ghost.CenterOrigin();
             ghost.Color = Color.Black;

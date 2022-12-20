@@ -45,8 +45,6 @@ public class UFO : Actor {
 
     float RaySizeY = 60f;
 
-    public static System.Reflection.MethodInfo SpringBounce;
-
 
     public UFO(Vector2[] nodes) : base(nodes[0]) {
         base.Depth = Depths.Above;
@@ -199,7 +197,7 @@ public class UFO : Actor {
                     }
                     break;
             }
-            SpringBounce.Invoke(CollidingSpring, null);
+            CollidingSpring.BounceAnimate();
             
         }
     }
@@ -338,9 +336,5 @@ public class UFO : Actor {
         if (state == States.Wait) {
             Draw.Rect(Position.X - RaySizeX, Position.Y + 12, RaySizeX * 2, RaySizeY, Color.White);
         }
-    }
-
-    public static void Load() {
-        SpringBounce = typeof(Spring).GetMethod("BounceAnimate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
     }
 }

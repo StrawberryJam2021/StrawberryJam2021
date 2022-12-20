@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
 using System.Collections;
 
 namespace Celeste.Mod.Entities {
@@ -66,12 +65,12 @@ namespace Celeste.Mod.Entities {
             }
 
             private IEnumerator startSkipping() {
-                DynamicData.For(Scene.Tracker.GetEntity<Textbox>()).Set("autoPressContinue", true);
+                Scene.Tracker.GetEntity<Textbox>().autoPressContinue = true;
                 yield break;
             }
 
             private IEnumerator stopSkipping() {
-                DynamicData.For(Scene.Tracker.GetEntity<Textbox>()).Set("autoPressContinue", false);
+                Scene.Tracker.GetEntity<Textbox>().autoPressContinue = false;
                 yield break;
             }
 

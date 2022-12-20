@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -12,19 +8,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     class UpsidedownSpring : Spring {
 
         public readonly float strength, xAxisFriction;
-        private StaticMover staticMover;
-        private Sprite sprite;
-        private Wiggler wiggler;
 
         public UpsidedownSpring(Vector2 position, float strength, float xAxisFriction) : base(position, Spring.Orientations.Floor, false) {
 
             this.strength = strength;
             this.xAxisFriction = xAxisFriction;
-
-            // extract components
-            staticMover = Get<StaticMover>();
-            sprite = Get<Sprite>();
-            wiggler = Get<Wiggler>();
 
             // remove components that need removing
             Remove(Get<PlayerCollider>());
@@ -43,13 +31,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public UpsidedownSpring(EntityData data, Vector2 offset) : this(data.Position + offset, data.Float("strength", 1), data.Float("xAxisFriction", 0.5f)) {
 
-        }
-
-        private void BounceAnimate() {
-            Audio.Play("event:/game/general/spring", BottomCenter);
-            staticMover.TriggerPlatform();
-            sprite.Play("bounce", true, false);
-            wiggler.Start();
         }
 
         private void onHoldable(Holdable holdable) {

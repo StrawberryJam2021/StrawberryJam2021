@@ -3,7 +3,6 @@ using System.Collections;
 using Monocle;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
-using System.Reflection;
 using MonoMod.Utils;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
@@ -19,7 +18,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Holdable hold;
         private Collision onCollideH, onCollideV;
         private Player player;
-        private DynamicData playerDynData;
         private Level level;
         private Sprite sprite;
 
@@ -30,7 +28,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public float SlowFallSpeed { get; private set; }
 
         private static ParticleType boostParticles;
-        private static MethodInfo player_launchBegin = typeof(Player).GetMethod("LaunchBegin", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public TripleBoostFlower(EntityData data, Vector2 offset) : this(data.Position + offset, data.Float("boostDelay", 0.2f), data.Float("boostSpeed", -160f), data.Float("boostDuration", 0.5f), data.Float("fastFallSpeed", 120f), data.Float("slowFallSpeed", 24f), data.Float("normalFallSpeed", 40f)) {
         }
@@ -219,7 +216,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void consumeBoost() {
             if (canBoost()) {
-                player_launchBegin.Invoke(hold.Holder, new object[] { });
+                hold.Holder.LaunchBegin();
                 hold.Holder.Speed.Y = boostSpeed;
                 // todo particles
                 //level.ParticlesBG.Emit(boostParticles, 8, Position - Vector2.UnitY * 10, Vector2.UnitX * 5 + Vector2.UnitY * 3, (float) Math.PI);
@@ -285,7 +282,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void onRelease(Vector2 direction) {
-            playerDynData.Set("CarryOffsetTarget", new Vector2(0f, -12f));
+            DynamicData.For(player).Set("CarryOffsetTarget", new Vector2(0f, -12f));
             RemoveTag(Tags.Persistent);
 
             highFrictionTimer = 0.5f;
@@ -324,8 +321,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             player = hold.Holder;
             AddTag(Tags.Persistent);
             lastFacing = (int) player.Facing;
-            playerDynData = DynamicData.For(player);
-            playerDynData.Set("CarryOffsetTarget", customCarryOffset);// + (Vector2.UnitX * (int) player.Facing * 4f));
+            DynamicData.For(player).Set("CarryOffsetTarget", customCarryOffset);
         }
 
         private void collideHandlerV(CollisionData data) {

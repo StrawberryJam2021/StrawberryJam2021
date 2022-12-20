@@ -14,12 +14,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/CrystalBombBadelineBoss")]
     [TrackedAs(typeof(FinalBoss))]
     public class CrystalBombBadelineBoss : FinalBoss {
-        private DynamicData baseData;
-        private Action<Player> base_OnPlayer;
-
         private string music;
 
-        private Circle playerCollider;
         // be more lenient with death hitbox
         private const float playerCollideRadius = 8f;
 
@@ -28,13 +24,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static MethodInfo crystalBombExplodeHookInfo = typeof(CrystalBombBadelineBoss).GetMethod("On_CrystalBomb_Explode", BindingFlags.NonPublic | BindingFlags.Static);
 
         public CrystalBombBadelineBoss(EntityData data, Vector2 offset) : base(data, offset) {
-            baseData = new DynamicData(typeof(FinalBoss), this);
-            // store original OnPlayer method so we can call it later...
-            base_OnPlayer = Get<PlayerCollider>().OnCollide;
-            // ...and then replace it for our boss
-            playerCollider = new Circle(playerCollideRadius, 0f, -6f);
+            // Replace player collider
             Remove(Get<PlayerCollider>());
-            Add(new PlayerCollider(OnPlayer, playerCollider));
+            Add(new PlayerCollider(OnPlayerCBBB, new Circle(playerCollideRadius, 0f, -6f)));
 
             music = data.Attr("music", "");
             if (data.Bool("disableCameraLock")) {
@@ -45,7 +37,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public override void Update() {
             base.Update();
             // don't try to visually avoid the player
-            baseData.Set("avoidPos", Vector2.Zero);
+            avoidPos = Vector2.Zero;
 
             if (Collidable) {
                 foreach (CrystalBomb bomb in SceneAs<Level>()?.Entities.FindAll<CrystalBomb>()) {
@@ -55,12 +47,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        private new void OnPlayer(Player player) {
+        private void OnPlayerCBBB(Player player) {
             player.Die((player.Center - Center).SafeNormalize());
         }
 
         private void OnHit() {
-            base_OnPlayer(null);
+            OnPlayer(null);
         }
 
         public static void Load() {
@@ -99,7 +91,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 yield return origEnum.Current;
             }
             Collider origCollider = self.Collider;
-            self.Collider = DynamicData.For(self).Get<Circle>("pushRadius");
+            self.Collider = self.pushRadius;
             foreach (FinalBoss boss in self.CollideAll<FinalBoss>()) {
                 if (boss is CrystalBombBadelineBoss cbbb)
                     cbbb.OnHit();
@@ -110,7 +102,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void On_Puffer_Explode(On.Celeste.Puffer.orig_Explode orig, Puffer self) {
             orig(self);
             Collider origCollider = self.Collider;
-            self.Collider = DynamicData.For(self).Get<Circle>("pushRadius");
+            self.Collider = self.pushRadius;
             foreach (FinalBoss boss in self.CollideAll<FinalBoss>()) {
                 if (boss is CrystalBombBadelineBoss cbbb)
                     cbbb.OnHit();
