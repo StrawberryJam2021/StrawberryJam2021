@@ -1,18 +1,14 @@
 ﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/RefillShard")]
     public class RefillShardController : Entity {
         public const float RespawnTime = 3600f;
-
-        private static MethodInfo m_RefillRespawn = typeof(Refill).GetMethod("Respawn", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public List<RefillShard> Shards;
         public Refill Refill;
@@ -24,7 +20,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int collectAmount;
         private Vector2[] nodes;
 
-        private DynamicData refillData;
         private bool finished;
 
         public RefillShardController(EntityData data, Vector2 offset) 
@@ -59,19 +54,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
                 Refill.Collidable = false;
                 Refill.Depth = Depths.BGDecals - 1;
-
-                refillData = new DynamicData(Refill);
-                refillData.Get<Sprite>("sprite").Visible = false;
-                refillData.Get<Sprite>("flash").Visible = false;
-                refillData.Get<Image>("outline").Visible = true;
-                refillData.Set("respawnTimer", RespawnTime);
+                Refill.sprite.Visible = Refill.flash.Visible = Refill.outline.Visible = false;
+                Refill.respawnTimer = RespawnTime;
             }
         }
 
         public override void Update() {
             base.Update();
             if (!finished && spawnRefill)
-                refillData.Set("respawnTimer", RespawnTime);
+                Refill.respawnTimer = RespawnTime;
         }
 
         public void CheckCollection() {
@@ -127,8 +118,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public void SpawnRefill() {
-            refillData.Set("respawnTimer", RespawnTime);
-            m_RefillRespawn.Invoke(Refill, null);
+            Refill.respawnTimer = RespawnTime;
+            Refill.Respawn();
         }
     }
 }

@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
-using MonoMod.Utils;
 using System;
 using System.Linq;
 
@@ -74,17 +73,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 cursor.Emit(OpCodes.Ldarg_0);
                 
                 cursor.EmitDelegate<Action<CassetteBlockManager>>(self => {
-                    var data = DynamicData.For(self);
-                    var beatIndex = data.Get<int>("beatIndex");
-                    var beatsPerTick = data.Get<int>("beatsPerTick");
-                    var ticksPerSwap = data.Get<int>("ticksPerSwap");
-                    var currentIndex = data.Get<int>("currentIndex");
-                    if (beatIndex % beatsPerTick == 0 &&
-                        beatIndex % (beatsPerTick * ticksPerSwap) != 0 &&
+                    if (self.beatIndex % self.beatsPerTick == 0 &&
+                        self.beatIndex % (self.beatsPerTick * self.ticksPerSwap) != 0 &&
                         self.Scene is not null) {
                         var components = self.Scene.Tracker.GetComponents<CassetteListener>();
                         foreach (CassetteListener component in components) {
-                            component.OnTick?.Invoke(currentIndex, false);
+                            component.OnTick?.Invoke(self.currentIndex, false);
                         }
                     }
                 });
@@ -104,11 +98,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             orig(self);
             if (self.Scene == null) return;
             
-            var data = DynamicData.For(self);
-            var currentIndex = data.Get<int>("currentIndex");
             var components = self.Scene.Tracker.GetComponents<CassetteListener>();
             foreach (CassetteListener component in components) {
-                component.OnSilentUpdate?.Invoke(component.Index == currentIndex);
+                component.OnSilentUpdate?.Invoke(component.Index == self.currentIndex);
             }
         }
         

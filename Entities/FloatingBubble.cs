@@ -13,7 +13,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private Sprite sprite;
 
         private bool broken = false;
-        private static MethodInfo SpringBounceAnimate = typeof(Spring).GetMethod("BounceAnimate", BindingFlags.NonPublic | BindingFlags.Instance);
         private static Hook FlagTouchSwitchCtorHook;
         private static ConstructorInfo FlagTouchSwitchCtorInfo = typeof(FlagTouchSwitch).GetConstructor(new Type[] { typeof(EntityData), typeof(Vector2) });
         private static MethodInfo OnFlagTouchSwitchCtorInfo = typeof(FloatingBubble).GetMethod("OnFlagTouchSwitchCtor", BindingFlags.Public | BindingFlags.Static);
@@ -59,10 +58,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             foreach (BubbleCollider collider in Scene.Tracker.GetComponents<BubbleCollider>()) {
                 if (collider.Check(this)) {
-                    if (collider.Entity is Spring) {
+                    if (collider.Entity is Spring spring) {
                         if (springCooldownTimer <= 0) {
-                            HitSpring(collider.Entity as Spring);
-                            SpringBounceAnimate.Invoke(collider.Entity as Spring, null);
+                            HitSpring(spring);
+                            spring.BounceAnimate();
                         }
                     } else if (collider.Entity is TouchSwitch) {
                         (collider.Entity as TouchSwitch).TurnOn();

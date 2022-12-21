@@ -1,17 +1,12 @@
-﻿using Celeste;
-using Celeste.Mod;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
-using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
     [Tracked]
@@ -53,7 +48,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
             var name = from ? ColorGradeFrom : ColorGradeTo;
 
             if (name == "(current)") {
-                name = from ? DynamicData.For(level).Get<string>("lastColorGrade") : level.Session.ColorGrade;
+                name = from ? level.lastColorGrade : level.Session.ColorGrade;
             } else if (name == "(core)") {
                 switch (level.CoreMode) {
                     case Session.CoreModes.Cold: name = "cold"; break;
@@ -139,8 +134,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                 cursor.EmitDelegate<Action<Level, Matrix>>((level, matrix) => {
                     var colorGradeMasks = level.Tracker.GetEntities<ColorGradeMask>();
                     if (colorGradeMasks.Count > 0) {
-                        var levelData = DynamicData.For(level);
-                        var currentFrom = GFX.ColorGrades.GetOrDefault(levelData.Get<string>("lastColorGrade"), GFX.ColorGrades["none"]);
+                        var currentFrom = GFX.ColorGrades.GetOrDefault(level.lastColorGrade, GFX.ColorGrades["none"]);
                         var currentTo = GFX.ColorGrades.GetOrDefault(level.Session.ColorGrade, GFX.ColorGrades["none"]);
                         var currentValue = ColorGrade.Percent;
 

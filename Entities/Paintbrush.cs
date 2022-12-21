@@ -1,7 +1,6 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -269,11 +268,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             State = LaserState.Cooldown;
                         } else if (State == LaserState.Idle && !cassetteListener.Activated) {
                             var cbm = Scene.Tracker.GetEntity<CassetteBlockManager>();
-                            var data = DynamicData.For(cbm);
-                            var beatsPerTick = data.Get<int>("beatsPerTick");
-                            var tempoMult = data.Get<float>("tempoMult");
-                            var beatLength = (10 / 60f) / tempoMult;
-                            var tickLength = beatLength * beatsPerTick;
+                            var beatLength = (10 / 60f) / cbm.tempoMult;
+                            var tickLength = beatLength * cbm.beatsPerTick;
                             chargeDelayRemaining = chargeDelayFraction * tickLength;
                             setAnimationSpeed(chargingAnimation, tickLength * (1 - chargeDelayFraction));
                             State = LaserState.Precharge;

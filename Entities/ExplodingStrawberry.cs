@@ -9,14 +9,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [RegisterStrawberry(true, false)]
     [Tracked]
     public class ExplodingStrawberry : Strawberry {
-        private Sprite sprite;
         private Sprite explosionSprite;
         private Vector2 lastPlayerPos;
         public ExplodingStrawberry(EntityData data, Vector2 offset, EntityID gid) : base(data, offset, gid) { }
 
         public override void Added(Scene scene) {
             base.Added(scene);
-            sprite = Get<Sprite>();
             explosionSprite = StrawberryJam2021Module.SpriteBank.Create("explodingStrawberry");
             explosionSprite.Visible = false;
             Add(explosionSprite);

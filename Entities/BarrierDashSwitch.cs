@@ -3,10 +3,7 @@ using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
-using MonoMod.Utils;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/BarrierDashSwitch")]
@@ -15,11 +12,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public BarrierDashSwitch(Vector2 position, Sides side, bool persistent, EntityID id, string spritePath)
             : base(position, side, persistent, false, id, "default") {
             if (!string.IsNullOrEmpty(spritePath)) {
-                DynamicData baseData = new DynamicData(typeof(DashSwitch), this);
-                Sprite sprite = baseData.Get<Sprite>("sprite");
-                Remove(sprite);
                 //sprites.xml cringe
-                sprite = new Sprite(GFX.Game, $"{spritePath}/dashButton");
+                sprite.Reset(GFX.Game, $"{spritePath}/dashButton");
                 sprite.CenterOrigin();
                 sprite.Justify = new Vector2(0.5f, 0.5f);
                 int[] idleFrames = new int[21];
@@ -39,9 +33,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         sprite.Rotation = (float) Math.PI;
                         break;
                 }
-                Add(sprite);
                 sprite.Play("idle");
-                baseData.Set("sprite", sprite);
             }
         }
 
@@ -78,10 +70,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void DestroyIfBarrierDashSwitch(Glider glider, Platform hit) {
             if (hit is BarrierDashSwitch) {
-                DynamicData gliderData = new DynamicData(glider);
-                gliderData.Set("destroyed", true);
+                glider.destroyed = true;
                 glider.Collidable = false;
-                glider.Add(new Coroutine(gliderData.Invoke<IEnumerator>("DestroyAnimationRoutine")));
+                glider.Add(new Coroutine(glider.DestroyAnimationRoutine()));
             }
         }
     }

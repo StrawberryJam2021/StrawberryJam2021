@@ -1,10 +1,7 @@
 ﻿using Celeste.Mod.CollabUtils2.Triggers;
 using Celeste.Mod.Entities;
-using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
-using System;
 using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
@@ -50,7 +47,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 sprite.OnChange = (lastAnimationId, currentAnimationId) => {
                     if (currentAnimationId == "fill") {
                         SoundSource sound = new SoundSource(new Vector2(0, -20f), pickFillSoundEffect(spriteName)) { RemoveOnOneshotEnd = true };
-                        new DynamicData(sound).Get<EventInstance>("instance").setVolume(0.3f);
+                        sound.instance.setVolume(0.3f);
                         Add(sound);
                     }
                 };

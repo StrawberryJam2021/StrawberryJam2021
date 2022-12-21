@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Reflection;
 using Monocle;
 using Celeste.Mod.Entities;
 
@@ -9,14 +8,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     class FlagDashSwitch : DashSwitch {
 
         private string flag;
-        private bool persistent, target;
-        private static FieldInfo ds_pressed, ds_pressDirection, ds_side, ds_pressedTarget, ds_startY;
+        private bool target;
 
         private Vector2 spriteOffset;
         private StaticMover mover;
 
         public FlagDashSwitch(EntityData data, Vector2 offset, EntityID id) : base(data.Position + offset, chooseFacing(data.Enum<Sides>("orientation")), data.Bool("persistent", false), false, id, data.Attr("sprite", "default")) {
-            persistent = data.Bool("persistent", false);
             target = data.Bool("flagTargetValue", true);
             flag = data.Attr("flag");
             if (data.Bool("attach", false)) {
@@ -26,7 +23,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     OnAttach = delegate (Platform p) { Depth = p.Depth + 1; },
                     OnShake = new Action<Vector2>(onShake),
                     SolidChecker = new Func<Solid, bool>((s) =>
-                        (Sides) ds_side.GetValue(this) switch {
+                        side switch {
                             Sides.Down => CollideCheckOutside(s, Position + Vector2.UnitY * 4),
                             Sides.Up => CollideCheckOutside(s, Position - Vector2.UnitY * 4),
                             Sides.Left => CollideCheckOutside(s, Position - Vector2.UnitX * 2),
@@ -36,7 +33,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 )
                 });
             }
-            Sides side = (Sides) ds_side.GetValue(this);
             if (side == Sides.Up || side == Sides.Down) {
                 Collider.Width = 16f;
                 Collider.Height = 6f;
@@ -60,18 +56,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (!persistent) {
                     SceneAs<Level>().Session.SetFlag(flag, false);
                 } else {
-                    ds_pressed.SetValue(this, true);
+                    pressed = true;
                 }
             }
         }
 
         public static void Load() {
-            ds_pressed = typeof(DashSwitch).GetField("pressed", BindingFlags.Instance | BindingFlags.NonPublic);
-            ds_pressDirection = typeof(DashSwitch).GetField("pressDirection", BindingFlags.Instance | BindingFlags.NonPublic);
-            ds_side = typeof(DashSwitch).GetField("side", BindingFlags.Instance | BindingFlags.NonPublic);
-            ds_pressedTarget = typeof(DashSwitch).GetField("pressedTarget", BindingFlags.Instance | BindingFlags.NonPublic);
-            ds_startY = typeof(DashSwitch).GetField("startY", BindingFlags.Instance | BindingFlags.NonPublic);
-
             On.Celeste.DashSwitch.GetGate += DashSwitch_GetGate;
             On.Celeste.DashSwitch.OnDashed += DashSwitch_OnDashed;
         }
@@ -106,7 +96,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static DashCollisionResults DashSwitch_OnDashed(On.Celeste.DashSwitch.orig_OnDashed orig, DashSwitch self, Player player, Vector2 direction) {
-            if (!(bool) ds_pressed.GetValue(self) && direction == (Vector2) ds_pressDirection.GetValue(self) && self is FlagDashSwitch fds && fds.mover != null) {
+            if (!self.pressed && direction == self.pressDirection && self is FlagDashSwitch fds && fds.mover != null) {
                 fds.mover.TriggerPlatform();
             }
             return orig(self, player, direction);
@@ -117,13 +107,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void staticMoverMove(Vector2 amount) {
-            if ((Sides) ds_side.GetValue(this) == Sides.Down && !(bool) ds_pressed.GetValue(this)) {
-                float v = (float) ds_startY.GetValue(this);
-                ds_startY.SetValue(this, v + amount.Y);
+            if (side == Sides.Down && !pressed) {
+                startY += amount.Y;
             }
             Position += amount;
-            Vector2 target = (Vector2) ds_pressedTarget.GetValue(this);
-            ds_pressedTarget.SetValue(this, target + amount);
+            pressedTarget += amount;
             if (GetPlayerRider() is Player p) {
                 p.MoveV(amount.Y);
                 p.MoveH(amount.X);
@@ -131,7 +119,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void onEnable() {
-            Collidable = !(bool) ds_pressed.GetValue(this);
+            Collidable = !pressed;
             Active = Visible = true;
             Speed = Vector2.Zero;
             Player p = Scene.Tracker.GetEntity<Player>();
@@ -141,7 +129,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private float stopClip(Player p, int offset = 0) =>
-            (Sides) ds_side.GetValue(this) switch {
+            side switch {
                 Sides.Down => p.Bottom = Top + (offset * Math.Sign(Top)),
                 Sides.Up => p.Top = Bottom + (offset * Math.Sign(Bottom)),
                 Sides.Left => p.Left = Right + (offset * Math.Sign(Right)),

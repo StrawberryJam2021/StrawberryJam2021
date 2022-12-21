@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Cil;
-using MonoMod.Utils;
 using System;
 using System.Linq;
 
@@ -52,7 +51,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void LevelLoader_LoadingThread(On.Celeste.LevelLoader.orig_LoadingThread orig, LevelLoader self) {
-            MapData mapData = DynamicData.For(self).Get<Session>("session").MapData;
+            MapData mapData = self.session.MapData;
             controllerInMap = mapData.Levels.Any(l => l.Entities.Any(e => e.Name == "SJ2021/LightSourceLimitController"));
             orig(self);
         }

@@ -1,17 +1,12 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using System.Collections;
-using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     // At the moment this entity is heavily based around the assumption that the player can only hold at-most one ER at any given moment
     [Tracked]
     [CustomEntity("SJ2021/ExpiringDashRefill")]
     public class ExpiringDashRefill : Refill {
-        private static readonly MethodInfo RefillRoutine = typeof(Refill).GetMethod("RefillRoutine", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static readonly FieldInfo respawnTimer = typeof(Refill).GetField("respawnTimer", BindingFlags.NonPublic | BindingFlags.Instance);
-
         // Config stuff
         private readonly float dashExpirationTime;
         private readonly float hairFlashTime;
@@ -24,10 +19,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             hairFlashTime = dashExpirationTime * Calc.Clamp(data.Float("hairFlashThreshold"), 0f, 1f);
 
             Remove(Components.Get<PlayerCollider>());
-            Add(new PlayerCollider(OnPlayer));
+            Add(new PlayerCollider(OnPlayerEDR));
         }
 
-        private void OnPlayer(Player player) {
+        private void OnPlayerEDR(Player player) {
             // The dash shouldn't be picked up if the ExpiringDash the player holds would last longer
             // If the player's in stamina panic, this rule is ignored
             if (session.ExpiringDashRemainingTime >= dashExpirationTime && player.Stamina >= 20f)
@@ -36,7 +31,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             int playerRealDashes = player.Dashes - (session.ExpiringDashRemainingTime > 0 ? 1 : 0);
 
             // Unconditionally add the dash, bypassing inventory limits
-            flash = false;
+            expireFlash = false;
             player.Dashes = playerRealDashes + 1;
             session.ExpiringDashRemainingTime = dashExpirationTime;
             session.ExpiringDashFlashThreshold = hairFlashTime;
@@ -49,11 +44,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
             Collidable = false;
 
-            Add(new Coroutine((IEnumerator) RefillRoutine.Invoke(this, new object[] { player })));
-            respawnTimer.SetValue(this, 2.5f);
+            Add(new Coroutine(RefillRoutine(player)));
+            respawnTimer = 2.5f;
         }
 
-        private static bool flash;
+        private static bool expireFlash;
 
         public static void Load() {
             On.Celeste.Player.Update += Update;
@@ -73,19 +68,19 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public static Color GetHairColor(On.Celeste.PlayerHair.orig_GetHairColor orig, PlayerHair self, int index)
-            => flash ? Player.FlashHairColor : orig.Invoke(self, index);
+            => expireFlash ? Player.FlashHairColor : orig.Invoke(self, index);
 
         public static void OnDashBegin(On.Celeste.Player.orig_DashBegin orig, Player player) {
             // The expiring dash should get used first
             session.ExpiringDashRemainingTime = 0;
-            flash = false;
+            expireFlash = false;
 
             orig.Invoke(player);
         }
 
         public static PlayerDeadBody OnPlayerDeath(On.Celeste.Player.orig_Die orig, Player player, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats) {
             if (evenIfInvincible || !SaveData.Instance.Assists.Invincible) {
-                flash = false;
+                expireFlash = false;
                 session.ExpiringDashRemainingTime = 0;
             }
 
@@ -96,7 +91,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // We first remove the expiring dash if the player still has one
             if (session.ExpiringDashRemainingTime > 0) {
                 player.Dashes--;
-                flash = false;
+                expireFlash = false;
 
                 session.ExpiringDashRemainingTime = 0;
             }
@@ -109,7 +104,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             // If touching the ground would've replenished the dash if the ExpiringDash wasn't there, remove the timer
             if (!self.Inventory.NoRefills && self.OnGround() && self.Dashes <= self.MaxDashes) {
                 session.ExpiringDashRemainingTime = 0;
-                flash = false;
+                expireFlash = false;
             }
 
             if (session.ExpiringDashRemainingTime <= 0) {
@@ -122,7 +117,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (session.ExpiringDashRemainingTime <= 0) {
                 // Remove given dash
                 self.Dashes--;
-                flash = false;
+                expireFlash = false;
                 orig.Invoke(self);
                 return;
             }
@@ -130,7 +125,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (session.ExpiringDashRemainingTime <= session.ExpiringDashFlashThreshold) {
                 // Flash hair
                 if (self.Scene.OnInterval(0.05f))
-                    flash = !flash;
+                    expireFlash = !expireFlash;
             }
 
             orig.Invoke(self);

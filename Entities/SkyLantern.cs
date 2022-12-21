@@ -3,10 +3,8 @@ using Monocle;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using System.Collections;
-using MonoMod.Utils;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
-using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/AntiGravJelly")]
@@ -154,53 +152,39 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
 
             Vector2 self_carryOffsetTarget = new Vector2(0f, -12f); // not the """correct""" way to do it but it never gets changed soo....why not
-            DynamicData dyndata_player = DynamicData.For(self);
-
-            Func<float> get_self_gliderBoosterTimer = new Func<float>(() => { return dyndata_player.Get<float>("gliderBoostTimer"); });
-            Action<float> set_self_gliderBoosterTimer = new Action<float>((x) => dyndata_player.Set("gliderBoostTimer", x));
-
-            Vector2 self_gliderBoostDir = dyndata_player.Get<Vector2>("gliderBoostDir");
-
-            Func<float> get_self_varJumpTimer = new Func<float>(() => { return dyndata_player.Get<float>("varJumpTimer"); });
-            Action<float> set_self_varJumpTimer = new Action<float>((x) => dyndata_player.Set("varJumpTimer", x));
-
-            Action<Vector2> set_self_carryOffset = new Action<Vector2>((x) => dyndata_player.Set("carryOffset", x));
-
-            bool self_onGround = dyndata_player.Get<bool>("onGround");
-            bool self_holdCannotDuck = dyndata_player.Get<bool>("holdCannotDuck");
 
             self.Play(SFX.char_mad_crystaltheo_lift, null, 0f);
             Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
-            if (self.Holding != null && self.Holding.SlowFall && get_self_gliderBoosterTimer() - 0.16f > 0f && self_gliderBoostDir.Y > 0f || (self.Speed.Length() > 180f && self.Speed.Y <= 0f)) {
+            if (self.Holding != null && self.Holding.SlowFall && self.gliderBoostTimer - 0.16f > 0f && self.gliderBoostDir.Y > 0f || (self.Speed.Length() > 180f && self.Speed.Y <= 0f)) {
                 Audio.Play(SFX.game_10_glider_platform_dissipate, self.Position);
             }
             Vector2 oldSpeed = self.Speed;
-            float varJump = get_self_varJumpTimer();
+            float varJump = self.varJumpTimer;
             self.Speed = Vector2.Zero;
             Vector2 vector = self.Holding.Entity.Position - self.Position;
             Vector2 carryOffsetTarget = self_carryOffsetTarget;
             Vector2 control = new Vector2(vector.X + (float) (Math.Sign(vector.X) * 2), self_carryOffsetTarget.Y - 2f);
             SimpleCurve curve = new SimpleCurve(vector, carryOffsetTarget, control);
-            set_self_carryOffset(vector);
+            self.carryOffset = vector;
             Tween tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeInOut, 0.16f, true);
             tween.OnUpdate = delegate (Tween t) {
-                set_self_carryOffset(curve.GetPoint(t.Eased));
+                self.carryOffset = curve.GetPoint(t.Eased);
             };
             self.Add(tween);
             yield return tween.Wait();
             self.Speed = oldSpeed;
-            set_self_varJumpTimer(varJump);
+            self.varJumpTimer = varJump;
             self.StateMachine.State = 0;
             if (self.Holding != null && self.Holding.SlowFall) {
-                if (get_self_gliderBoosterTimer() > 0f && self_gliderBoostDir.Y > 0f) {
+                if (self.gliderBoostTimer > 0f && self.gliderBoostDir.Y > 0f) {
                     Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
-                    set_self_gliderBoosterTimer(0f);
-                    self.Speed.Y = Math.Max(self.Speed.Y, 240f * self_gliderBoostDir.Y);
-                } else if (get_self_gliderBoosterTimer() > 0f && self_gliderBoostDir.Y < 0 && ((SkyLantern) self.Holding.Entity).canBoostUp) {
+                    self.gliderBoostTimer = 0f;
+                    self.Speed.Y = Math.Max(self.Speed.Y, 240f * self.gliderBoostDir.Y);
+                } else if (self.gliderBoostTimer > 0f && self.gliderBoostDir.Y < 0 && ((SkyLantern) self.Holding.Entity).canBoostUp) {
                     Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);
-                    set_self_gliderBoosterTimer(0f);
-                    self.Speed.Y = Math.Min(self.Speed.Y, -240f * Math.Abs(self_gliderBoostDir.Y));
-                } else if (self.Speed.Y > 0f && (get_self_gliderBoosterTimer() <= 0)) {
+                    self.gliderBoostTimer = 0f;
+                    self.Speed.Y = Math.Min(self.Speed.Y, -240f * Math.Abs(self.gliderBoostDir.Y));
+                } else if (self.Speed.Y > 0f && (self.gliderBoostTimer <= 0)) {
                     float pickupTimeDiff = self.Scene.TimeActive - jelly.lastDroppedTime;
                     if (pickupTimeDiff < 1.5f) {
                         self.Speed.Y = -self.Speed.Y * 1.2f;
@@ -210,8 +194,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 } else {
                     self.Speed.Y = self.Speed.Y / 2;
                 }
-                if (self_onGround && Input.MoveY.Value == 1f) {
-                    self_holdCannotDuck = true;
+                if (self.onGround && Input.MoveY.Value == 1f) {
+                    self.holdCannotDuck = true;
                 }
             }
             yield break;
@@ -530,7 +514,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return false;
         }
 
-        protected override void OnSquish(CollisionData data) {
+        public override void OnSquish(CollisionData data) {
             if (!TrySquishWiggle(data, 3, 3)) {
                 RemoveSelf();
             }

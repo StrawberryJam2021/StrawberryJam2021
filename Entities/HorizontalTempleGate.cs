@@ -1,15 +1,10 @@
 ﻿using System;
-using Celeste;
 using Celeste.Mod.Entities;
 using System.Collections;
 using Microsoft.Xna.Framework;
 using Monocle;
-using System.Collections.Generic;
-using MonoMod.Utils;
 using MonoMod.Cil;
-using Celeste.Mod;
 using Mono.Cecil.Cil;
-using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [Tracked(false)]
@@ -26,8 +21,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Right,
             Center
         }
-        private static readonly FieldInfo GetPrivateRiders = typeof(Solid).GetField("riders", BindingFlags.NonPublic | BindingFlags.Static);
-        private static HashSet<Actor> riders => (HashSet<Actor>)GetPrivateRiders.GetValue(null);
 
         private string LevelID;
 
@@ -74,7 +67,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     cursor.Emit(OpCodes.Ldarg_0);
                     cursor.EmitDelegate<Action<DashSwitch>>(self => {
                         foreach (HorizontalTempleGate entity in self.Scene.Tracker.GetEntities<HorizontalTempleGate>()) {
-                            if (entity.Type == HorizontalTempleGate.Types.NearestSwitch && entity.LevelID == DynamicData.For(self).Get<EntityID>("id").Level) {
+                            if (entity.Type == HorizontalTempleGate.Types.NearestSwitch && entity.LevelID == self.id.Level) {
                                 entity.SwitchOpen();
                             }
                         }
@@ -90,7 +83,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     HorizontalTempleGate hTempleGate = null;
                     float dist = 0f;
                     foreach (HorizontalTempleGate item in entities) {
-                        if (item.Type == HorizontalTempleGate.Types.NearestSwitch && !item.ClaimedByASwitch && item.LevelID == DynamicData.For(self).Get<EntityID>("id").Level) {
+                        if (item.Type == HorizontalTempleGate.Types.NearestSwitch && !item.ClaimedByASwitch && item.LevelID == self.id.Level) {
                             float currentDist = Vector2.DistanceSquared(self.Position, item.Position);
                             if (hTempleGate == null || currentDist < dist) {
                                 hTempleGate = item;

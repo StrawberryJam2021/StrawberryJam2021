@@ -2,9 +2,7 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
-using MonoMod.Utils;
 using System;
-using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/PelletEmitterUp = LoadUp",
@@ -103,11 +101,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private float getTickLength() {
             var cbm = Scene.Tracker.GetEntity<CassetteBlockManager>();
-            var data = DynamicData.For(cbm);
-            var beatsPerTick = data.Get<int>("beatsPerTick");
-            var tempoMult = data.Get<float>("tempoMult");
-            var beatLength = (10 / 60f) / tempoMult;
-            return beatLength * beatsPerTick;
+            var beatLength = (10 / 60f) / cbm.tempoMult;
+            return beatLength * cbm.beatsPerTick;
         }
 
         public void Fire(int? cassetteIndex = null, Action<PelletShot> action = null) {

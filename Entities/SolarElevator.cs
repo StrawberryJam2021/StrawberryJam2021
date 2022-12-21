@@ -2,10 +2,8 @@
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/SolarElevator")]
@@ -67,8 +65,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public bool IsCarryingHoldable = false;
 
         private Background bg;
-
-        private readonly DynamicData data;
 
         public SolarElevator(EntityData data, Vector2 offset)
             : this(
@@ -139,8 +135,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             img.JustifyOrigin(0.5f, 1.0f);
             img.Position.Y = 10;
             Add(img);
-
-            data = new DynamicData(typeof(Solid), this);
         }
 
         public override void Awake(Scene scene) {
@@ -267,7 +261,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Collider[] colliders = (Collider as ColliderList).colliders;
 
             GetRiders();
-            HashSet<Actor> riders = data.Get<HashSet<Actor>>("riders");
 
             Y += move;
             MoveStaticMovers(Vector2.UnitY * move);
@@ -327,15 +320,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     }
 
     public class HintTalkComponentUI : TalkComponent.TalkComponentUI {
-        private readonly DynamicData data;
-
         private readonly SolarElevator elevator;
         private readonly string text;
-        private float lerp, prev, timer;
+        private float lerp, prev;
 
         public HintTalkComponentUI(TalkComponent handler, SolarElevator elevator)
             : base(handler) {
-            data = new(typeof(TalkComponent.TalkComponentUI), this);
             this.elevator = elevator;
             text = Dialog.Clean(elevator.HoldableHintDialog);
         }
@@ -361,11 +351,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Render() {
             base.Render();
-
-            float timer = data.Get<float>("timer");
-            float slide = data.Get<float>("slide");
-            float alpha = data.Get<float>("alpha");
-            Wiggler wiggler = data.Get<Wiggler>("wiggler");
 
             Level level = Scene as Level;
             if (level.FrozenOrPaused || slide <= 0 || Handler.Entity is null)

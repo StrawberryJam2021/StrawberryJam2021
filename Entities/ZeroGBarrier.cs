@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Monocle;
 using Microsoft.Xna.Framework;
 using Celeste.Mod.Entities;
-using MonoMod.Cil;
-using MonoMod.Utils;
-using MonoMod.RuntimeDetour;
 using Celeste.Mod.StrawberryJam2021.Triggers;
-using System.Collections;
-using Mono.Cecil.Cil;
-using MonoMod;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <summary>
@@ -30,27 +20,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public static void Load() {
             On.Celeste.Player.Update += Player_Update;
             On.Celeste.Player.ClimbHop += Player_ClimbHop;
-            IL.Celeste.SeekerBarrier.Added += SeekerBarrier_Added;
-        }
-
-        private static void SeekerBarrier_Added(ILContext il) {
-            ILCursor cursor = new ILCursor(il);
-            cursor.GotoNext(instr => instr.MatchRet());
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.Emit(OpCodes.Ldfld, typeof(SeekerBarrier).GetField("particles",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance));
-            cursor.EmitDelegate<Action<SeekerBarrier, List<Vector2>>>(ClearParticlesForZeroG);
-        }
-
-        private static void ClearParticlesForZeroG(SeekerBarrier barrier, List<Vector2> particles) {
-            if (barrier is ZeroGBarrier)
-                particles.Clear();
         }
 
         public static void Unload() {
             On.Celeste.Player.Update -= Player_Update;
-            On.Celeste.Player.ClimbHop += Player_ClimbHop;
-            IL.Celeste.SeekerBarrier.Added -= SeekerBarrier_Added;
+            On.Celeste.Player.ClimbHop -= Player_ClimbHop;
         }
 
         private static void Player_ClimbHop(On.Celeste.Player.orig_ClimbHop orig, Player self) {
@@ -90,23 +64,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         /// </summary>
         public enum FourWayDirection { Right = 0, Up = 1, Left = 2, Down = 3 }
 
-        public static float[] speeds = new float[3] { 12f, 20f, 40f };
         internal static Vector2[] directionSet = new Vector2[4] { new Vector2(-1, 0), Vector2.UnitY, Vector2.UnitX, new Vector2(0, -1) };
 
         public EntityData data;
         public Vector2 offset;
         public FourWayDirection direction;
-        private List<Vector2> particles;
+        private List<Vector2> zeroGParticles;
         private Vector2 region;
 
         public ZeroGBarrier(EntityData data, Vector2 offset) : base(data, offset) {
             this.data = data;
             this.offset = offset;
             direction = data.Enum<FourWayDirection>("direction", FourWayDirection.Right);
-            particles = new List<Vector2>();
+            particles.Clear();
+            zeroGParticles = new List<Vector2>();
             region = new Vector2(base.Width - 1f, base.Height - 1f);
             for (int i = 0; (float) i < base.Width * base.Height / 16f; i++) {
-                particles.Add(new Vector2(Calc.Random.NextFloat(base.Width - 1f), Calc.Random.NextFloat(base.Height - 1f)));
+                zeroGParticles.Add(new Vector2(Calc.Random.NextFloat(base.Width - 1f), Calc.Random.NextFloat(base.Height - 1f)));
             }
 
         }
@@ -119,17 +93,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
-            int count = particles.Count;
+            int count = zeroGParticles.Count;
             for (int i = 0; i < count; i++) {
-                Vector2 value = particles[i] + directionSet[(int)direction] * speeds[i % 3] * Engine.DeltaTime; //speeds.Length is constant here so it's fine to leave this.
+                Vector2 value = zeroGParticles[i] + directionSet[(int)direction] * speeds[i % 3] * Engine.DeltaTime; //speeds.Length is constant here so it's fine to leave this.
                 value = modVec2(value, region);
-                particles[i] = value;
+                zeroGParticles[i] = value;
             }
         }
 
         public override void Render() {
             Color color = Color.White * 0.5f;
-            foreach (Vector2 particle in particles) {
+            foreach (Vector2 particle in zeroGParticles) {
                 Draw.Pixel.Draw(Position + particle, Vector2.Zero, color);
             }
             if (Flashing) {

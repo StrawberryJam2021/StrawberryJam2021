@@ -1,7 +1,6 @@
 ﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -339,7 +338,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             return false;
         }
 
-        protected override void OnSquish(CollisionData data) {
+        public override void OnSquish(CollisionData data) {
             if (!TrySquishWiggle(data, 3, 3) && !SaveData.Instance.Assists.Invincible) {
                 Die(forceKillMaddy: true);
             }

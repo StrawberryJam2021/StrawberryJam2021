@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.RuntimeDetour;
-using MonoMod.Utils;
 
 namespace Celeste.Mod.StrawberryJam2021.Triggers {
     [Tracked]
@@ -85,7 +84,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 PlayerDeadBody Deadbody = orig(self, direction, evenIfInvincible, registerDeathInStats);
                 if (Deadbody != null) {
                     Color hairColor = (self.Dashes > 0) ? Player.NormalHairColor : Player.UsedHairColor;
-                    new DynamicData(Deadbody).Set("initialHairColor", hairColor);             
+                    Deadbody.initialHairColor = hairColor;
                 }
 
                 return Deadbody;

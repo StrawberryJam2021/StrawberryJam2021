@@ -1,7 +1,6 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
 using System;
 using System.Collections;
 using System.Linq;
@@ -114,11 +113,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (cbm == null) {
                     yield return null;
                 } else {
-                    var data = DynamicData.For(cbm);
-                    var beatsPerTick = data.Get<int>("beatsPerTick");
-                    var tempoMult = data.Get<float>("tempoMult");
-                    var beatLength = (10 / 60f) / tempoMult;
-                    time = beatLength * beatsPerTick;
+                    var beatLength = (10 / 60f) / cbm.tempoMult;
+                    time = beatLength * cbm.beatsPerTick;
                 }
             }
             

@@ -274,16 +274,16 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
 
         private static void HeatWave_Update(On.Celeste.HeatWave.orig_Update orig, HeatWave self, Scene scene) {
             if (self.Tags.Any(tag => tag.StartsWith(TagPrefix))) {
-                var levelData = DynamicData.For(scene as Level);
-                var lastColorGrade = levelData.Get<string>("lastColorGrade");
-                var colorGradeEase = levelData.Get<float>("colorGradeEase");
-                var colorGradeEaseSpeed = levelData.Get<float>("colorGradeEaseSpeed");
-                var colorGrade = (scene as Level).Session.ColorGrade;
+                Level level = scene as Level;
+                var lastColorGrade = level.lastColorGrade;
+                var colorGradeEase = level.colorGradeEase;
+                var colorGradeEaseSpeed = level.colorGradeEaseSpeed;
+                var colorGrade = level.Session.ColorGrade;
                 orig(self, scene);
-                levelData.Set("lastColorGrade", lastColorGrade);
-                levelData.Set("colorGradeEase", colorGradeEase);
-                levelData.Set("colorGradeEaseSpeed", colorGradeEaseSpeed);
-                (scene as Level).Session.ColorGrade = colorGrade;
+                level.lastColorGrade = lastColorGrade;
+                level.colorGradeEase = colorGradeEase;
+                level.colorGradeEaseSpeed = colorGradeEaseSpeed;
+                level.Session.ColorGrade = colorGrade;
             } else {
                 orig(self, scene);
             }
@@ -358,7 +358,7 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
                             var tags = heatWave.Tags;
                             if (tags.Any(tag => tag.StartsWith(TagPrefix))) {
                                 baseRendering = tags.Contains("nomaskhide");
-                                if (DynamicData.For(heatWave).Get<float>("heat") > 0f) {
+                                if (heatWave.heat > 0f) {
                                     foreach (StylegroundMask mask in level.Tracker.GetEntities<StylegroundMask>()) {
                                         if (mask.RenderTags.Any(tag => heatWave.Tags.Contains(TagPrefix + tag))) {
                                             foreach (var slice in mask.GetMaskSlices()) {

@@ -7,7 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
@@ -15,7 +14,6 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
     // Currently only supports input playback with a subset of gameplay-relevant actions (see original repo for full reference)
     public static class TasHelper {
         private static readonly Regex InputPattern = new(@"^\d+((,[LRDUGJKXCZV])*|(,F,\d+(\.\d+)?))$", RegexOptions.IgnoreCase);
-        private static readonly FastReflectionDelegate MInput_UpdateVirtualInputs = typeof(MInput).GetMethod("UpdateVirtualInputs", BindingFlags.Static | BindingFlags.NonPublic).CreateFastDelegate();
         private static readonly Buttons Left = Buttons.DPadLeft;
         private static readonly Buttons Right = Buttons.DPadRight;
         private static readonly Buttons Down = Buttons.DPadDown;
@@ -151,7 +149,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             MInput.GamePadData gamePad = MInput.GamePads[Input.Gamepad];
             gamePad.PreviousState = lastState;
             gamePad.CurrentState = lastState = inputs[inputIndex].State;
-            MInput_UpdateVirtualInputs.Invoke(null, null);
+            MInput.UpdateVirtualInputs();
         }
 
         private static void SwitchToTasInput() {

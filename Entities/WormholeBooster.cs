@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
-using MonoMod.Utils;
 using System;
 using System.Collections;
 
@@ -13,8 +12,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     class WormholeBooster : Booster {
         public string deathColor;
         public bool instantCamera;
-        private DynamicData boosterData;
-        public Sprite sprite;
         public static bool TeleDeath;
         public static bool CanTeleport;
         public static ParticleType P_Teleporting;
@@ -41,12 +38,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             displacementMask.Stop();
             displacementMask.Visible = false;
 
-            boosterData = new DynamicData(typeof(Booster), this);
-            Remove(boosterData.Get<Sprite>("sprite"));
-            Add(sprite = StrawberryJam2021Module.SpriteBank.Create("WormholeBooster"));
+            sprite = StrawberryJam2021Module.SpriteBank.CreateOn(sprite, "WormholeBooster");
             sprite.Color = color;
-            boosterData.Set("sprite", sprite);
-            boosterData.Set("particleType", P_WBurst);
+            particleType = P_WBurst;
 
             TeleDeath = false;
             CanTeleport = true;
@@ -94,7 +88,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private static void BoosterOnPlayerHook(On.Celeste.Booster.orig_OnPlayer orig, Booster self, Player player) {
             if (self is WormholeBooster booster) {
-                if (CanTeleport && booster.boosterData.Get<float>("respawnTimer") <= 0f && booster.boosterData.Get<float>("cannotUseTimer") <= 0f && !booster.BoostingPlayer) {
+                if (CanTeleport && booster.respawnTimer <= 0f && booster.cannotUseTimer <= 0f && !booster.BoostingPlayer) {
                     if (TeleDeath) {
                         booster.Add(new Coroutine(booster.KillCoroutine(player)));
                     } else {
@@ -152,7 +146,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
-            boosterData.Get<Entity>("outline").RemoveSelf();
+            outline.RemoveSelf();
         }
 
         public override void Update() {
@@ -160,8 +154,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             sprite.Color = color;
 
-            if (boosterData.Get<float>("respawnTimer") > 0.1f) {
-                boosterData.Set("respawnTimer", 0.1f);
+            if (respawnTimer > 0.1f) {
+                respawnTimer = 0.1f;
             }
             TeleDeath = Scene.Tracker.CountEntities<WormholeBooster>() == 1;
             if (TeleDeath) {
@@ -210,8 +204,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             player.StateMachine.State = Player.StDummy;
             player.DummyGravity = false;
             player.Collidable = false;
-            DynamicData playerData = new DynamicData(player);
-            playerData.Set("varJumpTimer", 0f);
+            player.varJumpTimer = 0f;
             player.Speed = Vector2.Zero;
             Collidable = false;
             Vector2 target = Center - player.Collider.Center;
