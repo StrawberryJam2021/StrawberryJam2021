@@ -6,6 +6,7 @@
     <RootNamespace>Celeste.Mod.StrawberryJam2021</RootNamespace>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
     <ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>true</ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 
     <CelestePrefix Condition="'$(CelestePrefix)' == '' And Exists('..\..\Celeste.exe')">..\..</CelestePrefix>
     <CelestePrefix Condition="'$(CelestePrefix)' == ''">lib-stripped</CelestePrefix>
