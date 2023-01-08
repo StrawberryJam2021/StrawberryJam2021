@@ -54,7 +54,13 @@ const placements = Ahorn.PlacementDict(
 )
 
 Ahorn.editingOptions(entity::CassetteBadelineBlock) = Dict{String,Any}(
-    "tiletype" => Ahorn.tiletypeEditingOptions()
+    "tiletype" => Ahorn.tiletypeEditingOptions(),
+    "centerSpriteRotation" => Dict{String,Any}(
+        "Normal" => 0,
+        "Right" => 90,
+        "Upside-down" => 180,
+        "Left" => 270
+    )
 )
 
 Ahorn.nodeLimits(entity::CassetteBadelineBlock) = 1, -1

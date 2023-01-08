@@ -20,7 +20,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public SpriteEffects CenterSpriteEffects { get; private set; }
         public int CenterSpriteRotation { get; }
 
-        private Sprite centerSprite;
+        private Image centerImage;
         private int offsetNodeIndex;
         private int sourceNodeIndex;
         private int targetNodeIndex;
@@ -79,11 +79,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(sprite, new TileInterceptor(sprite, false));
 
             if (!string.IsNullOrWhiteSpace(CenterSpriteName)) {
-                centerSprite = GFX.SpriteBank.Create(CenterSpriteName);
-                centerSprite.CenterOrigin();
-                centerSprite.Rotation = CenterSpriteRotation;
-                centerSprite.Effects = CenterSpriteEffects;
-                Add(centerSprite);
+                centerImage = new Image(GFX.Game[CenterSpriteName]);
+                centerImage.CenterOrigin();
+                centerImage.Rotation = CenterSpriteRotation * Calc.DegToRad;
+                centerImage.Effects = CenterSpriteEffects;
+                centerImage.Position = new Vector2(Width / 2, Height / 2).Round();
+                Add(centerImage);
             }
             
             Add(new LightOcclude(),
