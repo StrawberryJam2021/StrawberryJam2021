@@ -1,5 +1,6 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
 using System.Collections;
@@ -14,7 +15,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         public bool OffBeat { get; }
         public char TileType { get; }
         public bool EmitImpactParticles { get; }
-        
+
+        public string CenterSpriteName { get; }
+        public SpriteEffects CenterSpriteEffects { get; private set; }
+        public int CenterSpriteRotation { get; }
+
+        private Sprite centerSprite;
         private int offsetNodeIndex;
         private int sourceNodeIndex;
         private int targetNodeIndex;
@@ -30,6 +36,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             HideFinalTransition = parent.HideFinalTransition;
             OffBeat = parent.OffBeat;
             EmitImpactParticles = parent.EmitImpactParticles;
+            CenterSpriteName = parent.CenterSpriteName;
+            CenterSpriteRotation = parent.CenterSpriteRotation;
+            CenterSpriteEffects = parent.CenterSpriteEffects;
 
             sourceNodeIndex = targetNodeIndex = this.initialNodeIndex = initialNodeIndex;
 
@@ -45,6 +54,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             OffBeat = data.Bool("offBeat");
             HideFinalTransition = data.Bool("hideFinalTransition");
             EmitImpactParticles = data.Bool("emitImpactParticles", true);
+            
+            CenterSpriteName = data.Attr("centerSpriteName");
+            CenterSpriteRotation = data.Int("centerSpriteRotation");
+            CenterSpriteEffects = SpriteEffects.None;
+            if (data.Bool("centerSpriteFlipX")) CenterSpriteEffects |= SpriteEffects.FlipHorizontally;
+            if (data.Bool("centerSpriteFlipY")) CenterSpriteEffects |= SpriteEffects.FlipVertically;
 
             string ignoredNodesString = data.Attr("ignoredNodes") ?? string.Empty;
             IgnoredNodes = ignoredNodesString
@@ -61,9 +76,17 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private void AddComponents() {
             TileGrid sprite = GFX.FGAutotiler.GenerateBox(TileType, (int) Width / 8, (int) Height / 8).TileGrid;
-            Add(sprite,
-                new TileInterceptor(sprite, false),
-                new LightOcclude(),
+            Add(sprite, new TileInterceptor(sprite, false));
+
+            if (!string.IsNullOrWhiteSpace(CenterSpriteName)) {
+                centerSprite = GFX.SpriteBank.Create(CenterSpriteName);
+                centerSprite.CenterOrigin();
+                centerSprite.Rotation = CenterSpriteRotation;
+                centerSprite.Effects = CenterSpriteEffects;
+                Add(centerSprite);
+            }
+            
+            Add(new LightOcclude(),
                 new CassetteListener(initialNodeIndex) {
                     OnTick = (_, isSwap) => {
                         if (isSwap != OffBeat) return;
