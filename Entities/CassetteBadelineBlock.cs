@@ -25,6 +25,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private int sourceNodeIndex;
         private int targetNodeIndex;
         private readonly int initialNodeIndex;
+        private bool initialized;
 
         private SingletonAudioController sfx;
 
@@ -90,11 +91,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(new LightOcclude(),
                 new CassetteListener(initialNodeIndex) {
                     OnTick = (_, isSwap) => {
-                        if (isSwap != OffBeat) return;
+                        if (isSwap != OffBeat || SceneAs<Level>().Transitioning) return;
                         offsetNodeIndex++;
                         targetNodeIndex = (initialNodeIndex + offsetNodeIndex) % Nodes.Length;
                     },
                     OnSilentUpdate = activated => {
+                        if (initialized) return;
+                        initialized = true;
                         offsetNodeIndex = 0;
                         if (initialNodeIndex < Nodes.Length)
                             Position = Nodes[initialNodeIndex];
