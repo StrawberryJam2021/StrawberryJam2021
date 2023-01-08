@@ -7,13 +7,15 @@ using ..Ahorn, Maple
     width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight,
     nodes=Tuple{Int,Int}[],
     tiletype::String="g", hideFinalTransition::Bool=true, ignoredNodes::String="", offBeat::Bool=false,
-    emitImpactParticles::Bool=true
+    emitImpactParticles::Bool=true,
+    centerSpriteName::String="", centerSpriteRotation::Integer=0, centerSpriteFlipX::Bool=false, centerSpriteFlipY::Bool=false
 )
 
 Ahorn.editingOrder(entity::CassetteBadelineBlock) = String[
     "x", "y", "width", "height",
     "tiletype", "ignoredNodes", "hideFinalTransition", "offBeat",
-    "emitImpactParticles"
+    "emitImpactParticles",
+    "centerSpriteName", "centerSpriteRotation", "centerSpriteFlipX", "centerSpriteFlipY"
 ]
 
 const placements = Ahorn.PlacementDict(
@@ -52,7 +54,13 @@ const placements = Ahorn.PlacementDict(
 )
 
 Ahorn.editingOptions(entity::CassetteBadelineBlock) = Dict{String,Any}(
-    "tiletype" => Ahorn.tiletypeEditingOptions()
+    "tiletype" => Ahorn.tiletypeEditingOptions(),
+    "centerSpriteRotation" => Dict{String,Any}(
+        "Normal" => 0,
+        "Right" => 90,
+        "Upside-down" => 180,
+        "Left" => 270
+    )
 )
 
 Ahorn.nodeLimits(entity::CassetteBadelineBlock) = 1, -1
