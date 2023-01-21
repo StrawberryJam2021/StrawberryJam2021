@@ -3,8 +3,9 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
+using Celeste.Mod.StrawberryJam2021.Entities;
 
-namespace Celeste.Mod.StrawberryJam2021.Entities {
+namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
     [CustomEntity("SJ2021/CS_PrologueOutro")]
     public class CS_PrologueOutro : CutsceneEntity {
 
@@ -67,10 +68,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             public Vector2 pos;
             private Vector2 initPos;
 
+            private int renderPhase;
+
             public TitleLogo() {
                 sprite = new Sprite(GFX.Gui, "StrawberryJam2021/logo/");
-                sprite.AddLoop("idle", "logo", 0.07f);
+                renderPhase = 0;
+                sprite.AddLoop("wave", "logo", 0.08f);
+                sprite.AddLoop("idle", "logoIdle", 1.5f);
                 sprite.Play("idle");
+                sprite.OnLoop = delegate {
+                    renderPhase++;
+                    if (renderPhase == 2) {
+                        sprite.Play("idle");
+                    } else if (renderPhase == 3) {
+                        renderPhase = 0;
+                        sprite.Play("wave");
+                    }
+                };
                 Tag = Tags.HUD;
                 initPos = new Vector2(960, 0);
                 pos = initPos;

@@ -1,10 +1,11 @@
 ﻿using Monocle;
 using Microsoft.Xna.Framework;
 using Celeste.Mod.Entities;
+using Celeste.Mod.StrawberryJam2021.Cutscenes;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/PrologueBasket")]
-    public class PrologueBasket : Entity{
+    public class PrologueBasket : Entity {
         private TalkComponent talk;
         private MTexture sprite;
         private Vector2 position;
