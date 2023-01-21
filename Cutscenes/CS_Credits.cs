@@ -65,7 +65,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             base.Update();
             Audio.MusicUnderwater = false;
 
-            if (!TasHelper.Active) {
+            if (!TasHelper.Active && Level.InCredits) {
                 MInput.Disabled = false;
                 if (Level.CanPause && (Input.Pause.Pressed || Input.ESC.Pressed)) {
                     Input.Pause.ConsumeBuffer();
@@ -140,12 +140,18 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 yield return null;
             }
 
-            yield return new FadeWipe(Level, wipeIn: false) {
+            FadeWipe wipe = new FadeWipe(Level, wipeIn: false) {
                 Duration = 3f,
-                OnUpdate = (percent) => Audio.SetMusicParam("fade", 1 - percent)
-            }.Wait();
+                OnUpdate = (percent) => Audio.SetMusicParam("fade", 1 - percent),
+            };
 
-            credits.RemoveSelf();
+            while (wipe.Percent < 1f) {
+                // Runs check to see if wipe will finish next frame, so we can remove the credits appropriately so they do not appear for 1 frame
+                if (Calc.Approach(wipe.Percent, 1f, Engine.RawDeltaTime / wipe.Duration) >= 1f) {
+                    credits.RemoveSelf();
+                }
+                yield return null;
+            }
 
             yield return FadeTo(0f);
 
