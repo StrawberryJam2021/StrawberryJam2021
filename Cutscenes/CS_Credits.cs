@@ -26,7 +26,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         internal static Type lobbyMapControllerType;
         private static ILHook areaCompleteHook;
 
-        private readonly SortedDictionary<string, CreditsPlayback> playbacks = new(StringComparer.OrdinalIgnoreCase);
+        private readonly SortedDictionary<string, Vector2> playbacks = new(StringComparer.OrdinalIgnoreCase);
         private readonly MTexture gradient;
         private readonly bool fromHeartside;
         private AudioState previousAudio;
@@ -190,23 +190,16 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
             yield return 1f;
 
-            if (playbacks.Count > 0) {
-                foreach (CreditsPlayback playback in playbacks.Values) {
-                    if (Level.Tracker.GetEntity<Player>() is Player player) {
-                        player.Position = playback.Position;
-                        Level.Camera.Position = player.CameraTarget;
-                        yield return 1f;
-                    }
-
-                    TasHelper.Play(playback.Inputs);
-                    yield return FadeTo(0f);
-                    yield return TasHelper.Wait(buffer: FadeTime);
-                    yield return FadeTo(1f);
+            foreach (string path in playbacks.Keys) {
+                if (Level.Tracker.GetEntity<Player>() is Player player) {
+                    player.Position = playbacks[path];
+                    Level.Camera.Position = player.CameraTarget;
+                    yield return 1f;
                 }
-            } else {
-                // DEBUG (show lobby so we can verify things work)
+
+                TasHelper.Play(path);
                 yield return FadeTo(0f);
-                yield return 3f;
+                yield return TasHelper.Wait(buffer: FadeTime);
                 yield return FadeTo(1f);
             }
 
@@ -231,16 +224,6 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             }
         }
 
-        public struct CreditsPlayback {
-            public Vector2 Position;
-            public List<TasInput> Inputs;
-
-            public CreditsPlayback(Vector2 position, List<TasInput> inputs) {
-                Position = position;
-                Inputs = inputs;
-            }
-        }
-
         #region Hooks
 
         internal static void Load() {
@@ -259,14 +242,14 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 if (level.Entities.ToAdd.OfType<CS_Credits>().FirstOrDefault() is CS_Credits credits) {
                     string name = entityData.Attr("tutorial");
                     string path = $"Tutorials/{name}.tas";
-                    if (TasHelper.TryParse(path, out List<TasInput> inputs)) {
-                        if (inputs.Count > 0) {
-                            credits.playbacks[name] = new CreditsPlayback(entityData.Position + offset, inputs);
+                    if (Everest.Content.TryGet(path, out _)) {
+                        if (TasHelper.Preload(path)) {
+                            credits.playbacks[path] = entityData.Position + offset;
                         } else {
-                            LevelEnter.ErrorMessage = "[SJ] Could not find a TAS file at {#ff1144}" + path + "{#}";
-                        }                        
+                            LevelEnter.ErrorMessage = "[SJ] Could not parse inputs in {#ff1144}" + path + "{#}";
+                        }
                     } else {
-                        LevelEnter.ErrorMessage = "[SJ] Could not parse any inputs in {#ff1144}" + path + "{#}";
+                        LevelEnter.ErrorMessage = "[SJ] Could not find {#ff1144}" + path + "{#}";
                     }
                 }
                 
