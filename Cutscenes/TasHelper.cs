@@ -54,62 +54,77 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             { "UpMoveOnly", new Binding() },
         };
 
-        private static List<TasInput> inputs;
+        private static readonly Dictionary<string, TasFile> tasFiles = new();
+        private static TasFile activeTas;
         private static GamePadState lastState;
         private static int inputIndex;
         private static int frameIndex;
         private static int elapsedFrames;
-        private static int totalFrames;
 
         private static bool previousPauseCheck;
         private static bool currentPauseCheck;
 
         public static bool Active { get; private set; } = false;
         public static bool Paused { get; private set; } = false;
+        public static int GetTotalFrames() {
+            int totalFrames = 0;
+            foreach (TasFile tas in tasFiles.Values) {
+                totalFrames += tas.TotalFrames;
+            }
+            return totalFrames;
+        }
 
-        public static void Play(List<TasInput> tasInputs) {
-            if (tasInputs != null && tasInputs.Count > 0) {
-                inputs = tasInputs;
-                lastState = default;
-                inputIndex = 0;
-                frameIndex = 0;
-                elapsedFrames = 0;
-                totalFrames = inputs.Sum(i => i.Frames);
+        private static TasInput CurrentInput => activeTas.Inputs[inputIndex];
 
-                // "Real" TASes need extra waiting frames to account for spawn time (1f) and the respawn animation (36f)
-                // Skipping 37f here lets us avoid having to manually edit TAS files before they can be used as playbacks
-                // TODO (?): would probably be better to only do this if we find a Console Load command
-                while (elapsedFrames < 37 && inputIndex <= inputs.Count - 1) {
-                    AdvanceFrame();
+        public static bool Preload(string path) {
+            List<TasInput> inputs = new();
+            Dictionary<int, List<Action>> commands = new();
+            if (Everest.Content.TryGet(path, out ModAsset tasFile)) {
+                int frame = 0;
+                using StreamReader reader = new(tasFile.Stream);
+                while (!reader.EndOfStream) {
+                    string line = reader.ReadLine().Trim();
+                    if (ParseInput(line, out TasInput input)) {
+                        inputs.Add(input);
+                        frame += input.Frames;
+                    } else if (ParseCommand(line, out Action command)) {
+                        if (!commands.ContainsKey(frame)) {
+                            commands[frame] = new List<Action>();
+                        }
+
+                        commands[frame].Add(command);
+                    }
                 }
 
-                Enable();
+                if (inputs.Count > 0) {
+                    tasFiles[path] = new TasFile(inputs, commands);
+                    return true;
+                }
             }
+
+            return false;
+        }
+
+        public static void Play(string path) {
+            if (!tasFiles.ContainsKey(path) && !Preload(path)) {
+                return;
+            }
+
+            activeTas = tasFiles[path];
+            lastState = default;
+            inputIndex = 0;
+            frameIndex = 0;
+            elapsedFrames = 0;
+
+            Enable();
         }
 
         // TODO (?): buffer time may not match up exactly due to engine freeze
         public static IEnumerator Wait(float buffer = 0f) {
             int bufferFrames = (int) (buffer / Engine.DeltaTime);
-            while (elapsedFrames < totalFrames - bufferFrames) {
+            while (elapsedFrames < activeTas.TotalFrames - bufferFrames) {
                 yield return null;
             }
-        }
-
-        public static bool TryParse(string path, out List<TasInput> inputs) {
-            inputs = new List<TasInput>();
-            if (Everest.Content.TryGet(path, out ModAsset tasFile)) {
-                using StreamReader reader = new(tasFile.Stream);
-                while (!reader.EndOfStream) {
-                    string line = reader.ReadLine().Trim();
-                    if (InputPattern.IsMatch(line)) {
-                        inputs.Add(ParseInput(line));
-                    }
-                }
-
-                return true;
-            }
-
-            return false;
         }
 
         private static void Enable() {
@@ -148,7 +163,8 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         private static void SetInputs() {
             MInput.GamePadData gamePad = MInput.GamePads[Input.Gamepad];
             gamePad.PreviousState = lastState;
-            gamePad.CurrentState = lastState = inputs[inputIndex].State;
+            gamePad.CurrentState = CurrentInput.State;
+            lastState = gamePad.CurrentState;
             MInput.UpdateVirtualInputs();
         }
 
@@ -187,11 +203,13 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         }
 
         private static void AdvanceFrame() {
-            frameIndex++;
-            elapsedFrames++;
-            if (frameIndex >= inputs[inputIndex].Frames) {
-                inputIndex++;
-                frameIndex = 0;
+            if (elapsedFrames < activeTas.TotalFrames) {
+                frameIndex++;
+                elapsedFrames++;
+                if (frameIndex >= CurrentInput.Frames) {
+                    inputIndex++;
+                    frameIndex = 0;
+                }
             }
         }
 
@@ -216,7 +234,12 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             return binding;
         }
 
-        private static TasInput ParseInput(string line) {
+        private static bool ParseInput(string line, out TasInput input) {
+            input = default;
+            if (!InputPattern.IsMatch(line)) {
+                return false;
+            }
+
             int idx = line.IndexOf(',');
             if (idx != -1) {
                 int frames = int.Parse(line.Substring(0, idx));
@@ -224,15 +247,15 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 Buttons buttons = 0;
                 Vector2 feather = Vector2.Zero;
                 for (int i = idx + 1; i < line.Length; i += 2) {
-                    char input = char.ToUpper(line[i]);
+                    char button = char.ToUpper(line[i]);
 
-                    if (input == 'F') {
+                    if (button == 'F') {
                         float angle = Calc.ToRad(float.Parse(line.Substring(i + 2)));
                         feather = new((float) Math.Sin(angle), (float) Math.Cos(angle));
                         break;
                     }
 
-                    buttons |= input switch {
+                    buttons |= button switch {
                         'L' => Left,
                         'R' => Right,
                         'D' => Down,
@@ -249,10 +272,51 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 }
 
                 GamePadState state = new(feather, Vector2.Zero, 0f, 0f, buttons);
-                return new TasInput(state, frames);
+                input = new TasInput(state, frames);
             } else {
-                return new TasInput(default, int.Parse(line));
+                input = new TasInput(default, int.Parse(line));
             }
+
+            return true;
+        }
+
+        private static bool ParseCommand(string line, out Action command) {
+            command = null;
+
+            if (line.StartsWith("console load")) {
+                command = () => {
+                    // "Real" TASes need extra waiting frames to account for spawn time (1f) and the respawn animation (36f)
+                    // Skipping 37f here lets us avoid having to manually edit TAS files before they can be used as playbacks
+                    for (int i = 0; i < 37; i++) {
+                        AdvanceFrame();
+                    }
+                };
+
+                return true;
+            } else if (line.StartsWith("start animation")) {
+                string[] split = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (split.Length == 3) {
+                    command = () => {
+                        if (Engine.Scene.Tracker.GetEntity<Player>() is Player player) {
+                            player.StateMachine.State = Player.StDummy;
+                            player.DummyAutoAnimate = false;
+                            player.Sprite.Play(split[2]);
+                        }
+                    };
+
+                    return true;
+                }
+            } else if (line == "stop animation") {
+                command = () => {
+                    if (Engine.Scene.Tracker.GetEntity<Player>() is Player player) {
+                        player.StateMachine.State = Player.StNormal;
+                    }
+                };
+
+                return true;
+            }
+
+            return false;
         }
 
         #region Hooks
@@ -276,11 +340,16 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
         private static void MInput_Update(On.Monocle.MInput.orig_Update orig) {
             if (Active) {
-                if (Engine.Scene is Level level && inputIndex <= inputs.Count - 1) {
+                if (Engine.Scene is Level level && elapsedFrames < activeTas.TotalFrames) {
                     if (!Paused) {
                         if (level.CanPause && PausePressed()) {
                             Pause();
                         } else {
+                            if (activeTas.Commands.ContainsKey(elapsedFrames)) {
+                                foreach (Action action in activeTas.Commands[elapsedFrames]) {
+                                    action.Invoke();
+                                }
+                            }
                             SetInputs();
                             AdvanceFrame();
                             return;
@@ -293,17 +362,29 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
             orig();
         }
-    }
 
-    #endregion Hooks
+        #endregion Hooks
 
-    public struct TasInput {
-        public GamePadState State;
-        public int Frames;
+        public class TasFile {
+            public List<TasInput> Inputs;
+            public Dictionary<int, List<Action>> Commands;
+            public readonly int TotalFrames;
 
-        public TasInput(GamePadState state, int frames) {
-            State = state;
-            Frames = frames;
+            public TasFile(List<TasInput> inputs, Dictionary<int, List<Action>> commands) {
+                Inputs = inputs;
+                Commands = commands;
+                TotalFrames = Inputs.Sum(i => i.Frames);
+            }
+        }
+
+        public struct TasInput {
+            public GamePadState State;
+            public int Frames;
+
+            public TasInput(GamePadState state, int frames) {
+                State = state;
+                Frames = frames;
+            }
         }
     }
 }
