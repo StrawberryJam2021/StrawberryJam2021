@@ -37,7 +37,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                         return;
                     }
                     if (livedTime > lifetime) {
-                        Reset(0f, Calc.Random.NextFloat(DefaultParticleLifetime) + 1f);
+                        Reset(0f, rand.NextFloat(DefaultParticleLifetime) + 1f);
                     }
                     livedTime += Engine.DeltaTime;
                     float percLived = livedTime / lifetime;
@@ -49,10 +49,10 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 private void Reset(float time = 0f, float lifetime = DefaultParticleLifetime) {
                     this.lifetime = lifetime;
                     preLivedTime = 0f;
-                    appearTime = Calc.Random.NextFloat(4f);
+                    appearTime = rand.NextFloat(4f);
                     livedTime = time % lifetime;
-                    relSize = Calc.Random.NextFloat(1f) + 0.25f;
-                    offset = new Vector2(Calc.Random.Next(-700, 700), Calc.Random.Next(-200, 200));
+                    relSize = rand.NextFloat(1f) + 0.25f;
+                    offset = new Vector2(rand.Next(-700, 700), rand.Next(-200, 200));
                     opacity = 0f;
                     size = 0.5f * relSize;
                 }
@@ -70,9 +70,12 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
             private int renderPhase;
 
+            private static Random rand;
+
             public TitleLogo() {
+                rand = new Random();
                 sprite = new Sprite(GFX.Gui, "StrawberryJam2021/logo/");
-                renderPhase = 0;
+                renderPhase = 1;
                 sprite.AddLoop("wave", "logo", 0.08f);
                 sprite.AddLoop("idle", "logoIdle", 1.5f);
                 sprite.Play("idle");
@@ -92,7 +95,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 size = 0f;
                 particles = new ArrayList();
                 for (int i = 0; i < ParticleCount; i++) {
-                    particles.Add(new Particle(Calc.Random.NextFloat(Particle.DefaultParticleLifetime)));
+                    particles.Add(new Particle(rand.NextFloat(Particle.DefaultParticleLifetime)));
                 }
             }
 
@@ -182,10 +185,10 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         }
 
         private IEnumerator PanCamera(Level level) {
-            float from = level.Camera.Position.Y;
-            float to = from - 3000f;
+            Vector2 from = level.Camera.Position;
+            Vector2 to = from - Vector2.UnitY * 3000f;
             for (float p = 0f; p < 1f; p += Engine.DeltaTime / 4.5f) {
-                level.Camera.Position = new Vector2(level.Camera.Position.X, from + (to - from) * Ease.CubeInOut(p));
+                level.Camera.Position = Vector2.Lerp(from, to, Ease.CubeInOut(p));
                 yield return null;
             }
         }
