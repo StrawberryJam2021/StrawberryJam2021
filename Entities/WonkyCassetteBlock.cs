@@ -4,6 +4,7 @@ using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -11,6 +12,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/WonkyCassetteBlock")]
     [Tracked]
     public class WonkyCassetteBlock : CassetteBlock {
+        private static readonly Regex OnAtBeatsSplitRegex = new(@",\s*", RegexOptions.Compiled);
 
         public readonly int[] OnAtBeats;
         public readonly int ControllerIndex;
@@ -21,11 +23,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private string textureDir;
 
+        private List<Image> _pressed, _solid; // we'll use these instead of pressed and solid, to make `UpdateVisualState` not enumerate through them for no reason.
+
         public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, string moveSpec, Color color, string textureDir, int overrideBoostFrames, int controllerIndex)
             : base(position, id, width, height, index, 1.0f) {
             Tag = Tags.FrozenUpdate | Tags.TransitionUpdate;
 
-            OnAtBeats = Regex.Split(moveSpec, @",\s*").Select(int.Parse).Select(i => i - 1).ToArray();
+            OnAtBeats = OnAtBeatsSplitRegex.Split(moveSpec).Select(s => int.Parse(s) - 1).ToArray();
 
             base.color = color;
 
@@ -37,6 +41,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 throw new ArgumentException($"Controller Index must be 0 or greater, but is set to {controllerIndex}.");
 
             ControllerIndex = controllerIndex;
+
+            _pressed = new();
+            _solid = new();
         }
 
         public WonkyCassetteBlock(EntityData data, Vector2 offset, EntityID id)
@@ -107,8 +114,13 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
-            if (Utilities.IsRectangleVisible(Position.X, Position.Y, Width, Height))
-                base.Render();
+            if (Utilities.IsRectangleVisible(Position.X, Position.Y, Width, Height)) {
+                List<Image> images = Collidable ? _solid : _pressed;
+
+                foreach (Image item in images) {
+                    item.Texture.Draw(item.Position + Position, item.Origin, item.Color, item.Scale, item.Rotation, item.Effects);
+                }
+            }
         }
 
         private static bool NewCheckForSame(On.Celeste.CassetteBlock.orig_CheckForSame origCheckForSame, CassetteBlock self, float x, float y) {
@@ -128,11 +140,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private static void CassetteBlock_SetImage(On.Celeste.CassetteBlock.orig_SetImage orig, CassetteBlock self, float x, float y, int tx, int ty) {
             if (self is WonkyCassetteBlock block) {
                 GFX.Game.PushFallback(GFX.Game["objects/cassetteblock/pressed00"]);
-                self.pressed.Add(self.CreateImage(x, y, tx, ty, GFX.Game[block.textureDir + "/pressed"]));
+                Image img = block.CreateImage(x, y, tx, ty, GFX.Game[block.textureDir + "/pressed"]);
+                // we don't want to have the image in the component list, because then the entity.Get<> function becomes much more expensive,
+                // and some modded hooks call it each frame, for each entity...
+                // this makes a huge difference in GMHS flag 1.
+                img.RemoveSelf();
+                block._pressed.Add(img);
                 GFX.Game.PopFallback();
 
                 GFX.Game.PushFallback(GFX.Game["objects/cassetteblock/solid"]);
-                self.solid.Add(self.CreateImage(x, y, tx, ty, GFX.Game[block.textureDir + "/solid"]));
+                img = block.CreateImage(x, y, tx, ty, GFX.Game[block.textureDir + "/solid"]);
+                img.RemoveSelf();
+                block._solid.Add(img);
                 GFX.Game.PopFallback();
             } else
                 orig(self, x, y, tx, ty);
