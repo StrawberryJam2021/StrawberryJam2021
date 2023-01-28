@@ -1,3 +1,2 @@
-# SJ Helper Dialogue
 StrawberryJam2021_Menu_Hint= Hint
 StrawberryJam2021_Entities_SolarElevator_DefaultHint=This elevator requires a holdable entity.
