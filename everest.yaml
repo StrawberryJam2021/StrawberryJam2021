@@ -1,6 +1,6 @@
 - Name: StrawberryJam2021
   Version: 1.0.0
-  DLL: bin/Debug/net452/StrawberryJam2021.dll
+  DLL: bin/StrawberryJam2021.dll
   Dependencies:
     - Name: Everest
       Version: 1.3274.0

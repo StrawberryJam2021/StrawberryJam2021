@@ -88,5 +88,18 @@
       </ItemGroup>
     </When>
   </Choose>
+  
+  <Target Name="CopyFiles" AfterTargets="Build">
+      <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="bin" />
+      <Copy SourceFiles="$(OutputPath)\$(AssemblyName).pdb" DestinationFolder="bin" />
+  </Target>
+  
+  <PropertyGroup>
+      <PathMap>$(MSBuildProjectDirectory)=StrawberryJam2021/</PathMap>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+      <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+  </PropertyGroup>
 
 </Project>
