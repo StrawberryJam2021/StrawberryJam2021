@@ -101,7 +101,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Y -= 64f - Collider.Height;
                 Collider.Height = 64f;
             }
-            MoveVExact(height - num);
+            MoveVNaive(height - num);
             Y = y;
             Collider.Height = height;
         }
