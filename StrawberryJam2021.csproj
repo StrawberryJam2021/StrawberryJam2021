@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <LangVersion>9.0</LangVersion>
-    <TargetFrameworks>net452</TargetFrameworks>
+    <TargetFramework>net452</TargetFramework>
     <AssemblyName>StrawberryJam2021</AssemblyName>
     <RootNamespace>Celeste.Mod.StrawberryJam2021</RootNamespace>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
@@ -96,10 +96,6 @@
   
   <PropertyGroup>
       <PathMap>$(MSBuildProjectDirectory)=StrawberryJam2021/</PathMap>
-  </PropertyGroup>
-  
-  <PropertyGroup>
-      <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
   </PropertyGroup>
 
 </Project>
