@@ -1,6 +1,3 @@
-# Auto-formatting is "Strawberry Jam2021"
-modname_StrawberryJam2021= Strawberry Jam 2021
-
+# SJ Helper Dialogue
 StrawberryJam2021_Menu_Hint= Hint
-
 StrawberryJam2021_Entities_SolarElevator_DefaultHint=This elevator requires a holdable entity.
