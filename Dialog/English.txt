@@ -1,2 +1,4 @@
 StrawberryJam2021_Menu_Hint= Hint
-StrawberryJam2021_Entities_SolarElevator_DefaultHint=This elevator requires a holdable entity.
+StrawberryJam2021_Entities_SolarElevator_DefaultHint= This elevator requires a holdable entity.
+StrawberryJam2021_DisplayDashSequence= Display Dash Sequence
+StrawberryJam2021_TogglePlaybacks= Toggle Playbacks
