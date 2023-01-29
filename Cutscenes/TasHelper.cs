@@ -324,11 +324,13 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         internal static void Load() {
             On.Celeste.Level.EndPauseEffects += Level_EndPauseEffects;
             On.Monocle.MInput.Update += MInput_Update;
+            On.Monocle.MInput.GamePadData.Rumble += GamePadData_Rumble;
         }
 
         internal static void Unload() {
             On.Celeste.Level.EndPauseEffects -= Level_EndPauseEffects;
             On.Monocle.MInput.Update -= MInput_Update;
+            On.Monocle.MInput.GamePadData.Rumble -= GamePadData_Rumble;
         }
 
         private static void Level_EndPauseEffects(On.Celeste.Level.orig_EndPauseEffects orig, Level self) {
@@ -361,6 +363,14 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             }
 
             orig();
+        }
+
+        private static void GamePadData_Rumble(On.Monocle.MInput.GamePadData.orig_Rumble orig, MInput.GamePadData self, float strength, float time) {
+            if (Active) {
+                return;
+            }
+
+            orig(self, strength, time);
         }
 
         #endregion Hooks
