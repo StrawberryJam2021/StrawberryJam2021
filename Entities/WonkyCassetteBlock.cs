@@ -23,6 +23,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private string textureDir;
 
+        private readonly string Key;
+
+        public static readonly Dictionary<string, bool[,]> Connections = new(StringComparer.Ordinal);
+
         private List<Image> _pressed, _solid; // we'll use these instead of pressed and solid, to make `UpdateVisualState` not enumerate through them for no reason.
 
         public WonkyCassetteBlock(Vector2 position, EntityID id, float width, float height, int index, string moveSpec, Color color, string textureDir, int overrideBoostFrames, int controllerIndex)
@@ -30,6 +34,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Tag = Tags.FrozenUpdate | Tags.TransitionUpdate;
 
             OnAtBeats = OnAtBeatsSplitRegex.Split(moveSpec).Select(s => int.Parse(s) - 1).ToArray();
+            Array.Sort(OnAtBeats);
 
             base.color = color;
 
@@ -41,6 +46,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 throw new ArgumentException($"Controller Index must be 0 or greater, but is set to {controllerIndex}.");
 
             ControllerIndex = controllerIndex;
+            
+            Key = $"{Index}|{ControllerIndex}|{string.Join(",", OnAtBeats)}";
 
             _pressed = new();
             _solid = new();
@@ -60,7 +67,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             WonkyCassetteBlock selfCast = (WonkyCassetteBlock) self;
 
-            foreach (WonkyCassetteBlock entity in self.Scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>()) {
+            foreach (WonkyCassetteBlock entity in self.Scene.Tracker.GetEntities<WonkyCassetteBlock>()) {
                 if (entity != self && entity != block && entity.Index == self.Index &&
                     entity.ControllerIndex == selfCast.ControllerIndex &&
                     (entity.CollideRect(new Rectangle((int) block.X - 1, (int) block.Y, (int) block.Width + 2, (int) block.Height))
@@ -70,6 +77,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     NewFindInGroup(orig, self, entity);
                 }
             }
+        }
+
+        public override void Awake(Scene scene) {
+            if (Connections.Count == 0) {
+                IndexConnections(SceneAs<Level>());
+            }
+
+            base.Awake(scene);
         }
 
         public override void Update() {
@@ -123,18 +138,69 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
+        private static void IndexConnections(Level level) {
+            LevelData levelData = level.Session.LevelData;
+            Rectangle bounds = levelData.Bounds;
+            Rectangle tileBounds = levelData.TileBounds;
+
+            foreach (WonkyCassetteBlock entity in level.Tracker.GetEntities<WonkyCassetteBlock>()) {
+                bool[,] connection;
+
+                if (!Connections.TryGetValue(entity.Key, out connection)) {
+                    Connections.Add(entity.Key, connection = new bool[tileBounds.Width + 2, tileBounds.Height + 2]);
+                }
+
+                for (float x = entity.Left; x < entity.Right; x += 8f) {
+                    for (float y = entity.Top; y < entity.Bottom; y += 8f) {
+                        int ix = ((int) x - bounds.Left) / 8 + 1;
+                        int iy = ((int) y - bounds.Top) / 8 + 1;
+
+                        if (ix < 0) ix = 0;
+                        else if (ix > tileBounds.Width) ix = tileBounds.Width + 1;
+                        if (iy < 0) iy = 0;
+                        else if (iy > tileBounds.Height) iy = tileBounds.Height + 1;
+
+                        connection[ix, iy] = true;
+                    }
+                }
+            }
+        }
+
         private static bool NewCheckForSame(On.Celeste.CassetteBlock.orig_CheckForSame origCheckForSame, CassetteBlock self, float x, float y) {
             if (!(self is WonkyCassetteBlock))
                 return origCheckForSame(self, x, y);
 
             WonkyCassetteBlock selfCast = (WonkyCassetteBlock) self;
 
-            return self.Scene.Tracker.GetEntities<WonkyCassetteBlock>()
-                .Cast<WonkyCassetteBlock>()
-                .Any(entity => entity.Index == self.Index
-                               && entity.ControllerIndex == selfCast.ControllerIndex
-                               && entity.Collider.Collide(new Rectangle((int) x, (int) y, 8, 8))
-                               && entity.OnAtBeats.SequenceEqual(selfCast.OnAtBeats));
+            bool[,] connection;
+
+            if (!Connections.TryGetValue(selfCast.Key, out connection)) {
+                // Fallback just in case
+                foreach (WonkyCassetteBlock entity in self.Scene.Tracker.GetEntities<WonkyCassetteBlock>()) {
+                    if (entity.Index == self.Index && entity.ControllerIndex == selfCast.ControllerIndex &&
+                        entity.Collider.Collide(new Rectangle((int) x, (int) y, 8, 8)) &&
+                        entity.OnAtBeats.SequenceEqual(selfCast.OnAtBeats)) {
+                        return true;                        
+                    }
+                }
+
+                return false;
+            }
+
+            Level level = selfCast.SceneAs<Level>();
+            LevelData levelData = level.Session.LevelData;
+            Rectangle bounds = levelData.Bounds;
+            Rectangle tileBounds = levelData.TileBounds;
+
+            int ix = ((int) x - bounds.Left) / 8 + 1;
+            int iy = ((int) y - bounds.Top) / 8 + 1;
+
+            if (ix < 0) ix = 0;
+            else if (ix > tileBounds.Width) ix = tileBounds.Width + 1;
+            if (iy < 0) iy = 0;
+            else if (iy > tileBounds.Height) iy = tileBounds.Height + 1;
+
+            return connection[ix, iy];
         }
 
         private static void CassetteBlock_SetImage(On.Celeste.CassetteBlock.orig_SetImage orig, CassetteBlock self, float x, float y, int tx, int ty) {
