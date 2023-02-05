@@ -324,6 +324,9 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly string text;
         private float lerp, prev;
 
+        // base component has a timer :: float field, let's just use our own.
+        private new float timer;
+
         public HintTalkComponentUI(TalkComponent handler, SolarElevator elevator)
             : base(handler) {
             this.elevator = elevator;
@@ -334,7 +337,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Update();
 
             bool show = Highlighted && !elevator.IsCarryingHoldable && !elevator.Moving;
-            timer = show ? Calc.Approach(timer, 0f, Engine.DeltaTime) : 0.75f;
+            timer = show ? Calc.Approach(timer, 0f, Engine.DeltaTime) : 0.25f;
 
             prev = lerp;
             lerp = Calc.Approach(lerp, show && timer <= 0 ? 1f : 0f, Engine.DeltaTime * 6f);
