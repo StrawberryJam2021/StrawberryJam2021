@@ -40,6 +40,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             CenterSpriteName = parent.CenterSpriteName;
             CenterSpriteRotation = parent.CenterSpriteRotation;
             CenterSpriteEffects = parent.CenterSpriteEffects;
+            SurfaceSoundIndex = parent.SurfaceSoundIndex;
 
             sourceNodeIndex = targetNodeIndex = this.initialNodeIndex = initialNodeIndex;
 
@@ -55,6 +56,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             OffBeat = data.Bool("offBeat");
             HideFinalTransition = data.Bool("hideFinalTransition");
             EmitImpactParticles = data.Bool("emitImpactParticles", true);
+            SurfaceSoundIndex = SurfaceIndex.TileToIndex.TryGetValue(TileType, out int value) ? value : 0;
             
             CenterSpriteName = data.Attr("centerSpriteName");
             CenterSpriteRotation = data.Int("centerSpriteRotation");
