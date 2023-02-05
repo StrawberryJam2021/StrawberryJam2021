@@ -363,7 +363,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (SaveData.Instance != null && SaveData.Instance.Assists.MirrorMode)
                 pos.X = 320f - pos.X;
             pos *= 6f;
-            pos.Y += (float) Math.Sin(timer * 4f) * 12f + 64f * (1f - Ease.CubeOut(slide)) + 12f;
+            pos.Y += (float) Math.Sin(base.timer * 4f) * 12f + 64f * (1f - Ease.CubeOut(slide)) + 12f;
 
             float transparence = Ease.CubeInOut(slide) * alpha * lerp;
             float wigglerMask = timer > 0 ? 1 : 0f;
