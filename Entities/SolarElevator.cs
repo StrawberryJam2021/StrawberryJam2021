@@ -324,6 +324,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private readonly string text;
         private float lerp, prev;
 
+        private float textTimer;
+
         public HintTalkComponentUI(TalkComponent handler, SolarElevator elevator)
             : base(handler) {
             this.elevator = elevator;
@@ -334,10 +336,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             base.Update();
 
             bool show = Highlighted && !elevator.IsCarryingHoldable && !elevator.Moving;
-            timer = show ? Calc.Approach(timer, 0f, Engine.DeltaTime) : 0.75f;
+            textTimer = show ? Calc.Approach(textTimer, 0f, Engine.DeltaTime) : 0.25f;
 
             prev = lerp;
-            lerp = Calc.Approach(lerp, show && timer <= 0 ? 1f : 0f, Engine.DeltaTime * 6f);
+            lerp = Calc.Approach(lerp, show && textTimer <= 0 ? 1f : 0f, Engine.DeltaTime * 6f);
 
             EventInstance sfx = null;
             if (prev == 1f && lerp < 1f)
@@ -345,8 +347,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             else if (prev == 0 && lerp > 0)
                 sfx = Audio.Play(SFX.ui_game_textbox_other_in, elevator.Position);
 
-            if (sfx is not null)
-                sfx.setPitch(1.75f);
+            sfx?.setPitch(1.75f);
         }
 
         public override void Render() {
@@ -363,7 +364,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             pos.Y += (float) Math.Sin(timer * 4f) * 12f + 64f * (1f - Ease.CubeOut(slide)) + 12f;
 
             float transparence = Ease.CubeInOut(slide) * alpha * lerp;
-            float wigglerMask = timer > 0 ? 1 : 0f;
+            float wigglerMask = textTimer > 0 ? 1 : 0f;
             float scale = Math.Max(wiggler.Value * wigglerMask * lerp * 0.1f + Ease.CubeOut(lerp) * 0.65f, 0);
 
             ActiveFont.DrawOutline(text, pos, Vector2.One * 0.5f, Vector2.One * scale, Color.White * transparence, 2f, Color.Black);
