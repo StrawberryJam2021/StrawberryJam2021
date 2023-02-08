@@ -11,7 +11,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         public class TitleLogo : Entity {
 
             private class Particle {
-                public readonly MTexture texture = OVR.Atlas["StrawberryJam2021/sparkle"].GetSubtexture(1, 1, 700, 700);
+                public readonly MTexture texture = GFX.Gui["StrawberryJam2021/logo/sparkle"];
                 public const float DefaultParticleLifetime = 1f;
                 public Vector2 offset;
                 public float opacity;
@@ -101,7 +101,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             public override void Render() {
                 sprite.Texture.DrawCentered(pos, Color.White * opacity, size);
                 foreach (Particle particle in particles) {
-                    particle.texture.DrawCentered(Celeste.TargetCenter + (particle.offset * size), Color.White * particle.opacity * opacity, particle.size * size * 0.15f);
+                    particle.texture.DrawCentered(pos + (particle.offset * size), Color.White * particle.opacity * opacity, particle.size * size * 0.15f);
                 }
             }
 
