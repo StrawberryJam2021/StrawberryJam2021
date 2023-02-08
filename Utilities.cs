@@ -69,6 +69,16 @@ namespace Celeste.Mod.StrawberryJam2021 {
             entity.Bottom >= self.Top - extend &&
             entity.Top <= self.Bottom + extend;
 
+        /// <summary>
+        /// Collides the specified collider with the camera bounds.
+        /// Entity position is manually added in case the collider is not associated with an entity.
+        /// </summary>
+        public static bool Collides(this Camera self, Entity entity, Collider collider, float extend = 32f) =>
+            entity.Position.X + collider.Right >= self.Left - extend &&
+            entity.Position.X + collider.Left <= self.Right + extend &&
+            entity.Position.Y + collider.Bottom >= self.Top - extend &&
+            entity.Position.Y + collider.Top <= self.Bottom + extend;
+
         public static bool Contains(this Camera self, Vector2 point, float extend = 32f) =>
             point.X >= self.Left - extend &&
             point.X <= self.Right + extend &&
