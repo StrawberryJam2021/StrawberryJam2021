@@ -8,7 +8,6 @@ using System.Threading;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities
 {
-    [CustomEntity("SJ2021/pinballIntroCutscene")]
     class PinballIntroCutscene : CutsceneEntity
     {
         private class Fader : Entity

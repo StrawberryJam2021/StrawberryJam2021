@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 using On.Celeste;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
-
-    [CustomEntity("SJ2021/pinballFallCutscene")]
     class PinballFallCutscene : CutsceneEntity {
         public PinballFallCutscene() {
 
