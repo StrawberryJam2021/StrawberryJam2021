@@ -6,7 +6,6 @@ using System;
 using Celeste.Mod.StrawberryJam2021.Entities;
 
 namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
-    [CustomEntity("SJ2021/CS_PrologueOutro")]
     public class CS_PrologueOutro : CutsceneEntity {
 
         public class TitleLogo : Entity {
