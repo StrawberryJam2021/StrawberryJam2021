@@ -543,7 +543,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private void PlayIfInBounds(SoundSource source, string path) {
-            if (SceneAs<Level>().Camera.IsInBounds(this)) {
+            if (SceneAs<Level>().Camera.Collides(this, activeColliderList)) {
                 source.Play(path);
             }
         }
