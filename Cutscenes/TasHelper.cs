@@ -66,13 +66,8 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
         public static bool Active { get; private set; } = false;
         public static bool Paused { get; private set; } = false;
-        public static int GetTotalFrames() {
-            int totalFrames = 0;
-            foreach (TasFile tas in tasFiles.Values) {
-                totalFrames += tas.TotalFrames;
-            }
-            return totalFrames;
-        }
+        public static void Clear() => tasFiles.Clear();
+        public static float TotalTime => tasFiles.Values.Sum(f => f.TotalFrames) * Engine.DeltaTime;
 
         private static TasInput CurrentInput => activeTas.Inputs[inputIndex];
 
@@ -280,18 +275,19 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             return true;
         }
 
+        private readonly static Action consoleLoad = () => {
+            // "Real" TASes need extra waiting frames to account for spawn time (1f) and the respawn animation (36f)
+            // Skipping 37f here lets us avoid having to manually edit TAS files before they can be used as playbacks
+            for (int i = 0; i < 37; i++) {
+                AdvanceFrame();
+            }
+        };
+
         private static bool ParseCommand(string line, out Action command) {
             command = null;
 
             if (line.StartsWith("console load")) {
-                command = () => {
-                    // "Real" TASes need extra waiting frames to account for spawn time (1f) and the respawn animation (36f)
-                    // Skipping 37f here lets us avoid having to manually edit TAS files before they can be used as playbacks
-                    for (int i = 0; i < 37; i++) {
-                        AdvanceFrame();
-                    }
-                };
-
+                command = consoleLoad;
                 return true;
             } else if (line.StartsWith("start animation")) {
                 string[] split = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -378,12 +374,25 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         public class TasFile {
             public List<TasInput> Inputs;
             public Dictionary<int, List<Action>> Commands;
-            public readonly int TotalFrames;
+            public int TotalFrames;
 
             public TasFile(List<TasInput> inputs, Dictionary<int, List<Action>> commands) {
                 Inputs = inputs;
                 Commands = commands;
-                TotalFrames = Inputs.Sum(i => i.Frames);
+                TotalFrames = GetTotalFrames();
+            }
+
+            private int GetTotalFrames() {
+                int totalFrames = Inputs.Sum(i => i.Frames);
+                foreach (KeyValuePair<int, List<Action>> frameCommands in Commands) {
+                    foreach (Action action in frameCommands.Value) {
+                        if (action == consoleLoad) {
+                            totalFrames -= 37;
+                        }
+                    }
+                }
+
+                return totalFrames;
             }
         }
 
