@@ -26,7 +26,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             cursor.EmitDelegate<Action<VertexLight[]>>(lights => {
                 // remove lights that were removed from their entity before vanilla code tries to read lights[i].Entity.Scene and crashes
-                for (int i = 0; i < 64; i++) {
+                for (int i = 0; i < LightingRenderer.MaxLights; i++) {
                     if (lights[i] != null && lights[i].Entity == null) {
                         lights[i].Index = -1;
                         lights[i] = null;
