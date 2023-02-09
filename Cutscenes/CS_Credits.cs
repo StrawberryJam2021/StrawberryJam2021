@@ -32,12 +32,15 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         private AudioState previousAudio;
         private Credits credits;
         private float fade;
+        private float buttonEase;
+        private bool finished;
 
         public CS_Credits(bool fromHeartside = true)
             : base(true, false) {
             this.fromHeartside = fromHeartside;
             gradient = GFX.Gui["creditsgradient"].GetSubtexture(0, 1, 1920, 1);
             Tag = TagsExt.SubHUD;
+            TasHelper.Clear();
         }
 
         public override void OnBegin(Level level) {
@@ -71,7 +74,13 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                     Input.Pause.ConsumeBuffer();
                     Input.ESC.ConsumeBuffer();
                     Level.Pause(minimal: true);
+                } else if (credits != null && credits.BottomTimer > 2f) {
+                    buttonEase = Calc.Approach(buttonEase, finished ? 0f : 1f, Engine.DeltaTime * 2);
+                    if (Input.MenuConfirm.Pressed) {
+                        finished = true;
+                    }
                 }
+
                 MInput.Disabled = true;
             }
         }
@@ -88,6 +97,11 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
             if (fade > 0f) {
                 Draw.Rect(-10f, -10f, 1940f, 1100f, Color.Black * Ease.CubeInOut(fade));
+            }
+
+            if (buttonEase > 0f) {
+                Input.GuiButton(Input.MenuConfirm, Input.PrefixMode.Latest, "controls/keyboard/oemquestion")
+                    .DrawCentered(new Vector2(Engine.Width - 120, Engine.Height - 120f * Ease.CubeOut(buttonEase)), Color.White * Ease.CubeOut(buttonEase));
             }
         }
 
@@ -134,9 +148,9 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
             yield return 0.5f;
 
-            Level.Add(credits = new Credits(Celeste.TargetCenter));
+            Level.Add(credits = new Credits(Celeste.TargetCenter, GFX.Gui["SJ2021/Credits/0-Prologue"]));
 
-            while (credits.BottomTimer < 2f) {
+            while (!finished) {
                 yield return null;
             }
 
@@ -186,24 +200,33 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             yield return 0.5f;
 
             float creditsX = SaveData.Instance.Assists.MirrorMode ? 50f : 1870f;
-            Level.Add(credits = new Credits(new Vector2(creditsX, 0f), alignment: 1f, scale: 0.6f, doubleColumns: false));
+            string lobbyName = Level.Session.Area.SID.Substring(Level.Session.Area.SID.LastIndexOf('/') + 1);
+            Level.Add(credits = new Credits(new Vector2(creditsX, 0f), GFX.Gui[$"SJ2021/Credits/{lobbyName}"], alignment: 1f, scale: 0.6f, doubleColumns: false));
 
             yield return 1f;
 
-            foreach (string path in playbacks.Keys) {
+            List<string> keys = playbacks.Keys.ToList();
+            float deadTime = Credits.SongLength - TasHelper.TotalTime - keys.Count - 2f;
+            float gapTime = Math.Max(0f, deadTime / (keys.Count - 1));
+
+            for (int i = 0; i < keys.Count; i++) {
                 if (Level.Tracker.GetEntity<Player>() is Player player) {
-                    player.Position = playbacks[path];
+                    player.Position = playbacks[keys[i]];
                     Level.Camera.Position = player.CameraTarget;
                     yield return 1f;
                 }
 
-                TasHelper.Play(path);
+                TasHelper.Play(keys[i]);
                 yield return FadeTo(0f);
                 yield return TasHelper.Wait(buffer: FadeTime);
                 yield return FadeTo(1f);
+
+                if (i < keys.Count - 1) {
+                    yield return gapTime;
+                }                
             }
 
-            while (credits.BottomTimer < 2f) {
+            while (!finished) {
                 yield return null;
             }
 
@@ -293,7 +316,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             return false;
         }
 
-        // DEBUG
+        #if DEBUG
         [Command("sj_credits", "[StrawberryJam2021] triggers the SJ credits (default warps to prologue credits, use 1-5 to play a specific lobby)")]
         private static void PlayCredits(int lobby) {
             string lobbySID = lobby switch {
@@ -328,6 +351,8 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 Engine.Commands.Log($"Could not find {lobbySID}");
             }
         }
+        #endif
+
         #endregion
     }
 }

@@ -10,26 +10,27 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         public const float SongLength = 174f;
 
         public float BottomTimer;
-        public float BaseScrollSpeed;
 
         private readonly List<CreditNode> credits;
         private readonly float height;
         private readonly float alignment;
         private readonly float scale;
+        private readonly MTexture thanks;
         internal float scrollSpeed;
         private float scroll;
 
-        public Credits(Vector2 position, float alignment = 0.5f, float scale = 1f, bool doubleColumns = true)
+        public Credits(Vector2 position, MTexture thanks, float alignment = 0.5f, float scale = 1f, bool doubleColumns = true)
             : base(position) {
             this.alignment = alignment;
             this.scale = scale;
+            this.thanks = thanks;
             credits = CreateCredits(doubleColumns);
             height = 0f;
             foreach (CreditNode creditNode in credits) {
                 height += creditNode.Height(scale) + CreditSpacing * scale;
             }
 
-            BaseScrollSpeed = scrollSpeed = height / (SongLength * scale);
+            scrollSpeed = height / SongLength;
 
             Depth = Depths.FormationSequences;
             Tag = TagsExt.SubHUD;
@@ -37,7 +38,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
         public override void Update() {
             base.Update();
-            scroll += scrollSpeed * Engine.DeltaTime * scale;
+            scroll += scrollSpeed * Engine.DeltaTime;
 
             if (scroll < 0f || scroll > height) {
                 scrollSpeed = 0f;
@@ -114,9 +115,10 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 new Team("SJ2021_Credits_Category_Music", "SJ2021_Credits_Names_Teams_Music", split: doubleColumns),
                 new Team("SJ2021_Credits_Category_Decoration", "SJ2021_Credits_Names_Teams_Decoration", split : doubleColumns),
                 new Team("SJ2021_Credits_Category_Playtesting", "SJ2021_Credits_Names_Teams_Playtesting", split: doubleColumns),
-                new Team("SJ2021_Credits_Category_Special", "SJ2021_Credits_Names_Special"),
+                new Special("SJ2021_Credits_Category_Special", "SJ2021_Credits_Names_Special"),
+                new Team("SJ2021_Credits_Category_Helpers", "SJ2021_Credits_Names_Helpers", split: doubleColumns),
 
-                new Thanks("SJ2021_Credits_Thanks", GFX.Gui["SJ2021/Credits/thanks"])
+                new Thanks("SJ2021_Credits_Thanks", thanks)
             };
 
             return list;
@@ -226,6 +228,50 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                     Credits = Dialog.Clean(creditsKey).Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                     Split = split;
                 }
+            }
+        }
+
+        public class Special : CreditNode {
+            public const float TitleScale = 1.7f;
+            public const float CreditsScale = 1.15f;
+            public const float Spacing = 8f;
+            public const float RoleScale = 0.9f;
+
+            public static readonly Color TitleColor = Color.White;
+            public static readonly Color CreditsColor = Color.White * 0.8f;
+            public static readonly Color RoleColor = Calc.HexToColor("a8a694");
+
+            public string Title;
+            public string[] Credits;
+
+            public Special(string titleKey, string creditsKey) {
+                Title = Dialog.Clean(titleKey);
+                Credits = Dialog.Clean(creditsKey).Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            }
+
+            public override void Render(Vector2 position, float alignment = 0.5f, float scale = 1f) {
+                Vector2 renderPos = position.Floor();
+                Vector2 justify = new(alignment, 0f);
+
+                ActiveFont.DrawOutline(Title, renderPos, justify, Vector2.One * TitleScale * scale, TitleColor, 2f, BorderColor);
+                renderPos.Y += (LineHeight * TitleScale + Spacing) * scale;
+
+                for (int i = 0; i < Credits.Length; i++) {
+                    ActiveFont.DrawOutline(Credits[i], renderPos, justify, Vector2.One * CreditsScale * scale, CreditsColor, 2f, BorderColor);
+                    renderPos.Y += LineHeight * CreditsScale * scale;
+                    if (++i < Credits.Length) {
+                        ActiveFont.DrawOutline(Credits[i], renderPos, justify, Vector2.One * RoleScale * scale, RoleColor, 2f, BorderColor);
+                        renderPos.Y += LineHeight * RoleScale * scale;
+                    }
+                }
+            }
+
+            public override float Height(float scale = 1f) {
+                float height = 0f;
+                height += LineHeight * TitleScale + Spacing;
+                height += LineHeight * CreditsScale * (Credits.Length / 2);
+                height += LineHeight * RoleScale * (Credits.Length / 2);
+                return height * scale;
             }
         }
 
