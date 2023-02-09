@@ -54,7 +54,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         private const string respawnAnimationId = "respawn";
 
         public GlowController(EntityData data, Vector2 offset)
-            : base(data.Position + offset) {
+            : base(data.Position + offset)
+        {
             _lightWhitelist = data.Attr("lightWhitelist").Split(',');
             _lightBlacklist = data.Attr("lightBlacklist").Split(',');
             _lightColor = data.HexColor("lightColor", Color.White);
@@ -134,8 +135,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 }
 
                 // if it's a respawning jelly, wait until the sprite is playing the respawn animation
-                if (!sprite.Animations.TryGetValue(respawnAnimationId, out var respawnAnimation))
-                    break;
+                if (!sprite.Animations.TryGetValue(respawnAnimationId, out var respawnAnimation)) break;
                 while (entity.Scene != null && sprite.CurrentAnimationID != respawnAnimationId) {
                     yield return null;
                 }
