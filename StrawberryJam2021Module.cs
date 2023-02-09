@@ -75,6 +75,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SpriteSwapTrigger.Load();
             CS_Credits.Load();
             TasHelper.Load();
+            GlowController.Load();
 
             Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
         }
@@ -125,6 +126,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             SpriteSwapTrigger.Unload();
             CS_Credits.Unload();
             TasHelper.Unload();
+            GlowController.Unload();
 
             Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
         }
@@ -163,7 +165,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
                 return new MeteorShower(child.AttrInt("numberOfMeteors"));
             }
             return null;
-		}
+        }
 
         //This occurs after all mods get initialized.
         public override void Initialize() {
