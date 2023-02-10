@@ -1,13 +1,40 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
 using Monocle;
+using MonoMod.Cil;
 using System;
 using System.Collections;
 using System.Linq;
+using System.Reflection;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/GlowController")]
     public class GlowController : Entity {
+        public static void Load() {
+            IL.Celeste.LightingRenderer.BeforeRender += IL_LightingRenderer_BeforeRender;
+        }
+
+        public static void Unload() {
+            IL.Celeste.LightingRenderer.BeforeRender -= IL_LightingRenderer_BeforeRender;
+        }
+
+        private static void IL_LightingRenderer_BeforeRender(ILContext il) {
+            ILCursor cursor = new ILCursor(il);
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldfld, typeof(LightingRenderer).GetField("lights", BindingFlags.NonPublic | BindingFlags.Instance));
+
+            cursor.EmitDelegate<Action<VertexLight[]>>(lights => {
+                // remove lights that were removed from their entity before vanilla code tries to read lights[i].Entity.Scene and crashes
+                for (int i = 0; i < LightingRenderer.MaxLights; i++) {
+                    if (lights[i] != null && lights[i].Entity == null) {
+                        lights[i].Index = -1;
+                        lights[i] = null;
+                    }
+                }
+            });
+        }
+
         private readonly string[] _lightWhitelist;
         private readonly string[] _lightBlacklist;
         private readonly Color _lightColor;
@@ -25,7 +52,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private const string deathAnimationId = "death";
         private const string respawnAnimationId = "respawn";
-        
+
         public GlowController(EntityData data, Vector2 offset)
             : base(data.Position + offset)
         {
@@ -86,7 +113,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     bloomPoint.Alpha = alpha;
                 }
             }
-            
+
             if (!sprite.Animations.TryGetValue(deathAnimationId, out var deathAnimation)) {
                 yield break;
             }
@@ -96,23 +123,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 while (entity.Scene != null && sprite.CurrentAnimationID != deathAnimationId) {
                     yield return null;
                 }
-                
+
                 // fade out over the length of that animation
                 var fadeTime = deathAnimation.Frames.Length * deathAnimation.Delay;
                 var fadeRemaining = fadeTime;
-        
+
                 while (entity.Scene != null && sprite.CurrentAnimationID == deathAnimationId && fadeRemaining > 0) {
                     fadeRemaining -= Engine.DeltaTime;
                     SetAlpha(Math.Max(fadeRemaining / fadeTime, 0f));
                     yield return null;
                 }
-                
+
                 // if it's a respawning jelly, wait until the sprite is playing the respawn animation
                 if (!sprite.Animations.TryGetValue(respawnAnimationId, out var respawnAnimation)) break;
                 while (entity.Scene != null && sprite.CurrentAnimationID != respawnAnimationId) {
                     yield return null;
                 }
-                
+
                 // fade in over the length of that animation
                 fadeTime = respawnAnimation.Frames.Length * respawnAnimation.Delay;
                 fadeRemaining = fadeTime;
