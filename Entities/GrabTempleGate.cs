@@ -101,7 +101,15 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Y -= 64f - Collider.Height;
                 Collider.Height = 64f;
             }
-            MoveVNaive(height - num);
+
+            // check if the player is above the gate's top y level, and if so,
+            // perform a naive move down so as to not snap the player down, possibly killing it.
+            Player player = Scene.Tracker.GetEntity<Player>();
+            if (player.Bottom <= Bottom) // note: Bottom was Top before the collider was changed in the code above.
+                MoveVNaive(height - num);
+            else
+                MoveV(height - num);
+            
             Y = y;
             Collider.Height = height;
         }
