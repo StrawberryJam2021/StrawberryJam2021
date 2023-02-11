@@ -226,7 +226,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         #region OnPressed stuff
 
         private void OnPressed(Player player, Vector2 direction) {
-            player.RefillDash();
+            player.UseRefill(twoDashes: false);
             if (Switch?.Activate() == true)
                 SoundEmitter.Play(SFX.game_gen_touchswitch_last_oneshot);
             Add(new Coroutine(PlayPushedAnimation()));
