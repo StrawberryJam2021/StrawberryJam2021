@@ -270,6 +270,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
+            WonkyCassetteBlock.Connections.Clear();
+
             orig(self, playerIntro, isFromLoader);
 
             StrawberryJam2021Session session = StrawberryJam2021Module.Session;
