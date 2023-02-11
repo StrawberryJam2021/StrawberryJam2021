@@ -195,10 +195,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 if (holdable.Holder?.IsRiding(this) ?? false)
                     return true;
 
-                if (!actor.IsRiding(this))
-                    continue;
-
-                if (actor.Left >= Left + 3 && actor.Right <= Right - 3)
+                if (actor.Left >= Left + 3 && actor.Right <= Right - 3 && actor.Bottom <= Bottom && actor.Top >= Top + 8)
                     return true;
             }
             return false;
