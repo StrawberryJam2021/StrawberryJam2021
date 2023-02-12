@@ -27,7 +27,7 @@
         // Drum Swap Blocks
         public const string game_drum_swapblock_move = "event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move";
         public const string game_drum_swapblock_move_end = "event:/strawberry_jam_2021/game/drum_swapblock/drum_swapblock_move_end";
-        
+
         // Dash Sequence Controller Fail Jingle
         public const string game_dash_seq_fail = "event:/strawberry_jam_2021/game/dash_seq/fail";
 
@@ -47,9 +47,13 @@
         public const string mosscairn_sfx_paintbrush_laser_pink = "event:/sj21_mosscairn_sfx/paintbrush_laser_pink";
         public const string mosscairn_sfx_paintbrush_laser_ramp_up = "event:/sj21_mosscairn_sfx/paintbrush_laser_ramp_up";
 
+        // Triple Boost Flower
         public const string game_triple_boost_flower_boost_1 = "event:/strawberry_jam_2021/game/triple_boost_flower/boost_1";
         public const string game_triple_boost_flower_boost_2 = "event:/strawberry_jam_2021/game/triple_boost_flower/boost_2";
         public const string game_triple_boost_flower_boost_3 = "event:/strawberry_jam_2021/game/triple_boost_flower/boost_3";
         public const string game_triple_boost_flower_glider_movement = "event:/strawberry_jam_2021/game/triple_boost_flower/glider_movement";
+
+        // Rock Stream - Solar Express
+        public const string game_solar_express_rock_stream = "event:/strawberry_jam_2021/game/solar_express/rock_stream";
     }
 }
