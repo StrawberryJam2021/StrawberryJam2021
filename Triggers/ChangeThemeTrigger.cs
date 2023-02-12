@@ -15,7 +15,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             "StrawberryJam2021/0-Gyms/3-Advanced", 
             "StrawberryJam2021/0-Gyms/4-Expert",
             "StrawberryJam2021/0-Gyms/5-Grandmaster",
-            "StrawberryJam2021/0-Gyms/6-Library"
+            "StrawberryJam2021/0-Gyms/0-Prologue"
         };
 
         public ChangeThemeTrigger(EntityData data, Vector2 offset) : base(data, offset) {
@@ -85,7 +85,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 case "StrawberryJam2021/0-Gyms/3-Advanced":
                 case "StrawberryJam2021/0-Gyms/4-Expert":
                 case "StrawberryJam2021/0-Gyms/5-Grandmaster":
-                case "StrawberryJam2021/0-Gyms/6-Library":
+                case "StrawberryJam2021/0-Gyms/0-Prologue":
                     // Light Mode alternate
                     level.Session.SetFlag("lightMode", enabled);
                     break;
