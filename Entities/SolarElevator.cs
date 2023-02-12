@@ -184,23 +184,26 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (Moving || (RequiresHoldable && !IsCarryingHoldable))
                 return;
 
-            Add(new Coroutine(Sequence()));
+            Add(new Coroutine(Sequence(player)));
+        }
+
+        private bool CanCarry(Holdable holdable) {
+            if (holdable.Entity is not Actor actor)
+                return false;
+
+            if (holdable.Holder?.IsRiding(this) ?? false)
+                return true;
+
+            if (actor.Left >= Left + 3 && actor.Right <= Right - 3 && actor.Bottom <= Bottom && actor.Top >= Top + 8)
+                return true;
+
+            return false;
         }
 
         private bool HoldableCheck() {
-            foreach (Holdable holdable in Scene.Tracker.GetComponents<Holdable>()) {
-                if (holdable.Entity is not Actor actor)
-                    continue;
-
-                if (holdable.Holder?.IsRiding(this) ?? false)
+            foreach (Holdable holdable in Scene.Tracker.GetComponents<Holdable>())
+                if (CanCarry(holdable))
                     return true;
-
-                if (!actor.IsRiding(this))
-                    continue;
-
-                if (actor.Left >= Left + 3 && actor.Right <= Right - 3)
-                    return true;
-            }
             return false;
         }
 
@@ -209,8 +212,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             IsCarryingHoldable = HoldableCheck();
         }
 
-        private IEnumerator Sequence() {
+        private IEnumerator Sequence(Player player) {
             Level level = SceneAs<Level>();
+
+            // drop the eventual holdable.
+            if (player.Holding is not null)
+                player.Drop();
+
+            // the player here is guaranteed to hold nothing.
+            // let's also make it impossible to hold any holdable during the elevator sequence.
+            foreach (Holdable holdable in Scene.Tracker.GetComponents<Holdable>())
+                if (CanCarry(holdable))
+                    holdable.cannotHoldTimer = delay + time;
 
             Moving = true;
             interaction.Enabled = false;
