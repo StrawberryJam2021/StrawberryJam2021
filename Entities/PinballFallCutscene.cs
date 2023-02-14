@@ -21,6 +21,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Add(new Coroutine(Cutscene(level)));
         }
         private IEnumerator Cutscene(Level level) {
+            level.Session.RespawnPoint = level.GetSpawnPoint(new Vector2(level.Bounds.Left, level.Bounds.Bottom));
             Player player = level.Entities.FindFirst<Player>();
             Glitch.Value = .2f;
             yield return .4f;
@@ -41,6 +42,11 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
             MInput.Disabled = true;
             base.Update();
+            
+        }
+        public override void SceneEnd(Scene scene) {
+            base.SceneEnd(scene);
+            MInput.Disabled = false;
         }
         public override void OnEnd(Level level) {
             level.OnEndOfFrame += delegate {
