@@ -168,10 +168,9 @@ namespace Celeste.Mod.StrawberryJam2021 {
         //This occurs after all mods get initialized.
         public override void Initialize() {
             base.Initialize();
-            // Hacky, but works since these mods are dependencies of SJ
+            // Hacky, but works since this is a dependency of SJ
             CrystallineHelperTimeFreezeMusicController.crystallineHelper_TimeCrystal_stopStage =
                 FakeAssembly.GetFakeEntryAssembly().GetType("vitmod.TimeCrystal")?.GetField("stopStage", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-            CS_Credits.lobbyMapControllerType = FakeAssembly.GetFakeEntryAssembly().GetType("Celeste.Mod.XaphanHelper.Controllers.LobbyMapController");
         }
 
         // Temporary code from vivhelper

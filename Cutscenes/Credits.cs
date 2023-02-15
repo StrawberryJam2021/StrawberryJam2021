@@ -93,6 +93,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 new Team("SJ2021_Credits_Category_Music", "SJ2021_Credits_Names_Captains_Music"),
                 new Team("SJ2021_Credits_Category_Decoration", "SJ2021_Credits_Names_Captains_Decoration"),
                 new Team("SJ2021_Credits_Category_Playtesting", "SJ2021_Credits_Names_Captains_Playtesting"),
+                new Team("SJ2021_Credits_Category_Pack_Management", "SJ2021_Credits_Names_Captains_Pack_Management"),
                 new Team("SJ2021_Credits_Category_Media", "SJ2021_Credits_Names_Captains_Media"),
                 new Team("SJ2021_Credits_Category_Localization", "SJ2021_Credits_Names_Captains_Localization"),
                 new Team("SJ2021_Credits_Category_Accessibility", "SJ2021_Credits_Names_Captains_Accessibility"),
@@ -115,6 +116,8 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 new Team("SJ2021_Credits_Category_Music", "SJ2021_Credits_Names_Teams_Music", split: doubleColumns),
                 new Team("SJ2021_Credits_Category_Decoration", "SJ2021_Credits_Names_Teams_Decoration", split : doubleColumns),
                 new Team("SJ2021_Credits_Category_Playtesting", "SJ2021_Credits_Names_Teams_Playtesting", split: doubleColumns),
+                new Team("SJ2021_Credits_Category_Overworld", "SJ2021_Credits_Names_Overworld"),
+                new Team("SJ2021_Credits_Category_UX_Design", "SJ2021_Credits_Names_UX_Design"),
                 new Special("SJ2021_Credits_Category_Special", "SJ2021_Credits_Names_Special"),
                 new Team("SJ2021_Credits_Category_Helpers", "SJ2021_Credits_Names_Helpers", split: doubleColumns),
 

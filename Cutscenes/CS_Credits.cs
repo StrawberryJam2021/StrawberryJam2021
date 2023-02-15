@@ -23,27 +23,30 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             { "StrawberryJam2021/5-Grandmaster/ZZ-HeartSide", "StrawberryJam2021/0-Lobbies/5-Grandmaster" }
         };
 
-        internal static Type lobbyMapControllerType;
         private static ILHook areaCompleteHook;
 
         private readonly SortedDictionary<string, Vector2> playbacks = new(StringComparer.OrdinalIgnoreCase);
         private readonly MTexture gradient;
-        private readonly bool fromHeartside;
+        private MTexture thanksImage;
         private AudioState previousAudio;
         private Credits credits;
         private float fade;
         private float buttonEase;
+        private bool fromHeartside;
         private bool finished;
 
-        public CS_Credits(bool fromHeartside = true)
+        public CS_Credits()
             : base(true, false) {
-            this.fromHeartside = fromHeartside;
             gradient = GFX.Gui["creditsgradient"].GetSubtexture(0, 1, 1920, 1);
             Tag = TagsExt.SubHUD;
             TasHelper.Clear();
         }
 
         public override void OnBegin(Level level) {
+            string mapName = Level.Session.Area.SID.Substring(Level.Session.Area.SID.LastIndexOf('/') + 1);
+            fromHeartside = mapName != "0-Prologue";
+            thanksImage = GetThanksImage(mapName);
+
             Audio.BusMuted(Buses.GAMEPLAY, mute: true);
             MInput.UpdateNull();
             MInput.Disabled = true;
@@ -61,6 +64,14 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                     Level.Session.SetFlag("opened_mini_heart_door_" + new EntityID(Level.Session.Level, data.ID), true);
                     break;
                 }
+            }
+        }
+
+        private MTexture GetThanksImage(string mapName) {
+            if (Everest.Content.TryGet($"Graphics/Atlases/Credits/StrawberryJam2021/{mapName}", out ModAsset thanksAsset)) {
+                return new MTexture(VirtualContent.CreateTexture(thanksAsset));
+            } else {
+                return GFX.Gui.DefaultFallback;
             }
         }
 
@@ -109,6 +120,8 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             Audio.BusMuted(Buses.GAMEPLAY, mute: false);
             MInput.Disabled = false;
             credits?.RemoveSelf();
+            thanksImage?.Unload();
+            thanksImage = null;
 
             if (fromHeartside) {
                 Level.CompleteArea(skipScreenWipe: true, skipCompleteScreen: true);
@@ -129,6 +142,8 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             base.SceneEnd(scene);
             Audio.BusMuted(Buses.GAMEPLAY, mute: false);
             MInput.Disabled = false;
+            thanksImage?.Unload();
+            thanksImage = null;
         }
 
         private IEnumerator MovieRoutine() {
@@ -148,7 +163,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
             yield return 0.5f;
 
-            Level.Add(credits = new Credits(Celeste.TargetCenter, GFX.Gui["SJ2021/Credits/0-Prologue"]));
+            Level.Add(credits = new Credits(Celeste.TargetCenter, thanksImage));
 
             while (!finished) {
                 yield return null;
@@ -178,9 +193,6 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             Level.Entities.FindFirst<TotalStrawberriesDisplay>()?.RemoveSelf();
             Level.Entities.FindFirst<GameplayStats>()?.RemoveSelf();
             Level.Entities.OfType<RainbowBerry>().FirstOrDefault()?.RemoveSelf();
-            if (lobbyMapControllerType != null) {
-                Level.Tracker.Entities[lobbyMapControllerType].FirstOrDefault()?.RemoveSelf();
-            }
 
             foreach (CustomBirdTutorial tutorial in Level.Tracker.GetEntities<CustomBirdTutorial>()) {
                 tutorial.TriggerHideTutorial();
@@ -201,7 +213,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
             float creditsX = SaveData.Instance.Assists.MirrorMode ? 50f : 1870f;
             string lobbyName = Level.Session.Area.SID.Substring(Level.Session.Area.SID.LastIndexOf('/') + 1);
-            Level.Add(credits = new Credits(new Vector2(creditsX, 0f), GFX.Gui[$"SJ2021/Credits/{lobbyName}"], alignment: 1f, scale: 0.6f, doubleColumns: false));
+            Level.Add(credits = new Credits(new Vector2(creditsX, 0f), thanksImage, alignment: 1f, scale: 0.6f, doubleColumns: false));
 
             yield return 1f;
 
