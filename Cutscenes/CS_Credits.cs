@@ -45,8 +45,10 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         public override void OnBegin(Level level) {
             string mapName = Level.Session.Area.SID.Substring(Level.Session.Area.SID.LastIndexOf('/') + 1);
             fromHeartside = mapName != "0-Prologue";
-            thanksImage = GetThanksImage(mapName);
-
+            if (Everest.Content.TryGet($"Graphics/Atlases/Credits/StrawberryJam2021/{mapName}", out ModAsset thanksAsset)) {
+                thanksImage = new MTexture(VirtualContent.CreateTexture(thanksAsset));
+            }            
+            
             Audio.BusMuted(Buses.GAMEPLAY, mute: true);
             MInput.UpdateNull();
             MInput.Disabled = true;
@@ -64,14 +66,6 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                     Level.Session.SetFlag("opened_mini_heart_door_" + new EntityID(Level.Session.Level, data.ID), true);
                     break;
                 }
-            }
-        }
-
-        private MTexture GetThanksImage(string mapName) {
-            if (Everest.Content.TryGet($"Graphics/Atlases/Credits/StrawberryJam2021/{mapName}", out ModAsset thanksAsset)) {
-                return new MTexture(VirtualContent.CreateTexture(thanksAsset));
-            } else {
-                return GFX.Gui.DefaultFallback;
             }
         }
 
@@ -163,7 +157,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
             yield return 0.5f;
 
-            Level.Add(credits = new Credits(Celeste.TargetCenter, thanksImage));
+            Level.Add(credits = new Credits(Celeste.TargetCenter, thanksImage ?? GFX.Gui.GetFallback()));
 
             while (!finished) {
                 yield return null;
@@ -212,8 +206,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
             yield return 0.5f;
 
             float creditsX = SaveData.Instance.Assists.MirrorMode ? 50f : 1870f;
-            string lobbyName = Level.Session.Area.SID.Substring(Level.Session.Area.SID.LastIndexOf('/') + 1);
-            Level.Add(credits = new Credits(new Vector2(creditsX, 0f), thanksImage, alignment: 1f, scale: 0.6f, doubleColumns: false));
+            Level.Add(credits = new Credits(new Vector2(creditsX, 0f), thanksImage ?? GFX.Gui.GetFallback(), alignment: 1f, scale: 0.6f, doubleColumns: false));
 
             yield return 1f;
 
