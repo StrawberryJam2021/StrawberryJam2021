@@ -18,7 +18,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         }
 
         private void OnTalk(Player player) {
-            Scene.Add(new CS_Credits(fromHeartside: false));
+            Scene.Add(new CS_Credits());
         }
     }
 }
