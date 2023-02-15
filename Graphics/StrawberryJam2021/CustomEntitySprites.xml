@@ -180,7 +180,7 @@
     <jamJar_trailer path="objects/StrawberryJam2021/jamJar/trailer/" start="empty">
         <Justify x="0.5" y="1"/>
         <Loop id="empty" path="jarempty_idle" delay="0.1"/>
-        <Anim id="before_fill" path="jarempty_idle" delay="0.1" frames="8-15" goto="fill"/>
+        <Anim id="before_fill" path="jarempty_idle" delay="0.1" frames="5-15" goto="fill"/>
         <Anim id="fill" path="jarfill_" delay="0.1" goto="full"/>
         <Loop id="full" path="jarfull_idle" delay="0.1"/>
     </jamJar_trailer>
@@ -188,7 +188,7 @@
     <jamJar_beginner path="objects/StrawberryJam2021/jamJar/beginner/" start="empty">
         <Justify x="0.5" y="1"/>
         <Loop id="empty" path="jarempty_idle" delay="0.1"/>
-        <Anim id="before_fill" path="jarempty_idle" delay="0.1" frames="8-15" goto="fill"/>
+        <Anim id="before_fill" path="jarempty_idle" delay="0.1" frames="5-15" goto="fill"/>
         <Anim id="fill" path="jarfill_" delay="0.1" goto="full"/>
         <Anim id="full" path="jarfull_idle" delay="0.1" goto="full:9,fullB:1"/>
         <Anim id="fullB" path="idle_b/jartilt_" delay="0.1" goto="full:9,fullB:1"/>
