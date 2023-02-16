@@ -1,6 +1,6 @@
-{d0cdcc68-d28b-49b6-8502-3de03714d387} event:/sj21_jamjar-red
-{14168b5d-b2da-4e16-8df4-377ebdb99b84} event:/sj21_jamjar-yellow
-{a956d7f4-5f71-4432-8d61-c2c511e2940a} event:/sj21_jamjar-orange
-{f467f48f-9734-4fca-ab2c-37f7c86bf61b} event:/sj21_jamjar-blue
-{be8e5928-5915-4b5b-9637-dffb60e32688} event:/sj21_jamjar-purple
-{98af646e-ac41-43e2-8db4-40d5063b43ad} bank:/sj21_jamjars
+{f81c1b1a-e90e-4442-90a7-8d05db253a0b} event:/sj21_jamjar-blue
+{ecd29d26-72bc-4fdc-ada4-e30bd7546793} event:/sj21_jamjar-orange
+{63498b42-1988-4cbf-9995-a1c3478c263a} event:/sj21_jamjar-purple
+{83607dcd-3fdd-4946-b788-6cb08c742ad4} event:/sj21_jamjar-red
+{cc8b2f52-be5b-424e-9926-93b50ccdb61b} event:/sj21_jamjar-yellow
+{a8371196-9461-4ff6-8994-7032718615a7} bank:/sj21_jamjars
