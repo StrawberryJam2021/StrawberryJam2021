@@ -1,0 +1,4 @@
+StrawberryJam2021_Menu_Hint= 힌트
+StrawberryJam2021_Entities_SolarElevator_DefaultHint= 이 엘리베이터가 작동하려면 들것이 필요합니다.
+StrawberryJam2021_DisplayDashSequence= 대시 순서 표시하기
+StrawberryJam2021_TogglePlaybacks= 녹화본 재생
