@@ -192,6 +192,10 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 tutorial.TriggerHideTutorial();
             }
 
+            foreach (AmbienceParamTrigger trigger in Level.Entities.Where(e => e is AmbienceParamTrigger)) {
+                trigger.RemoveSelf();
+            }
+
             foreach (Entity entity in Level.Entities) {
                 entity.Get<TalkComponent>()?.RemoveSelf();
             }
