@@ -1,0 +1,4 @@
+StrawberryJam2021_Menu_Hint= ヒント
+StrawberryJam2021_Entities_SolarElevator_DefaultHint= エレベーターを動かすには、あるオブジェクトが必要です。
+StrawberryJam2021_DisplayDashSequence= ダッシュ順序を表示する
+StrawberryJam2021_TogglePlaybacks= プレイバックを切り替える

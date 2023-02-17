@@ -1,0 +1,4 @@
+StrawberryJam2021_Menu_Hint= 提示
+StrawberryJam2021_Entities_SolarElevator_DefaultHint= 激活这台电梯需要一个可抓取的实体。
+StrawberryJam2021_DisplayDashSequence= 显示冲刺序列
+StrawberryJam2021_TogglePlaybacks= 显示影子
