@@ -14,6 +14,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
     public class CS_Credits : CutsceneEntity {
         private const float FadeTime = 2f;
         private const string CreditsSong = "event:/sj21_credits";
+        private const string CelesteTasFastRestartFlag = "StopFastRestartFlag";
 
         public static readonly Dictionary<string, string> HeartsidesToLobbies = new() {
             { "StrawberryJam2021/1-Beginner/ZZ-HeartSide", "StrawberryJam2021/0-Lobbies/1-Beginner" },
@@ -43,6 +44,9 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         }
 
         public override void OnBegin(Level level) {
+            // TAS Tool's fast restart skips scenes, so we need to disable it during credits
+            level.Session.SetFlag(CelesteTasFastRestartFlag);
+
             string mapName = Level.Session.Area.SID.Substring(Level.Session.Area.SID.LastIndexOf('/') + 1);
             fromHeartside = mapName != "0-Prologue";
             if (Everest.Content.TryGet($"Graphics/Atlases/Credits/StrawberryJam2021/{mapName}", out ModAsset thanksAsset)) {
