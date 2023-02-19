@@ -98,7 +98,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (parent is Booster) {
                 type = OutlineType.Booster;
             } else if (parent is Refill r){
-                type = r.Get<Image>().Texture.AtlasPath.Contains("Two") ? OutlineType.DoubleRefill : OutlineType.Refill; // yeah I know but this is faster
+                type = r.twoDashes ? OutlineType.DoubleRefill : OutlineType.Refill; // yeah I know but this is faster
             }
             Setup();
         }
