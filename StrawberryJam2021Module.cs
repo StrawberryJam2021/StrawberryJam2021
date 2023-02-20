@@ -77,6 +77,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             GlowController.Load();
 
             Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
+            On.Celeste.Player.OnSquish += Player_OnSquish;
         }
 
         public override void Unload() {
@@ -127,6 +128,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             GlowController.Unload();
 
             Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
+            On.Celeste.Player.OnSquish -= Player_OnSquish;
         }
 
         public override void LoadContent(bool firstLoad) {
@@ -163,6 +165,15 @@ namespace Celeste.Mod.StrawberryJam2021 {
                 return new MeteorShower(child.AttrInt("numberOfMeteors"));
             }
             return null;
+        }
+
+        // Temporary fix for bubble return deaths. Will remove when it's added to Everest.
+        private void Player_OnSquish(On.Celeste.Player.orig_OnSquish orig, Player self, CollisionData data) {
+            if (self.StateMachine.State == Player.StCassetteFly && self.SceneAs<Level>().Session.Area.SID.StartsWith("StrawberryJam2021")) {
+                return;
+            }
+
+            orig(self, data);
         }
 
         //This occurs after all mods get initialized.
