@@ -173,6 +173,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
         public override void OnLeave(Player player)
         {
+            if (player?.Dead ?? true)
+                return;
             if (onExit)
             {
                 bool trigger = true;
@@ -212,7 +214,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
             float timer = delay;
             while(timer > 0)
             {
-                if (player.Dead || player == null) { yield break; }
+                if (player?.Dead ?? true) { yield break; }
                 timer -= Engine.DeltaTime;
                 yield return null;
             }
@@ -240,6 +242,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
                 level.OnEndOfFrame += delegate
                 {
+                    if (player?.Dead ?? true)
+                        return;
                     Tween tween1 = Tween.Create(Tween.TweenMode.Oneshot, null, 0.3f, start: true);
                     tween1.OnUpdate = delegate (Tween t)
                     {
