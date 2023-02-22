@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
     /// <summary>
@@ -25,12 +26,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void EntityAdded(Scene scene) {
             base.EntityAdded(scene);
-            UpdateBeam();
+            UpdateBeam(true);
         }
 
         public override void EntityAwake() {
             base.EntityAwake();
-            UpdateBeam();
+            UpdateBeam(true);
         }
 
         public override void Update() {
@@ -68,7 +69,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        public void UpdateBeam() {
+        public void UpdateBeam(bool fromEntityAdded = false) {
             if (!(Entity is OrientableEntity orientableEntity)) return;
             var level = SceneAs<Level>();
 
@@ -82,23 +83,34 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             int low = 0, safety = 1000;
 
+            // force non-collidable invisible barriers to be collidable if our entity was just added
+            List<Entity> barriers = null;
+            if (fromEntityAdded && CollideWithSolids) {
+                barriers = new List<Entity>();
+                barriers.AddRange(level.Tracker.GetEntities<InvisibleBarrier>().Where(ib => !ib.Collidable));
+                barriers.ForEach(ib => ib.Collidable = true);
+            }
+
             // first check if the laser hits the edge of the screen
             resizeHitbox(high);
             CollidedWithScreenBounds = !CollideWithSolids || !solidCollideCheck();
-            if (CollidedWithScreenBounds) return;
-
-            // perform a binary search to hit the nearest solid
-            while (safety-- > 0) {
-                int pivot = (int) (low + (high - low) / 2f);
-                resizeHitbox(pivot);
-                if (pivot == low)
-                    break;
-                if (solidCollideCheck()) {
-                    high = pivot;
-                } else {
-                    low = pivot;
+            if (!CollidedWithScreenBounds) {
+                // perform a binary search to hit the nearest solid
+                while (safety-- > 0) {
+                    int pivot = (int) (low + (high - low) / 2f);
+                    resizeHitbox(pivot);
+                    if (pivot == low)
+                        break;
+                    if (solidCollideCheck()) {
+                        high = pivot;
+                    } else {
+                        low = pivot;
+                    }
                 }
             }
+
+            // reset collidable for those we modified
+            barriers?.ForEach(ib => ib.Collidable = false);
         }
 
         private bool solidCollideCheck() {
