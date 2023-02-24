@@ -70,7 +70,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             session.CassetteBeatTimer = session.MusicBeatTimer - cassetteOffset;
             session.CassetteWonkyBeatIndex = 0;
-            
+
             var wonkyBlocks = scene.Tracker.GetEntities<WonkyCassetteBlock>().Cast<WonkyCassetteBlock>();
 
             foreach (WonkyCassetteBlock wonkyBlock in wonkyBlocks) {
@@ -296,7 +296,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             orig(self, gametime);
 
-            if (!Engine.DashAssistFreeze && oldFreezeTimer > 0f) {
+            if (!Engine.DashAssistFreeze && Engine.OverloadGameLoop != null && oldFreezeTimer > 0f) {
                 Engine.Scene.Tracker.GetEntity<WonkyCassetteBlockController>()?.AdvanceMusic(Engine.DeltaTime, Engine.Scene, StrawberryJam2021Module.Session);
                 Engine.Scene.Tracker.GetEntities<WonkyCassetteBlock>().ForEach(block => block.Update());
             }
