@@ -1,4 +1,3 @@
-using Celeste.Mod.CollabUtils2.Entities;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
@@ -63,13 +62,6 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 Add(new Coroutine(LobbyRoutine()));
             } else {
                 Add(new Coroutine(MovieRoutine()));
-            }
-
-            foreach (EntityData data in Level.Session.LevelData.Entities) {
-                if (data.Name == "CollabUtils2/MiniHeartDoor") {
-                    Level.Session.SetFlag("opened_mini_heart_door_" + new EntityID(Level.Session.Level, data.ID), true);
-                    break;
-                }
             }
         }
 
@@ -190,8 +182,6 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
 
             Level.Entities.FindFirst<TotalStrawberriesDisplay>()?.RemoveSelf();
             Level.Entities.FindFirst<GameplayStats>()?.RemoveSelf();
-            Level.Entities.OfType<RainbowBerry>().FirstOrDefault()?.RemoveSelf();
-            Level.Entities.OfType<HoloRainbowBerry>().FirstOrDefault()?.RemoveSelf();
 
             foreach (CustomBirdTutorial tutorial in Level.Tracker.GetEntities<CustomBirdTutorial>()) {
                 tutorial.TriggerHideTutorial();
@@ -275,22 +265,30 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
         }
 
         private static bool Level_OnLoadEntity(Level level, LevelData levelData, Vector2 offset, EntityData entityData) {
-            if (entityData.Name == "playbackTutorial" && HeartsidesToLobbies.Values.Contains(level.Session.Area.SID)) {
-                if (level.Entities.ToAdd.OfType<CS_Credits>().FirstOrDefault() is CS_Credits credits) {
-                    string name = entityData.Attr("tutorial");
-                    string path = $"Tutorials/{name}.tas";
-                    if (Everest.Content.TryGet(path, out _)) {
-                        if (TasHelper.Preload(path)) {
-                            credits.playbacks[path] = entityData.Position + offset;
+            if (HeartsidesToLobbies.Values.Contains(level.Session.Area.SID)) {
+                CS_Credits credits = level.Entities.ToAdd.OfType<CS_Credits>().FirstOrDefault();
+                bool inCredits = credits != null;
+                if (inCredits && entityData.Name == "CollabUtils2/RainbowBerry") {
+                    return true;
+                } else if (inCredits && entityData.Name == "CollabUtils2/MiniHeartDoor") {
+                    level.Session.SetFlag("opened_mini_heart_door_" + new EntityID(level.Session.Level, entityData.ID), true);
+                } else if (entityData.Name == "playbackTutorial") {
+                    if (inCredits) {
+                        string name = entityData.Attr("tutorial");
+                        string path = $"Tutorials/{name}.tas";
+                        if (Everest.Content.TryGet(path, out _)) {
+                            if (TasHelper.Preload(path)) {
+                                credits.playbacks[path] = entityData.Position + offset;
+                            } else {
+                                LevelEnter.ErrorMessage = "[SJ] Could not parse inputs in {#ff1144}" + path + "{#}";
+                            }
                         } else {
-                            LevelEnter.ErrorMessage = "[SJ] Could not parse inputs in {#ff1144}" + path + "{#}";
+                            LevelEnter.ErrorMessage = "[SJ] Could not find {#ff1144}" + path + "{#}";
                         }
-                    } else {
-                        LevelEnter.ErrorMessage = "[SJ] Could not find {#ff1144}" + path + "{#}";
                     }
+
+                    return true;
                 }
-                
-                return true;
             }
 
             return false;
