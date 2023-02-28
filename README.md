@@ -1,6 +1,17 @@
 # StrawberryJam2021
 Code mod to be used for the Celeste Community Strawberry Jam Collab 2021.
 
+## Porting
+The SJ code mod is bundled with the main pack, which means mechanics from it cannot be used in other maps, even if you have the plugins. If you would like to use these mechanics elsewhere, they will need to be ported into another helper. The list below tracks the porting status of different mechanics. If something that you want to use is not on the list, reach out to us in the [SJ Discord](https://discord.com/invite/8zx245Ha3x) and ask about it.
+
+
+### Already Ported
+- [Core Mode Trigger No Flash](https://github.com/StrawberryJam2021/StrawberryJam2021/blob/main/Triggers/CoreModeTriggerNoFlash.cs): use the `playEffects` option in the Everest Core Mode Trigger.
+- [Dash Through Spikes](https://github.com/StrawberryJam2021/StrawberryJam2021/blob/main/Entities/DashThroughSpikes.cs): an equivalent implementation is available in [Nerd Helper](https://gamebanana.com/mods/338413).
+
+###  In-Progress
+- [Styleground Masks](https://github.com/StrawberryJam2021/StrawberryJam2021/tree/main/StylegroundMasks): will be ported to a standalone helper.
+
 ## Setup instructions
 
 Feel free to ask a coding team captain in the collab Discord server for help.
