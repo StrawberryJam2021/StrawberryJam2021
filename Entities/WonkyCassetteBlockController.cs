@@ -2,6 +2,7 @@ using Celeste.Mod.Entities;
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Cil;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -261,12 +262,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void Load() {
             On.Celeste.Level.LoadLevel += Level_LoadLevel;
-            On.Monocle.Engine.Update += Engine_Update;
+            IL.Monocle.Engine.Update += Engine_Update;
         }
 
         public static void Unload() {
             On.Celeste.Level.LoadLevel -= Level_LoadLevel;
-            On.Monocle.Engine.Update -= Engine_Update;
+            IL.Monocle.Engine.Update -= Engine_Update;
         }
 
         private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
@@ -291,15 +292,18 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             }
         }
 
-        private static void Engine_Update(On.Monocle.Engine.orig_Update orig, Engine self, GameTime gametime) {
-            float oldFreezeTimer = Engine.FreezeTimer;
+        private static void Engine_Update(ILContext context) {
+            ILCursor cursor = new ILCursor(context);
 
-            orig(self, gametime);
-
-            if (!Engine.DashAssistFreeze && oldFreezeTimer > 0f) {
-                Engine.Scene.Tracker.GetEntity<WonkyCassetteBlockController>()?.AdvanceMusic(Engine.DeltaTime, Engine.Scene, StrawberryJam2021Module.Session);
-                Engine.Scene.Tracker.GetEntities<WonkyCassetteBlock>().ForEach(block => block.Update());
+            if (cursor.TryGotoNext(instr => instr.MatchLdsfld<Engine>("FreezeTimer"),
+                    instr => instr.MatchCall<Engine>("get_RawDeltaTime"))) {
+                cursor.EmitDelegate<Action>(FreezeUpdate);
             }
+        }
+
+        private static void FreezeUpdate() {
+            Engine.Scene.Tracker.GetEntity<WonkyCassetteBlockController>()?.AdvanceMusic(Engine.DeltaTime, Engine.Scene, StrawberryJam2021Module.Session);
+            Engine.Scene.Tracker.GetEntities<WonkyCassetteBlock>().ForEach(block => block.Update());
         }
     }
 }
