@@ -137,34 +137,28 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                                 
                             else if (up && !down && left && right) {
                                 texture = outerEdges[1, 2, index];
-
                                 outlineTexture = outerEdgesOutlines[1, 2, index];
                             }
                                 
                             else if (up && down && !left && right) {
                                 texture = outerEdges[0, 1, index];
-
                                 outlineTexture = outerEdgesOutlines[0, 1, index];
                             }
                                 
                             else if (up && down && left && !right) {
                                 texture = outerEdges[2, 1, index];
-
                                 outlineTexture = outerEdgesOutlines[2, 1, index];
                             }
                                 
                             else if (right && down) {
-
                                 texture = (downright ? outerEdges[0, 0, index] : wallEdges[0, 0, index]);
                                 outlineTexture = (downright ? outerEdgesOutlines[0, 0, index] : outerEdgesOutlines[0, 0, index]);
                             }
                             else if (left && down) {
-
                                 texture = (downleft ? outerEdges[2, 0, index] : wallEdges[1, 0, index]);
                                 outlineTexture = (downleft ? outerEdgesOutlines[2, 0, index] : outerEdgesOutlines[1, 0, index]);
                             }
                             else if (right && up) {
-
                                 texture = (upright ? outerEdges[0, 2, index] : wallEdges[0, 1, index]);
                                 outlineTexture = (upright ? outerEdgesOutlines[0, 2, index] : outerEdgesOutlines[0, 1, index]);
                             }
@@ -174,7 +168,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                                 outlineTexture = (upleft ? outerEdgesOutlines[2, 2, index] : outerEdgesOutlines[1, 1, index]);
                             }
                             else if (left && right && !up && !down) {
-
                                 texture = wallEdges[2, 0, index];
                                 outlineTexture = wallEdgesOutlines[2, 0, index];
                             }
@@ -425,38 +418,39 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             innerCorners[0, 1] = tiles.GetSubtexture(0, 64, 8, 8); // inner bottom left
             innerCorners[1, 1] = tiles.GetSubtexture(24, 64, 8, 8); // inner bottom right
 
+            //basically a copy of tiles, but for the outline of the loopyblock. we need this because we want a colored outline, which can't be done without a pure texture because DrawOutline...(...) always
             MTexture tilesOutlines = GFX.Game["objects/StrawberryJam2021/loopBlock/tilesoutline"];
             for (int i = 0; i < 3; i++) {
                 int tx = i * 8;
 
-                outerEdgesOutlines[0, 0, i] = tilesOutlines.GetSubtexture(tx, 0, 8, 8); // outer top left
-                outerEdgesOutlines[2, 0, i] = tilesOutlines.GetSubtexture(24 + tx, 0, 8, 8); // outer top right
-                outerEdgesOutlines[0, 2, i] = tilesOutlines.GetSubtexture(tx, 8, 8, 8); // outer bottom left
-                outerEdgesOutlines[2, 2, i] = tilesOutlines.GetSubtexture(24 + tx, 8, 8, 8); // outer bottom right
-                outerEdgesOutlines[1, 0, i] = tilesOutlines.GetSubtexture(tx, 16, 8, 8); // outer top
-                outerEdgesOutlines[1, 2, i] = tilesOutlines.GetSubtexture(tx, 24, 8, 8); // outer bottom
-                outerEdgesOutlines[0, 1, i] = tilesOutlines.GetSubtexture(24 + tx, 16, 8, 8); // outer left
-                outerEdgesOutlines[2, 1, i] = tilesOutlines.GetSubtexture(24 + tx, 24, 8, 8); // outer right
+                outerEdgesOutlines[0, 0, i] = tilesOutlines.GetSubtexture(tx, 0, 8, 8); // outer outline top left
+                outerEdgesOutlines[2, 0, i] = tilesOutlines.GetSubtexture(24 + tx, 0, 8, 8); // outer outline top right
+                outerEdgesOutlines[0, 2, i] = tilesOutlines.GetSubtexture(tx, 8, 8, 8); // outer outline bottom left
+                outerEdgesOutlines[2, 2, i] = tilesOutlines.GetSubtexture(24 + tx, 8, 8, 8); // outer outline bottom right
+                outerEdgesOutlines[1, 0, i] = tilesOutlines.GetSubtexture(tx, 16, 8, 8); // outer outline top
+                outerEdgesOutlines[1, 2, i] = tilesOutlines.GetSubtexture(tx, 24, 8, 8); // outer outline bottom
+                outerEdgesOutlines[0, 1, i] = tilesOutlines.GetSubtexture(24 + tx, 16, 8, 8); // outer outline left
+                outerEdgesOutlines[2, 1, i] = tilesOutlines.GetSubtexture(24 + tx, 24, 8, 8); // outer outline right
 
-                wallEdgesOutlines[0, 0, i] = tilesOutlines.GetSubtexture(tx, 32, 8, 8); // outer inner top left
-                wallEdgesOutlines[1, 0, i] = tilesOutlines.GetSubtexture(24 + tx, 32, 8, 8); // outer inner top right
-                wallEdgesOutlines[0, 1, i] = tilesOutlines.GetSubtexture(tx, 40, 8, 8); // outer inner bottom left
-                wallEdgesOutlines[1, 1, i] = tilesOutlines.GetSubtexture(24 + tx, 40, 8, 8); // outer inner bottom right
-                wallEdgesOutlines[2, 0, i] = tilesOutlines.GetSubtexture(tx, 48, 8, 8); // outer inner horizontal
-                wallEdgesOutlines[2, 1, i] = tilesOutlines.GetSubtexture(24 + tx, 48, 8, 8); // outer inner vertical
+                wallEdgesOutlines[0, 0, i] = tilesOutlines.GetSubtexture(tx, 32, 8, 8); // outer outline inner top left
+                wallEdgesOutlines[1, 0, i] = tilesOutlines.GetSubtexture(24 + tx, 32, 8, 8); // outer outline inner top right
+                wallEdgesOutlines[0, 1, i] = tilesOutlines.GetSubtexture(tx, 40, 8, 8); // outer outline inner bottom left
+                wallEdgesOutlines[1, 1, i] = tilesOutlines.GetSubtexture(24 + tx, 40, 8, 8); // outer outline inner bottom right
+                wallEdgesOutlines[2, 0, i] = tilesOutlines.GetSubtexture(tx, 48, 8, 8); // outer outline inner horizontal
+                wallEdgesOutlines[2, 1, i] = tilesOutlines.GetSubtexture(24 + tx, 48, 8, 8); // outer outline inner vertical
 
                 if (i > 0) {
-                    centerTilesOutlines[i - 1] = tilesOutlines.GetSubtexture(tx, 56, 8, 8); // center 0, 1
-                    centerTilesOutlines[i + 1] = tilesOutlines.GetSubtexture(24 + tx, 56, 8, 8); // center 2, 3
-                    centerTilesOutlines[i + 3] = tilesOutlines.GetSubtexture(tx, 64, 8, 8); // center 4, 5
-                    centerTilesOutlines[i + 5] = tilesOutlines.GetSubtexture(24 + tx, 64, 8, 8); // center 6, 7
+                    centerTilesOutlines[i - 1] = tilesOutlines.GetSubtexture(tx, 56, 8, 8); // center outline 0, 1
+                    centerTilesOutlines[i + 1] = tilesOutlines.GetSubtexture(24 + tx, 56, 8, 8); // center outline 2, 3
+                    centerTilesOutlines[i + 3] = tilesOutlines.GetSubtexture(tx, 64, 8, 8); // center outline 4, 5
+                    centerTilesOutlines[i + 5] = tilesOutlines.GetSubtexture(24 + tx, 64, 8, 8); // center outline 6, 7
                 }
             }
 
-            innerCornersOutlines[0, 0] = tilesOutlines.GetSubtexture(0, 56, 8, 8); // inner top left
-            innerCornersOutlines[1, 0] = tilesOutlines.GetSubtexture(24, 56, 8, 8); // inner top right
-            innerCornersOutlines[0, 1] = tilesOutlines.GetSubtexture(0, 64, 8, 8); // inner bottom left
-            innerCornersOutlines[1, 1] = tilesOutlines.GetSubtexture(24, 64, 8, 8); // inner bottom right
+            innerCornersOutlines[0, 0] = tilesOutlines.GetSubtexture(0, 56, 8, 8); // inner outline top left
+            innerCornersOutlines[1, 0] = tilesOutlines.GetSubtexture(24, 56, 8, 8); // inner outline top right
+            innerCornersOutlines[0, 1] = tilesOutlines.GetSubtexture(0, 64, 8, 8); // inner outline bottom left
+            innerCornersOutlines[1, 1] = tilesOutlines.GetSubtexture(24, 64, 8, 8); // inner outline bottom right
 
         }
     }
