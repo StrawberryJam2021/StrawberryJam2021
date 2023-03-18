@@ -1,5 +1,6 @@
 ﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
 
@@ -15,10 +16,23 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         // Center tile doesn't need to be stored in a structured 2d array, but it has 8 variations.
         private static readonly MTexture[] centerTiles = new MTexture[8];
 
+        // The third dimension is to store the same tiles with different details and variations.
+        private static readonly MTexture[,,] outerEdgesOutlines = new MTexture[3, 3, 3];
+        private static readonly MTexture[,,] wallEdgesOutlines = new MTexture[3, 2, 3];
+        // This one has no variation, always used 4 times, or never.
+        private static readonly MTexture[,] innerCornersOutlines = new MTexture[2, 2];
+        // Center tile doesn't need to be stored in a structured 2d array, but it has 8 variations.
+        private static readonly MTexture[] centerTilesOutlines = new MTexture[8];
+
         private Vector2 start;
         private Vector2 speed;
 
         private MTexture[,] tiles;
+
+        //tilesOutline is the same as tiles in setup, but with a pure white texture. This allows for a solid colored outline due to how outline code works.
+        //Simply using tiles creates a colored outline with the same texture variations as tiles itself. This is not normally noticeable because Mtexture outlines are always rendered with a pure black multiplier.
+        private MTexture[,] tilesOutlines;
+
         private Vector2 scale = Vector2.One;
         private Color color;
 
@@ -67,6 +81,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             int h = (int) (Height / 8f);
 
             tiles = new MTexture[w, h];
+            tilesOutlines = new MTexture[w, h];
             VirtualMap<bool> tileMap = new VirtualMap<bool>(w, h);
 
             for (int i = 0; i < w; i++) {
@@ -93,42 +108,86 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         bool filler = innerEdge && upleft && upright && downleft && downright;
 
                         MTexture texture = null;
+                        MTexture outlineTexture = null;
                         if (filler) {
                             texture = centerTiles[Calc.Random.Next(8)];
                         } else if (innerEdge) {
-                            if (!downright)
+                            if (!downright) {
                                 texture = innerCorners[0, 0];
-                            else if (!downleft)
+                                outlineTexture = innerCornersOutlines[0, 0];
+                            }
+                            else if (!downleft) {
                                 texture = innerCorners[1, 0];
-                            else if (!upright)
+                                outlineTexture = innerCornersOutlines[1, 0];
+                            }
+                            else if (!upright) {
                                 texture = innerCorners[0, 1];
-                            else if (!upleft)
+                                outlineTexture = innerCornersOutlines[0, 1];
+                            } 
+                            else if (!upleft) {
                                 texture = innerCorners[1, 1];
+                                outlineTexture = innerCornersOutlines[1, 1];
+                            }
+                                
                         } else {
-                            if (!up && down && left && right)
+                            if (!up && down && left && right) {
                                 texture = outerEdges[1, 0, index];
-                            else if (up && !down && left && right)
+                                outlineTexture = outerEdgesOutlines[1, 0, index];
+                            }
+                                
+                            else if (up && !down && left && right) {
                                 texture = outerEdges[1, 2, index];
-                            else if (up && down && !left && right)
+
+                                outlineTexture = outerEdgesOutlines[1, 2, index];
+                            }
+                                
+                            else if (up && down && !left && right) {
                                 texture = outerEdges[0, 1, index];
-                            else if (up && down && left && !right)
+
+                                outlineTexture = outerEdgesOutlines[0, 1, index];
+                            }
+                                
+                            else if (up && down && left && !right) {
                                 texture = outerEdges[2, 1, index];
-                            else if (right && down)
+
+                                outlineTexture = outerEdgesOutlines[2, 1, index];
+                            }
+                                
+                            else if (right && down) {
+
                                 texture = (downright ? outerEdges[0, 0, index] : wallEdges[0, 0, index]);
-                            else if (left && down)
+                                outlineTexture = (downright ? outerEdgesOutlines[0, 0, index] : outerEdgesOutlines[0, 0, index]);
+                            }
+                            else if (left && down) {
+
                                 texture = (downleft ? outerEdges[2, 0, index] : wallEdges[1, 0, index]);
-                            else if (right && up)
+                                outlineTexture = (downleft ? outerEdgesOutlines[2, 0, index] : outerEdgesOutlines[1, 0, index]);
+                            }
+                            else if (right && up) {
+
                                 texture = (upright ? outerEdges[0, 2, index] : wallEdges[0, 1, index]);
-                            else if (left && up)
+                                outlineTexture = (upright ? outerEdgesOutlines[0, 2, index] : outerEdgesOutlines[0, 1, index]);
+                            }
+                            else if (left && up) {
+
                                 texture = (upleft ? outerEdges[2, 2, index] : wallEdges[1, 1, index]);
-                            else if (left && right && !up && !down)
+                                outlineTexture = (upleft ? outerEdgesOutlines[2, 2, index] : outerEdgesOutlines[1, 1, index]);
+                            }
+                            else if (left && right && !up && !down) {
+
                                 texture = wallEdges[2, 0, index];
-                            else if (!left && !right && up && down)
+                                outlineTexture = wallEdgesOutlines[2, 0, index];
+                            }
+                            else if (!left && !right && up && down) {
                                 texture = wallEdges[2, 1, index];
+                                outlineTexture = wallEdgesOutlines[2, 1, index];
+                            }
                         }
 
                         if (texture != null)
                             tiles[i, j] = texture;
+                        if (outlineTexture != null)
+                            tilesOutlines[i, j] = outlineTexture;
                     }
                 }
             }
@@ -299,6 +358,30 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             for (int i = 0; i < w; i++) {
                 for (int j = 0; j < h; j++) {
+                    MTexture tile = tilesOutlines[i, j];
+                    if (tile != null) {
+                        Vector2 pos = Center + (new Vector2(X + i * 8 + 4, Y + j * 8 + 4) - Center) * scale;
+
+                        //MTexture.DrawOutline...(...) accepts a color, but always renders with black, which looks bad on LoopyBlocks.
+                        //This is a modified version of MTexture.DrawOutlineCentered(pos, color, scale) that draws with that LoopyBlock's Color
+                        float scaleFix = tile.ScaleFix;
+                        Vector2 tileScale = scale * scaleFix;
+                        Rectangle clipRect = tile.ClipRect;
+                        Vector2 origin = (tile.Center - tile.DrawOffset) / scaleFix;
+                        for (int i2 = -1; i2 <= 1; i2++) {
+                            for (int j2 = -1; j2 <= 1; j2++) {
+                                if (i2 != 0 || j2 != 0) {
+                                    Monocle.Draw.SpriteBatch.Draw(tile.Texture.Texture_Safe, pos + new Vector2(i2, j2), clipRect, new Color(color.R / 255F * 0.5F, color.G / 255F * 0.5F, color.B / 255F * 0.5F, color.A), 0f, origin, tileScale, SpriteEffects.None, 1f);
+                                }
+                            }
+                        }
+                        Monocle.Draw.SpriteBatch.Draw(tile.Texture.Texture_Safe, pos, clipRect, new Color(color.R / 255F * 0.5F, color.G / 255F * 0.5F, color.B / 255F * 0.5F, color.A), 0f, origin, scale, SpriteEffects.None, 1f);
+                    }
+                }
+            }
+
+            for (int i = 0; i < w; i++) {
+                for (int j = 0; j < h; j++) {
                     MTexture tile = tiles[i, j];
                     if (tile != null) {
                         Vector2 pos = Center + (new Vector2(X + i * 8 + 4, Y + j * 8 + 4) - Center) * scale;
@@ -341,6 +424,40 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             innerCorners[1, 0] = tiles.GetSubtexture(24, 56, 8, 8); // inner top right
             innerCorners[0, 1] = tiles.GetSubtexture(0, 64, 8, 8); // inner bottom left
             innerCorners[1, 1] = tiles.GetSubtexture(24, 64, 8, 8); // inner bottom right
+
+            MTexture tilesOutlines = GFX.Game["objects/StrawberryJam2021/loopBlock/tilesoutline"];
+            for (int i = 0; i < 3; i++) {
+                int tx = i * 8;
+
+                outerEdgesOutlines[0, 0, i] = tilesOutlines.GetSubtexture(tx, 0, 8, 8); // outer top left
+                outerEdgesOutlines[2, 0, i] = tilesOutlines.GetSubtexture(24 + tx, 0, 8, 8); // outer top right
+                outerEdgesOutlines[0, 2, i] = tilesOutlines.GetSubtexture(tx, 8, 8, 8); // outer bottom left
+                outerEdgesOutlines[2, 2, i] = tilesOutlines.GetSubtexture(24 + tx, 8, 8, 8); // outer bottom right
+                outerEdgesOutlines[1, 0, i] = tilesOutlines.GetSubtexture(tx, 16, 8, 8); // outer top
+                outerEdgesOutlines[1, 2, i] = tilesOutlines.GetSubtexture(tx, 24, 8, 8); // outer bottom
+                outerEdgesOutlines[0, 1, i] = tilesOutlines.GetSubtexture(24 + tx, 16, 8, 8); // outer left
+                outerEdgesOutlines[2, 1, i] = tilesOutlines.GetSubtexture(24 + tx, 24, 8, 8); // outer right
+
+                wallEdgesOutlines[0, 0, i] = tilesOutlines.GetSubtexture(tx, 32, 8, 8); // outer inner top left
+                wallEdgesOutlines[1, 0, i] = tilesOutlines.GetSubtexture(24 + tx, 32, 8, 8); // outer inner top right
+                wallEdgesOutlines[0, 1, i] = tilesOutlines.GetSubtexture(tx, 40, 8, 8); // outer inner bottom left
+                wallEdgesOutlines[1, 1, i] = tilesOutlines.GetSubtexture(24 + tx, 40, 8, 8); // outer inner bottom right
+                wallEdgesOutlines[2, 0, i] = tilesOutlines.GetSubtexture(tx, 48, 8, 8); // outer inner horizontal
+                wallEdgesOutlines[2, 1, i] = tilesOutlines.GetSubtexture(24 + tx, 48, 8, 8); // outer inner vertical
+
+                if (i > 0) {
+                    centerTilesOutlines[i - 1] = tilesOutlines.GetSubtexture(tx, 56, 8, 8); // center 0, 1
+                    centerTilesOutlines[i + 1] = tilesOutlines.GetSubtexture(24 + tx, 56, 8, 8); // center 2, 3
+                    centerTilesOutlines[i + 3] = tilesOutlines.GetSubtexture(tx, 64, 8, 8); // center 4, 5
+                    centerTilesOutlines[i + 5] = tilesOutlines.GetSubtexture(24 + tx, 64, 8, 8); // center 6, 7
+                }
+            }
+
+            innerCornersOutlines[0, 0] = tilesOutlines.GetSubtexture(0, 56, 8, 8); // inner top left
+            innerCornersOutlines[1, 0] = tilesOutlines.GetSubtexture(24, 56, 8, 8); // inner top right
+            innerCornersOutlines[0, 1] = tilesOutlines.GetSubtexture(0, 64, 8, 8); // inner bottom left
+            innerCornersOutlines[1, 1] = tilesOutlines.GetSubtexture(24, 64, 8, 8); // inner bottom right
+
         }
     }
 }
