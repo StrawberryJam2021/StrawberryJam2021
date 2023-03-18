@@ -152,20 +152,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                                 
                             else if (right && down) {
                                 texture = (downright ? outerEdges[0, 0, index] : wallEdges[0, 0, index]);
-                                outlineTexture = (downright ? outerEdgesOutlines[0, 0, index] : outerEdgesOutlines[0, 0, index]);
+                                outlineTexture = (downright ? outerEdgesOutlines[0, 0, index] : wallEdgesOutlines[0, 0, index]);
                             }
                             else if (left && down) {
                                 texture = (downleft ? outerEdges[2, 0, index] : wallEdges[1, 0, index]);
-                                outlineTexture = (downleft ? outerEdgesOutlines[2, 0, index] : outerEdgesOutlines[1, 0, index]);
+                                outlineTexture = (downleft ? outerEdgesOutlines[2, 0, index] : wallEdgesOutlines[1, 0, index]);
                             }
                             else if (right && up) {
                                 texture = (upright ? outerEdges[0, 2, index] : wallEdges[0, 1, index]);
-                                outlineTexture = (upright ? outerEdgesOutlines[0, 2, index] : outerEdgesOutlines[0, 1, index]);
+                                outlineTexture = (upright ? outerEdgesOutlines[0, 2, index] : wallEdgesOutlines[0, 1, index]);
                             }
                             else if (left && up) {
 
                                 texture = (upleft ? outerEdges[2, 2, index] : wallEdges[1, 1, index]);
-                                outlineTexture = (upleft ? outerEdgesOutlines[2, 2, index] : outerEdgesOutlines[1, 1, index]);
+                                outlineTexture = (upleft ? outerEdgesOutlines[2, 2, index] : wallEdgesOutlines[1, 1, index]);
                             }
                             else if (left && right && !up && !down) {
                                 texture = wallEdges[2, 0, index];
@@ -369,7 +369,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                             }
                         }
                         Monocle.Draw.SpriteBatch.Draw(tile.Texture.Texture_Safe, pos, clipRect, Color.Lerp(color, Color.Black, 0.5F), 0f, origin, scale, SpriteEffects.None, 1f);
-                        
                     }
                 }
             }
