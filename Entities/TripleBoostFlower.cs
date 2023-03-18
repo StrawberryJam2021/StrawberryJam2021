@@ -337,5 +337,10 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             speed.X *= -1f;
         }
 
+        public override void Render() {
+            if(sprite.Visible) sprite.DrawOutline();
+            base.Render();
+        }
+
     }
 }
