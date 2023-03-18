@@ -344,6 +344,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public override void Render() {
+            const float lerpDarkness = 0.50F;
+
             base.Render();
 
             int w = (int) (Width / 8f);
@@ -364,7 +366,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                         for (int i2 = -1; i2 <= 1; i2++) {
                             for (int j2 = -1; j2 <= 1; j2++) {
                                 if (i2 != 0 || j2 != 0) {
-                                    Monocle.Draw.SpriteBatch.Draw(tile.Texture.Texture_Safe, pos + new Vector2(i2, j2), clipRect, Color.Lerp(color, Color.Black, 0.5F), 0f, origin, tileScale, SpriteEffects.None, 1f);
+                                    Monocle.Draw.SpriteBatch.Draw(tile.Texture.Texture_Safe, pos + new Vector2(i2, j2), clipRect, Color.Lerp(color, Color.Black, lerpDarkness), 0f, origin, tileScale, SpriteEffects.None, 1f);
                                 }
                             }
                         }
