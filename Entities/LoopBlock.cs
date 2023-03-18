@@ -368,7 +368,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                                 }
                             }
                         }
-                        Monocle.Draw.SpriteBatch.Draw(tile.Texture.Texture_Safe, pos, clipRect, Color.Lerp(color, Color.Black, 0.5F), 0f, origin, scale, SpriteEffects.None, 1f);
                     }
                 }
             }
