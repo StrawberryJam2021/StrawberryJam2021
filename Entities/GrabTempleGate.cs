@@ -4,23 +4,22 @@ using Monocle;
 using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
+
     [CustomEntity("SJ2021/GrabTempleGate")]
-    class GrabTempleGate : Solid {
-
+    public class GrabTempleGate : Solid {
         private const float switchTimeDelay = 0.2f;
-        private int closedHeight;
+        private readonly int closedHeight;
 
-        private Sprite sprite;
-        private Shaker shaker;
-        private float drawHeight;
-        private float drawHeightMoveSpeed;
+        private readonly Sprite sprite;
+        private readonly Shaker shaker;
 
-        private bool startClosed;
+        private readonly bool startClosed;
         private bool open;
 
+        private float drawHeight, drawHeightMoveSpeed;
         private float canSwitchTimer;
 
-        private SoundSource sfx;
+        private readonly SoundSource sfx;
 
         public GrabTempleGate(Vector2 position, bool startClosed)
             : base(position, 8f, 48, safe: true) {
@@ -37,23 +36,20 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         public GrabTempleGate(EntityData data, Vector2 offset)
-            : this(data.Position + offset, data.Bool("closed")) {
-        }
+            : this(data.Position + offset, data.Bool("closed")) { }
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
-            if (!startClosed) {
+
+            if (!startClosed)
                 StartOpen();
-            }
+
             drawHeight = Math.Max(4f, Height);
         }
 
         public bool CloseBehindPlayerCheck() {
-            Player entity = Scene.Tracker.GetEntity<Player>();
-            if (entity != null) {
-                return entity.X < X;
-            }
-            return false;
+            Player player = Scene.Tracker.GetEntity<Player>();
+            return player is not null && player.X < X;
         }
 
         public void SwitchOpen() {
@@ -95,6 +91,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 Collider.Height = height;
                 return;
             }
+
             float y = Y;
             int num = (int) Collider.Height;
             if (Collider.Height < 64f) {
@@ -116,27 +113,25 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public override void Update() {
             base.Update();
+
             canSwitchTimer = Calc.Approach(canSwitchTimer, 0f, Engine.DeltaTime);
             if (Input.Grab.Pressed && canSwitchTimer == 0f) {
                 sfx.Stop();
-                if (open) {
+                if (open)
                     Close();
-                } else {
+                else
                     Open();
-                }
                 canSwitchTimer = switchTimeDelay;
             }
 
             float num = Math.Max(4f, Height);
-            if (drawHeight != num) {
+            if (drawHeight != num)
                 drawHeight = Calc.Approach(drawHeight, num, drawHeightMoveSpeed * Engine.DeltaTime);
-            }
         }
 
         public override void Render() {
-            Vector2 value = new Vector2(Math.Sign(shaker.Value.X), 0f);
             Draw.Rect(X - 2f, Y - 8f, 13f, 10f, Color.Black);
-            sprite.DrawSubrect(Vector2.Zero + value, new Rectangle(0, (int) (sprite.Height - drawHeight), (int) sprite.Width, (int) drawHeight));
+            sprite.DrawSubrect(Vector2.UnitX * Math.Sign(shaker.Value.X), new Rectangle(0, (int) (sprite.Height - drawHeight), (int) sprite.Width, (int) drawHeight));
         }
 
     }
