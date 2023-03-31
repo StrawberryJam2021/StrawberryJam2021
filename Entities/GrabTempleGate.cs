@@ -1,11 +1,13 @@
 ﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Cil;
 using System;
 
 namespace Celeste.Mod.StrawberryJam2021.Entities {
 
     [CustomEntity("SJ2021/GrabTempleGate")]
+    [Tracked]
     public class GrabTempleGate : Solid {
         private const float switchTimeDelay = 0.2f;
         private readonly int closedHeight;
@@ -111,9 +113,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             Collider.Height = height;
         }
 
-        public override void Update() {
-            base.Update();
-
+        private void CheckToggle() {
             canSwitchTimer = Calc.Approach(canSwitchTimer, 0f, Engine.DeltaTime);
             if (Input.Grab.Pressed && canSwitchTimer == 0f) {
                 sfx.Stop();
@@ -123,6 +123,12 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                     Open();
                 canSwitchTimer = switchTimeDelay;
             }
+        }
+
+        public override void Update() {
+            base.Update();
+
+            CheckToggle();
 
             float num = Math.Max(4f, Height);
             if (drawHeight != num)
@@ -134,5 +140,35 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             sprite.DrawSubrect(Vector2.UnitX * Math.Sign(shaker.Value.X), new Rectangle(0, (int) (sprite.Height - drawHeight), (int) sprite.Width, (int) drawHeight));
         }
 
+        private static void UpdateAll() {
+            if (Engine.Scene is not Level level)
+                return;
+
+            foreach (GrabTempleGate gate in level.Tracker.GetEntities<GrabTempleGate>())
+                gate.CheckToggle();
+        }
+
+        #region Hooks
+
+        internal static void Load() {
+            IL.Monocle.Engine.Update += Engine_Update;
+        }
+
+        internal static void Unload() {
+            IL.Monocle.Engine.Update -= Engine_Update;
+        }
+
+        private static void Engine_Update(ILContext il) {
+            ILCursor cursor = new(il);
+
+            cursor.TryGotoNext(
+                instr => instr.MatchLdsfld<Engine>(nameof(Engine.FreezeTimer)),
+                instr => instr.MatchCall<Engine>("get_RawDeltaTime")
+            );
+
+            cursor.EmitDelegate<Action>(UpdateAll);
+        }
+
+        #endregion
     }
 }
