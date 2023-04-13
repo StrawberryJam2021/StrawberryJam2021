@@ -38,7 +38,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
 
             Level level = SceneAs<Level>();
 
-            if (level.Session.Dashes != 0 || !level.Session.StartedFromBeginning) {
+            if (level.Session.Dashes != 0 || (!level.Session.StartedFromBeginning && !level.Session.RestartedFromGolden)) {
                 scene.Remove(trackedEntities);
                 removed = true;
             }
