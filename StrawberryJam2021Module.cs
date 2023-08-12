@@ -76,7 +76,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             TasHelper.Load();
             GlowController.Load();
             GrabTempleGate.Load();
-
+            LiftBoostTrigger.Load();
             Everest.Events.Level.OnLoadBackdrop += onLoadBackdrop;
             On.Celeste.Player.OnSquish += Player_OnSquish;
         }
@@ -128,7 +128,7 @@ namespace Celeste.Mod.StrawberryJam2021 {
             TasHelper.Unload();
             GlowController.Unload();
             GrabTempleGate.Unload();
-
+            LiftBoostTrigger.Unload();
             Everest.Events.Level.OnLoadBackdrop -= onLoadBackdrop;
             On.Celeste.Player.OnSquish -= Player_OnSquish;
         }
