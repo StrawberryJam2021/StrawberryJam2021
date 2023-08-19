@@ -61,7 +61,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         private static Sprite SpriteBank_Create(On.Monocle.SpriteBank.orig_Create orig, SpriteBank self, string id) {
-            if (spriteSwaps.TryGetValue(id, out string newId)) {
+            if (self == GFX.SpriteBank && spriteSwaps.TryGetValue(id, out string newId)) {
                 return orig(self, newId);
             }
 
@@ -69,7 +69,7 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
         }
 
         private static Sprite SpriteBank_CreateOn(On.Monocle.SpriteBank.orig_CreateOn orig, SpriteBank self, Sprite sprite, string id) {
-            if (spriteSwaps.TryGetValue(id, out string newId)) {
+            if (self == GFX.SpriteBank && spriteSwaps.TryGetValue(id, out string newId)) {
                 return orig(self, sprite, newId);
             }
 
