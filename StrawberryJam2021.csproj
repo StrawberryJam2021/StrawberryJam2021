@@ -43,6 +43,10 @@
       <HintPath>lib-stripped\CavernHelper.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="CherryHelper">
+      <HintPath>lib-stripped\CherryHelper.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="CollabUtils2">
       <HintPath>lib-stripped\CollabUtils2.dll</HintPath>
       <Private>false</Private>
