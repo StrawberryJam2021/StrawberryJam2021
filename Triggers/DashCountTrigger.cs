@@ -52,8 +52,8 @@ namespace Celeste.Mod.StrawberryJam2021.Triggers {
                 On.Celeste.PlayerHair.GetHairColor += ModPlayerGetHairColor;
                 On.Celeste.Player.GetCurrentTrailColor += ModPlayerGetTrailColor;
                 On.Celeste.Player.Die += ModDie;
+                On.Celeste.DeathEffect.Draw += ModDraw;
             }
-            On.Celeste.DeathEffect.Draw += ModDraw;
         }
 
         internal static void Unload() {
