@@ -1,0 +1,4 @@
+StrawberryJam2021_Menu_Hint= Подсказки
+StrawberryJam2021_Entities_SolarElevator_DefaultHint= Чтобы лифт работал, нужно держать что-то в руках.
+StrawberryJam2021_DisplayDashSequence= Отображать Последовательность Дэшей
+StrawberryJam2021_TogglePlaybacks= Включить Показ Механик

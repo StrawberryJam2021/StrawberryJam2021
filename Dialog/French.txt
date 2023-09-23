@@ -1,0 +1,4 @@
+StrawberryJam2021_Menu_Hint= Indice
+StrawberryJam2021_Entities_SolarElevator_DefaultHint= Cet ascenseur nécessite un objet à porter.
+StrawberryJam2021_DisplayDashSequence= Afficher l’ordre des dash
+StrawberryJam2021_TogglePlaybacks= Activer les playbacks
