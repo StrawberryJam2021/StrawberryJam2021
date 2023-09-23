@@ -120,8 +120,10 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 new Team("SJ2021_Credits_Category_UX_Design", "SJ2021_Credits_Names_UX_Design"),
                 new Team("SJ2021_Credits_Category_Localization",
                     new Team.Section("SJ2021_Credits_Category_Localization_Chinese", "SJ2021_Credits_Names_Localization_Chinese"),
+                    new Team.Section("SJ2021_Credits_Category_Localization_French", "SJ2021_Credits_Names_Localization_French"),
                     new Team.Section("SJ2021_Credits_Category_Localization_Japanese", "SJ2021_Credits_Names_Localization_Japanese"),
-                    new Team.Section("SJ2021_Credits_Category_Localization_Korean", "SJ2021_Credits_Names_Localization_Korean")
+                    new Team.Section("SJ2021_Credits_Category_Localization_Korean", "SJ2021_Credits_Names_Localization_Korean"),
+                    new Team.Section("SJ2021_Credits_Category_Localization_Russian", "SJ2021_Credits_Names_Localization_Russian")
                 ),
                 new Special("SJ2021_Credits_Category_Special", "SJ2021_Credits_Names_Special"),
                 new Team("SJ2021_Credits_Category_Helpers", "SJ2021_Credits_Names_Helpers", split: doubleColumns),
