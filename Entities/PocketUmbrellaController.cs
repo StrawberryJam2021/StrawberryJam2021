@@ -66,7 +66,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
         }
 
         private static void ModForPocketUmbrella(ILCursor cursor) {
-            cursor.EmitDelegate<Func<Holdable, bool>>((h) => h == null ? false : !(h.Entity is not null && h.Entity is PocketUmbrella));
+            cursor.EmitDelegate<Func<Holdable, Holdable>>((h) => (h is null || h.Entity is PocketUmbrella) ? null : h);
         }
 
         private static void Engine_Update(ILContext il) {
