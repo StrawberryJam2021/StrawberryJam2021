@@ -8,8 +8,8 @@ jobs:
   automate-project-columns:
     runs-on: ubuntu-latest
     steps:
-      - uses: alex-page/github-project-automation-plus@v0.5.1
+      - uses: alex-page/github-project-automation-plus@v0.8.3
         with:
           project: Strawberry Jam Collab 2021
           column: Pull Requests
-          repo-token: ${{ secrets.JADEBOT_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
