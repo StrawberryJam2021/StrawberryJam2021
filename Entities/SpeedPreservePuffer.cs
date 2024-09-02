@@ -11,8 +11,6 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
     [CustomEntity("SJ2021/SpeedPreservePuffer")]
     public class SpeedPreservePuffer : Puffer {
         public bool Static;
-        public static float storedSpeed;
-        public static Puffer lastPuffer;
         private static ILHook origUpdateHook;
 
         public SpeedPreservePuffer(EntityData data, Vector2 offset) : base(data, offset) {
@@ -26,7 +24,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         public static void Load() {
             origUpdateHook = new ILHook(typeof(Player).GetMethod("orig_Update"), playerOrigUpdateHook);
-            IL.Celeste.Puffer.ctor_Vector2_bool += onPufferConstructor; //taken from max480's helping hand
+            IL.Celeste.Puffer.ctor_Vector2_bool += onPufferConstructor; //taken from maddie480's helping hand
             IL.Celeste.Puffer.Explode += onPufferExplode;
         }
 
@@ -43,7 +41,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Func<float, Player, float>>((orig, self) => {
                     // Normally the 1.2x launch speed is hardcoded when using lenience frames, so here we manually add the extra 0.2x launch speed
-                    if (lastPuffer is SpeedPreservePuffer) {
+                    if (self.Get<DataComponent>() is not null) {
                         return self.Speed.X + Math.Abs(0.2f * orig) * Math.Sign(self.Speed.X);
                     }
                     return orig;
@@ -76,20 +74,26 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 instr => instr.MatchBrtrue(out _))) {
 
                 cursor.EmitDelegate<Action>(() => {
-                    Player player = Engine.Scene.Tracker.GetEntity<Player>();
-                    storedSpeed = player.Speed.X;
+                    if (Engine.Scene.Tracker.GetEntity<Player>() is { } player) {
+                        var pufferData = player.Get<DataComponent>();
+                        if (pufferData is null) player.Add(pufferData = new DataComponent());
+                        pufferData.storedSpeed = player.Speed.X;
+                    }
                 });
             }
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCallvirt<Player>("ExplodeLaunch"))) {
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Puffer>>((self) => {
-                    lastPuffer = self;
-                    if (self is SpeedPreservePuffer) {
-                        Player player = Engine.Scene.Tracker.GetEntity<Player>();
-                        player.Speed.X += Math.Abs(storedSpeed) * Math.Sign(player.Speed.X);
+                    if (self is SpeedPreservePuffer && self.Scene.Tracker.GetEntity<Player>() is { } player && player.Get<DataComponent>() is { } dataComponent) {
+                        player.Speed.X += Math.Abs(dataComponent.storedSpeed) * Math.Sign(player.Speed.X);
                     }
                 });
             }
+        }
+
+        private class DataComponent : Component {
+            public float storedSpeed;
+            public DataComponent() : base(false, false) { }
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             FailureFlag = data.Attr("flagOnFailure", "");
             Index = data.Int("index");
 
-            //stole this code from max480's helping hand set flag on spawn trigger hope u don't mind
+            //stole this code from maddie480's helping hand set flag on spawn trigger hope u don't mind
             Level level = null;
             if (Engine.Scene is Level) {
                 level = Engine.Scene as Level;
