@@ -65,7 +65,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ExpiringDashRefill.Load();
             ToggleSwapBlock.Load();
             ShowHitboxTrigger.Load();
-            WindTunnelNoParticles.Load();
             LightSourceLimitController.Load();
             TogglePlaybackHandler.Load();
             CassetteListener.Load();
@@ -117,7 +116,6 @@ namespace Celeste.Mod.StrawberryJam2021 {
             ExpiringDashRefill.Unload();
             ToggleSwapBlock.Unload();
             ShowHitboxTrigger.Unload();
-            WindTunnelNoParticles.Unload();
             LightSourceLimitController.Unload();
             TogglePlaybackHandler.Unload();
             CassetteListener.Unload();
