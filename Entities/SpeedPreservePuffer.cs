@@ -41,7 +41,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Func<float, Player, float>>((orig, self) => {
                     // Normally the 1.2x launch speed is hardcoded when using lenience frames, so here we manually add the extra 0.2x launch speed
-                    if (self.Get<DataComponent>() is not null) {
+                    if (self.Get<DataComponent>() is { } dataComponent && dataComponent.speedPreservingPuffer) {
                         return self.Speed.X + Math.Abs(0.2f * orig) * Math.Sign(self.Speed.X);
                     }
                     return orig;
@@ -84,8 +84,14 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchCallvirt<Player>("ExplodeLaunch"))) {
                 cursor.Emit(OpCodes.Ldarg_0);
                 cursor.EmitDelegate<Action<Puffer>>((self) => {
-                    if (self is SpeedPreservePuffer && self.Scene.Tracker.GetEntity<Player>() is { } player && player.Get<DataComponent>() is { } dataComponent) {
-                        player.Speed.X += Math.Abs(dataComponent.storedSpeed) * Math.Sign(player.Speed.X);
+                    if (self.Scene.Tracker.GetEntity<Player>() is { } player && player.Get<DataComponent>() is { } dataComponent) {
+                        if (self is SpeedPreservePuffer) {
+                            player.Speed.X += Math.Abs(dataComponent.storedSpeed) * Math.Sign(player.Speed.X);
+                            dataComponent.speedPreservingPuffer = true;
+                        } else {
+                            dataComponent.speedPreservingPuffer = false;
+                        }
+
                     }
                 });
             }
@@ -93,6 +99,7 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
         private class DataComponent : Component {
             public float storedSpeed;
+            public bool speedPreservingPuffer;
             public DataComponent() : base(false, false) { }
         }
     }
