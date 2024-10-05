@@ -62,7 +62,8 @@ namespace Celeste.Mod.StrawberryJam2021.Entities {
 
             if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcI4(VanillaRenderTargetBufferSize))) {
                 cursor.EmitDelegate<Func<int, int>>(GetLightBufferSize);
-                cursor.Index++;
+            }
+            if (cursor.TryGotoNext(MoveType.After, instr => instr.MatchLdcI4(VanillaRenderTargetBufferSize))) {
                 cursor.EmitDelegate<Func<int, int>>(GetLightBufferSize);
             }
         }
