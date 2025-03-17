@@ -1,0 +1,7 @@
+mods.SJ2021.name=SJ2021
+
+# Library Text
+entities.SJ2021/LibraryText.placements.name.text=Library Text
+entities.SJ2021/LibraryText.placements.name.core_message=Core Message
+entities.SJ2021/LibraryText.attributes.description.dialog=The dialogue key to use.
+entities.SJ2021/LibraryText.attributes.description.outline=Whether the text has a black outline or not.
