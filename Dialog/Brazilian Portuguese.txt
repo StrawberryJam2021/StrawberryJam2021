@@ -1,0 +1,4 @@
+StrawberryJam2021_Menu_Hint= Dica
+StrawberryJam2021_Entities_SolarElevator_DefaultHint= Este elevador precisa de uma entidade carregável.
+StrawberryJam2021_DisplayDashSequence= Mostrar Sequência de Dashes
+StrawberryJam2021_TogglePlaybacks= Ligar/Desligar Playbacks
