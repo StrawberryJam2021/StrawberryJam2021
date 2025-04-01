@@ -119,6 +119,7 @@ namespace Celeste.Mod.StrawberryJam2021.Cutscenes {
                 new Team("SJ2021_Credits_Category_Overworld", "SJ2021_Credits_Names_Overworld"),
                 new Team("SJ2021_Credits_Category_UX_Design", "SJ2021_Credits_Names_UX_Design"),
                 new Team("SJ2021_Credits_Category_Localization",
+                    new Team.Section("SJ2021_Credits_Category_Localization_Brazilian_Portuguese", "SJ2021_Credits_Names_Localization_Brazilian_Portuguese"),
                     new Team.Section("SJ2021_Credits_Category_Localization_Chinese", "SJ2021_Credits_Names_Localization_Chinese"),
                     new Team.Section("SJ2021_Credits_Category_Localization_French", "SJ2021_Credits_Names_Localization_French"),
                     new Team.Section("SJ2021_Credits_Category_Localization_Japanese", "SJ2021_Credits_Names_Localization_Japanese"),
