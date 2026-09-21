@@ -94,8 +94,13 @@ namespace Celeste.Mod.StrawberryJam2021.StylegroundMasks {
         public Rectangle GetVisibleRect()
             => Rectangle.Intersect(new Rectangle(0, 0, 320, 180), new Rectangle((int)(X - Level.Camera.X), (int)(Y - Level.Camera.Y), (int)Width, (int)Height));
 
-        public Vector2 GetDrawPos()
-            => new Vector2(Math.Max(X, Level.Camera.X), Math.Max(Y, Level.Camera.Y));
+        public Vector2 GetDrawPos() {
+            // Get the draw position frrom the source rectangle
+            // in order to support fractional camera positions
+            
+            Rectangle sourceRect = GetVisibleRect();
+            return new Vector2(sourceRect.X + Level.Camera.X, sourceRect.Y + Level.Camera.Y);
+		}
 
         public Vector2 GetDrawOffset()
             => new Vector2(Math.Max(0, Level.Camera.X - X), Math.Max(0, Level.Camera.Y - Y));
